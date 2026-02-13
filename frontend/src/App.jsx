@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
 import LoginSuccess from './components/LoginSuccess';
-import Events from './pages/events'; 
+import Events from './pages/events';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -50,7 +50,7 @@ function App() {
             element={
               <>
                 <Navbar />
-                <main>
+                <main className="pt-24 md:pt-0">
                   <Hero />
                   <About />
                   <section id="events" className="h-screen flex items-center justify-center bg-[#0E0E0E] text-[#B8A18A]">
