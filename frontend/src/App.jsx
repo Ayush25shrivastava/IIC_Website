@@ -7,6 +7,7 @@ import About from './components/About';
 import Events from './pages/Events';
 import Sponsors from './pages/Sponsors';
 import LoginSuccess from './components/LoginSuccess';
+import Events from './pages/events';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -48,24 +49,47 @@ function App() {
         <Navbar />
         
         <Routes>
-          {/* Main Landing Page */}
-          <Route path="/" element={
-            <main>
-              <Hero />
-              <About />
-              <section id="schedule" className="h-screen flex items-center justify-center bg-[#dcd9d2] text-[#0E0E0E]">
-                <h2 className="font-playfair text-6xl">Event Schedule</h2>
-              </section>
-              <section id="contact" className="h-[50vh] flex items-center justify-center bg-[#7C6C58] text-white">
-                <h2 className="font-playfair text-4xl">Contact Us</h2>
-              </section>
-            </main>
-          } />
 
-          {/* HIGHLIGHT: Sub-pages registered here */}
-          <Route path="/events" element={<Events />} />
-          <Route path="/sponsors" element={<Sponsors />} />
+          {/* Home Route (UNCHANGED) */}
+          <Route
+            path="/"
+            element={
+              <>
+                <Navbar />
+                <main className="pt-24 md:pt-0">
+                  <Hero />
+                  <About />
+                  <section id="events" className="h-screen flex items-center justify-center bg-[#0E0E0E] text-[#B8A18A]">
+                    <h2 className="font-playfair text-6xl">Events Coming Soon...</h2>
+                  </section>
+                  <section id="schedule" className="h-screen flex items-center justify-center bg-[#dcd9d2] text-[#0E0E0E]">
+                    <h2 className="font-playfair text-6xl">Event Schedule</h2>
+                  </section>
+                  <section id="contact" className="h-[50vh] flex items-center justify-center bg-[#7C6C58] text-white">
+                    <h2 className="font-playfair text-4xl">Contact Us</h2>
+                  </section>
+                </main>
+
+                <footer className="py-8 text-center text-sm text-[#0E0E0E] bg-[#dcd9d2] border-t border-[#7C6C58]">
+                  © 2024 Udbhav - IIC MNNIT. All rights reserved.
+                </footer>
+              </>
+            }
+          />
+
+          {/* Events Page */}
+          <Route
+            path="/events"
+            element={
+              <>
+                <Navbar />
+                <Events />
+              </>
+            }
+          />
+          {/* Login Success */}
           <Route path="/login/success" element={<LoginSuccess />} />
+
         </Routes>
 
         <footer className="py-8 text-center text-sm text-[#0E0E0E] bg-[#dcd9d2] border-t border-[#7C6C58]">
