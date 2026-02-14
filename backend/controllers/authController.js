@@ -19,6 +19,6 @@ export const googleCallback = (req, res) => {
 
   // 2. Redirect with encoded values
   res.redirect(
-    `${process.env.CLIENT_URL}/login/success?token=${token}&complete=${isComplete}&name=${encodeURIComponent(userName)}&image=${encodeURIComponent(userImage)}`
+    `https://iic-website-three.vercel.app/login/success?token=${token}&complete=${isComplete}&name=${encodeURIComponent(userName)}&image=${encodeURIComponent(userImage)}`
   );
 };
