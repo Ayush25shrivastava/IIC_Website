@@ -34,6 +34,32 @@ const eventSchema = new Schema({
     default: 1 
   },
 
+
+  problemStatement: { 
+    type: String,
+    default: 'Details will be announced soon.'
+  },
+  
+  prizes: [{
+    position: { type: String }, 
+    amount: { type: String }    
+  }],
+
+  eligibility: { 
+    type: String,
+    default: 'Open to all college students'
+  },
+
+  registrationDeadline: { 
+    type: Date,
+    required: true
+  },
+
+  maxParticipants: {
+    type: Number,
+    default: null 
+  },
+
   registrationFee: { type: Number, default: 0 },
   isRegistrationOpen: { type: Boolean, default: true },
 

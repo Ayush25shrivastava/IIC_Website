@@ -2,35 +2,60 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const teamSchema = new Schema({
-  name: { 
-    type: String, 
-    required: true, 
-    trim: true 
-  },
-  
-  event: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'Event', 
-    required: true 
+  name: {
+    type: String,
+    required: true,
+    trim: true
   },
 
-  leader: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true 
+  event: {
+    type: Schema.Types.ObjectId,
+    ref: 'Event',
+    required: true
   },
 
-  members: [{ 
-    type: Schema.Types.ObjectId, 
-    ref: 'User' 
+  leader: {
+    email: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true
+    },
+    collegeRegNo: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    name: {
+      type: String,
+      default: ''
+    }
+  },
+
+  members: [{
+    email: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true
+    },
+    collegeRegNo: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    name: {
+      type: String,
+      default: ''
+    }
   }],
 
-  teamCode: { 
-    type: String, 
+  teamCode: {
+    type: String,
     unique: true,
-    required: true 
+    required: true
   },
-  
+
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'disqualified'],
@@ -39,17 +64,28 @@ const teamSchema = new Schema({
 
 }, { timestamps: true });
 
-// PRE-SAVE HOOK: Validation logic for Team Size
-teamSchema.pre('save', async function(next) {
-  if (this.isModified('members')) {
+
+teamSchema.pre('save', async function () {
+  if (this.isModified('members') || this.isNew) {
     const event = await mongoose.model('Event').findById(this.event);
+
+    if (!event) {
+      throw new Error('Event not found');
+    }
+
     
-    // Check Max Size
-    if (this.members.length > event.maxTeamSize) {
-      throw new Error(`Team size cannot exceed ${event.maxTeamSize} members.`);
+    const totalMembers = 1 + this.members.length;
+
+    
+    if (totalMembers > event.maxTeamSize) {
+      throw new Error(`Team size cannot exceed ${event.maxTeamSize} members. Current: ${totalMembers}`);
+    }
+
+    
+    if (totalMembers < event.minTeamSize) {
+      throw new Error(`Team must have at least ${event.minTeamSize} members. Current: ${totalMembers}`);
     }
   }
-  next();
 });
 
 export default mongoose.model('Team', teamSchema);

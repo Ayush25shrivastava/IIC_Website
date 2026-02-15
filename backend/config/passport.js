@@ -1,6 +1,6 @@
-// config/passport.js
+
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import User from '../models/userModel.js'; // Note the .js extension
+import User from '../models/userModel.js'; 
 
 export default function(passport) {
   passport.use(
@@ -12,13 +12,13 @@ export default function(passport) {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          // 1. Check if user exists
+          
           let user = await User.findOne({ googleId: profile.id });
 
           if (user) {
             return done(null, user);
           } else {
-            // 2. Create new user
+           
             const newUser = {
               googleId: profile.id,
               name: profile.displayName,
