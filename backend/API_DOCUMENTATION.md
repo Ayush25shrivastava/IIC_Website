@@ -52,17 +52,26 @@ Base URL: `http://localhost:5000`
   ```json
   {
     "eventId": "event_id_here",
-    "teamName": "My Awesome Team",
-    "leader": {
-      "collegeRegNo": "REG123" // Optional if 'studentId' is set in user profile
-    },
-    "members": [
-      {
-        "name": "Member Name",
-        "email": "member@email.com",
-        "collegeRegNo": "REG456"
-      }
-    ]
+    "teamName": "My Awesome Team"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "success": true,
+    "teamCode": "X7Z9P2", // Usage: Share this code with members
+    "data": { ... }
+  }
+  ```
+
+### Join Team
+**`POST /join`**
+- **Description:** Join an existing team using a unique team code.
+- **Auth:** **Yes** (Bearer Token)
+- **Body:**
+  ```json
+  {
+    "teamCode": "X7Z9P2"
   }
   ```
 
@@ -98,16 +107,10 @@ Base URL: `http://localhost:5000`
   ```
 
 ### Get My Teams
-**`POST /my-teams`**
-- **Description:** Get all teams a user belongs to (as leader or member).
-- **Auth:** No
-- **Body:**
-  ```json
-  {
-    "email": "user@email.com",
-    "collegeRegNo": "REG123"
-  }
-  ```
+**`GET /my-teams`**
+- **Description:** Get all teams the currently logged-in user belongs to (as leader or member).
+- **Auth:** **Yes** (Bearer Token)
+- **Body:** None
 
 ---
 

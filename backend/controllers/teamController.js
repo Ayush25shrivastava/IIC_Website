@@ -4,8 +4,8 @@ import { generateTeamCode } from '../utils/generateTeamCode.js';
 
 export const createTeam = async (req, res) => {
     try {
-        const { eventId, teamName, members } = req.body;
-        const leader = req.user; 
+        const { eventId, teamName } = req.body;
+        const leader = req.user;
 
         const leaderRegNo = leader.studentId || req.body.leader?.collegeRegNo;
 
@@ -61,72 +61,20 @@ export const createTeam = async (req, res) => {
             if (!existing) codeExists = false;
         }
 
-
-        const allMembers = [leaderData, ...(members || [])];
-        const seen = new Set();
-        const allEmails = [];
-        const allRegNos = [];
-
-        for (const member of allMembers) {
-            const email = member.email.toLowerCase();
-            const regNo = member.collegeRegNo;
-            const key = `${email}-${regNo}`;
-
-            if (seen.has(key)) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Duplicate member in current request: ${member.email}`
-                });
-            }
-            seen.add(key);
-            allEmails.push(email);
-            allRegNos.push(regNo);
-        }
-
-
         const existingMemberTeam = await Team.findOne({
             event: eventId,
-            $or: [
-                { 'leader.email': { $in: allEmails } },
-                { 'leader.collegeRegNo': { $in: allRegNos } },
-                { 'members.email': { $in: allEmails } },
-                { 'members.collegeRegNo': { $in: allRegNos } }
-            ]
+            'members': {
+                $elemMatch: {
+                    email: leaderData.email.toLowerCase(),
+                    collegeRegNo: leaderData.collegeRegNo
+                }
+            }
         });
 
         if (existingMemberTeam) {
-
-            let duplicateMember = null;
-            let duplicateReason = '';
-
-
-            if (allEmails.includes(existingMemberTeam.leader.email.toLowerCase())) {
-                duplicateMember = existingMemberTeam.leader.email;
-                duplicateReason = 'email';
-            } else if (allRegNos.includes(existingMemberTeam.leader.collegeRegNo)) {
-                duplicateMember = existingMemberTeam.leader.collegeRegNo;
-                duplicateReason = 'registration number';
-            }
-
-
-            if (!duplicateMember) {
-                for (const member of existingMemberTeam.members) {
-                    if (allEmails.includes(member.email.toLowerCase())) {
-                        duplicateMember = member.email;
-                        duplicateReason = 'email';
-                        break;
-                    }
-                    if (allRegNos.includes(member.collegeRegNo)) {
-                        duplicateMember = member.collegeRegNo;
-                        duplicateReason = 'registration number';
-                        break;
-                    }
-                }
-            }
-
             return res.status(400).json({
                 success: false,
-                message: `User with ${duplicateReason} '${duplicateMember}' is already registered in team '${existingMemberTeam.name}' for this event`
+                message: `You are already a member of team '${existingMemberTeam.name}' for this event`
             });
         }
 
@@ -138,11 +86,7 @@ export const createTeam = async (req, res) => {
                 collegeRegNo: leaderData.collegeRegNo,
                 name: leaderData.name
             },
-            members: (members || []).map(m => ({
-                email: m.email.toLowerCase(),
-                collegeRegNo: m.collegeRegNo,
-                name: m.name || ''
-            })),
+            members: [],
             teamCode
         });
 
@@ -154,9 +98,98 @@ export const createTeam = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: 'Team created successfully',
-            data: populatedTeam
+            message: 'Team created successfully. Share the team code with your members to join.',
+            data: populatedTeam,
+            teamCode: teamCode
         });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+export const joinTeam = async (req, res) => {
+    try {
+        const { teamCode } = req.body;
+        const user = req.user;
+        const userRegNo = user.studentId;
+
+        if (!userRegNo) {
+            return res.status(400).json({
+                success: false,
+                message: 'College registration number is required to join a team'
+            });
+        }
+
+        const team = await Team.findOne({ teamCode }).populate('event');
+
+        if (!team) {
+            return res.status(404).json({
+                success: false,
+                message: 'Invalid team code'
+            });
+        }
+
+        const event = team.event;
+
+        if (team.members.length + 1 >= event.maxTeamSize) {
+            return res.status(400).json({
+                success: false,
+                message: 'Team is already full'
+            });
+        }
+
+        if (team.leader.email === user.email.toLowerCase() || team.leader.collegeRegNo === userRegNo) {
+            return res.status(400).json({
+                success: false,
+                message: 'You are the leader of this team'
+            });
+        }
+
+        const isMember = team.members.some(
+            m => m.email === user.email.toLowerCase() || m.collegeRegNo === userRegNo
+        );
+
+        if (isMember) {
+            return res.status(400).json({
+                success: false,
+                message: 'You are already a member of this team'
+            });
+        }
+
+        const existingTeam = await Team.findOne({
+            event: event._id,
+            $or: [
+                { 'leader.email': user.email.toLowerCase() },
+                { 'leader.collegeRegNo': userRegNo },
+                { 'members.email': user.email.toLowerCase() },
+                { 'members.collegeRegNo': userRegNo }
+            ]
+        });
+
+        if (existingTeam) {
+            return res.status(400).json({
+                success: false,
+                message: `You are already registered in team '${existingTeam.name}' for this event`
+            });
+        }
+
+        team.members.push({
+            email: user.email.toLowerCase(),
+            collegeRegNo: userRegNo,
+            name: user.name
+        });
+
+        await team.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Successfully joined the team',
+            data: team
+        });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -355,19 +388,14 @@ export const deleteTeam = async (req, res) => {
 
 export const getMyTeams = async (req, res) => {
     try {
-        const { email, collegeRegNo } = req.body;
-
-        if (!email || !collegeRegNo) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email and college registration number are required'
-            });
-        }
+        const user = req.user;
+        const email = user.email;
+        const collegeRegNo = user.studentId;
 
         const asLeader = await Team.find({
             'leader.email': email.toLowerCase(),
             'leader.collegeRegNo': collegeRegNo
-        }).populate('event', 'name eventType date venue category');
+        }).populate('event', 'name eventType date venue category description image');
 
         const asMember = await Team.find({
             'members': {
@@ -376,7 +404,7 @@ export const getMyTeams = async (req, res) => {
                     collegeRegNo: collegeRegNo
                 }
             }
-        }).populate('event', 'name eventType date venue category');
+        }).populate('event', 'name eventType date venue category description image');
 
         const allTeams = [...asLeader, ...asMember];
         const uniqueTeams = Array.from(

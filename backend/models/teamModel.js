@@ -73,16 +73,16 @@ teamSchema.pre('save', async function () {
       throw new Error('Event not found');
     }
 
-    
+
     const totalMembers = 1 + this.members.length;
 
-    
+
     if (totalMembers > event.maxTeamSize) {
       throw new Error(`Team size cannot exceed ${event.maxTeamSize} members. Current: ${totalMembers}`);
     }
 
-    
-    if (totalMembers < event.minTeamSize) {
+
+    if (this.status === 'confirmed' && totalMembers < event.minTeamSize) {
       throw new Error(`Team must have at least ${event.minTeamSize} members. Current: ${totalMembers}`);
     }
   }
