@@ -8,21 +8,22 @@ import { IoMdHome } from "react-icons/io";
 import { RiGalleryFill } from "react-icons/ri";
 import { CgOrganisation } from "react-icons/cg";
 import { API_BASE_URL } from '../utils/config';
+
 gsap.registerPlugin(ScrollTrigger);
 
 const Navbar = () => {
     const navRef = useRef(null);
+    const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    // HIGHLIGHT: Determine if we are on a dark sub-page (Events/Sponsors)
+    const isDarkPage = location.pathname === '/events' || location.pathname === '/sponsors';
 
     const [user, setUser] = useState(() => {
         const savedJwt = localStorage.getItem('jwt');
         const savedName = localStorage.getItem('userName');
         const savedImage = localStorage.getItem('userImage');
-
-        if (savedJwt && savedName && savedImage) {
-            return { name: savedName, image: savedImage };
-        }
-        return null;
+        return (savedJwt && savedName && savedImage) ? { name: savedName, image: savedImage } : null;
     });
 
     useEffect(() => {
@@ -70,20 +71,19 @@ const Navbar = () => {
         return () => ctx.revert();
     }, []);
 
-    const toggleMobileMenu = () => {
-        setIsMobileMenuOpen(!isMobileMenuOpen);
-    };
-
-    const handleGoogleLogin = () => {
-        window.location.href = `${API_BASE_URL}/auth/google`;
-    };
-
     const handleLogout = () => {
-        localStorage.removeItem('jwt');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('userImage');
+        localStorage.clear();
         setUser(null);
+        window.location.href = "/";
     };
+
+    const NavLink = ({ to, icon, label }) => (
+        <Link to={to} className="hover:text-[#0E0E0E] transition-colors relative group flex items-center gap-1">
+            <span className="text-lg">{icon}</span>
+            {label}
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#0E0E0E] transition-all group-hover:w-full"></span>
+        </Link>
+    );
 
     return (
         <nav ref={navRef} className="fixed z-50 transition-all duration-300 bg-[#7C6C58] bg-opacity-95 backdrop-blur-md text-[#0E0E0E] shadow-2xl
@@ -178,58 +178,18 @@ const Navbar = () => {
                 )}
             </button>
 
-            {/* Mobile Menu Overlay */}
-            <div className={`fixed inset-0 bg-[#0E0E0E] bg-opacity-95 z-40 flex flex-col items-center justify-center transition-transform duration-300 md:hidden ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                <div className="flex flex-col gap-8 text-center">
-                    <a href="#home" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#B8A18A] transition-colors flex items-center justify-center gap-2">
-                        <span className="text-2xl"><IoMdHome /></span> Home
-                    </a>
-                    <a href="#" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#B8A18A] transition-colors flex items-center justify-center gap-2">
-                        <span className="text-2xl"><MdEventNote /></span> Events
-                    </a>
-                    <a href="#" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#B8A18A] transition-colors flex items-center justify-center gap-2">
-                        <span className="text-2xl"><IoPeopleSharp /></span> Teams
-                    </a>
-                    <a href="#" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#B8A18A] transition-colors flex items-center justify-center gap-2">
-                        <span className="text-2xl"><RiGalleryFill /></span> Gallery
-                    </a>
-                    <a href="#" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#B8A18A] transition-colors flex items-center justify-center gap-2">
-                        <span className="text-2xl"><CgOrganisation /></span> Sponsors
-                    </a>
-
-                    <div className="flex flex-col items-center gap-4 mt-8">
-                        {user ? (
-                            <>
-                                <div className="flex items-center gap-3 mb-4">
-                                    <img
-                                        src={user.image}
-                                        alt={user.name}
-                                        referrerPolicy="no-referrer"
-                                        className="w-12 h-12 rounded-full border border-[#B8A18A] object-cover"
-                                        onError={(e) => { e.target.src = 'https://via.placeholder.com/32' }}
-                                    />
-                                    <span className="text-[#B8A18A] font-merriweather text-lg">
-                                        {user.name}
-                                    </span>
-                                </div>
-                                <button
-                                    onClick={() => { handleLogout(); toggleMobileMenu(); }}
-                                    className="px-8 py-3 border border-[#B8A18A] text-[#B8A18A] font-merriweather text-lg font-bold uppercase hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300"
-                                >
-                                    Logout
-                                </button>
-                            </>
-                        ) : (
-                            <button
-                                onClick={() => { handleGoogleLogin(); toggleMobileMenu(); }}
-                                className="px-8 py-3 border border-[#B8A18A] text-[#B8A18A] font-merriweather text-lg font-bold uppercase hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300"
-                            >
-                                Register
-                            </button>
-                        )}
-                    </div>
+            {/* Mobile Overlay */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 bg-[#0E0E0E] z-[60] flex flex-col items-center justify-center space-y-8 animate-in fade-in slide-in-from-top-10">
+                    <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-6 right-8 text-4xl text-[#B8A18A]">×</button>
+                    <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-playfair">Home</Link>
+                    <Link to="/events" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-playfair">Events</Link>
+                    <Link to="/sponsors" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-playfair">Sponsors</Link>
+                    {!user && (
+                        <button onClick={() => window.location.href = `${API_BASE_URL}/auth/google`} className="bg-[#B8A18A] text-[#0E0E0E] px-8 py-3 font-bold">LOGIN</button>
+                    )}
                 </div>
-            </div>
+            )}
         </nav>
     );
 };

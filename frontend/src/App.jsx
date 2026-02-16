@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
+import Events from './pages/Events';
+import Sponsors from './pages/Sponsors';
 import LoginSuccess from './components/LoginSuccess';
 import Events from './pages/events';
 import gsap from 'gsap';
@@ -11,27 +13,27 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-function App() {
+// Helper component to reset scroll on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
+function App() {
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: 'vertical',
-      gestureDirection: 'vertical',
       smooth: true,
-      mouseMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
     });
 
     lenis.on('scroll', ScrollTrigger.update);
-
     gsap.ticker.add((time) => {
       lenis.raf(time * 1000);
     });
-
-    gsap.ticker.lagSmoothing(0);
 
     return () => {
       lenis.destroy();
@@ -41,7 +43,11 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="bg-[#dcd9d2] text-[#0E0E0E] min-h-screen overflow-x-hidden font-merriweather selection:bg-[#B8A18A] selection:text-white">
+      <ScrollToTop />
+      {/* HIGHLIGHT: Navbar is now global across all routes */}
+      <div className="bg-[#dcd9d2] text-[#0E0E0E] min-h-screen font-merriweather selection:bg-[#B8A18A] selection:text-white">
+        <Navbar />
+        
         <Routes>
 
           {/* Home Route (UNCHANGED) */}
@@ -85,6 +91,10 @@ function App() {
           <Route path="/login/success" element={<LoginSuccess />} />
 
         </Routes>
+
+        <footer className="py-8 text-center text-sm text-[#0E0E0E] bg-[#dcd9d2] border-t border-[#7C6C58]">
+          © 2026 Udbhav - IIC MNNIT. All rights reserved.
+        </footer>
       </div>
     </BrowserRouter>
   );
