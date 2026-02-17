@@ -122,7 +122,7 @@ const Navbar = () => {
                     <span className="md:text-[8px] md:uppercase md:tracking-widest group-hover:tracking-[0.2em] transition-all duration-300">Gallery</span>
                     <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-[#0E0E0E] rounded-r-md transition-all duration-300 group-hover:h-2/3 opacity-0 group-hover:opacity-100"></span>
                 </a>
-                <a href="#" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
+                <a href="/sponsors" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
                     <span className="text-xl md:text-2xl mb-1 group-hover:text-[#0E0E0E] group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300"><CgOrganisation /></span>
                     <span className="md:text-[8px] md:uppercase md:tracking-widest group-hover:tracking-[0.2em] transition-all duration-300">Sponsors</span>
                     <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-[#0E0E0E] rounded-r-md transition-all duration-300 group-hover:h-2/3 opacity-0 group-hover:opacity-100"></span>
