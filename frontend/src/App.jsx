@@ -6,6 +6,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import LoginSuccess from './components/LoginSuccess';
 import Events from './pages/events';
+import Sponsors from './pages/Sponsors';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -78,6 +79,16 @@ function App() {
               <>
                 <Navbar />
                 <Events />
+              </>
+            }
+          />
+
+          <Route
+            path="/sponsors"
+            element={
+              <>
+                <Navbar />
+                <Sponsors />
               </>
             }
           />
