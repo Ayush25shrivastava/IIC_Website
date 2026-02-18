@@ -9,6 +9,7 @@ import EventSection from './components/EventSection';
 import EventTimeline from './components/EventTimeline';
 import PastSponsors from './components/PastSponsors';
 import Speakers from './components/Speakers';
+import ContactFooter from './components/ContactFooter';
 import Events from './pages/events';
 import Sponsors from './pages/Sponsors';
 import gsap from 'gsap';
@@ -62,13 +63,11 @@ function App() {
                   <EventTimeline />
                   <PastSponsors />
                   <Speakers />
-                  <section id="contact" className="h-[50vh] flex items-center justify-center bg-[#7C6C58] text-white">
-                    <h2 className="font-playfair text-4xl">Contact Us</h2>
-                  </section>
+                  <ContactFooter />
                 </main>
 
-                <footer className="py-8 text-center text-sm text-[#0E0E0E] bg-[#dcd9d2] border-t border-[#7C6C58]">
-                  © 2026 Udbhav - IIC MNNIT. All rights reserved.
+                <footer className="hidden">
+                  {/* Deprecated Footer - Replaced by ContactFooter */}
                 </footer>
               </>
             }

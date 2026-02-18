@@ -61,8 +61,10 @@ html.lenis body {
     0% {
         transform: translateX(0);
     }
+
     100% {
-        transform: translateX(-50%); /* Adjust based on duplication count (e.g., -50% for 2 sets, -33.33% for 3 sets) */
+        transform: translateX(-50%);
+        /* Adjust based on duplication count (e.g., -50% for 2 sets, -33.33% for 3 sets) */
     }
 }
 

@@ -79,10 +79,10 @@ const Sponsors = () => {
     return (
         <div ref={sectionRef} className="relative min-h-screen bg-[#0E0E0E] pt-32 pb-20 px-6 overflow-hidden">
             {/* Background Archival Texture */}
-            <div 
+            <div
                 ref={bgRef}
                 className="absolute inset-0 z-0"
-                style={{ 
+                style={{
                     backgroundImage: `url(${invboard})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
@@ -109,13 +109,13 @@ const Sponsors = () => {
                             </h3>
                             <div className="flex flex-wrap justify-center gap-12">
                                 {tier.sponsors.map((s) => (
-                                    <div 
-                                        key={s.id} 
+                                    <div
+                                        key={s.id}
                                         className={`group relative ${tier.size} rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center p-6 transition-all duration-500 hover:border-[#B8A18A]/50 hover:scale-110 ${tier.glow}`}
                                     >
-                                        <img 
-                                            src={s.logo} 
-                                            alt={s.name} 
+                                        <img
+                                            src={s.logo}
+                                            alt={s.name}
                                             className="w-full h-full object-contain opacity-70 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0"
                                         />
                                         {/* Tooltip effect */}

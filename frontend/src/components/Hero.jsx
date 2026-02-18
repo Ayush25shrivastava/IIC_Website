@@ -62,7 +62,7 @@ const Hero = () => {
                     Udbhav
                     <div className="w-full h-1 bg-[#B8A18A] rounded-full"></div>
                 </h1>
-                
+
                 <p className="font-merriweather text-lg md:text-2xl text-[#dcd9d2] max-w-2xl font-light italic">
                     Vision • Venture • Victory
                 </p>

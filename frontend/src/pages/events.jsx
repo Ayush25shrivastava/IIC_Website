@@ -115,12 +115,12 @@ const Events = () => {
             }
         });
 
-        tl.fromTo(titleRef.current.children, 
+        tl.fromTo(titleRef.current.children,
             { opacity: 0, y: 40, skewY: 5 },
             { opacity: 1, y: 0, skewY: 0, duration: 1.2, stagger: 0.2 }
         );
 
-        tl.fromTo(cardsRef.current, 
+        tl.fromTo(cardsRef.current,
             { opacity: 0, y: 60, scale: 0.95 },
             { opacity: 1, y: 0, scale: 1, duration: 1, stagger: 0.1, ease: "expo.out" },
             "-=0.8"
@@ -133,11 +133,11 @@ const Events = () => {
         <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] pt-32 pb-20 px-6 relative overflow-x-hidden">
             {/* Cinematic Film Grain Overlay */}
             <div className="fixed inset-0 pointer-events-none opacity-[0.1] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-[60]"></div>
-            
+
             {/* ENHANCED VISIBILITY BACKGROUND */}
             <div ref={bgRef} className="fixed inset-0 bg-repeat bg-cover bg-center z-0 pointer-events-none"
-                style={{ 
-                    backgroundImage: "url('https://fcmod.org/wp-content/uploads/2020/03/philatelist-1844080_640-e1585082769528.jpg')", 
+                style={{
+                    backgroundImage: "url('https://fcmod.org/wp-content/uploads/2020/03/philatelist-1844080_640-e1585082769528.jpg')",
                     backgroundSize: "contain",
                     opacity: 0.4, // Increased opacity for better visibility
                     filter: "contrast(1.1) brightness(0.7)" // Added contrast to make the text/stamps pop
@@ -147,14 +147,14 @@ const Events = () => {
             <div className="max-w-7xl mx-auto relative z-10">
                 <header ref={titleRef} className="mb-20 border-l border-[#7C6C58]/30 pl-8">
                     <h1 className="font-playfair text-6xl md:text-8xl font-bold tracking-tighter text-white uppercase leading-none">
-                        Active <span className="text-[#7C6C58]">Docket</span> <br /> 
+                        Active <span className="text-[#7C6C58]">Docket</span> <br />
                         <span className="text-4xl md:text-6xl italic font-light opacity-80 uppercase font-merriweather">Udbhav 2026</span>
                     </h1>
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {eventsData.map((event, index) => (
-                        <motion.div 
+                        <motion.div
                             layoutId={`card-${event.id}`}
                             key={event.id}
                             ref={el => cardsRef.current[index] = el}
@@ -181,8 +181,8 @@ const Events = () => {
                 {selectedId && activeEvent && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 lg:p-8 overflow-hidden backdrop-blur-md">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/90" onClick={() => setSelectedId(null)} />
-                        
-                        <motion.div 
+
+                        <motion.div
                             layoutId={`card-${selectedId}`}
                             className="relative bg-[#1E1E1E] border border-[#B8A18A]/50 w-full max-w-5xl max-h-[85vh] md:max-h-[90vh] overflow-hidden flex flex-col md:flex-row rounded-2xl shadow-[0_0_100px_rgba(184,161,138,0.2)]"
                         >
@@ -198,9 +198,9 @@ const Events = () => {
                                     <span className="h-[1px] w-8 bg-[#B8A18A]/40"></span>
                                     <span className="text-[10px] tracking-[0.5em] text-[#B8A18A] uppercase font-bold font-mono tracking-widest">Docket No. 00{activeEvent.id}</span>
                                 </div>
-                                
+
                                 <h2 className="font-playfair text-3xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight shrink-0">{activeEvent.title}</h2>
-                                
+
                                 <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-8 mb-8">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-white/5 p-4 rounded-xl border border-white/5">
@@ -219,7 +219,7 @@ const Events = () => {
                                             {activeEvent.intel}
                                         </p>
                                     </div>
-                                    
+
                                     <div className="text-[11px] text-[#7C6C58] font-mono leading-relaxed space-y-2 pt-4">
                                         <p>&gt; DEPLOYMENT DATE: {activeEvent.date}</p>
                                         <p>&gt; SECTOR: {activeEvent.category}</p>
