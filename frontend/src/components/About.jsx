@@ -85,7 +85,7 @@ const About = () => {
 
                 <p className="font-merriweather text-lg md:text-xl leading-relaxed text-[#dcd9d2]">
                     (IIHMF) is also a recognised inclusive Technology Business Incubator (i-TBI) and facilitating the start-up inline with the NIDHI i-TBI guidelines of the Deparment of Science and Technology (DST). It is also a recognised incubator of Uttar Pradesh Electronic Corporation Ltd. (UPLC) under StartinUP scheme of the Government of Uttar Pradesh and facilitating the StartUps, inline with the startUp policy.
-                </p> 
+                </p>
 
                 <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                     <div className="p-6 border border-[#7C6C58] bg-[#0E0E0E] bg-opacity-50 backdrop-blur-sm rounded-lg hover:border-[#B8A18A] transition-colors duration-300">
