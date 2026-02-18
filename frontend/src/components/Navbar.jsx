@@ -8,6 +8,7 @@ import { IoMdHome } from "react-icons/io";
 import { RiGalleryFill } from "react-icons/ri";
 import { CgOrganisation } from "react-icons/cg";
 import { API_BASE_URL } from '../utils/config';
+import UdbhavLogo from '../assets/udbhav-logo.png';
 gsap.registerPlugin(ScrollTrigger);
 
 const Navbar = () => {
@@ -93,10 +94,8 @@ const Navbar = () => {
 
             <div className="nav-item flex items-center gap-4 md:flex-col md:gap-1">
                 {/* Logo */}
-                <div className="font-playfair font-bold text-2xl md:text-lg tracking-wider text-white text-center cursor-pointer hover:animate-pulse">
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-orange-400">
-                        UDBHAV
-                    </span>
+                <div className="flex justify-center cursor-pointer hover:scale-105 transition-transform duration-300">
+                    <img src={UdbhavLogo} alt="Udbhav Logo" className="h-12 md:h-16 w-auto object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
                 </div>
             </div>
 
