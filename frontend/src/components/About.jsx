@@ -80,18 +80,18 @@ const About = () => {
                 </h2>
 
                 <p className="font-merriweather text-lg md:text-xl leading-relaxed text-[#dcd9d2]">
-                    Institution's Innovation Council (IIC) at MNNIT Allahabad is a faculty-expert-student council which takes on the responsibility of organizing, facilitating, and overseeing innovation and entrepreneurship-related activities in the institute.
+                    The Innovation and Incubation Hub MNNIT Foundation (IIHMF) at Motilal Nehru National Institute of Technology Allahabad fosters innovation and entrepreneurship by providing mentorship, networking, funding, and business resources. It bridges academia and industry, driving technological advancements and economic growth, and empowers entrepreneurs, nurturing a vibrant startup ecosystem on campus and beyond.
                 </p>
 
                 <p className="font-merriweather text-lg md:text-xl leading-relaxed text-[#dcd9d2]">
-                    We foster an ecosystem of creativity, providing a platform for budding entrepreneurs to transform their visionary ideas into successful ventures. With a legacy of excellence, IIC MNNIT continues to be a beacon of innovation in the region.
-                </p>
+                    (IIHMF) is also a recognised inclusive Technology Business Incubator (i-TBI) and facilitating the start-up inline with the NIDHI i-TBI guidelines of the Deparment of Science and Technology (DST). It is also a recognised incubator of Uttar Pradesh Electronic Corporation Ltd. (UPLC) under StartinUP scheme of the Government of Uttar Pradesh and facilitating the StartUps, inline with the startUp policy.
+                </p> 
 
                 <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                     <div className="p-6 border border-[#7C6C58] bg-[#0E0E0E] bg-opacity-50 backdrop-blur-sm rounded-lg hover:border-[#B8A18A] transition-colors duration-300">
                         <h3
                             ref={el => countersRef.current[0] = el}
-                            data-target="50"
+                            data-target="15"
                             data-suffix="+"
                             className="font-playfair text-4xl font-bold text-[#B8A18A] mb-2"
                         >
@@ -102,7 +102,7 @@ const About = () => {
                     <div className="p-6 border border-[#7C6C58] bg-[#0E0E0E] bg-opacity-50 backdrop-blur-sm rounded-lg hover:border-[#B8A18A] transition-colors duration-300">
                         <h3
                             ref={el => countersRef.current[1] = el}
-                            data-target="100"
+                            data-target="40"
                             data-suffix="+"
                             className="font-playfair text-4xl font-bold text-[#B8A18A] mb-2"
                         >
@@ -113,7 +113,7 @@ const About = () => {
                     <div className="p-6 border border-[#7C6C58] bg-[#0E0E0E] bg-opacity-50 backdrop-blur-sm rounded-lg hover:border-[#B8A18A] transition-colors duration-300">
                         <h3
                             ref={el => countersRef.current[2] = el}
-                            data-target="10"
+                            data-target="2"
                             data-suffix="k+"
                             className="font-playfair text-4xl font-bold text-[#B8A18A] mb-2"
                         >
