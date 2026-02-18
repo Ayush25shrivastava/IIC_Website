@@ -8,6 +8,7 @@ import LoginSuccess from './components/LoginSuccess';
 import EventSection from './components/EventSection';
 import EventTimeline from './components/EventTimeline';
 import PastSponsors from './components/PastSponsors';
+import Speakers from './components/Speakers';
 import Events from './pages/events';
 import Sponsors from './pages/Sponsors';
 import gsap from 'gsap';
@@ -60,6 +61,7 @@ function App() {
                   <EventSection />
                   <EventTimeline />
                   <PastSponsors />
+                  <Speakers />
                   <section id="contact" className="h-[50vh] flex items-center justify-center bg-[#7C6C58] text-white">
                     <h2 className="font-playfair text-4xl">Contact Us</h2>
                   </section>
