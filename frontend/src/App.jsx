@@ -85,14 +85,18 @@ function App() {
           />
 
           <Route
-            path="/sponsors"
-            element={
-              <>
-                <Navbar />
-                <Sponsors />
-              </>
-            }
-          />
+              path="/sponsors"
+              element={
+                <>
+                  <Navbar />
+                  <main>
+                    <Sponsors />
+                    
+                    <ContactFooter />
+                  </main>
+                </>
+              }
+            />
           {/* Login Success */}
           <Route path="/login/success" element={<LoginSuccess />} />
 
