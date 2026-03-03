@@ -39,7 +39,7 @@ export const getUserProfile = async (req, res) => {
 
 export const updateUserProfile = async (req, res) => {
     try {
-        const { name, collegeName, studentId, branch, year, phone } = req.body;
+        const { name, collegeName, studentId, branch, year, phone, isMnnit } = req.body;
 
         const user = await User.findById(req.user._id);
 
@@ -56,9 +56,12 @@ export const updateUserProfile = async (req, res) => {
         if (branch) user.branch = branch;
         if (year) user.year = year;
         if (phone) user.phone = phone;
+        if (isMnnit !== undefined) user.isMnnit = Boolean(isMnnit);
 
-        if (user.name && user.email && user.collegeName && user.studentId) {
+        if (user.name && user.email && user.collegeName && (!user.isMnnit || user.studentId)) {
             user.isProfileComplete = true;
+        } else {
+            user.isProfileComplete = false;
         }
 
         await user.save();

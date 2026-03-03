@@ -4,22 +4,24 @@ import { generateTeamCode } from '../utils/generateTeamCode.js';
 
 export const createTeam = async (req, res) => {
     try {
-        const { eventId, teamName } = req.body;
+        const { eventId, teamName, leaderIsMnnit } = req.body;
         const leader = req.user;
 
-        const leaderRegNo = leader.studentId || req.body.leader?.collegeRegNo;
+        const isMnnit = leaderIsMnnit !== undefined ? Boolean(leaderIsMnnit) : Boolean(leader.isMnnit);
+        const leaderRegNo = leader.studentId || req.body.leader?.collegeRegNo || '';
 
-        if (!leaderRegNo) {
+        if (isMnnit && !leaderRegNo) {
             return res.status(400).json({
                 success: false,
-                message: 'Leader college registration number is required (update profile or provide in body)'
+                message: 'Leader college registration number is required for MNNIT students'
             });
         }
 
         const leaderData = {
             name: leader.name,
             email: leader.email,
-            collegeRegNo: leaderRegNo
+            collegeRegNo: leaderRegNo,
+            isMnnit: isMnnit
         };
 
         const event = await Event.findById(eventId);
@@ -61,13 +63,15 @@ export const createTeam = async (req, res) => {
             if (!existing) codeExists = false;
         }
 
+        const memberMatchQuery = { email: leaderData.email.toLowerCase() };
+        if (leaderData.collegeRegNo) {
+            memberMatchQuery.collegeRegNo = leaderData.collegeRegNo;
+        }
+
         const existingMemberTeam = await Team.findOne({
             event: eventId,
             'members': {
-                $elemMatch: {
-                    email: leaderData.email.toLowerCase(),
-                    collegeRegNo: leaderData.collegeRegNo
-                }
+                $elemMatch: memberMatchQuery
             }
         });
 
@@ -84,7 +88,8 @@ export const createTeam = async (req, res) => {
             leader: {
                 email: leaderData.email.toLowerCase(),
                 collegeRegNo: leaderData.collegeRegNo,
-                name: leaderData.name
+                name: leaderData.name,
+                isMnnit: leaderData.isMnnit
             },
             members: [],
             teamCode
@@ -112,14 +117,15 @@ export const createTeam = async (req, res) => {
 
 export const joinTeam = async (req, res) => {
     try {
-        const { teamCode } = req.body;
+        const { teamCode, isMnnit: reqIsMnnit } = req.body;
         const user = req.user;
-        const userRegNo = user.studentId;
+        const isMnnit = reqIsMnnit !== undefined ? Boolean(reqIsMnnit) : Boolean(user.isMnnit);
+        const userRegNo = user.studentId || '';
 
-        if (!userRegNo) {
+        if (isMnnit && !userRegNo) {
             return res.status(400).json({
                 success: false,
-                message: 'College registration number is required to join a team'
+                message: 'College registration number is required to join a team for MNNIT students'
             });
         }
 
@@ -149,7 +155,7 @@ export const joinTeam = async (req, res) => {
         }
 
         const isMember = team.members.some(
-            m => m.email === user.email.toLowerCase() || m.collegeRegNo === userRegNo
+            m => m.email === user.email.toLowerCase() || (userRegNo && m.collegeRegNo === userRegNo)
         );
 
         if (isMember) {
@@ -159,15 +165,20 @@ export const joinTeam = async (req, res) => {
             });
         }
 
-        const existingTeam = await Team.findOne({
+        const existingTeamQuery = {
             event: event._id,
             $or: [
                 { 'leader.email': user.email.toLowerCase() },
-                { 'leader.collegeRegNo': userRegNo },
-                { 'members.email': user.email.toLowerCase() },
-                { 'members.collegeRegNo': userRegNo }
+                { 'members.email': user.email.toLowerCase() }
             ]
-        });
+        };
+
+        if (userRegNo) {
+            existingTeamQuery.$or.push({ 'leader.collegeRegNo': userRegNo });
+            existingTeamQuery.$or.push({ 'members.collegeRegNo': userRegNo });
+        }
+
+        const existingTeam = await Team.findOne(existingTeamQuery);
 
         if (existingTeam) {
             return res.status(400).json({
@@ -179,7 +190,8 @@ export const joinTeam = async (req, res) => {
         team.members.push({
             email: user.email.toLowerCase(),
             collegeRegNo: userRegNo,
-            name: user.name
+            name: user.name,
+            isMnnit: isMnnit
         });
 
         await team.save();
@@ -229,7 +241,7 @@ export const getTeamDetails = async (req, res) => {
 export const updateTeam = async (req, res) => {
     try {
         const { id: teamId } = req.params;
-        const { teamName, members, leaderEmail, leaderRegNo } = req.body;
+        const { teamName, members, leaderEmail, leaderRegNo, leaderIsMnnit } = req.body;
 
         const team = await Team.findById(teamId).populate('event');
 
@@ -240,13 +252,16 @@ export const updateTeam = async (req, res) => {
             });
         }
 
-
         if (team.leader.email !== leaderEmail.toLowerCase() ||
             team.leader.collegeRegNo !== leaderRegNo) {
             return res.status(403).json({
                 success: false,
                 message: 'Only team leader can update the team'
             });
+        }
+
+        if (leaderIsMnnit !== undefined) {
+            team.leader.isMnnit = Boolean(leaderIsMnnit);
         }
 
 
@@ -264,8 +279,17 @@ export const updateTeam = async (req, res) => {
 
             for (const member of allMembers) {
                 const email = member.email.toLowerCase();
-                const regNo = member.collegeRegNo;
-                const key = `${email}-${regNo}`;
+                const isMnnit = Boolean(member.isMnnit);
+                const regNo = member.collegeRegNo || '';
+
+                if (isMnnit && !regNo) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `College registration number is required for MNNIT member: ${email}`
+                    });
+                }
+
+                const key = regNo ? `${email}-${regNo}` : `${email}`;
 
                 if (seen.has(key)) {
                     return res.status(400).json({
@@ -275,19 +299,23 @@ export const updateTeam = async (req, res) => {
                 }
                 seen.add(key);
                 allEmails.push(email);
-                allRegNos.push(regNo);
+                if (regNo) allRegNos.push(regNo);
             }
 
+            const searchOr = [
+                { 'leader.email': { $in: allEmails } },
+                { 'members.email': { $in: allEmails } }
+            ];
+
+            if (allRegNos.length > 0) {
+                searchOr.push({ 'leader.collegeRegNo': { $in: allRegNos } });
+                searchOr.push({ 'members.collegeRegNo': { $in: allRegNos } });
+            }
 
             const existingMemberTeam = await Team.findOne({
                 event: team.event,
                 _id: { $ne: teamId },
-                $or: [
-                    { 'leader.email': { $in: allEmails } },
-                    { 'leader.collegeRegNo': { $in: allRegNos } },
-                    { 'members.email': { $in: allEmails } },
-                    { 'members.collegeRegNo': { $in: allRegNos } }
-                ]
+                $or: searchOr
             });
 
             if (existingMemberTeam) {
@@ -297,7 +325,7 @@ export const updateTeam = async (req, res) => {
                 if (allEmails.includes(existingMemberTeam.leader.email.toLowerCase())) {
                     duplicateMember = existingMemberTeam.leader.email;
                     duplicateReason = 'email';
-                } else if (allRegNos.includes(existingMemberTeam.leader.collegeRegNo)) {
+                } else if (existingMemberTeam.leader.collegeRegNo && allRegNos.includes(existingMemberTeam.leader.collegeRegNo)) {
                     duplicateMember = existingMemberTeam.leader.collegeRegNo;
                     duplicateReason = 'registration number';
                 }
@@ -309,7 +337,7 @@ export const updateTeam = async (req, res) => {
                             duplicateReason = 'email';
                             break;
                         }
-                        if (allRegNos.includes(member.collegeRegNo)) {
+                        if (member.collegeRegNo && allRegNos.includes(member.collegeRegNo)) {
                             duplicateMember = member.collegeRegNo;
                             duplicateReason = 'registration number';
                             break;
@@ -325,8 +353,9 @@ export const updateTeam = async (req, res) => {
 
             team.members = members.map(m => ({
                 email: m.email.toLowerCase(),
-                collegeRegNo: m.collegeRegNo,
-                name: m.name || ''
+                collegeRegNo: m.collegeRegNo || '',
+                name: m.name || '',
+                isMnnit: Boolean(m.isMnnit)
             }));
         }
 

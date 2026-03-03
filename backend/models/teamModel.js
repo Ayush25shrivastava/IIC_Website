@@ -23,12 +23,16 @@ const teamSchema = new Schema({
     },
     collegeRegNo: {
       type: String,
-      required: true,
+      default: '',
       trim: true
     },
     name: {
       type: String,
       default: ''
+    },
+    isMnnit: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -41,12 +45,16 @@ const teamSchema = new Schema({
     },
     collegeRegNo: {
       type: String,
-      required: true,
+      default: '',
       trim: true
     },
     name: {
       type: String,
       default: ''
+    },
+    isMnnit: {
+      type: Boolean,
+      default: false
     }
   }],
 
