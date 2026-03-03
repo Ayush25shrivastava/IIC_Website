@@ -1,217 +1,166 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import det1 from '../assets/det1.webp';
+import det1 from '../assets/det2.avif';
+import partnersData from '../data/logos.json';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const images = import.meta.glob('../assets/past sponsors/*', { eager: true, query: '?url', import: 'default' });
-const sponsorLogos = Object.values(images);
-
-const sponsorTiers = [
-    { 
-        id: "MASTERMIND", 
-        title: "The Masterminds", 
-        description: "Primary entities funding the operation. Direct oversight of all project phases.",
-        logos: sponsorLogos.slice(0, 1),
-    },
-    { 
-        id: "SYNDICATE", 
-        title: "The Syndicate", 
-        description: "Strategic alliances providing high-level technical and logistical resources.",
-        logos: sponsorLogos.slice(1, 3),
-    },
-    { 
-        id: "INFORMANTS", 
-        title: "The Informants", 
-        description: "Wide-range network providing essential intelligence across various sectors.",
-        logos: sponsorLogos.slice(3, 7),
-    },
-];
-
-const Sponsors = () => {
-    const pageRef = useRef(null);
-
-    useEffect(() => {
-        let ctx = gsap.context(() => {
-            const sections = gsap.utils.toArray('.tier-section');
-
-            sections.forEach((section) => {
-                const horizontalContainer = section.querySelector('.horizontal-scroll');
-                const moveAmount = horizontalContainer.scrollWidth - window.innerWidth;
-
-                const tl = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top top",
-                        end: () => `+=${moveAmount + window.innerHeight}`,
-                        pin: true,
-                        scrub: 1,
-                        anticipatePin: 1,
-                        pinSpacing: true,
-                    }
-                });
-
-                if (moveAmount > 0) {
-                    tl.to(horizontalContainer, {
-                        x: -moveAmount,
-                        ease: "none",
-                    });
-                }
-            });
-        }, pageRef);
-
-        return () => ctx.revert();
-    }, []);
-
-    return (
-        <div ref={pageRef} className="relative text-[#dcd9d2] min-h-screen">
-
-            {/* BACKGROUND */}
-            <div 
-                className="fixed inset-0 z-0 w-full h-full bg-cover bg-center bg-no-repeat grayscale-[5%]"
-                style={{ 
-                    backgroundImage: `url(${det1})`,
-                    filter: "brightness(0.65) contrast(1.05)" 
-                }}
-            >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.7)_100%)]"></div>
-            </div>
-
-            <div className="relative z-10">
-
-                {/* INTRO */}
-                <div className="h-[90vh] flex flex-col items-center justify-center text-center px-4">
-                    <h1 className="font-playfair text-6xl md:text-9xl uppercase font-black tracking-tighter mb-6 leading-none drop-shadow-2xl">
-                        The <span className="text-[#B8A18A]">Partners</span>
-                    </h1>
-                    <p className="font-merriweather italic text-lg md:text-2xl text-white font-bold max-w-2xl drop-shadow-xl px-4">
-                        "Every great investigation requires the right backing. Meet the hands behind Udbhav."
-                    </p>
-                </div>
-
-                {/* TIERS */}
-                {sponsorTiers.map((tier) => (
-                    <section 
-                        key={tier.id} 
-                        className="tier-section h-screen w-full flex items-center overflow-hidden"
-                    >
-                        <div className="horizontal-scroll flex items-center h-full px-[8vw] gap-[6vw]">
-                            
-                            {/* INFO CARD */}
-                            <div className="w-[85vw] sm:w-[480px] shrink-0">
-                                <div className="relative p-10 border-l-8 border-[#B8A18A] bg-[#0a0a0a]/85 shadow-[20px_20px_40px_rgba(0,0,0,0.7)]">
-                                    <span className="font-mono text-sm text-[#B8A18A] tracking-[0.5em] uppercase mb-4 block font-bold">
-                                        SECTION: {tier.id}
-                                    </span>
-                                    <h2 className="font-playfair text-5xl md:text-7xl text-white font-black mb-6 leading-none uppercase">
-                                        {tier.title}
-                                    </h2>
-                                    <p className="font-merriweather italic text-[#dcd9d2]/80 leading-relaxed mb-8 text-base md:text-lg">
-                                        "{tier.description}"
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* DOSSIER CARDS */}
-                            {tier.logos.map((logo, idx) => (
-                                <SponsorDossier key={idx} logo={logo} />
-                            ))}
-                        </div>
-                    </section>
-                ))}
-
-                {/* FOOTER */}
-                <div className="h-screen flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm">
-                    <p className="font-playfair text-5xl opacity-80 italic text-[#B8A18A] drop-shadow-2xl">
-                        Case Files Remain Open...
-                    </p>
-                    <p className="font-mono text-xs mt-4 tracking-[0.5em] opacity-50 uppercase">
-                        Investigation Ongoing
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
+const getImageUrl = (name) => {
+  return new URL(`../assets/past sponsors/${name}`, import.meta.url).href;
 };
 
-const SponsorDossier = ({ logo }) => {
-    return (
-        <div className="sponsor-dossier group relative 
-            w-[320px] sm:w-[360px] md:w-[380px]
-            h-[480px] 
-            shrink-0 
-            flex items-center justify-center">
+const Sponsors = () => {
+  const boardRef = useRef(null);
 
-            <div className="relative w-full h-full 
-                bg-gradient-to-br from-[#f5efe4] to-[#e3dacb]
-                rounded-xl
-                shadow-[0_25px_60px_rgba(0,0,0,0.7)]
-                border border-[#B8A18A]/40
-                overflow-hidden
-                transition-all duration-500
-                group-hover:-translate-y-4
-                group-hover:rotate-[0.8deg]
-                group-hover:shadow-[0_35px_90px_rgba(184,161,138,0.5)]">
+  useEffect(() => {
+    let ctx = gsap.context(() => {
+      gsap.utils.toArray('.sponsor-card').forEach((card) => {
+        gsap.from(card, {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 90%",
+            toggleActions: "play none none none"
+          },
+          opacity: 0,
+          y: 80,
+          duration: 0.9,
+          ease: "power3.out"
+        });
+      });
+    }, boardRef);
+    return () => ctx.revert();
+  }, []);
 
-                {/* HEADER */}
-                <div className="bg-[#111] px-5 py-4 flex justify-between items-center">
-                    <div>
-                        <p className="font-mono text-[10px] text-[#B8A18A] uppercase tracking-widest">
-                            Case File
-                        </p>
-                        <p className="font-mono text-[12px] text-white font-bold tracking-wider">
-                            DOSSIER_042
-                        </p>
-                    </div>
+  return (
+    <div ref={boardRef} className="relative min-h-screen text-[#e8dcc8] pb-32 overflow-x-hidden">
+      
+      {/* BACKGROUND BOARD */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-85"
+          style={{ backgroundImage: `url(${det1})` }}
+        />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cork-board.png')] opacity-25"></div>
+        <div className="absolute inset-0 bg-black/35"></div>
+      </div>
 
-                    <div className="bg-red-700 text-white text-[9px] px-3 py-1 font-bold uppercase tracking-widest rounded-sm shadow-md">
-                        Restricted
-                    </div>
-                </div>
+      {/* THREAD WEB */}
+      <div className="absolute inset-0 z-10 pointer-events-none opacity-50">
+        <svg className="w-full h-full min-h-[300vh]">
+          <line x1="10%" y1="20%" x2="90%" y2="40%" stroke="#7f1d1d" strokeWidth="3" />
+          <line x1="20%" y1="60%" x2="80%" y2="85%" stroke="#7f1d1d" strokeWidth="3" />
+          <line x1="85%" y1="10%" x2="15%" y2="75%" stroke="#991b1b" strokeWidth="2" />
+          <line x1="5%" y1="50%" x2="95%" y2="55%" stroke="#5a1212" strokeWidth="2" />
+          <line x1="30%" y1="5%" x2="60%" y2="95%" stroke="#4a0f0f" strokeWidth="2" />
+          <line x1="70%" y1="0%" x2="40%" y2="100%" stroke="#4a0f0f" strokeWidth="2" />
+        </svg>
+      </div>
 
-                {/* BODY */}
-                <div className="p-6 flex flex-col justify-between h-[calc(100%-72px)]">
+      <div className="relative z-20 max-w-7xl mx-auto px-6 pt-28">
 
-                    {/* IMAGE */}
-                    <div className="relative w-full aspect-square bg-white rounded-md shadow-inner border border-black/10 overflow-hidden">
+        {/* HEADER */}
+        <header className="text-center mb-24 md:mb-28">
+          <h1 className="font-playfair text-6xl md:text-8xl font-bold tracking-wide mb-6 leading-tight">
+            <span className="text-[#f5e9d8]">The Sponsor</span>{" "}
+            <span className="text-[#d6c6b1] drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
+              Archive
+            </span>
+          </h1>
 
-                        <div className="absolute inset-0 z-20 bg-black flex items-center justify-center transition-opacity duration-500 group-hover:opacity-0">
-                            <span className="text-[#B8A18A] text-xs font-mono tracking-widest animate-pulse">
-                                DECRYPTING...
-                            </span>
-                        </div>
+          <div className="inline-block px-8 py-4 bg-black/40 backdrop-blur-md border border-[#cbbfae]/30 rounded-md">
+            <p className="italic text-[#e6d8c3] text-lg tracking-wide">
+              Documented alliances and strategic backers shaping the mission.
+            </p>
+          </div>
+        </header>
 
-                        <div className="w-full h-full flex items-center justify-center p-10 grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700">
-                            <img 
-                                src={logo}
-                                alt="Sponsor"
-                                className="max-w-full max-h-full object-contain"
-                            />
-                        </div>
-                    </div>
+        {/* HIERARCHICAL TIERS */}
+        <div className="space-y-32 md:space-y-40">
+          {partnersData.map((tier) => (
+            <div key={tier.id} className="relative text-center">
 
-                    {/* TEXT */}
-                    <div className="mt-6 space-y-3">
-                        <h3 className="font-playfair text-xl text-black font-bold italic border-b border-black/20 pb-1">
-                            Classified Partner
-                        </h3>
+              {/* Tier Heading */}
+              <div className="mb-16 relative">
+                <div className="w-9 h-9 bg-[#8b0000] rounded-full mx-auto mb-5 shadow-[0_0_30px_rgba(139,0,0,0.6)] border-2 border-[#4a0000]"></div>
 
-                        <p className="font-merriweather text-black/70 text-sm leading-relaxed">
-                            Strategic collaborator contributing to operational intelligence 
-                            and logistical expansion.
-                        </p>
-                    </div>
-                </div>
+                <h2 className="font-playfair text-4xl md:text-5xl font-semibold uppercase tracking-[0.3em] text-[#f1e6d6] drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
+                  {tier.title}
+                </h2>
 
-                
-                <div className="absolute inset-0 pointer-events-none rounded-xl border border-[#B8A18A]/20 group-hover:border-[#B8A18A]/60 transition-all duration-500"></div>
+                <div className="w-32 h-[2px] bg-gradient-to-r from-transparent via-[#cbbfae] to-transparent mx-auto mt-4 mb-3"></div>
+
+                <p className="text-sm text-[#d8c9b4] italic tracking-wide">
+                  Official {tier.title} Sponsors
+                </p>
+              </div>
+
+              {/* Cards */}
+              <div className={`grid gap-x-16 gap-y-14 justify-center ${
+                tier.id === 'MASTERMIND'
+                  ? 'grid-cols-1 max-w-sm mx-auto'
+                  : tier.id === 'SYNDICATE'
+                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                  : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+              }`}>
+                {tier.logos.map((logo, index) => (
+                  <SponsorCard
+                    key={index}
+                    logo={logo}
+                    sponsorType={tier.title}
+                  />
+                ))}
+              </div>
             </div>
-
-            {/* THREAD */}
-            <div className="absolute -top-[100px] left-1/2 w-[2px] h-[100px] bg-red-600/40 hidden md:block border-dashed border-l"></div>
+          ))}
         </div>
-    );
+      </div>
+    </div>
+  );
+};
+
+const SponsorCard = ({ logo, sponsorType }) => {
+  return (
+    <div className="sponsor-card relative group mx-auto w-full max-w-[300px]">
+      
+      {/* Thread */}
+      <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-[4px] h-16 bg-[#7f1d1d] z-10"></div>
+
+      {/* Pin */}
+      <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30">
+        <div className="w-8 h-8 bg-[#8b0000] rounded-full shadow-lg border-2 border-[#4a0000] flex items-center justify-center">
+          <div className="w-2 h-2 bg-white/50 rounded-full"></div>
+        </div>
+      </div>
+
+      {/* CARD */}
+      <div className="bg-[#f1e6d6] border border-[#cbbfae] p-6 pb-10 shadow-[20px_25px_60px_rgba(0,0,0,0.85)] transition-all duration-300 group-hover:-translate-y-3 group-hover:scale-105 group-hover:shadow-[25px_35px_80px_rgba(0,0,0,0.95)] relative">
+
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-25 pointer-events-none"></div>
+
+        <div className="bg-white p-6 rounded shadow-inner flex items-center justify-center h-44">
+          <img
+            src={getImageUrl(logo.fileName)}
+            alt={logo.name}
+            className="max-h-full max-w-full object-contain"
+          />
+        </div>
+
+        <div className="mt-6 text-black text-center">
+          <h3 className="font-playfair text-xl font-bold tracking-wide">
+            {logo.name}
+          </h3>
+          <p className="text-xs uppercase tracking-[0.25em] text-gray-700 mt-3">
+            {sponsorType} Sponsor
+          </p>
+        </div>
+
+        <div className="absolute bottom-3 right-3 text-[#7f1d1d] text-[10px] font-mono opacity-60 tracking-widest">
+          VERIFIED
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Sponsors;

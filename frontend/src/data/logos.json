@@ -1,0 +1,37 @@
+[
+  {
+    "id": "MASTERMIND",
+    "title": "The Masterminds",
+    "description": "Primary entities funding the operation. Direct oversight of all project phases.",
+    "logos": [
+      { "name": "PVR Cinemas", "fileName": "832d34dc-25b4-4e44-a8a3-3fcd1edea9a6.png" }
+    ]
+  },
+  {
+    "id": "SYNDICATE",
+    "title": "The Syndicate",
+    "description": "Strategic alliances providing high-level logistical support.",
+    "logos": [
+      { "name": "The Roof Park", "fileName": "280276600_833963994673566_1134578587338969714_n.jpg" },
+      { "name": "Bank of Baroda", "fileName": "Bank-of-Baroda-logo.jpg" },
+      { "name": "Royal Enfield", "fileName": "Royal_Enfield_Logo_full.png" },
+      { "name": "Unstop", "fileName": "images (4).png" }
+    ]
+  },
+  {
+    "id": "INFORMANTS",
+    "title": "The Informants",
+    "description": "Wide-range network providing essential intelligence and resources.",
+    "logos": [
+      { "name": "Campa Cola", "fileName": "campacola.jpeg" },
+      { "name": "D2D Youth Story", "fileName": "D2D LOGO (1).png" },
+      { "name": "Jolen New York", "fileName": "download.jpeg" },
+      { "name": "Ensure", "fileName": "images (2).jpeg" },
+      { "name": "Abhibus", "fileName": "images (3).png" },
+      { "name": "The Bull", "fileName": "images (5).png" },
+      { "name": "Suzuki", "fileName": "images (6).png" },
+      { "name": "Pharmabolt", "fileName": "LOGO.png" },
+      { "name": "Sault", "fileName": "WhatsApp Image 2025-04-23 at 4.36.29 PM (1).jpeg" }
+    ]
+  }
+]
