@@ -15,6 +15,7 @@ import Sponsors from './pages/Sponsors';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Gallery from './pages/gallery';
+import Registration from './pages/Registration';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -84,6 +85,19 @@ function App() {
                     <Events />
                     <ContactFooter />
                   </main>
+              </>
+            }
+          />
+
+          {/* Registration Page */}
+          <Route
+            path="/events/:eventId/register"
+            element={
+              <>
+                {/* Omit Navbar here for full app-like experience or keep it if consistent */}
+                <main>
+                    <Registration />
+                </main>
               </>
             }
           />
