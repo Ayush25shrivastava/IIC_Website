@@ -14,6 +14,7 @@ import Events from './pages/events';
 import Sponsors from './pages/Sponsors';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Gallery from './pages/gallery';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -79,7 +80,24 @@ function App() {
             element={
               <>
                 <Navbar />
-                <Events />
+                <main>
+                    <Events />
+                    <ContactFooter />
+                  </main>
+              </>
+            }
+          />
+
+          {/* Gallery Page */}
+          <Route
+            path="/gallery"
+            element={
+              <>
+                <Navbar />
+                <main>
+                    <Gallery />
+                    <ContactFooter />
+                </main>
               </>
             }
           />
@@ -91,7 +109,6 @@ function App() {
                   <Navbar />
                   <main>
                     <Sponsors />
-                    
                     <ContactFooter />
                   </main>
                 </>
