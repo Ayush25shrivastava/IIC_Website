@@ -1,5 +1,6 @@
+
 import React, { useRef, useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { IoPeopleSharp } from "react-icons/io5";
@@ -12,6 +13,8 @@ import UdbhavLogo from '../assets/udbhav-logo.png';
 gsap.registerPlugin(ScrollTrigger);
 
 const Navbar = () => {
+
+    const navigate = useNavigate();
     const navRef = useRef(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -143,9 +146,16 @@ const Navbar = () => {
                             <span className="text-[#B8A18A] font-merriweather text-[10px] text-center truncate w-full px-1">
                                 {user.name.split(' ')[0]}
                             </span>
+
+                            <button
+                                onClick={() => navigate('/dashboard')}
+                                className="text-[10px] cursor-pointer font-merriweather text-white hover:text-[#0E0E0E] hover:bg-[#B8A18A] transition-all duration-300 uppercase tracking-widest w-full py-1 border border-white/20 rounded"
+                            >
+                                Profile
+                            </button>
                             <button
                                 onClick={handleLogout}
-                                className="text-[10px] font-merriweather text-white hover:text-[#0E0E0E] hover:bg-[#B8A18A] transition-all duration-300 uppercase tracking-widest w-full py-1 border border-white/20 rounded"
+                                className="text-[10px] cursor-pointer font-merriweather text-white hover:text-[#0E0E0E] hover:bg-[#B8A18A] transition-all duration-300 uppercase tracking-widest w-full py-1 border border-white/20 rounded"
                             >
                                 Logout
                             </button>
@@ -154,7 +164,7 @@ const Navbar = () => {
                         <div className="nav-item flex flex-col gap-2 w-full">
                             <button
                                 onClick={handleGoogleLogin}
-                                className="w-full px-1 py-1.5 border border-[#B8A18A] text-white font-merriweather text-[10px] font-bold uppercase hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300 rounded hover:shadow-[0_0_15px_#B8A18A] hover:-translate-y-0.5"
+                                className="w-full cursor-pointer px-1 py-1.5 border border-[#B8A18A] text-white font-merriweather text-[10px] font-bold uppercase hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300 rounded hover:shadow-[0_0_15px_#B8A18A] hover:-translate-y-0.5"
                             >
                                 Register
                             </button>
@@ -212,7 +222,7 @@ const Navbar = () => {
                     <div className="flex flex-col items-center gap-4 mt-8">
                         {user ? (
                             <>
-                                <div className="flex items-center gap-3 mb-4">
+                                <div onClick={() => navigate('/dashboard')} className="flex items-center gap-3 mb-4">
                                     <img
                                         src={user.image}
                                         alt={user.name}
