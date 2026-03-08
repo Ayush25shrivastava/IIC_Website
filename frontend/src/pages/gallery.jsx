@@ -2,6 +2,22 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion } from 'framer-motion';
+import img1 from "../assets/past images/DSC_0364.jpg";
+import img2 from "../assets/past images/DSC_0392.jpg";
+import img3 from "../assets/past images/DSC_0454.jpg";
+import img4 from "../assets/past images/DSC_0690.jpg";
+import img5 from "../assets/past images/DSC_0704.jpg";
+import img6 from "../assets/past images/DSC_0733.jpg";
+import img7 from "../assets/past images/DSC_0757.jpg";
+import img8 from "../assets/past images/DSC_0752.jpg";
+import img9 from "../assets/past images/DSC_04981.jpg";
+import img10 from "../assets/past images/DSC_0736.jpg";
+import img11 from "../assets/past images/DSC_0740.jpg";
+import img12 from "../assets/past images/DSC_0715.jpg";
+import img13 from "../assets/past images/DSC_0534.jpg";
+import img14 from "../assets/past images/DSC_0458.jpg";
+import img15 from "../assets/past images/DSC_0442.jpg";
+import img16 from "../assets/past images/DSC_0438.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,12 +33,22 @@ const pastSpeakers = [
 ];
 
 const galleryPhotos = [
-    "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800",
-    "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800",
-    "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=800",
-    "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?q=80&w=800",
-    "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=800",
-    "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800",
+    img1,
+    img2,
+    img3,
+    img4,
+    img5,
+    img6,
+    img7,
+    img8,
+    img9,
+    img10,
+    img11,
+    img12,
+    img13,
+    img14,
+    img15,
+    img16,
 ];
 
 const Gallery = () => {
@@ -64,7 +90,7 @@ const Gallery = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] pt-32 pb-20 px-6 relative overflow-x-hidden">
+        <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] pl-40 pt-32 pb-20 px-6 relative overflow-x-hidden">
 
             {/* Background */}
             <div
@@ -97,7 +123,7 @@ const Gallery = () => {
                             ref={(el) => (sectionHeadings.current[0] = el)}
                             className="font-playfair text-3xl md:text-5xl lg:text-[80px] text-white uppercase tracking-[0.25em] leading-none"
                         >
-                            CONFIDENTIAL ASSETS
+                            PAST SPEAKERS
                         </h2>
 
                         <div className="mt-8 backdrop-blur-md bg-black/50 border border-[#7C6C58]/30 px-10 py-4 rounded-xl shadow-2xl">
@@ -133,7 +159,7 @@ const Gallery = () => {
                             ref={(el) => (sectionHeadings.current[1] = el)}
                             className="font-playfair text-3xl md:text-5xl lg:text-[80px] text-white uppercase tracking-[0.25em] leading-none"
                         >
-                            FIELD EVIDENCE
+                            PAST HIGHLIGHTS
                         </h2>
 
                         <div className="mt-8 backdrop-blur-md bg-black/50 border border-[#7C6C58]/30 px-10 py-4 rounded-xl shadow-2xl">
@@ -144,7 +170,7 @@ const Gallery = () => {
 
                     </div>
 
-                    <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {galleryPhotos.map((photo, index) => (
                             <motion.div
                                 key={index}
@@ -152,23 +178,14 @@ const Gallery = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.8, delay: index * 0.1 }}
-                                className="relative group break-inside-avoid bg-[#1A1A1A]/80 p-3 border border-[#7C6C58]/20 shadow-2xl hover:rotate-1 transition-transform duration-500 backdrop-blur-sm"
+                                className="relative group bg-[#1A1A1A]/80 p-3 border border-[#7C6C58]/20 shadow-2xl hover:rotate-1 transition-transform duration-500 backdrop-blur-sm"
                             >
-                                <div className="overflow-hidden bg-black aspect-video md:aspect-auto">
+                                <div className="overflow-hidden bg-black aspect-video">
                                     <img
                                         src={photo}
                                         alt="Evidence"
-                                        className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000 grayscale group-hover:grayscale-0"
+                                        className="w-full h-full object-cover opacity-100 group-hover:scale-105 transition-all duration-1000"
                                     />
-                                </div>
-
-                                <div className="mt-4 flex justify-between items-center px-1">
-                                    <span className="text-[9px] font-mono text-[#7C6C58]">
-                                        REF_IMG_00{index + 104}
-                                    </span>
-                                    <span className="text-[9px] font-mono text-[#7C6C58]">
-                                        CONFIDENTIAL
-                                    </span>
                                 </div>
                             </motion.div>
                         ))}
