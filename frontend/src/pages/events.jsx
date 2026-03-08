@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -101,6 +102,7 @@ const Events = () => {
     const cardsRef = useRef([]);
     const titleRef = useRef(null);
     const bgRef = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
@@ -227,7 +229,10 @@ const Events = () => {
                                     </div>
                                 </div>
 
-                                <button className="group relative w-full py-4 bg-[#B8A18A] text-[#0E0E0E] font-black uppercase text-xs tracking-[0.6em] rounded-xl shrink-0 hover:shadow-[0_0_25px_rgba(184,161,138,0.4)] transition-all">
+                                <button 
+                                    onClick={() => navigate(`/events/${activeEvent.id}/register`)}
+                                    className="group relative w-full py-4 bg-[#B8A18A] text-[#0E0E0E] font-black uppercase text-xs tracking-[0.6em] rounded-xl shrink-0 hover:shadow-[0_0_25px_rgba(184,161,138,0.4)] transition-all"
+                                >
                                     <span className="relative z-10">Authorize Access</span>
                                 </button>
                             </div>

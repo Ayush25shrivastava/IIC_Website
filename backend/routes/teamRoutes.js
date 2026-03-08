@@ -1,4 +1,5 @@
 import express from 'express';
+import { verifyToken } from '../middleware/authMiddleware.js';
 import {
     createTeam,
     getTeamDetails,
@@ -10,14 +11,14 @@ import {
 
 const router = express.Router();
 
+// 1. STATIC ROUTES GO FIRST
+router.post('/create', verifyToken, createTeam);
+router.post('/join', verifyToken, joinTeam);
+router.get('/my-teams', verifyToken, getMyTeams); // <-- This MUST be above /:id
 
-import { verifyToken } from '../middleware/authMiddleware.js';
-
-router.post('/', verifyToken, createTeam);
+// 2. DYNAMIC ROUTES GO LAST
 router.get('/:id', getTeamDetails);
 router.put('/:id', updateTeam);
 router.delete('/:id', deleteTeam);
-router.get('/my-teams', verifyToken, getMyTeams);
-router.post('/join', verifyToken, joinTeam);
 
 export default router;

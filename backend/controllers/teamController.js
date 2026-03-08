@@ -147,7 +147,7 @@ export const joinTeam = async (req, res) => {
             });
         }
 
-        if (team.leader.email === user.email.toLowerCase() || team.leader.collegeRegNo === userRegNo) {
+        if (team.leader.email === user.email.toLowerCase()) {
             return res.status(400).json({
                 success: false,
                 message: 'You are the leader of this team'
@@ -419,23 +419,32 @@ export const getMyTeams = async (req, res) => {
     try {
         const user = req.user;
         const email = user.email;
-        const collegeRegNo = user.studentId;
+        // Fallback to empty string if undefined to prevent MongoDB query errors
+        const collegeRegNo = user.studentId || ''; 
 
-        const asLeader = await Team.find({
-            'leader.email': email.toLowerCase(),
-            'leader.collegeRegNo': collegeRegNo
-        }).populate('event', 'name eventType date venue category description image');
+        // Build the query dynamically. If they don't have a regNo, just match the email.
+        const leaderQuery = { 'leader.email': email.toLowerCase() };
+        if (collegeRegNo) leaderQuery['leader.collegeRegNo'] = collegeRegNo;
 
-        const asMember = await Team.find({
+        const asLeader = await Team.find(leaderQuery)
+            .populate('event', 'name eventType date venue category description image');
+
+        const memberQuery = {
             'members': {
-                $elemMatch: {
-                    email: email.toLowerCase(),
-                    collegeRegNo: collegeRegNo
-                }
+                $elemMatch: { email: email.toLowerCase() }
             }
-        }).populate('event', 'name eventType date venue category description image');
+        };
+        // Add regNo matching to the elemMatch only if it exists
+        if (collegeRegNo) {
+             memberQuery.members.$elemMatch.collegeRegNo = collegeRegNo;
+        }
+
+        const asMember = await Team.find(memberQuery)
+            .populate('event', 'name eventType date venue category description image');
 
         const allTeams = [...asLeader, ...asMember];
+        
+        // Remove duplicates just in case
         const uniqueTeams = Array.from(
             new Map(allTeams.map(team => [team._id.toString(), team])).values()
         );
