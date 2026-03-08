@@ -18,7 +18,7 @@ const LoginSuccess = () => {
       localStorage.setItem('userName', userName);
       localStorage.setItem('userImage', profileImage);
 
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [searchParams, navigate]);
 

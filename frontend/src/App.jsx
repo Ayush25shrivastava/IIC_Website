@@ -16,6 +16,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Gallery from './pages/gallery';
 import Registration from './pages/Registration';
+import Dashboard from './pages/dashboard';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -97,6 +98,17 @@ function App() {
                 {/* Omit Navbar here for full app-like experience or keep it if consistent */}
                 <main>
                     <Registration />
+                </main>
+              </>
+            }
+          />
+
+          <Route
+            path="/dashboard"
+            element={
+              <>
+                <main>
+                    <Dashboard />
                 </main>
               </>
             }
