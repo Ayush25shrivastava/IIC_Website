@@ -78,29 +78,69 @@ export const getEventById = async (req, res) => {
 export const registerForEvent = async (req, res) => {
     try {
         const { id: eventId } = req.params;
+
+        console.log(eventId);
+        
+
+        const { teamId } = req.body;
         const userId = req.user._id;
 
-        const event = await Event.findById(eventId);
+        // 1. Robust Query: Support both MongoDB ObjectId and Event Name
+        let query = {};
+        if (mongoose.Types.ObjectId.isValid(eventId)) {
+            query = { _id: eventId };
+        } else {
+            query = { name: { $regex: new RegExp(`^${eventId}$`, 'i') } };
+        }
+
+        const event = await Event.findOne(query);
 
         if (!event) {
             return res.status(404).json({
                 success: false,
-                message: 'Event not found'
+                message: `Event not found for identifier: ${eventId}`
             });
         }
 
+        // Use the true MongoDB ObjectId for all database relations going forward
+        const actualEventId = event._id;
+        let registrationType = 'individual';
 
+        // 2. Validate Team logic if the Event Type is Team
         if (event.eventType === 'Team') {
-            return res.status(400).json({
-                success: false,
-                message: 'This is a team event. Please create or join a team.'
-            });
+            if (!teamId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'This is a team event. Please provide a teamId.'
+                });
+            }
+
+            const team = await Team.findById(teamId);
+            if (!team) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Team not found.'
+                });
+            }
+
+            // Verify the user is actually part of this team
+            const isLeader = team.leader.email === req.user.email.toLowerCase();
+            const isMember = team.members.some(m => m.email === req.user.email.toLowerCase());
+
+            if (!isLeader && !isMember) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'You are not a member of this team.'
+                });
+            }
+
+            registrationType = 'team';
         }
 
-
+        // 3. Prevent Double Registration using the actualEventId
         const existingRegistration = await Registration.findOne({
             user: userId,
-            event: eventId
+            event: actualEventId
         });
 
         if (existingRegistration) {
@@ -110,7 +150,7 @@ export const registerForEvent = async (req, res) => {
             });
         }
 
-
+        // 4. Ensure Max Participants aren't exceeded
         if (event.maxParticipants && event.participants.length >= event.maxParticipants) {
             return res.status(400).json({
                 success: false,
@@ -118,20 +158,21 @@ export const registerForEvent = async (req, res) => {
             });
         }
 
-
+        // 5. Create Registration
         const registration = await Registration.create({
             user: userId,
-            event: eventId,
-            registrationType: 'individual',
+            event: actualEventId,
+            team: teamId || null,
+            registrationType,
             paymentStatus: event.registrationFee > 0 ? 'pending' : 'free'
         });
 
-
+        // 6. Update associated models
         event.participants.push(userId);
         await event.save();
 
         await User.findByIdAndUpdate(userId, {
-            $addToSet: { registeredEvents: eventId }
+            $addToSet: { registeredEvents: actualEventId }
         });
 
         res.status(201).json({
