@@ -17,6 +17,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Gallery from './pages/gallery';
 import Registration from './pages/Registration';
 import Dashboard from './pages/dashboard';
+import CustomCursor from './components/CustomCursor';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,86 +50,88 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <div className="bg-[#dcd9d2] text-[#0E0E0E] min-h-screen overflow-x-hidden font-merriweather selection:bg-[#B8A18A] selection:text-white">
-        <Routes>
+    <>
+      <CustomCursor />
+      <BrowserRouter>
+        <div className="bg-[#dcd9d2] text-[#0E0E0E] min-h-screen overflow-x-hidden font-merriweather selection:bg-[#B8A18A] selection:text-white">
+          <Routes>
 
-          {/* Home Route (UNCHANGED) */}
-          <Route
-            path="/"
-            element={
-              <>
-                <Navbar />
-                <main className="pt-24 md:pt-0">
-                  <Hero />
-                  <About />
-                  <EventSection />
-                  <EventTimeline />
-                  <PastSponsors />
-                  <Speakers />
-                  <ContactFooter />
-                </main>
+            {/* Home Route (UNCHANGED) */}
+            <Route
+              path="/"
+              element={
+                <>
+                  <Navbar />
+                  <main className="pt-24 md:pt-0">
+                    <Hero />
+                    <About />
+                    <EventSection />
+                    <EventTimeline />
+                    <PastSponsors />
+                    <Speakers />
+                    <ContactFooter />
+                  </main>
 
-                <footer className="hidden">
-                  {/* Deprecated Footer - Replaced by ContactFooter */}
-                </footer>
-              </>
-            }
-          />
+                  <footer className="hidden">
+                    {/* Deprecated Footer - Replaced by ContactFooter */}
+                  </footer>
+                </>
+              }
+            />
 
-          {/* Events Page */}
-          <Route
-            path="/events"
-            element={
-              <>
-                <Navbar />
-                <main>
+            {/* Events Page */}
+            <Route
+              path="/events"
+              element={
+                <>
+                  <Navbar />
+                  <main>
                     <Events />
                     <ContactFooter />
                   </main>
-              </>
-            }
-          />
+                </>
+              }
+            />
 
-          {/* Registration Page */}
-          <Route
-            path="/events/:eventId/register"
-            element={
-              <>
-                {/* Omit Navbar here for full app-like experience or keep it if consistent */}
-                <main>
+            {/* Registration Page */}
+            <Route
+              path="/events/:eventId/register"
+              element={
+                <>
+                  {/* Omit Navbar here for full app-like experience or keep it if consistent */}
+                  <main>
                     <Registration />
-                </main>
-              </>
-            }
-          />
+                  </main>
+                </>
+              }
+            />
 
-          <Route
-            path="/dashboard"
-            element={
-              <>
-                <main>
+            <Route
+              path="/dashboard"
+              element={
+                <>
+                  <main>
                     <Dashboard />
-                </main>
-              </>
-            }
-          />
+                  </main>
+                </>
+              }
+            />
 
-          {/* Gallery Page */}
-          <Route
-            path="/gallery"
-            element={
-              <>
-                <Navbar />
-                <main>
+            {/* Gallery Page */}
+            <Route
+              path="/gallery"
+              element={
+                <>
+                  <Navbar />
+                  <main>
                     <Gallery />
                     <ContactFooter />
-                </main>
-              </>
-            }
-          />
+                  </main>
+                </>
+              }
+            />
 
-          <Route
+            <Route
               path="/sponsors"
               element={
                 <>
@@ -140,12 +143,13 @@ function App() {
                 </>
               }
             />
-          {/* Login Success */}
-          <Route path="/login/success" element={<LoginSuccess />} />
+            {/* Login Success */}
+            <Route path="/login/success" element={<LoginSuccess />} />
 
-        </Routes>
-      </div>
-    </BrowserRouter>
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </>
   );
 }
 

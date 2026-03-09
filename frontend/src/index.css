@@ -75,3 +75,10 @@ html.lenis body {
 .animate-scroll:hover {
     animation-play-state: paused;
 }
+
+/* Custom Cursor support */
+@media (hover: hover) and (pointer: fine) {
+    * {
+        cursor: none !important;
+    }
+}
