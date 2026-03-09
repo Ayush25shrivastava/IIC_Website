@@ -1,13 +1,29 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { API_BASE_URL } from '../utils/config';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
+    const navigate = useNavigate();
     const heroRef = useRef(null);
     const bgImageRef = useRef(null);
     const textRef = useRef(null);
+
+    const [user] = useState(() => {
+        const savedJwt = localStorage.getItem('jwt');
+        return !!savedJwt;
+    });
+
+    const handleRegisterClick = () => {
+        if (user) {
+            navigate('/dashboard');
+        } else {
+            window.location.href = `${API_BASE_URL}/auth/google`;
+        }
+    };
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -68,12 +84,12 @@ const Hero = () => {
                 </p>
 
                 <div className="mt-8 flex flex-col md:flex-row gap-6">
-                    <button className="px-10 py-4 border-2 border-[#B8A18A] bg-[#B8A18A] text-[#0E0E0E] font-merriweather font-bold uppercase hover:bg-transparent hover:text-[#B8A18A] transition-all duration-300 transform hover:scale-105">
-                        Register Now
+                    <button onClick={handleRegisterClick} className="px-10 py-4 border-2 border-[#B8A18A] bg-[#B8A18A] text-[#0E0E0E] font-merriweather font-bold uppercase hover:bg-transparent hover:text-[#B8A18A] transition-all duration-300 transform hover:scale-105 cursor-pointer z-50 block">
+                        {user ? 'Dashboard' : 'Register Now'}
                     </button>
-                    <button className="px-10 py-4 border-2 border-[#B8A18A] text-[#B8A18A] font-merriweather font-bold uppercase hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300 transform hover:scale-105">
+                    <Link to="/events" className="px-10 py-4 border-2 border-[#B8A18A] text-[#B8A18A] font-merriweather font-bold uppercase hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300 transform hover:scale-105 cursor-pointer z-50 block text-center">
                         Explore Events
-                    </button>
+                    </Link>
                 </div>
             </div>
         </section>
