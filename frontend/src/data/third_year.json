@@ -1,0 +1,138 @@
+{
+  "third_year": {
+    "marketing_team": [
+      {
+        "name": "Suraj Pratap",
+        "registration_no": "20232080",
+        "linkedin": "https://www.linkedin.com/in/surajprata07/",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773426455/IMG_20250125_074619_-_SURAJ_PRATAP_vh2byf.jpg"
+      },
+      {
+        "name": "Sunil Nayak",
+        "registration_no": "20236218",
+        "linkedin": "https://www.linkedin.com/in/sunil-nayak-2b5a66316",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773426526/IMG_20250330_164936290_HDR_-_Subh_Nyk_j0uavw.jpg"
+      },
+      {
+        "name": "Divyanshu Yadav",
+        "registration_no": "20231031",
+        "linkedin": "https://www.linkedin.com/in/divyanshu-yadav-506506274",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773426586/IMG_2498_-_Divyanshu_Yadav_jbm41n.jpg"
+      },
+      {
+        "name": "Jayant",
+        "registration_no": "20234074",
+        "linkedin": "https://www.linkedin.com/in/jayant-bishnoi-3194632b4",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773426630/IMG_2267_-_Jayant_MNNIT_f4cta6.jpg"
+      },
+      {
+        "name": "Manish Kumar",
+        "registration_no": "20236074",
+        "linkedin": "https://www.linkedin.com/in/manish-kumar-53b589298",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427148/pic_-_Manish_Kumar_ab4e7e.png"
+      },
+      {
+        "name": "Ananya Mishra",
+        "registration_no": "20232004",
+        "linkedin": "https://www.linkedin.com/in/ananym",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427512/IMG-20260102-WA0030_1_-_ANANY_MISHRA_dxlfek.jpg"
+      },
+      {
+        "name": "Vyas Bhumit",
+        "registration_no": "20230093",
+        "linkedin": "https://www.linkedin.com/in/bhumit-vyas-01a376325",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427384/Bhumit_-_Bhumit_Vyas_pjjgdp.jpg"
+      }
+    ],
+
+    "design_team": [
+      {
+        "name": "Shivanshu Yadav",
+        "registration_no": "20236128",
+        "linkedin": "linkedin.com/in/shivanshu1763",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773426915/Shivanshu_Yadav_image_-_Shivanshu_Yadav_bm1elb.jpg"
+      },
+      {
+        "name": "Gargi Shukla",
+        "registration_no": "20230020",
+        "linkedin": "www.linkedin.com/in/gargi-shukla-240281298",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427005/WhatsApp_Image_2026-03-12_at_12.00.16_PM_-_Gargi_Shukla_xlg89z.jpg"
+      },
+      {
+        "name": "Arushi Khare",
+        "registration_no": "20232010",
+        "linkedin": "https://www.linkedin.com/in/arushi-khare-6342432a7",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427338/IMG-20260313-WA0007_-_Arushi_Khare_ocdvio.jpg"
+      },
+      {
+        "name": "Pranjal Asthana",
+        "registration_no": "20236095",
+        "linkedin": "https://www.linkedin.com/in/pranjal-asthana",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427373/IMG-20260111-WA0036_-_Pranjal_Asthana_nojmgu.jpg"
+      }
+    ],
+
+    "video_team": [
+      {
+        "name": "Vivek Prajapati",
+        "registration_no": "20236228",
+        "linkedin": "https://www.linkedin.com/in/vivek-prajapati-3506032b0",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773426706/IMG_7792_-_Vivek_Prajapati_b97f3n.jpg"
+      },
+      {
+        "name": "Siddham Bagrecha",
+        "registration_no": "20236215",
+        "linkedin": "https://www.linkedin.com/in/siddham-bagrecha-803870280",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773426796/IMG_20251026_111847_-_Siddham_Bagrecha_wwdrib.jpg"
+      },
+      {
+        "name": "Ranjan Kumar",
+        "registration_no": "20231083",
+        "linkedin": "https://www.linkedin.com/in/ranjan-kumar-740453374",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427193/IMG_5216_-_Ranjan_Kumar_lsohec.jpg"
+      }
+    ],
+
+    "content_team": [
+      {
+        "name": "Chinmay Jain",
+        "registration_no": "20232014",
+        "linkedin": "https://www.linkedin.com/in/chinmay-jain-94171a285",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773426845/IMG_20260311_131525_-_Chinmay_Jain_lak2b5.jpg"
+      },
+      {
+        "name": "Prachi Mittal",
+        "registration_no": "20230038",
+        "linkedin": "https://www.linkedin.com/in/prachi-mittal-382211280",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427087/IMG_20260125_194950_-_Prachi_Mittal_a1vsrg.jpg"
+      },
+      {
+        "name": "Aryan Raj",
+        "registration_no": "20232011",
+        "linkedin": "https://www.linkedin.com/in/aryarj",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427530/Aryan_Raj_2_-_ARYAN_RAJ_yvq4xn.jpg"
+      }
+    ],
+
+    "web_team": [
+      {
+        "name": "Divyansh Singh",
+        "registration_no": "20233122",
+        "linkedin": "https://www.linkedin.com/in/divyansh-singh101",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773426769/IMG_20260227_221132_251_-_Divyansh_Singh_wtpism.webp"
+      },
+      {
+        "name": "Sneha Jain",
+        "registration_no": "20234161",
+        "linkedin": "https://www.linkedin.com/in/sneha-jain-520233300",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427503/SnehaJain_-_Sneha_Jain_hso4bd.jpg"
+      },
+      {
+        "name": "Vatsal Kumar",
+        "registration_no": "20232057",
+        "linkedin": "https://www.linkedin.com/in/vatsal-kumar-61492627b",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427404/IMG20251002153348_-_Vatsal_kumar_uaoo70.jpg"
+      }
+    ]
+  }
+}

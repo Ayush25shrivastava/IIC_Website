@@ -1,0 +1,81 @@
+{
+  "second_year": {
+    "marketing_team": [
+      {
+        "name": "Sourabh Choyal",
+        "registration_no": "20246143",
+        "linkedin": "https://www.linkedin.com/in/sourabhchoyal/",
+        "image_url": ""
+      },
+      {
+        "name": "Hardik Jain",
+        "registration_no": "20246064",
+        "linkedin": "https://www.linkedin.com/in/hardikjain-mnnit",
+        "image_url": ""
+      },
+      {
+        "name": "Tanvee Singh",
+        "registration_no": "20247056",
+        "linkedin": "https://www.linkedin.com/in/tanvee-s-1513b4348/",
+        "image_url": ""
+      },
+      {
+        "name": "Satya Prakash Maurya",
+        "registration_no": "20245084",
+        "linkedin": "https://www.linkedin.com/in/satya-prakash-3b903337a",
+        "image_url": ""
+      }
+    ],
+
+    "design_team": [
+      {
+        "name": "Arya Singh",
+        "registration_no": "20242015",
+        "linkedin": "https://www.linkedin.com/in/arya-singh-8899a4315",
+        "image_url": ""
+      },
+      {
+        "name": "Rajendra Piri",
+        "registration_no": "20247039",
+        "linkedin": "https://in.linkedin.com/in/rajendra-piri-bb7630332",
+        "image_url": ""
+      }
+    ],
+
+    "content_team": [
+      {
+        "name": "Sudipta Guha",
+        "registration_no": "20246145",
+        "linkedin": "Sudipta guha",
+        "image_url": ""
+      },
+      {
+        "name": "Pooja A",
+        "registration_no": "20246109",
+        "linkedin": "https://www.linkedin.com/in/pooja-a-a96bb1389/",
+        "image_url": ""
+      }
+    ],
+
+    "web_team": [
+      {
+        "name": "Harshvardhan Singh Chauhan",
+        "registration_no": "20244075",
+        "linkedin": "https://www.linkedin.com/in/harshvardhan-singh-chauhan-b70482324",
+        "image_url": ""
+      },
+      {
+        "name": "Hule Ramling Rajendra",
+        "registration_no": "20243118",
+        "linkedin": "https://www.linkedin.com/in/ramling-hule-804560318/",
+        "image_url": ""
+      },
+      {
+        "name": "Prakriti Gupta",
+        "registration_no": "20243209",
+        "linkedin": "https://www.linkedin.com/in/prakriti1111/",
+        "image_url": ""
+      }
+    ]
+  }
+}
