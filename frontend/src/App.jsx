@@ -18,6 +18,7 @@ import Gallery from './pages/gallery';
 import Registration from './pages/Registration';
 import Dashboard from './pages/dashboard';
 import CustomCursor from './components/CustomCursor';
+import Teams from './pages/Teams';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -138,6 +139,18 @@ function App() {
                   <Navbar />
                   <main>
                     <Sponsors />
+                    <ContactFooter />
+                  </main>
+                </>
+              }
+            />
+            <Route
+              path="/teams"
+              element={
+                <>
+                  <Navbar />
+                  <main>
+                    <Teams />
                     <ContactFooter />
                   </main>
                 </>
