@@ -1,0 +1,66 @@
+services:
+  gateway:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web-client
+      - api-server
+    networks:
+      - iic-network
+
+  web-client:
+    build: ./frontend
+    image: 714326/iic-web-client:latest # New repo name
+    networks:
+      - iic-network
+
+  api-server:
+    build: ./backend
+    image: 714326/iic-api-server:latest # New repo name
+    env_file:
+      - ./backend/.env
+    networks:
+      - iic-network
+
+networks:
+  iic-network:
+    driver: bridge
+
+
+# services:
+#   # --- NGINX (The Front Door) ---
+#   nginx:
+#     image: nginx:alpine
+#     ports:
+#       - "80:80"              # Exposes everything on http://localhost
+#     volumes:
+#       - ./nginx.conf:/etc/nginx/nginx.conf:ro # Mounts the config file above
+#     depends_on:
+#       - frontend
+#       - backend
+#     networks:
+#       - app-network
+
+#   # --- BACKEND SERVICE ---
+#   backend:
+#     image: 714326/iic_backend:latest  # Your Docker Hub Image
+#     env_file:
+#       - ./backend/.env
+#     networks:
+#       - app-network
+
+#   # --- FRONTEND SERVICE ---
+#   frontend:
+#     image: 714326/iic_frontend:latest # Your Docker Hub Image
+#     command: npm start -- --host 0.0.0.0
+#     environment:
+#       - HOST=0.0.0.0
+#     networks:
+#       - app-network
+
+# networks:
+#   app-network:
+#     driver: bridge

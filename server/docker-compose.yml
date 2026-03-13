@@ -1,0 +1,33 @@
+services:
+  # The Nginx gateway that handles traffic
+  gateway:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web-client
+      - api-server
+    networks:
+      - iic-network
+
+  # Pulling your pre-built Frontend from Hub
+  web-client:
+    image: 714326/iic-web-client:latest
+    restart: always
+    networks:
+      - iic-network
+
+  # Pulling your pre-built Backend from Hub
+  api-server:
+    image: 714326/iic-api-server:latest
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - iic-network
+
+networks:
+  iic-network:
+    driver: bridge
