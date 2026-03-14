@@ -42,6 +42,12 @@
         "registration_no": "20230093",
         "linkedin": "https://www.linkedin.com/in/bhumit-vyas-01a376325",
         "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773427384/Bhumit_-_Bhumit_Vyas_pjjgdp.jpg"
+      },
+      {
+        "name": "Somay Agarwal",
+        "registration_no": "20236136",
+        "linkedin": "https://www.linkedin.com/in/somay-agarwal-1b7454273?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773481601/IMG_20250324_011823_-_Somay_Agarwal_lwixqm.jpg"
       }
     ],
 
@@ -115,6 +121,12 @@
     ],
 
     "web_team": [
+      {
+        "name": "Abhijit Saha",
+        "registration_no": "20236004",
+        "linkedin": "http://linkedin.com/in/abhijit--saha",
+        "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773481328/IMG_20250322_140936_455_-_Abhijit_Saha_q5c7qm.webp"
+      },
       {
         "name": "Divyansh Singh",
         "registration_no": "20233122",
