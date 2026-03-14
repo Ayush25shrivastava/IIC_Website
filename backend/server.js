@@ -20,7 +20,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: ["https://iic-website-azure.vercel.app", "http://210.212.49.57:80"], //frontend URL
+    origin: ["https://iic-website-azure.vercel.app", "http://210.212.49.57"], //frontend URL
     credentials: true
 }));
 app.use(express.json());
