@@ -1,81 +1,54 @@
 {
   "second_year": {
     "marketing_team": [
-      {
-        "name": "Sourabh Choyal",
-        "registration_no": "20246143",
-        "linkedin": "https://www.linkedin.com/in/sourabhchoyal/",
-        "image_url": ""
-      },
-      {
-        "name": "Hardik Jain",
-        "registration_no": "20246064",
-        "linkedin": "https://www.linkedin.com/in/hardikjain-mnnit",
-        "image_url": ""
-      },
-      {
-        "name": "Tanvee Singh",
-        "registration_no": "20247056",
-        "linkedin": "https://www.linkedin.com/in/tanvee-s-1513b4348/",
-        "image_url": ""
-      },
-      {
-        "name": "Satya Prakash Maurya",
-        "registration_no": "20245084",
-        "linkedin": "https://www.linkedin.com/in/satya-prakash-3b903337a",
-        "image_url": ""
-      }
+      { "name": "Sourabh Choyal", "registration_no": "20246143", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Sourabh+Choyal&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Hardik Jain", "registration_no": "20246064", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Hardik+Jain&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Tanvee Singh", "registration_no": "20247056", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Tanvee+Singh&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Satya Prakash Maurya", "registration_no": "20245084", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Satya+Prakash+Maurya&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Avni Singh", "registration_no": "20246043", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Avni+Singh&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Khushi Rana", "registration_no": "20249018", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Khushi+Rana&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Manas Agnihotri", "registration_no": "20243159", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Manas+Agnihotri&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Vaishnavi Singh", "registration_no": "20240058", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Vaishnavi+Singh&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Manasvi Singh", "registration_no": "20240038", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Manasvi+Singh&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Satyam Soni", "registration_no": "20246130", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Satyam+Soni&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Pranjal Pal", "registration_no": "20246112", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Pranjal+Pal&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Shivank Kumar", "registration_no": "20242045", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Shivank+Kumar&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Shivanshu Mishra", "registration_no": "20241101", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Shivanshu+Mishra&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Sumanth Yadavalli", "registration_no": "20243322", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Sumanth+Yadavalli&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Sreethan Reddy", "registration_no": "20243550", "linkedin": "http://www.linkedin.com/in/Sr", "image_url": "https://ui-avatars.com/api/?name=Sreethan+Reddy&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Shubham Maurya", "registration_no": "20243273", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Shubham+Maurya&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Ragini Prajapati", "registration_no": "20240047", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Ragini+Prajapati&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Aryan Pratap Singh", "registration_no": "20242016", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Aryan+Pratap+Singh&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Rishabh Ranjan", "registration_no": "20246119", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Rishabh+Ranjan&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Ankit Bharadwaj", "registration_no": "20249005", "linkedin": "http://www.linkedin.com/in/an", "image_url": "https://ui-avatars.com/api/?name=Ankit+Bharadwaj&background=d6b89a&color=2b1f17&size=200" }
     ],
-
     "design_team": [
-      {
-        "name": "Arya Singh",
-        "registration_no": "20242015",
-        "linkedin": "https://www.linkedin.com/in/arya-singh-8899a4315",
-        "image_url": ""
-      },
-      {
-        "name": "Rajendra Piri",
-        "registration_no": "20247039",
-        "linkedin": "https://in.linkedin.com/in/rajendra-piri-bb7630332",
-        "image_url": ""
-      }
+      { "name": "Arya Singh", "registration_no": "20242015", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Arya+Singh&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Rajendra Piri", "registration_no": "20247039", "linkedin": "https://in.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Rajendra+Piri&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Ruchita", "registration_no": "20247042", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Ruchita&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Priyanshu Rawat", "registration_no": "20242037", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Priyanshu+Rawat&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Saumya Shrestha", "registration_no": "20242043", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Saumya+Shrestha&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Prem Kumar Prince", "registration_no": "20246115", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Prem+Kumar+Prince&background=d6b89a&color=2b1f17&size=200" }
     ],
-
     "content_team": [
-      {
-        "name": "Sudipta Guha",
-        "registration_no": "20246145",
-        "linkedin": "Sudipta guha",
-        "image_url": ""
-      },
-      {
-        "name": "Pooja A",
-        "registration_no": "20246109",
-        "linkedin": "https://www.linkedin.com/in/pooja-a-a96bb1389/",
-        "image_url": ""
-      }
+      { "name": "Sudipta Guha", "registration_no": "20246145", "linkedin": "#", "image_url": "https://ui-avatars.com/api/?name=Sudipta+Guha&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Krrish", "registration_no": "20244098", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Krrish&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Pooja A", "registration_no": "20246109", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Pooja+A&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Antima Jain", "registration_no": "20240009", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Antima+Jain&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Siddhartha Dwivedi", "registration_no": "20246138", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Siddhartha+Dwivedi&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Shrey Jain", "registration_no": "20246137", "linkedin": "http://www.linkedin.com/in/sh", "image_url": "https://ui-avatars.com/api/?name=Shrey+Jain&background=d6b89a&color=2b1f17&size=200" }
     ],
-
     "web_team": [
-      {
-        "name": "Harshvardhan Singh Chauhan",
-        "registration_no": "20244075",
-        "linkedin": "https://www.linkedin.com/in/harshvardhan-singh-chauhan-b70482324",
-        "image_url": ""
-      },
-      {
-        "name": "Hule Ramling Rajendra",
-        "registration_no": "20243118",
-        "linkedin": "https://www.linkedin.com/in/ramling-hule-804560318/",
-        "image_url": ""
-      },
-      {
-        "name": "Prakriti Gupta",
-        "registration_no": "20243209",
-        "linkedin": "https://www.linkedin.com/in/prakriti1111/",
-        "image_url": ""
-      }
+      { "name": "Harshvardhan Singh Chauhan", "registration_no": "20244075", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Harshvardhan+Singh+Chauhan&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Hule Ramling Rajendra", "registration_no": "20243118", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Hule+Ramling+Rajendra&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Prakriti Gupta", "registration_no": "20243209", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Prakriti+Gupta&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Paramita Ghosh", "registration_no": "20243197", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Paramita+Ghosh&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Ayush Shrivastava", "registration_no": "20242020", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Ayush+Shrivastava&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Ansh Narayan Chaturvedi", "registration_no": "20244026", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Ansh+Narayan+Chaturvedi&background=d6b89a&color=2b1f17&size=200" }
+    ],
+    "video_team": [
+      { "name": "Ayush Raj Singh", "registration_no": "20240016", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Ayush+Raj+Singh&background=d6b89a&color=2b1f17&size=200" },
+      { "name": "Lokesh Kumar", "registration_no": "20240036", "linkedin": "https://www.linkedin.com", "image_url": "https://ui-avatars.com/api/?name=Lokesh+Kumar&background=d6b89a&color=2b1f17&size=200" }
     ]
   }
 }

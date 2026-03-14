@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import fourthYear from "../data/fourth_year.json";
 import thirdYear from "../data/third_year.json";
+import secondYear from "../data/second_year.json";
 import { FaLinkedin } from "react-icons/fa";
 import gsap from "gsap";
 
@@ -61,7 +62,53 @@ const Card = ({ member }) => {
   );
 };
 
-const HorizontalScroll = ({ team }) => {
+const ConciseCard = ({ member }) => {
+  return (
+    <div className="relative group w-[260px] rounded-xl transition-all duration-300 hover:scale-105 h-[160px]">
+
+      {/* Outer glow border */}
+      <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition duration-300 border-2 border-[#d6b89a] shadow-[0_0_25px_rgba(214,184,154,0.6)]"></div>
+
+      {/* Card body */}
+      <div className="relative bg-[#e6d6c3] border border-[#c4ad93] rounded-xl p-5 h-full
+      shadow-[0_18px_45px_rgba(0,0,0,0.35)] 
+      group-hover:shadow-[0_28px_65px_rgba(0,0,0,0.5)] 
+      transition-all duration-300 flex flex-col justify-center items-center">
+
+        {/* Inner paper edge */}
+        <div className="absolute inset-0 rounded-xl border border-[#f1e4d6]/40 pointer-events-none"></div>
+
+        {/* Paper texture */}
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-10 rounded-xl pointer-events-none"></div>
+
+        {/* Info */}
+        <div className="text-center relative z-10 w-full flex flex-col items-center h-full justify-center">
+          <h3 className="font-playfair text-[1.15rem] font-semibold text-[#2b1f17] mb-1 leading-tight flex-grow flex items-center">
+            {member.name}
+          </h3>
+
+          <p className="text-xs tracking-widest text-[#6e5c4b] mb-4">
+            REG: {member.registration_no}
+          </p>
+
+          <a
+            href={member.linkedin}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center gap-2 text-[#6e5c4b] hover:text-[#2b1f17] transition bg-[#c4ad93]/30 py-2 px-4 rounded-lg border border-[#c4ad93]/50 hover:bg-[#c4ad93]/50 w-full"
+          >
+            <FaLinkedin size={18} />
+            <span className="text-xs tracking-widest uppercase">
+              LinkedIn
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const HorizontalScroll = ({ team, isConcise = false }) => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -94,7 +141,7 @@ const HorizontalScroll = ({ team }) => {
     return (
       <div className="flex justify-center gap-12 flex-wrap">
         {team.map((member) => (
-          <Card key={member.registration_no} member={member} />
+          isConcise ? <ConciseCard key={member.registration_no} member={member} /> : <Card key={member.registration_no} member={member} />
         ))}
       </div>
     );
@@ -104,9 +151,9 @@ const HorizontalScroll = ({ team }) => {
 
   return (
     <div className="overflow-hidden w-full">
-      <div ref={scrollRef} className="flex gap-10 w-max">
+      <div ref={scrollRef} className="flex gap-10 w-max items-center">
         {duplicated.map((member, index) => (
-          <Card key={index} member={member} />
+          isConcise ? <ConciseCard key={index} member={member} /> : <Card key={index} member={member} />
         ))}
       </div>
     </div>
@@ -198,6 +245,39 @@ const Teams = () => {
         <section className="mb-28">
           <SectionTitle>Video Team</SectionTitle>
           <HorizontalScroll team={thirdYear.third_year.video_team} />
+        </section>
+
+        {/* SECOND YEAR */}
+        <SectionTitle>Second Year</SectionTitle>
+
+        {/* WEB */}
+        <section className="mb-28">
+          <SectionTitle>Web Team</SectionTitle>
+          <HorizontalScroll team={secondYear.second_year.web_team} isConcise={true} />
+        </section>
+
+        {/* MARKETING */}
+        <section className="mb-28">
+          <SectionTitle>Marketing Team</SectionTitle>
+          <HorizontalScroll team={secondYear.second_year.marketing_team} isConcise={true} />
+        </section>
+
+        {/* DESIGN */}
+        <section className="mb-28">
+          <SectionTitle>Design Team</SectionTitle>
+          <HorizontalScroll team={secondYear.second_year.design_team} isConcise={true} />
+        </section>
+
+        {/* CONTENT */}
+        <section className="mb-28">
+          <SectionTitle>Content Team</SectionTitle>
+          <HorizontalScroll team={secondYear.second_year.content_team} isConcise={true} />
+        </section>
+
+        {/* VIDEO */}
+        <section className="mb-28">
+          <SectionTitle>Video Team</SectionTitle>
+          <HorizontalScroll team={secondYear.second_year.video_team} isConcise={true} />
         </section>
 
       </div>
