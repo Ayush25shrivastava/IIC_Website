@@ -6,69 +6,69 @@ gsap.registerPlugin(ScrollTrigger);
 
 const timelineData = [
     {
-        time: "09:00 AM",
-        date: "Oct 24",
-        title: "Theta Decay",
-        location: "Main Auditorium",
-        type: "Briefing",
-        status: "SCHEDULED"
+        time: "10:00 AM",
+        date: "April 4th",
+        title: "Quest Youth",
+        location: "MP Hall, MNNIT",
+        type: "Team",
+        status: "OFFLINE"
     },
     {
         time: "11:30 AM",
-        date: "Oct 25",
-        title: "Seed Start Summit",
-        location: "Conference Room B",
-        type: "Intel Gathering",
-        status: "CONFIRMED"
-    },
-    {
-        time: "02:00 PM",
-        date: "Oct 26",
-        title: "Mock IPL Auction",
-        location: "War Room",
-        type: "High Stakes",
-        status: "PENDING"
-    },
-    {
-        time: "04:30 PM",
-        date: "Oct 27",
-        title: "Case Clash",
-        location: "Interrogation Cell",
-        type: "Analysis",
-        status: "CLASSIFIED"
-    },
-    {
-        time: "10:00 AM",
-        date: "Oct 28",
-        title: "Quest Youth",
-        location: "Field Ops",
-        type: "Recon",
-        status: "ACTIVE"
-    },
-    {
-        time: "01:00 PM",
-        date: "Oct 29",
-        title: "Stall Mania",
-        location: "The Market",
-        type: "Undercover",
-        status: "OPEN"
-    },
-    {
-        time: "10:00 AM",
-        date: "Oct 30",
-        title: "Viral Vision",
-        location: "Cyber Deck",
-        type: "Surveillance",
+        date: "April 4th",
+        title: "Youth Rise",
+        location: "MP Hall, MNNIT",
+        type: "Solo",
         status: "ONLINE"
     },
     {
-        time: "06:00 PM",
-        date: "Oct 31",
+        time: "02:00 PM",
+        date: "April 4th",
+        title: "Seed Start Summit",
+        location: "IIHMF, MNNIT",
+        type: "Team",
+        status: "OFFLINE"
+    },
+    {
+        time: "04:30 PM",
+        date: "April 5th",
+        title: "Cultural Extravaganza",
+        location: "SMS Building, MNNIT",
+        type: "Team",
+        status: "OFFLINE"
+    },
+    {
+        time: "10:00 AM",
+        date: "April 5th",
         title: "Venture Vault",
-        location: "Secure Vault",
-        type: "Extraction",
-        status: "LOCKED"
-    }
+        location: "IIHMF, MNNIT",
+        type: "Solo",
+        status: "ONLINE"
+    },
+    {
+        time: "01:00 PM",
+        date: "April 5th",
+        title: "Stall Mania",
+        location: "Arena, MNNIT",
+        type: "Team",
+        status: "OFFLINE"
+    },
+    // {
+    //     time: "10:00 AM",
+    //     date: "Oct 30",
+    //     title: "Viral Vision",
+    //     location: "Cyber Deck",
+    //     type: "Surveillance",
+    //     status: "ONLINE"
+    // },
+    // {
+    //     time: "06:00 PM",
+    //     date: "Oct 31",
+    //     title: "Venture Vault",
+    //     location: "Secure Vault",
+    //     type: "Extraction",
+    //     status: "LOCKED"
+    // }
 ];
 
 const EventTimeline = () => {
@@ -133,7 +133,7 @@ const EventTimeline = () => {
 
             <div className="max-w-6xl mx-auto px-4 relative z-10">
                 <div className="text-center mb-20">
-                    <h2 className="font-playfair text-5xl md:text-7xl font-bold text-[#dcd9d2] mb-4">Operation Timeline</h2>
+                    <h2 className="font-playfair text-5xl md:text-7xl font-bold text-[#dcd9d2] mb-4">Event Timeline</h2>
                     {/* <p className="font-mono text-[#B8A18A] tracking-widest uppercase text-sm">Synchronize Watch // Sequence of Events</p> */}
                 </div>
 
@@ -197,7 +197,7 @@ const EventTimeline = () => {
                                                         <span>{item.location}</span>
                                                     </div>
                                                     <div className="flex items-center gap-3">
-                                                        <span className="w-4 h-4 text-[#7C6C58]">📂</span>
+                                                        <span className="w-4 h-4 text-[#7C6C58]">👥</span>
                                                         <span className="uppercase">{item.type}</span>
                                                     </div>
                                                 </div>
@@ -205,7 +205,7 @@ const EventTimeline = () => {
                                                 {/* Handwritten Note Style */}
                                                 <div className="mt-2 pt-2">
                                                     <p className="font-merriweather italic text-xs text-[#666]">
-                                                        "Attendance mandatory. Briefing at {item.time}."
+                                                        "Participate with enthusiam and make it memorable"
                                                     </p>
                                                 </div>
                                             </div>

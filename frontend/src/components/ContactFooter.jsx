@@ -34,12 +34,9 @@ const ContactFooter = () => {
 
                     {/* Navigation Links */}
                     <nav className="flex flex-wrap justify-center gap-6 md:gap-8 font-merriweather text-xs md:text-sm font-bold uppercase tracking-wide text-[#0E0E0E]/70">
-                        <a href="#about" className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all">About Us</a>
+                        <a href="/#about" className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all">About Us</a>
                         <a href="#partners" onClick={(e) => { e.preventDefault(); setIsPartnersModalOpen(true); }} className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all cursor-pointer">Partner With Us</a>
                         <a href="#contact" onClick={(e) => { e.preventDefault(); setIsContactModalOpen(true); }} className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all cursor-pointer">Contact Us</a>
-                        <a href="/privacy" className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all">Privacy Policy</a>
-                        <a href="/refund" className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all">Refund Policy</a>
-                        <a href="/terms" className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all">Terms & Conditions</a>
                     </nav>
                 </div>
 
@@ -59,9 +56,7 @@ const ContactFooter = () => {
                         <a href="https://www.instagram.com/iic_mnnit/" target="_blank" rel="noopener noreferrer" className="text-xl text-[#0E0E0E] hover:text-[#E4405F] transition-colors bg-[#0E0E0E]/5 p-2 rounded-full hover:bg-[#0E0E0E]/10 border border-[#0E0E0E]/10">
                             <FaInstagram />
                         </a>
-                        {/* <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-xl text-[#0E0E0E] hover:text-black transition-colors bg-[#0E0E0E]/5 p-2 rounded-full hover:bg-[#0E0E0E]/10 border border-[#0E0E0E]/10">
-                            <FaXTwitter />
-                        </a> */}
+                        
                     </div>
                 </div>
 

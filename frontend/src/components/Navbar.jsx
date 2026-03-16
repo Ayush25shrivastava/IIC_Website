@@ -211,15 +211,15 @@ const Navbar = () => {
                     <Link to="/events" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
                         <span className="text-2xl"><MdEventNote /></span> Events
                     </Link>
-                    <a href="#" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
+                    <Link to="/teams" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
                         <span className="text-2xl"><IoPeopleSharp /></span> Teams
-                    </a>
-                    <a href="#" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
+                    </Link>
+                    <Link to="/gallery" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
                         <span className="text-2xl"><RiGalleryFill /></span> Gallery
-                    </a>
-                    <a href="/sponsors" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
+                    </Link>
+                    <Link to="/sponsors" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
                         <span className="text-2xl"><CgOrganisation /></span> Sponsors
-                    </a>
+                    </Link>
 
                     <div className="flex flex-col items-center gap-4 mt-8">
                         {user ? (

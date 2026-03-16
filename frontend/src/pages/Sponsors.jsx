@@ -62,9 +62,9 @@ const Sponsors = () => {
         {/* HEADER */}
         <header className="text-center mb-24 md:mb-28">
           <h1 className="font-playfair text-6xl md:text-8xl font-bold tracking-wide mb-6 leading-tight">
-            <span className="text-[#f5e9d8]">The Sponsor</span>{" "}
+            <span className="text-[#f5e9d8]">Our Partners & </span>{" "}
             <span className="text-[#d6c6b1] drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
-              Archive
+              Sponsors
             </span>
           </h1>
 

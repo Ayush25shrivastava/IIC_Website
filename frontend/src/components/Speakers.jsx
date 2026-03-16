@@ -4,51 +4,51 @@ import detectiveImage from '../assets/detective-image.png';
 const speakersData = [
     {
         id: 1,
-        name: "Agent Cipher",
-        role: "Head of Cryptography",
-        specialty: "Data Decryption",
-        clearance: "Level 5",
-        status: "ACTIVE"
+        name: "Speaker 1",
+        role: "Company 1",
+        expertise: "Tech and related fields",
+        designation: "CEO",
+        status: "RECOGNISED"
     },
     {
         id: 2,
-        name: "Detective Noir",
-        role: "Lead Investigator",
-        specialty: "Forensic Analysis",
-        clearance: "Level 4",
-        status: "ON DUTY"
+        name: "Speaker 2",
+        role: "Company 2",
+        expertise: "Tech and related fields",
+        designation: "CEO",
+        status: "RECOGNISED"
     },
     {
         id: 3,
-        name: "Professor Enigma",
-        role: "Strategic Advisor",
-        specialty: "Pattern Recognition",
-        clearance: "Level 5",
-        status: "CLASSIFIED"
+        name: "Speaker 3",
+        role: "Company 3",
+        expertise: "Tech and related fields",
+        designation: "CEO",
+        status: "RECOGNISED"
     },
     {
         id: 4,
-        name: "Shadow Walker",
-        role: "Field Operative",
-        specialty: "Infiltration",
-        clearance: "Level 3",
-        status: "UNKNOWN"
+        name: "Speaker 4",
+        role: "Company 4",
+        expertise: "Stand Up comedy",
+        designation: "Comedian",
+        status: "RECOGNISED"
     },
     {
         id: 5,
-        name: "The Oracle",
-        role: "Information Broker",
-        specialty: "Surveillance",
-        clearance: "Level 4",
-        status: "REDACTED"
+        name: "Speaker 5",
+        role: "Company 5",
+        expertise: "Surveillance",
+        designation: "CEO",
+        status: "RECOGNISED"
     },
     {
         id: 6,
-        name: "Dr. Watson",
-        role: "Medical Examiner",
-        specialty: "Autopsy",
-        clearance: "Level 3",
-        status: "ACTIVE"
+        name: "Speaker 6",
+        role: "Company 6",
+        expertise: "Retired Military Officer",
+        designation: "Ex-Army Officer",
+        status: "RECOGNISED"
     }
 ];
 
@@ -82,24 +82,24 @@ const Speakers = () => {
     };
 
     return (
-        <section id="speakers" className="bg-[#f5f1e6] py-20 border-t border-[#7C6C58] relative overflow-hidden">
+        <section id="speakers" className="bg-[#f5f1e6] py-20 border-t border-[#7C6C58] relative overflow-hidden scroll-mt-24">
             {/* Background Texture */}
             <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/aged-paper.png')]"></div>
 
             <div className="container mx-auto px-4 mb-12 text-center relative z-10">
                 <h2 className="font-playfair text-4xl md:text-5xl font-bold text-[#0E0E0E] mb-2 uppercase tracking-wide">
-                    Suspect Profiles
+                    Featured Speakers
                 </h2>
                 <div className="h-1 w-24 bg-[#7C6C58] mx-auto mb-4"></div>
                 <p className="font-mono text-[#555] text-sm uppercase tracking-widest">
-                    Identify the Key Players
+                    Insights from Leading Experts 
                 </p>
             </div>
 
             {/* Scroll Container */}
             <div
                 ref={scrollRef}
-                className="flex md:overflow-x-auto overflow-y-hidden gap-8 px-8 py-8 md:snap-x md:snap-mandatory cursor-grab active:cursor-grabbing no-scrollbar flex-col md:flex-row"
+                className="flex md:overflow-x-auto overflow-y-hidden gap-8 px-8 md:pl-0 md:ml-32 lg:ml-40 py-8 md:snap-x md:snap-mandatory cursor-grab active:cursor-grabbing no-scrollbar flex-col md:flex-row"
                 onMouseDown={handleMouseDown}
                 onMouseLeave={handleMouseLeave}
                 onMouseUp={handleMouseUp}
@@ -143,12 +143,12 @@ const Speakers = () => {
 
                                 <div className="mt-4 text-left bg-[#f0ebd8] p-3 text-xs font-mono text-[#555] border-l-2 border-[#7C6C58]">
                                     <div className="flex justify-between mb-1">
-                                        <span className="uppercase font-bold">Specialty:</span>
-                                        <span>{speaker.specialty}</span>
+                                        <span className="uppercase font-bold">Expertise:</span>
+                                        <span>{speaker.expertise}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="uppercase font-bold">Clearance:</span>
-                                        <span>{speaker.clearance}</span>
+                                        <span className="uppercase font-bold">Designation:</span>
+                                        <span>{speaker.designation}</span>
                                     </div>
                                 </div>
                             </div>

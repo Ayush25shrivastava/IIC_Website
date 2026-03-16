@@ -80,7 +80,7 @@ const Events = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] pl-40 pt-32 pb-20 px-6 relative overflow-x-hidden">
+        <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] md:pl-40 pt-32 pb-20 px-6 relative overflow-x-hidden">
             {/* Cinematic Film Grain Overlay */}
             <div className="fixed inset-0 pointer-events-none opacity-[0.1] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-[60]"></div>
 

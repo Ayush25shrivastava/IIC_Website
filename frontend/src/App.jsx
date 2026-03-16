@@ -63,7 +63,7 @@ function App() {
               element={
                 <>
                   <Navbar />
-                  <main className="pt-24 md:pt-0">
+                  <main>
                     <Hero />
                     <About />
                     <EventSection />
@@ -73,9 +73,6 @@ function App() {
                     <ContactFooter />
                   </main>
 
-                  <footer className="hidden">
-                    {/* Deprecated Footer - Replaced by ContactFooter */}
-                  </footer>
                 </>
               }
             />

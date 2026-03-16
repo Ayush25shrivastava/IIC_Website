@@ -90,7 +90,7 @@ const Gallery = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] pl-40 pt-32 pb-20 px-6 relative overflow-x-hidden">
+        <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] md:pl-40 pt-32 pb-20 px-6 relative overflow-x-hidden">
 
             {/* Background */}
             <div
@@ -111,7 +111,7 @@ const Gallery = () => {
                 {/* HEADER */}
                 <header ref={titleRef} className="mb-28 border-l border-[#7C6C58]/30 pl-8">
                     <h1 className="font-playfair text-6xl md:text-8xl font-bold tracking-tighter text-white uppercase leading-none">
-                        Intelligence <span className="text-[#7C6C58]">Archive</span> <br />
+                        Event <span className="text-[#7C6C58]">Archive</span> <br />
                     </h1>
                 </header>
 
@@ -128,7 +128,7 @@ const Gallery = () => {
 
                         <div className="mt-8 backdrop-blur-md bg-black/50 border border-[#7C6C58]/30 px-10 py-4 rounded-xl shadow-2xl">
                             <p className="font-serif italic text-lg md:text-xl text-[#D6C3A5] tracking-wide">
-                                Documented operatives and classified contributors shaping the mission.
+                                Notable speakers who have contributed valuable insights in our past events.
                             </p>
                         </div>
 
@@ -159,12 +159,12 @@ const Gallery = () => {
                             ref={(el) => (sectionHeadings.current[1] = el)}
                             className="font-playfair text-3xl md:text-5xl lg:text-[80px] text-white uppercase tracking-[0.25em] leading-none"
                         >
-                            PAST HIGHLIGHTS
+                            PAST EVENT HIGHLIGHTS
                         </h2>
 
                         <div className="mt-8 backdrop-blur-md bg-black/50 border border-[#7C6C58]/30 px-10 py-4 rounded-xl shadow-2xl">
                             <p className="font-serif italic text-lg md:text-xl text-[#D6C3A5] tracking-wide">
-                                Archived visuals and documented intelligence from the field.
+                                A collection of memorable moments and highlights from past events.
                             </p>
                         </div>
 
