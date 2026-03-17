@@ -1,0 +1,18 @@
+{
+  "faculty": [
+    {
+      "name": "Prof. Mukul Shukla ",
+      "registration_no": "",
+      "team": "",
+      "linkedin": "https://www.linkedin.com/in/mukul-shukla-329a7121/",
+      "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773751835/Screenshot_2026-03-17_182018_nohfzp.png"
+    },
+    {
+      "name": "Prof. Mayank Pandey",
+      "registration_no": "",
+      "team": "",
+      "linkedin": "https://www.linkedin.com/in/mayank-pandey-0b433137/",
+      "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1773751941/Screenshot_2026-03-17_182204_bcncvt.png"
+    }
+  ]
+}

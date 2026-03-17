@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import faculty from "../data/faculty.json";
 import fourthYear from "../data/fourth_year.json";
 import thirdYear from "../data/third_year.json";
 import secondYear from "../data/second_year.json";
@@ -11,7 +12,7 @@ const Card = ({ member }) => {
   return (
     <div className="relative group w-[260px] rounded-xl transition-all duration-300 hover:scale-105">
 
-      {/* Outer glow border */}
+      
       <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition duration-300 border-2 border-[#d6b89a] shadow-[0_0_25px_rgba(214,184,154,0.6)]"></div>
 
       {/* Card body */}
@@ -20,10 +21,10 @@ const Card = ({ member }) => {
       group-hover:shadow-[0_28px_65px_rgba(0,0,0,0.5)] 
       transition-all duration-300">
 
-        {/* Inner paper edge */}
+        
         <div className="absolute inset-0 rounded-xl border border-[#f1e4d6]/40 pointer-events-none"></div>
 
-        {/* Paper texture */}
+        
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-10 rounded-xl pointer-events-none"></div>
 
         {/* Image */}
@@ -66,7 +67,7 @@ const ConciseCard = ({ member }) => {
   return (
     <div className="relative group w-[260px] rounded-xl transition-all duration-300 hover:scale-105 h-[160px]">
 
-      {/* Outer glow border */}
+      
       <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition duration-300 border-2 border-[#d6b89a] shadow-[0_0_25px_rgba(214,184,154,0.6)]"></div>
 
       {/* Card body */}
@@ -75,10 +76,10 @@ const ConciseCard = ({ member }) => {
       group-hover:shadow-[0_28px_65px_rgba(0,0,0,0.5)] 
       transition-all duration-300 flex flex-col justify-center items-center">
 
-        {/* Inner paper edge */}
+        
         <div className="absolute inset-0 rounded-xl border border-[#f1e4d6]/40 pointer-events-none"></div>
 
-        {/* Paper texture */}
+        
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-10 rounded-xl pointer-events-none"></div>
 
         {/* Info */}
@@ -197,12 +198,21 @@ const Teams = () => {
           Meet Our Team
         </h1>
 
-        {/* Description with blur */}
+        
         <div className="flex justify-center mb-20">
           <p className="text-center text-[#e6d4bd] text-lg 
           backdrop-blur-md bg-black/30 px-6 py-3 rounded-lg shadow-lg">
             The minds behind innovation, creativity and execution.
           </p>
+        </div>
+
+        {/* FACULTY INCHARGE */}
+        <SectionTitle>Faculty Incharge</SectionTitle>
+
+        <div className="flex justify-center gap-16 flex-wrap mb-32">
+          {faculty.faculty.map((member, index) => (
+            <Card key={index} member={member} />
+          ))}
         </div>
 
         {/* FINAL YEAR */}
