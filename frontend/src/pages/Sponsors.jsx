@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import det1 from '../assets/det2.avif';
 import partnersData from '../data/logos.json';
+import topSecretImg from '../assets/top-secret.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -134,14 +135,21 @@ const SponsorCard = ({ logo, sponsorType }) => {
       </div>
 
       {/* CARD */}
-      <div className="bg-[#f1e6d6] border border-[#cbbfae] p-6 pb-10 shadow-[20px_25px_60px_rgba(0,0,0,0.85)] transition-all duration-300 group-hover:-translate-y-3 group-hover:scale-105 group-hover:shadow-[25px_35px_80px_rgba(0,0,0,0.95)] relative">
+      <div className="bg-[#f1e6d6] border border-[#cbbfae] p-6 pb-10 shadow-[20px_25px_60px_rgba(0,0,0,0.85)] transition-all duration-300 group-hover:-translate-y-3 group-hover:scale-105 group-hover:shadow-[25px_35px_80px_rgba(0,0,0,0.95)] relative blur-[4px] select-none">
 
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-25 pointer-events-none"></div>
 
         <div className="bg-white p-6 rounded shadow-inner flex items-center justify-center h-44">
+          {/* 
           <img
             src={getImageUrl(logo.fileName)}
             alt={logo.name}
+            className="max-h-full max-w-full object-contain"
+          />
+          */}
+          <img
+            src={topSecretImg}
+            alt="To be revealed"
             className="max-h-full max-w-full object-contain"
           />
         </div>

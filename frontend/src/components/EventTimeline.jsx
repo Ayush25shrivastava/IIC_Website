@@ -159,7 +159,7 @@ const EventTimeline = () => {
                                 <div className="w-full md:w-1/2 pl-12 md:pl-0 md:px-12">
                                     <div
                                         ref={el => cardsRef.current[index] = el}
-                                        className="relative bg-[#f5f1e6] p-1 shadow-lg transform transition-transform hover:scale-105 duration-300 postcard-border"
+                                        className="relative bg-[#f5f1e6] p-1 shadow-lg transform transition-transform hover:scale-105 duration-300 postcard-border blur-[4px] select-none"
                                         style={{
                                             maxWidth: '400px',
                                             marginLeft: index % 2 === 0 ? '0' : 'auto', // Align correctly on desktop
