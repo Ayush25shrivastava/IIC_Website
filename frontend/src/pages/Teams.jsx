@@ -42,9 +42,11 @@ const Card = ({ member }) => {
             {member.name}
           </h3>
 
-          <p className="text-xs tracking-widest text-[#6e5c4b] mt-1">
-            REG: {member.registration_no}
-          </p>
+          {member.registration_no && (
+            <p className="text-xs tracking-widest text-[#6e5c4b] mb-4">
+              REG: {member.registration_no}
+            </p>
+          )}
 
           <a
             href={member.linkedin}
@@ -88,9 +90,11 @@ const ConciseCard = ({ member }) => {
             {member.name}
           </h3>
 
-          <p className="text-xs tracking-widest text-[#6e5c4b] mb-4">
-            REG: {member.registration_no}
-          </p>
+          {member.registration_no && (
+            <p className="text-xs tracking-widest text-[#6e5c4b] mt-1">
+              REG: {member.registration_no}
+            </p>
+          )}
 
           <a
             href={member.linkedin}
