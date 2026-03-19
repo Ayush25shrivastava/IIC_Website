@@ -80,7 +80,7 @@ export const registerForEvent = async (req, res) => {
         const { id: eventId } = req.params;
 
         console.log(eventId);
-        
+
 
         const { teamId } = req.body;
         const userId = req.user._id;
@@ -131,6 +131,14 @@ export const registerForEvent = async (req, res) => {
                 return res.status(403).json({
                     success: false,
                     message: 'You are not a member of this team.'
+                });
+            }
+
+            const totalMembers = 1 + team.members.length; // leader + members
+            if (event.minTeamSize && totalMembers < event.minTeamSize) {
+                return res.status(400).json({
+                    success: false,
+                    message: `This event requires a minimum of ${event.minTeamSize} team members. Your team currently has ${totalMembers} ${totalMembers === 1 ? 'member' : 'members'}.`
                 });
             }
 
