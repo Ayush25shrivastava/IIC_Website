@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import dotenv from 'dotenv';
+import { PROD_CLIENT_URL } from '../utils/config.js';
 
 dotenv.config();
 
@@ -19,6 +20,6 @@ export const googleCallback = (req, res) => {
 
   // 2. Redirect with encoded values
   res.redirect(
-    `https://iic-website-azure.vercel.app/login/success?token=${token}&complete=${isComplete}&name=${encodeURIComponent(userName)}&image=${encodeURIComponent(userImage)}`
+    `${PROD_CLIENT_URL}/login/success?token=${token}&complete=${isComplete}&name=${encodeURIComponent(userName)}&image=${encodeURIComponent(userImage)}`
   );
 };

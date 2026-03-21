@@ -152,7 +152,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] font-merriweather selection:bg-[#B8A18A] selection:text-white flex overflow-hidden">
       
-      {/* Sidebar */}
+      {/* Sidebar (Desktop Only) */}
       <aside className="w-64 border-r border-[#7C6C58]/20 flex flex-col justify-between hidden md:flex">
         <div>
           <div className="p-8 border-b border-[#7C6C58]/20 mb-6 flex items-center gap-3">
@@ -164,23 +164,30 @@ const Dashboard = () => {
           
           <nav className="space-y-2 px-4">
             <button  onClick={() => navigate('/')} className="w-full cursor-pointer flex items-center gap-4 px-4 py-3 bg-[#7C6C58]/10 text-white rounded-lg border border-[#7C6C58]/30 transition-colors cursor-default">
-              <FiUser size={20} />
+              <FiHome size={20} /> {/* Swapped to FiHome for consistency */}
               <span className="text-sm font-bold tracking-wider">Home</span>
             </button>
-
           </nav>
         </div>
-
-        {/* <div className="p-4 border-t border-[#7C6C58]/20">
-          <button onClick={() => { localStorage.removeItem('jwt'); navigate('/login'); }} className="w-full flex items-center gap-4 px-4 py-3 text-[#7C6C58] hover:text-red-400 rounded-lg transition-colors group">
-            <FiLogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-bold tracking-wider">Log Out</span>
-          </button>
-        </div> */}
       </aside>
 
       <main className="flex-1 overflow-y-auto custom-scrollbar relative p-6 md:p-10">
-        <div className="max-w-6xl mx-auto space-y-8 mt-10 md:mt-4">
+        
+        {/* Mobile Header Navigation (Hidden on Desktop) */}
+        <div className="md:hidden flex justify-between items-center mb-6 pb-4 border-b border-[#7C6C58]/20 mt-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full border border-[#B8A18A] overflow-hidden">
+               {user.avatar && <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />}
+            </div>
+            <span className="font-playfair font-bold text-white tracking-widest text-sm uppercase">You</span>
+          </div>
+          <button onClick={() => navigate('/')} className="flex items-center gap-2 px-4 py-2 bg-[#7C6C58]/10 text-white rounded-lg border border-[#7C6C58]/30 hover:bg-[#7C6C58]/20 transition-colors">
+            <FiHome size={18} />
+            <span className="text-xs font-bold tracking-wider uppercase">Home</span>
+          </button>
+        </div>
+
+        <div className="max-w-6xl mx-auto space-y-8 mt-4 md:mt-4">
           
           <div className="mb-8">
             <h1 className="font-playfair text-4xl md:text-5xl font-bold text-white tracking-wide uppercase mb-2">User Dashboard</h1>
