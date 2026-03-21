@@ -20,6 +20,6 @@ export const googleCallback = (req, res) => {
 
   // 2. Redirect with encoded values
   res.redirect(
-    `${PROD_CLIENT_URL}/login/success?token=${token}&complete=${isComplete}&name=${encodeURIComponent(userName)}&image=${encodeURIComponent(userImage)}`
+    `${PROD_CLIENT_URL}/udbhav/login/success?token=${token}&complete=${isComplete}&name=${encodeURIComponent(userName)}&image=${encodeURIComponent(userImage)}`
   );
 };

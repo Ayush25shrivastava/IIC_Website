@@ -105,29 +105,29 @@ const Navbar = () => {
 
                 {/* Desktop Navigation Links */}
                 <div className="nav-item hidden md:flex flex-col gap-3 font-merriweather text-sm font-medium text-white w-full px-1 -mt-8">
-                    <Link to="/" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
+                    <Link to="/udbhav" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
                         <span className="text-xl md:text-2xl mb-1 group-hover:text-[#0E0E0E] group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300"><IoMdHome /></span>
                         <span className="md:text-[8px] md:uppercase md:tracking-widest group-hover:tracking-[0.2em] transition-all duration-300">Home</span>
                         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-[#0E0E0E] rounded-r-md transition-all duration-300 group-hover:h-2/3 opacity-0 group-hover:opacity-100"></span>
                     </Link>
-                    <Link to="/events" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
+                    <Link to="/udbhav/events" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
                         <span className="text-xl md:text-2xl mb-1 group-hover:text-[#0E0E0E] group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300"><MdEventNote /></span>
                         <span className="md:text-[8px] md:uppercase md:tracking-widest group-hover:tracking-[0.2em] transition-all duration-300">Events</span>
                         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-[#0E0E0E] rounded-r-md transition-all duration-300 group-hover:h-2/3 opacity-0 group-hover:opacity-100"></span>
                     </Link>
-                    <Link to="/teams" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
+                    <Link to="/udbhav/teams" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
                     
                         <span className="text-xl md:text-2xl mb-1 group-hover:text-[#0E0E0E] group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300"><IoPeopleSharp /></span>
                         <span className="md:text-[8px] md:uppercase md:tracking-widest group-hover:tracking-[0.2em] transition-all duration-300">Teams</span>
                         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-[#0E0E0E] rounded-r-md transition-all duration-300 group-hover:h-2/3 opacity-0 group-hover:opacity-100"></span>
                     
                     </Link>
-                    <Link to="/gallery" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
+                    <Link to="/udbhav/gallery" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
                         <span className="text-xl md:text-2xl mb-1 group-hover:text-[#0E0E0E] group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300"><MdEventNote /></span>
                         <span className="md:text-[8px] md:uppercase md:tracking-widest group-hover:tracking-[0.2em] transition-all duration-300">Gallery</span>
                         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-[#0E0E0E] rounded-r-md transition-all duration-300 group-hover:h-2/3 opacity-0 group-hover:opacity-100"></span>
                     </Link>
-                    <a href="/sponsors" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
+                    <a href="/udbhav/sponsors" className="nav-item relative group flex md:flex-col items-center gap-3 md:gap-0.5 p-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:shadow-inner hover:-translate-y-1">
                         <span className="text-xl md:text-2xl mb-1 group-hover:text-[#0E0E0E] group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300"><CgOrganisation /></span>
                         <span className="md:text-[8px] md:uppercase md:tracking-widest group-hover:tracking-[0.2em] transition-all duration-300">Sponsors</span>
                         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-[#0E0E0E] rounded-r-md transition-all duration-300 group-hover:h-2/3 opacity-0 group-hover:opacity-100"></span>
@@ -150,7 +150,7 @@ const Navbar = () => {
                             </span>
 
                             <button
-                                onClick={() => navigate('/dashboard')}
+                                onClick={() => navigate('/udbhav/dashboard')}
                                 className="text-[10px] cursor-pointer font-merriweather text-white hover:text-[#0E0E0E] hover:bg-[#B8A18A] transition-all duration-300 uppercase tracking-widest w-full py-1 border border-white/20 rounded"
                             >
                                 Profile
@@ -205,26 +205,26 @@ const Navbar = () => {
                 </button>
 
                 <div className="flex flex-col gap-8 text-center">
-                    <Link to="/" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
+                    <Link to="/udbhav" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
                         <span className="text-2xl"><IoMdHome /></span> Home
                     </Link>
-                    <Link to="/events" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
+                    <Link to="/udbhav/events" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
                         <span className="text-2xl"><MdEventNote /></span> Events
                     </Link>
-                    <Link to="/teams" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
+                    <Link to="/udbhav/teams" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
                         <span className="text-2xl"><IoPeopleSharp /></span> Teams
                     </Link>
-                    <Link to="/gallery" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
+                    <Link to="/udbhav/gallery" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
                         <span className="text-2xl"><RiGalleryFill /></span> Gallery
                     </Link>
-                    <Link to="/sponsors" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
+                    <Link to="/udbhav/sponsors" onClick={toggleMobileMenu} className="font-merriweather text-2xl text-white hover:text-[#C5A25F] transition-colors flex items-center justify-center gap-2">
                         <span className="text-2xl"><CgOrganisation /></span> Sponsors
                     </Link>
 
                     <div className="flex flex-col items-center gap-4 mt-8">
                         {user ? (
                             <>
-                                <div onClick={() => navigate('/dashboard')} className="flex items-center gap-3 mb-4">
+                                <div onClick={() => navigate('/udbhav/dashboard')} className="flex items-center gap-3 mb-4">
                                     <img
                                         src={user.image}
                                         alt={user.name}

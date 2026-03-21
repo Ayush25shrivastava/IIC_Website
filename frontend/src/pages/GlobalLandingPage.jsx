@@ -85,7 +85,7 @@ Major Focus of IIC
 
           <ImageButton image={tedx} link="/" />
           <ImageButton image={renaissance} link="/" />
-          <ImageButton image={udbhav} link="/" />
+          <ImageButton image={udbhav} link="/udbhav" />
 
         </div>
       </section>

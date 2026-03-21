@@ -34,7 +34,7 @@ const ContactFooter = () => {
 
                     {/* Navigation Links */}
                     <nav className="flex flex-wrap justify-center gap-6 md:gap-8 font-merriweather text-xs md:text-sm font-bold uppercase tracking-wide text-[#0E0E0E]/70">
-                        <a href="/#about" className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all">About Us</a>
+                        <a href="/udbhav/#about" className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all">About Us</a>
                         <a href="#partners" onClick={(e) => { e.preventDefault(); setIsPartnersModalOpen(true); }} className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all cursor-pointer">Partner With Us</a>
                         <a href="#contact" onClick={(e) => { e.preventDefault(); setIsContactModalOpen(true); }} className="hover:text-[#0E0E0E] hover:underline decoration-[#0E0E0E] transition-all cursor-pointer">Contact Us</a>
                     </nav>

@@ -85,7 +85,7 @@ const Dashboard = () => {
     if (localStorage.getItem('jwt')) {
       fetchDashboardData();
     } else {
-      navigate('/login'); // Redirect if no token
+      navigate('/udbhav'); // Redirect if no token
     }
   }, [navigate]);
 
@@ -163,7 +163,7 @@ const Dashboard = () => {
           </div>
           
           <nav className="space-y-2 px-4">
-            <button  onClick={() => navigate('/')} className="w-full cursor-pointer flex items-center gap-4 px-4 py-3 bg-[#7C6C58]/10 text-white rounded-lg border border-[#7C6C58]/30 transition-colors cursor-default">
+            <button  onClick={() => navigate('/udbhav')} className="w-full cursor-pointer flex items-center gap-4 px-4 py-3 bg-[#7C6C58]/10 text-white rounded-lg border border-[#7C6C58]/30 transition-colors cursor-default">
               <FiHome size={20} /> {/* Swapped to FiHome for consistency */}
               <span className="text-sm font-bold tracking-wider">Home</span>
             </button>
@@ -181,7 +181,7 @@ const Dashboard = () => {
             </div>
             <span className="font-playfair font-bold text-white tracking-widest text-sm uppercase">You</span>
           </div>
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 px-4 py-2 bg-[#7C6C58]/10 text-white rounded-lg border border-[#7C6C58]/30 hover:bg-[#7C6C58]/20 transition-colors">
+          <button onClick={() => navigate('/udbhav')} className="flex items-center gap-2 px-4 py-2 bg-[#7C6C58]/10 text-white rounded-lg border border-[#7C6C58]/30 hover:bg-[#7C6C58]/20 transition-colors">
             <FiHome size={18} />
             <span className="text-xs font-bold tracking-wider uppercase">Home</span>
           </button>

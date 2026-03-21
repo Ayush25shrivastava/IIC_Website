@@ -183,7 +183,7 @@ const Events = () => {
                                 </div>
 
                                 <button 
-                                    onClick={() => navigate(`/events/${activeEvent._id}/register`)}
+                                    onClick={() => navigate(`/udbhav/events/${activeEvent._id}/register`)}
                                     className="group relative w-full py-4 bg-[#B8A18A] text-[#0E0E0E] font-black uppercase text-xs tracking-[0.6em] rounded-xl shrink-0 hover:shadow-[0_0_25px_rgba(184,161,138,0.4)] transition-all"
                                 >
                                     <span className="relative z-10">Authorize Access</span>
