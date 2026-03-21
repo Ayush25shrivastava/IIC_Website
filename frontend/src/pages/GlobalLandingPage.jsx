@@ -1,32 +1,38 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import udbhav from '../assets/udbhav-logo.png';
-import tedx from "../assets/WhatsApp Image 2026-03-21 at 1.08.30 AM.jpeg";
-import renaissance from "../assets/WhatsApp Image 2026-03-21 at 1.09.44 AM.jpeg";
+import udbhav from '../assets/udbhav image.png';
+import tedx from "../assets/WhatsApp Image 2026-03-21 at 1.09.44 AM.png";
+import renaissance from "../assets/WhatsApp Image 2026-03-21 at 1.08.30 AM.jpeg";
+import mnnit from "../assets/mnnit image.png";
 
 const IICPage = () => {
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans">
+    <div className="min-h-screen bg-[#fdfbf7] text-[#0E0E0E] font-merriweather selection:bg-[#B8A18A] selection:text-white">
+      <style>{`
+        * { cursor: auto !important; }
+        a, button, [role="button"], input { cursor: pointer !important; }
+        .custom-cursor-container { display: none !important; }
+      `}</style>
 
       {/* HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('https://www.mnnit.ac.in/dic2020/aboutus.png')` }}
+          style={{ backgroundImage: `url(${mnnit})` }}
         >
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative z-10 text-center px-4 text-white"
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="relative z-10 text-center px-6 text-[#fdfbf7]"
         >
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
-            INSTITUTION'S <span className="text-blue-400">INNOVATION</span> COUNCIL
+          <h1 className="text-5xl md:text-8xl font-playfair font-black tracking-tight mb-8 leading-tight drop-shadow-xl">
+            INSTITUTION'S <span className="text-[#B8A18A]">INNOVATION</span> COUNCIL
           </h1>
-          <p className="text-lg md:text-xl max-w-2xl mx-auto font-medium text-gray-200">
+          <p className="text-lg md:text-2xl max-w-3xl mx-auto font-merriweather leading-relaxed text-[#fdfbf7]/90 drop-shadow-md">
             Nurturing ideas, fostering entrepreneurs, and building the future of technology.
           </p>
         </motion.div>
@@ -37,16 +43,16 @@ const IICPage = () => {
       </section>
 
       {/* ABOUT CARD */}
-      <section className="py-24 px-6 flex justify-center bg-gradient-to-b from-white to-gray-100">
+      <section className="py-32 px-6 flex justify-center">
         <div className="max-w-5xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="p-10 rounded-3xl bg-white/60 backdrop-blur-xl border border-gray-200 shadow-xl"
+            transition={{ duration: 0.8 }}
+            className="p-10 md:p-16 rounded-[2rem] bg-white border border-[#d1ccc0] shadow-[15px_15px_40px_rgba(0,0,0,0.08)]"
           >
-            <h2 className="text-3xl font-bold mb-6 text-center">About IIC</h2>
-            <p className="text-gray-700 leading-relaxed text-lg">
+            <h2 className="text-4xl md:text-5xl font-playfair font-black mb-8 text-center text-[#0E0E0E]">About IIC</h2>
+            <p className="text-[#0E0E0E]/80 leading-loose text-lg md:text-xl text-center md:text-left">
               Ministry of Human Resource Development (MHRD), Govt. of India has established ‘MHRD’s Innovation Cell (MIC)’ to systematically foster the culture of Innovation amongst all Higher Education Institutions (HEIs). The primary mandate of MIC is to encourage, inspire and nurture young students by supporting them to work with new ideas while they are in formative years.
             </p>
           </motion.div>
@@ -54,8 +60,8 @@ const IICPage = () => {
       </section>
 
       {/* FUNCTION + FOCUS */}
-      <section className="px-6 pb-24">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
+      <section className="px-6 pb-32">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-16">
 
           <GlassCard title="Functions of Institutes’s Innovation Council" content={`
 1.To conduct various innovation and entrepreneurship-related activities prescribed by Central MIC in time bounded fashion.
@@ -79,12 +85,27 @@ Major Focus of IIC
       </section>
 
       {/* EVENT CARDS */}
-      <section className="pb-16 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
+      <section className="pb-32 px-6">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
 
-          <ImageButton image={tedx} link="/" />
-          <ImageButton image={renaissance} link="/" />
-          <ImageButton image={udbhav} link="/udbhav" />
+          <EventCard 
+            image={tedx} 
+            title="TEDx MNNIT"
+            description="Experience world-class speakers and ideas worth spreading."
+            link="#" 
+          />
+          <EventCard 
+            image={renaissance} 
+            title="Renaissance"
+            description="The annual entrepreneurship summit fostering business acumen."
+            link="#" 
+          />
+          <EventCard 
+            image={udbhav} 
+            title="Udbhav"
+            description="The flagship tech-management-cultural festival of the Institute."
+            link="/udbhav" 
+          />
 
         </div>
       </section>
@@ -98,7 +119,7 @@ Major Focus of IIC
 };
 
 const LiveBar = () => (
-  <div className="bg-neutral-900 py-3 overflow-hidden">
+  <div className="bg-[#0E0E0E] py-4 overflow-hidden border-y border-[#B8A18A]/30">
     <div className="flex w-max animate-marquee">
 
       {[...Array(2)].map((_, idx) => (
@@ -106,14 +127,12 @@ const LiveBar = () => (
           {[1,2,3,4].map(i => (
             <a
               key={i}
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mx-10 text-amber-200 font-semibold tracking-widest uppercase flex items-center gap-2 hover:text-white transition"
+              href="/udbhav"
+              className="mx-12 text-[#B8A18A] font-merriweather tracking-widest uppercase flex items-center gap-3 hover:text-[#fdfbf7] transition-colors"
             >
-              <span className="animate-spin inline-block">●</span>
-              ✨ Udbhav is <span className='text-red-400'>Live Now</span> — Register Today 🚀
-              <span className="animate-spin inline-block">●</span>
+              <span className="animate-spin inline-block text-xs">◆</span>
+              ✨ Udbhav is <span className='text-[#fdfbf7] font-bold'>Live Now</span> — Register Today 🚀
+              <span className="animate-spin inline-block text-xs">◆</span>
             </a>
           ))}
         </div>
@@ -126,46 +145,59 @@ const LiveBar = () => (
 const GlassCard = ({ title, content }) => (
   <motion.div
     whileHover={{ scale: 1.02 }}
-    className="p-8 rounded-2xl bg-white/60 backdrop-blur-xl border border-gray-200 shadow-md"
+    className="p-10 md:p-12 rounded-[2rem] bg-white border border-[#d1ccc0] shadow-[15px_15px_40px_rgba(0,0,0,0.08)] hover:shadow-[20px_20px_50px_rgba(0,0,0,0.12)] transition-shadow duration-500"
   >
-    <h3 className="text-xl font-bold mb-4">{title}</h3>
-    <p className="whitespace-pre-line text-gray-700 leading-relaxed">
+    <h3 className="text-2xl md:text-3xl font-playfair font-bold mb-6 text-[#0E0E0E]">{title}</h3>
+    <p className="whitespace-pre-line text-[#0E0E0E]/80 leading-loose text-sm md:text-base">
       {content}
     </p>
   </motion.div>
 );
 
+const ImageButton = ({ image, link }) => (
+  <motion.a
+    href={link}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.97 }}
+    className="relative h-56 rounded-2xl overflow-hidden shadow-xl cursor-pointer block"
+  >
+    <img
+      src={image}
+      alt="event"
+      className="w-full h-full object-cover"
+    />
+    <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-all duration-300" />
+  </motion.a>
+);
+
 const EventCard = ({ image, title, description, link }) => (
   <motion.div
-    whileHover={{ scale: 1.03 }}
-    className="rounded-3xl border border-gray-200 bg-white/70 backdrop-blur-xl shadow-md hover:shadow-lg transition"
+    className="rounded-[2rem] border border-[#d1ccc0] bg-white shadow-[15px_15px_40px_rgba(0,0,0,0.08)] hover:shadow-[20px_20px_50px_rgba(0,0,0,0.15)] hover:-translate-y-2 transition-all duration-500 flex flex-col overflow-hidden group"
   >
-    <div className="p-5 flex flex-col h-full">
+    <div className="p-6 md:p-8 flex flex-col h-full bg-[#fdfbf7]/50">
 
-      <a href={link} target="_blank" rel="noopener noreferrer">
+      <a href={link} rel="noopener noreferrer" className="overflow-hidden rounded-2xl mb-6 block">
         <img
           src={image}
           alt={title}
-          className="w-full h-40 object-cover rounded-xl mb-4"
+          className="w-full h-48 object-fill transform group-hover:scale-110 transition-transform duration-700"
         />
       </a>
 
-      <h3 className="text-lg font-semibold mb-2 text-gray-900">
+      <h3 className="text-2xl font-playfair font-bold mb-4 text-[#0E0E0E]">
         {title}
       </h3>
 
-      <p className="text-gray-600 text-sm flex-grow leading-relaxed whitespace-pre-line">
+      <p className="text-[#0E0E0E]/70 text-sm md:text-base flex-grow leading-relaxed whitespace-pre-line">
         {description}
       </p>
 
-      <a href={link} target="_blank" rel="noopener noreferrer" className="mt-4">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
-          className="w-full py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium shadow-md hover:shadow-lg transition"
+      <a href={link} rel="noopener noreferrer" className="mt-8 block">
+        <button
+          className="w-full py-4 rounded-xl bg-[#0E0E0E] text-[#fdfbf7] font-merriweather uppercase tracking-widest text-xs font-bold shadow-[5px_5px_15px_rgba(0,0,0,0.2)] hover:bg-[#B8A18A] hover:text-[#0E0E0E] hover:shadow-[8px_8px_20px_rgba(0,0,0,0.3)] transition-all duration-300 cursor-pointer"
         >
-          Register Now
-        </motion.button>
+          Explore / Register
+        </button>
       </a>
 
     </div>
