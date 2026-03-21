@@ -82,26 +82,9 @@ Major Focus of IIC
       <section className="pb-16 px-6">
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
 
-          <EventCard
-            image={renaissance}
-            title="TEDx MNNIT"
-            description={`TEDx MNNIT is a platform where powerful ideas meet storytelling. It brings together speakers from diverse domains to spark curiosity, inspire innovation, and encourage independent thinking. Through engaging talks and discussions, participants gain fresh perspectives and meaningful insights.`}
-            link="#"
-          />
-
-          <EventCard
-            image={tedx}
-            title="Renaissance"
-            description={`Renaissance is an entrepreneurial and innovation-driven fest under E-Cell MNNIT. It combines competitions, workshops, and collaborative experiences that promote creativity and real-world problem solving. Participants explore ideas, build skills, and connect with like-minded peers.`}
-            link="#"
-          />
-
-          <EventCard
-            image={udbhav}
-            title="Udbhav 3.0"
-            description={`UDBHAV 3.0 is a dynamic platform where ideas are encouraged, curiosity is ignited, and creativity is nurtured. It offers expert sessions, challenges, and innovation showcases to inspire collaboration and confidence. Participants explore, learn, and begin their journey in innovation.`}
-            link="#"
-          />
+          <ImageButton image={tedx} link="/" />
+          <ImageButton image={renaissance} link="/" />
+          <ImageButton image={udbhav} link="/udbhav" />
 
         </div>
       </section>

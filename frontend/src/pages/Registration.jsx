@@ -72,7 +72,7 @@ const Registration = () => {
 
       if (data.success) {
         alert("Successfully registered individually!");
-        navigate('/dashboard'); 
+        navigate('/udbhav/dashboard'); 
       } else {
         alert(data.message || "Registration failed.");
       }
@@ -135,7 +135,7 @@ const Registration = () => {
       const data = await response.json();
       if (data.success) {
         alert("Your team is successfully registered!");
-        navigate('/dashboard');
+        navigate('/udbhav/dashboard');
       } else {
         alert(data.message);
       }

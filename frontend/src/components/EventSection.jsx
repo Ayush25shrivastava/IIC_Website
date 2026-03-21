@@ -160,7 +160,7 @@ const EventSection = () => {
                                                     </span>
                                                 </div>
                                                 <button 
-                                                    onClick={() => navigate(`/events/${event._id}/register`)}
+                                                    onClick={() => navigate(`/udbhav/events/${event._id}/register`)}
                                                     className="px-4 py-2 border border-[#0E0E0E] text-[#0E0E0E] text-[10px] font-bold uppercase tracking-wider hover:bg-[#0E0E0E] hover:text-[#dcd9d2] transition-colors duration-300">
                                                     Register
                                                 </button>

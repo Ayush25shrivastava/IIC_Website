@@ -19,7 +19,7 @@ const Hero = () => {
 
     const handleRegisterClick = () => {
         if (user) {
-            navigate('/dashboard');
+            navigate('/udbhav/dashboard');
         } else {
             window.location.href = `${API_BASE_URL}/auth/google`;
         }
@@ -87,7 +87,7 @@ const Hero = () => {
                     <button onClick={handleRegisterClick} className="px-10 py-4 border-2 border-[#B8A18A] bg-[#B8A18A] text-[#0E0E0E] font-merriweather font-bold uppercase hover:bg-transparent hover:text-[#B8A18A] transition-all duration-300 transform hover:scale-105 cursor-pointer z-50 block">
                         {user ? 'Dashboard' : 'Register Now'}
                     </button>
-                    <Link to="/events" className="px-10 py-4 border-2 border-[#B8A18A] text-[#B8A18A] font-merriweather font-bold uppercase hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300 transform hover:scale-105 cursor-pointer z-50 block text-center">
+                    <Link to="/udbhav/events" className="px-10 py-4 border-2 border-[#B8A18A] text-[#B8A18A] font-merriweather font-bold uppercase hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300 transform hover:scale-105 cursor-pointer z-50 block text-center">
                         Explore Events
                     </Link>
                 </div>

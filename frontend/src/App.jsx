@@ -19,6 +19,7 @@ import Registration from './pages/Registration';
 import Dashboard from './pages/dashboard';
 import CustomCursor from './components/CustomCursor';
 import Teams from './pages/Teams';
+import GlobalLandingPage from './pages/GlobalLandingPage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -57,9 +58,12 @@ function App() {
         <div className="bg-[#dcd9d2] text-[#0E0E0E] min-h-screen overflow-x-hidden font-merriweather selection:bg-[#B8A18A] selection:text-white">
           <Routes>
 
-            {/* Home Route (UNCHANGED) */}
+            {/* IIC Global Landing Route */}
+            <Route path="/" element={<GlobalLandingPage />} />
+
+            {/* Home Route (UDBHAV) */}
             <Route
-              path="/"
+              path="/udbhav"
               element={
                 <>
                   <Navbar />
@@ -79,7 +83,7 @@ function App() {
 
             {/* Events Page */}
             <Route
-              path="/events"
+              path="/udbhav/events"
               element={
                 <>
                   <Navbar />
@@ -93,7 +97,7 @@ function App() {
 
             {/* Registration Page */}
             <Route
-              path="/events/:eventId/register"
+              path="/udbhav/events/:eventId/register"
               element={
                 <>
                   {/* Omit Navbar here for full app-like experience or keep it if consistent */}
@@ -105,7 +109,7 @@ function App() {
             />
 
             <Route
-              path="/dashboard"
+              path="/udbhav/dashboard"
               element={
                 <>
                   <main>
@@ -117,7 +121,7 @@ function App() {
 
             {/* Gallery Page */}
             <Route
-              path="/gallery"
+              path="/udbhav/gallery"
               element={
                 <>
                   <Navbar />
@@ -130,7 +134,7 @@ function App() {
             />
 
             <Route
-              path="/sponsors"
+              path="/udbhav/sponsors"
               element={
                 <>
                   <Navbar />
@@ -142,7 +146,7 @@ function App() {
               }
             />
             <Route
-              path="/teams"
+              path="/udbhav/teams"
               element={
                 <>
                   <Navbar />
@@ -154,7 +158,7 @@ function App() {
               }
             />
             {/* Login Success */}
-            <Route path="/login/success" element={<LoginSuccess />} />
+            <Route path="/udbhav/login/success" element={<LoginSuccess />} />
 
           </Routes>
         </div>
