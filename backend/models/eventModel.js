@@ -34,7 +34,6 @@ const eventSchema = new Schema({
     default: 1 
   },
 
-
   problemStatement: { 
     type: String,
     default: 'Details will be announced soon.'
@@ -62,6 +61,12 @@ const eventSchema = new Schema({
 
   registrationFee: { type: Number, default: 0 },
   isRegistrationOpen: { type: Boolean, default: true },
+
+  // Added Unstop Link
+  unstopLink: { 
+    type: String,
+    default: '' // Optional, defaults to an empty string
+  },
 
   participants: [{ 
     type: Schema.Types.ObjectId, 
