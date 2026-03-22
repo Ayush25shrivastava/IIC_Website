@@ -107,6 +107,16 @@ const Dashboard = () => {
   // Submit Updated Profile
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
+
+    // --- MNNIT EMAIL VALIDATION ---
+    if (user.isMnnit && !user.email?.toLowerCase().endsWith('@mnnit.ac.in')) {
+      alert("Access Denied: Please login with your official college email ID (@mnnit.ac.in) to register as an MNNIT student.");
+      localStorage.clear(); // Erase local storage
+      navigate('/udbhav'); // Redirect to main page
+      return; // Halt the update process
+    }
+    // ------------------------------
+
     setSaving(true);
     try {
       const response = await fetch(`${API_BASE_URL}/users/profile`, {
@@ -164,7 +174,7 @@ const Dashboard = () => {
           
           <nav className="space-y-2 px-4">
             <button  onClick={() => navigate('/udbhav')} className="w-full cursor-pointer flex items-center gap-4 px-4 py-3 bg-[#7C6C58]/10 text-white rounded-lg border border-[#7C6C58]/30 transition-colors cursor-default">
-              <FiHome size={20} /> {/* Swapped to FiHome for consistency */}
+              <FiHome size={20} />
               <span className="text-sm font-bold tracking-wider">Home</span>
             </button>
           </nav>
