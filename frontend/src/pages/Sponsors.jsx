@@ -109,6 +109,7 @@ const Sponsors = () => {
                     key={index}
                     logo={logo}
                     sponsorType={tier.title}
+                    isRevealed={tier.id === partnersData[0].id && index === 0}
                   />
                 ))}
               </div>
@@ -120,7 +121,7 @@ const Sponsors = () => {
   );
 };
 
-const SponsorCard = ({ logo, sponsorType }) => {
+const SponsorCard = ({ logo, sponsorType, isRevealed }) => {
   return (
     <div className="sponsor-card relative group mx-auto w-full max-w-[300px]">
       
@@ -135,8 +136,9 @@ const SponsorCard = ({ logo, sponsorType }) => {
       </div>
 
       {/* CARD */}
-      <div className="bg-[#f1e6d6] border border-[#cbbfae] p-6 pb-10 shadow-[20px_25px_60px_rgba(0,0,0,0.85)] transition-all duration-300 group-hover:-translate-y-3 group-hover:scale-105 group-hover:shadow-[25px_35px_80px_rgba(0,0,0,0.95)] relative blur-[4px] select-none">
-
+      <div className={`bg-[#f1e6d6] border border-[#cbbfae] p-6 pb-10 shadow-[20px_25px_60px_rgba(0,0,0,0.85)] transition-all duration-300 group-hover:-translate-y-3 group-hover:scale-105 group-hover:shadow-[25px_35px_80px_rgba(0,0,0,0.95)] relative select-none ${
+  isRevealed ? '' : 'blur-[4px]'
+}`}>
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-25 pointer-events-none"></div>
 
         <div className="bg-white p-6 rounded shadow-inner flex items-center justify-center h-44">
@@ -148,8 +150,8 @@ const SponsorCard = ({ logo, sponsorType }) => {
           />
           */}
           <img
-            src={topSecretImg}
-            alt="To be revealed"
+            src={isRevealed ? getImageUrl(logo.fileName) : topSecretImg}
+            alt={logo.name}
             className="max-h-full max-w-full object-contain"
           />
         </div>
