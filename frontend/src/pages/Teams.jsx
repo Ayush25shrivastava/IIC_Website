@@ -222,11 +222,9 @@ const Teams = () => {
         {/* FINAL YEAR */}
         <SectionTitle>Final Year</SectionTitle>
 
-        <div className="flex justify-center gap-16 flex-wrap mb-32">
-          {fourthYear.fourth_year.map((member) => (
-            <Card key={member.registration_no} member={member} />
-          ))}
-        </div>
+        <section className="mb-32">
+          <HorizontalScroll team={fourthYear.fourth_year} />
+        </section>
 
         {/* THIRD YEAR */}
         <SectionTitle>Third Year</SectionTitle>
