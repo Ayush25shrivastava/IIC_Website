@@ -134,7 +134,7 @@ const EventSection = () => {
                                                 <div>
                                                     <span className="block text-[#0E0E0E]/50 uppercase text-[9px]">Date of incident</span>
                                                     <span className="font-bold">
-                                                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                                        {event.date}
                                                     </span>
                                                 </div>
                                                 <div>

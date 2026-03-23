@@ -176,7 +176,7 @@ const Events = () => {
                                     </div>
 
                                     <div className="text-[11px] text-[#7C6C58] font-mono leading-relaxed space-y-2 pt-4">
-                                        <p>&gt; DEPLOYMENT DATE: {new Date(activeEvent.date).toLocaleDateString()}</p>
+                                        <p>&gt; DEPLOYMENT DATE: {activeEvent.date}</p>
                                         <p>&gt; SECTOR (VENUE): {activeEvent.venue}</p>
                                         <p>&gt; TYPE: {activeEvent.eventType.toUpperCase()}</p>
                                     </div>
