@@ -94,17 +94,19 @@ Major Focus of IIC
             description="Experience world-class speakers and ideas worth spreading."
             link="#" 
           />
-          <EventCard 
-            image={renaissance} 
-            title="Renaissance"
-            description="The annual entrepreneurship summit fostering business acumen."
-            link="#" 
-          />
+
           <EventCard 
             image={udbhav} 
             title="Udbhav"
             description="The flagship tech-management-cultural festival of the Institute."
             link="/udbhav" 
+          />
+          
+          <EventCard 
+            image={renaissance} 
+            title="Renaissance"
+            description="The annual entrepreneurship summit fostering business acumen."
+            link="#" 
           />
 
         </div>
