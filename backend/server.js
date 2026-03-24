@@ -20,7 +20,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: ["https://iic-website-azure.vercel.app", "https://iic.mnnit.ac.in", "http://210.212.49.57"], //frontend URL
+    origin: ["https://iic-website-azure.vercel.app", "https://iic.mnnit.ac.in", "http://210.212.49.57", "http://localhost:5173"], //frontend URL
     credentials: true
 }));
 app.use(express.json());
