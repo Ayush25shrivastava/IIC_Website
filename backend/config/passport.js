@@ -8,10 +8,7 @@ export default function(passport) {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.NODE_ENV === 'development' 
-  ? '/auth/google/callback' 
-  : 'https://iic.mnnit.ac.in/api/v1/auth/google/callback'
-
+        callbackURL: 'https://iic.mnnit.ac.in/api/v1/auth/google/callback' 
         //server callback URL
       },
       async (accessToken, refreshToken, profile, done) => {
