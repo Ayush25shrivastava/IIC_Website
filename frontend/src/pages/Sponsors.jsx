@@ -109,7 +109,10 @@ const Sponsors = () => {
                     key={index}
                     logo={logo}
                     sponsorType={tier.title}
-                    isRevealed={tier.id === partnersData[0].id && index === 0}
+                    isRevealed={
+                      (tier.id === partnersData[0].id && index === 0) || 
+                      (tier.id === 'SYNDICATE' && index === 0)
+                    }
                   />
                 ))}
               </div>
