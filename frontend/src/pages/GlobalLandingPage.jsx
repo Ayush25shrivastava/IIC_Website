@@ -1,11 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import udbhav from '../assets/udbhav image.png';
 import tedx from "../assets/WhatsApp Image 2026-03-21 at 1.09.44 AM.png";
 import renaissance from "../assets/WhatsApp Image 2026-03-21 at 1.08.30 AM.jpeg";
 import mnnit from "../assets/mnnit image.png";
+import heroImg1 from '../assets/hero-section/academic building image.jpg';
+import heroImg2 from '../assets/hero-section/front image.jpeg';
+import heroImg3 from '../assets/hero-section/hostels.png';
+import heroImg4 from '../assets/hero-section/mnnit image.png';
 
 const IICPage = () => {
+  const images = [heroImg1, heroImg2, heroImg3, heroImg4];
+  const [currentImg, setCurrentImg] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImg((prev) => (prev + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+
   return (
     <div className="min-h-screen bg-[#fdfbf7] text-[#0E0E0E] font-merriweather selection:bg-[#B8A18A] selection:text-white">
       <style>{`
@@ -16,12 +31,20 @@ const IICPage = () => {
 
       {/* HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${mnnit})` }}
-        >
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
+        {/* Background Images Slider */}
+        {images.map((img, idx) => (
+          <img 
+            key={idx}
+            src={img}
+            alt={`Slide ${idx}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
+              idx === currentImg ? 'opacity-100 z-0' : 'opacity-0 -z-10'
+            }`}
+          />
+        ))}
+
+{/* Overlay */}
+<div className="absolute inset-0 bg-black/60 z-0"></div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
