@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import udbhav from '../assets/udbhav image.png';
 import tedx from "../assets/WhatsApp Image 2026-03-21 at 1.09.44 AM.png";
 import renaissance from "../assets/WhatsApp Image 2026-03-21 at 1.08.30 AM.jpeg";
 import mnnit from "../assets/mnnit image.png";
-import IICFooter from "../components/IICFooter"
+import heroImg1 from '../assets/hero-section/academic building image.jpg';
+import heroImg2 from '../assets/hero-section/front image.jpeg';
+import heroImg3 from '../assets/hero-section/hostels.png';
+import heroImg4 from '../assets/hero-section/mnnit image.png';
 
 const IICPage = () => {
+  const images = [heroImg1, heroImg2, heroImg3, heroImg4];
+  const [currentImg, setCurrentImg] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImg((prev) => (prev + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+
   return (
     <div className="min-h-screen bg-[#fdfbf7] text-[#0E0E0E] font-merriweather selection:bg-[#B8A18A] selection:text-white">
       <style>{`
@@ -17,12 +31,20 @@ const IICPage = () => {
 
       {/* HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${mnnit})` }}
-        >
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
+        {/* Background Images Slider */}
+        {images.map((img, idx) => (
+          <img 
+            key={idx}
+            src={img}
+            alt={`Slide ${idx}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
+              idx === currentImg ? 'opacity-100 z-0' : 'opacity-0 -z-10'
+            }`}
+          />
+        ))}
+
+{/* Overlay */}
+<div className="absolute inset-0 bg-black/60 z-0"></div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -44,8 +66,7 @@ const IICPage = () => {
       </section>
 
       {/* ABOUT CARD */}
-      <section id="aboutus" className="py-20 px-6">
-      <section className="flex justify-center">
+      <section className="py-32 px-6 flex justify-center">
         <div className="max-w-5xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -55,29 +76,32 @@ const IICPage = () => {
           >
             <h2 className="text-4xl md:text-5xl font-playfair font-black mb-8 text-center text-[#0E0E0E]">About IIC</h2>
             <p className="text-[#0E0E0E]/80 leading-loose text-lg md:text-xl text-center md:text-left">
-              ​An Initiative under the Ministry of Education (MoE) and AICTE
-​The Institution’s Innovation Council (IIC) at Motilal Nehru National Institute of Technology (MNNIT) Allahabad was established under the mandate of the Ministry of Education’s Innovation Cell (MIC). Its primary objective is to systematically foster the culture of Innovation and Entrepreneurship (I&E) amongst students and faculty and promote innovations in fields like IoT, AI/ML, healthcare, and agritech.
+              Ministry of Human Resource Development (MHRD), Govt. of India has established ‘MHRD’s Innovation Cell (MIC)’ to systematically foster the culture of Innovation amongst all Higher Education Institutions (HEIs). The primary mandate of MIC is to encourage, inspire and nurture young students by supporting them to work with new ideas while they are in formative years.
             </p>
           </motion.div>
         </div>
-      </section>
       </section>
 
       {/* FUNCTION + FOCUS */}
       <section className="px-6 pb-32">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-16">
 
-          <GlassCard title="Vision of Institutes’s Innovation Council" content={`
-              ​To establish a sustainable, globally recognized innovation ecosystem at MNNIT Allahabad that nurtures creativity, facilitates deep-tech research, and drives the development of indigenous technologies and successful startups.
-              To promote ethical innovation, inclusivity, and long-term societal impact through technology and entrepreneurship.
-              To create an environment where students are encouraged to think critically, experiment freely, and translate ideas into practical solutions addressing real-world challenges.
+          <GlassCard title="Functions of Institutes’s Innovation Council" content={`
+1.To conduct various innovation and entrepreneurship-related activities prescribed by Central MIC in time bounded fashion.
+2. Identify and reward innovations and share success stories.
+3.Organize periodic workshops/ seminars/ interactions with entrepreneurs, investors, professionals and create a mentor pool for student innovators.
+4.Network with peers and national entrepreneurship development organizations.
+5. Create an Institution’s Innovation portal to highlight innovative projects carried out by institution’s faculty and students.
+6. Organize Hackathons, idea competition, mini-challenges etc with the involvement of industries.
           `} />
 
-          <GlassCard title="IIC – Mission" content={`
-                ​To Cultivate: Foster a pervasive culture of innovation through structured ideation workshops, design challenges, and hackathons in alignment with the National Innovation and Startup Policy (NISP).
-                ​To Incubate: Provide state-of-the-art infrastructure, mentorship, and administrative support to early-stage startups.
-                ​To Accelerate: Facilitate the commercialization of Intellectual Property (IP) and technology transfer by connecting innovators with angel investors, venture capitalists, and government grants.
-
+          <GlassCard title="IIC – Focus" content={`
+Major Focus of IIC
+1. To create a vibrant local innovation ecosystem
+2. Start-up/ entrepreneurship supporting Mechanism in HEIs
+3. Prepare institute for Atal Ranking of Institutions on Innovation Achievements Framework (ARRIA)
+4.Establish Function Ecosystem for Scouting Ideas and Pre-incubation of Ideas
+5. Develop better Cognitive Ability amongst Technology Students
           `} />
 
         </div>
@@ -114,8 +138,6 @@ const IICPage = () => {
       <div className="pb-24">
         <LiveBar />
       </div>
-
-      <IICFooter /> 
 
     </div>
   );
