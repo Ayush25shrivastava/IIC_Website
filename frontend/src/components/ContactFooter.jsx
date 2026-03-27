@@ -17,19 +17,19 @@ const ContactFooter = () => {
     }, [isPartnersModalOpen, isContactModalOpen]);
 
     return (
-        <section id="contact" className="bg-[#C5A25F] text-[#0E0E0E] relative overflow-hidden pt-16 pb-8 border-t border-[#0E0E0E]/10 md:pl-40 transition-all duration-300">
+        <section id="contact" className="bg-[#C5A25F] text-[#0E0E0E] relative overflow-hidden pt-8 pb-4 md:h-[40vh] md:pt-0 md:pb-0 border-t border-[#0E0E0E]/10 md:pl-40 transition-all duration-300">
 
             {/* Background Texture (optional for detective feel) */}
             <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/aged-paper.png')] mix-blend-multiply"></div>
 
-            <div className="container mx-auto px-6 relative z-10 flex flex-col h-full justify-between min-h-[300px]">
+            <div className="container mx-auto px-6 relative z-10 flex flex-col h-full justify-between md:py-6">
 
                 {/* Top Section: Logo & Nav Links */}
-                <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 mb-4 md:mb-0">
 
                     {/* Logo Area */}
                     <div className="flex items-center gap-3">
-                        <img src={UdbhavLogo} alt="Udbhav Logo" className="h-24 w-auto opacity-90 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]" />
+                        <img src={UdbhavLogo} alt="Udbhav Logo" className="h-16 md:h-14 w-auto opacity-90 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]" />
                     </div>
 
                     {/* Navigation Links */}
@@ -41,7 +41,7 @@ const ContactFooter = () => {
                 </div>
 
                 {/* Middle/Bottom: Copyright & Socials */}
-                <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-6 border-t border-[#0E0E0E]/10 pt-8 mt-auto">
+                <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-4 border-t border-[#0E0E0E]/10 pt-4 md:pt-3 mt-auto">
 
                     {/* Copyright */}
                     <div className="text-xs font-mono text-[#0E0E0E]/60 font-semibold">
