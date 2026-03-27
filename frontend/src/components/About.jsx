@@ -76,15 +76,21 @@ const About = () => {
                 </div>
 
                 <h2 className="font-playfair text-5xl md:text-7xl font-bold mb-4 text-[#B8A18A]">
-                    About IIC MNNIT
+                    About UDBHAV
                 </h2>
 
                 <p className="font-merriweather text-lg md:text-xl leading-relaxed text-[#dcd9d2]">
-                    The Innovation and Incubation Hub MNNIT Foundation (IIHMF) at Motilal Nehru National Institute of Technology Allahabad fosters innovation and entrepreneurship by providing mentorship, networking, funding, and business resources. It bridges academia and industry, driving technological advancements and economic growth, and empowers entrepreneurs, nurturing a vibrant startup ecosystem on campus and beyond.
+                    Annual Entrepreneurship & Financial Literacy Summit
                 </p>
 
                 <p className="font-merriweather text-lg md:text-xl leading-relaxed text-[#dcd9d2]">
-                    (IIHMF) is also a recognised inclusive Technology Business Incubator (i-TBI) and facilitating the start-up inline with the NIDHI i-TBI guidelines of the Deparment of Science and Technology (DST). It is also a recognised incubator of Uttar Pradesh Electronic Corporation Ltd. (UPLC) under StartinUP scheme of the Government of Uttar Pradesh and facilitating the StartUps, inline with the startUp policy.
+                    Organized under the aegis of IIC, Udbhav is MNNIT’s premier event designed to bridge the gap between technical education and business acumen. The summit features business plan competitions, financial literacy workshops, and expert lectures, serving as a catalyst for student-led enterprise.
+                </p>
+
+                <p className="font-merriweather text-lg md:text-xl leading-relaxed text-[#dcd9d2]">
+                    At MNNIT Allahabad, we believe that the next big idea can come from anywhere. Whether you are a student with a prototype, a researcher with a patent, or an alumnus looking to give back, IIC provides the platform to turn vision into reality.
+Together, let us build a self-reliant and innovative future
+
                 </p>
 
                 <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
