@@ -11,14 +11,14 @@ import heroImg4 from '../assets/hero-section/mnnit image.png';
 
 const IICPage = () => {
   const images = [heroImg1, heroImg2, heroImg3, heroImg4];
-const [currentImg, setCurrentImg] = useState(0);
+  const [currentImg, setCurrentImg] = useState(0);
 
-useEffect(() => {
-  const timer = setInterval(() => {
-    setCurrentImg((prev) => (prev + 1) % images.length);
-  }, 3000);
-  return () => clearInterval(timer);
-}, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImg((prev) => (prev + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
 
 
   return (
@@ -32,16 +32,16 @@ useEffect(() => {
       {/* HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background Images Slider */}
-{images.map((img, idx) => (
-  <img 
-    key={idx}
-    src={img}
-    alt={`Slide ${idx}`}
-    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
-      idx === currentImg ? 'opacity-100 z-0' : 'opacity-0 -z-10'
-    }`}
-  />
-))}
+        {images.map((img, idx) => (
+          <img 
+            key={idx}
+            src={img}
+            alt={`Slide ${idx}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
+              idx === currentImg ? 'opacity-100 z-0' : 'opacity-0 -z-10'
+            }`}
+          />
+        ))}
 
 {/* Overlay */}
 <div className="absolute inset-0 bg-black/60 z-0"></div>
