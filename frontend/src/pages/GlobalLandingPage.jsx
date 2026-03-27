@@ -76,7 +76,7 @@ const IICPage = () => {
           >
             <h2 className="text-4xl md:text-5xl font-playfair font-black mb-8 text-center text-[#0E0E0E]">About IIC</h2>
             <p className="text-[#0E0E0E]/80 leading-loose text-lg md:text-xl text-center md:text-left">
-              Ministry of Human Resource Development (MHRD), Govt. of India has established ‘MHRD’s Innovation Cell (MIC)’ to systematically foster the culture of Innovation amongst all Higher Education Institutions (HEIs). The primary mandate of MIC is to encourage, inspire and nurture young students by supporting them to work with new ideas while they are in formative years.
+              ​The Institution’s Innovation Council (IIC) at Motilal Nehru National Institute of Technology (MNNIT) Allahabad was established under the mandate of the Ministry of Education’s Innovation Cell (MIC). Its primary objective is to systematically foster the culture of Innovation and Entrepreneurship (I&E) amongst students and faculty and promote innovations in fields like IoT, AI/ML, healthcare, and agritech.
             </p>
           </motion.div>
         </div>
@@ -86,22 +86,20 @@ const IICPage = () => {
       <section className="px-6 pb-32">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-16">
 
-          <GlassCard title="Functions of Institutes’s Innovation Council" content={`
-1.To conduct various innovation and entrepreneurship-related activities prescribed by Central MIC in time bounded fashion.
-2. Identify and reward innovations and share success stories.
-3.Organize periodic workshops/ seminars/ interactions with entrepreneurs, investors, professionals and create a mentor pool for student innovators.
-4.Network with peers and national entrepreneurship development organizations.
-5. Create an Institution’s Innovation portal to highlight innovative projects carried out by institution’s faculty and students.
-6. Organize Hackathons, idea competition, mini-challenges etc with the involvement of industries.
+          <GlassCard title="Vision & Mission of Institution's Innovation Council" content={`
+- To establish a sustainable, globally recognized innovation ecosystem at MNNIT Allahabad that nurtures creativity, facilitates deep-tech research, and drives the development of indigenous technologies and successful startups.
+- To Cultivate: Foster a pervasive culture of innovation through structured ideation workshops, design challenges, and hackathons in alignment with the National Innovation and Startup Policy (NISP).
+- To Incubate: Provide state-of-the-art infrastructure, mentorship, and administrative support to early-stage startups.
+- To Accelerate: Facilitate the commercialization of Intellectual Property (IP) and technology transfer by connecting innovators with angel investors, venture capitalists, and government grants.
+
           `} />
 
-          <GlassCard title="IIC – Focus" content={`
-Major Focus of IIC
-1. To create a vibrant local innovation ecosystem
-2. Start-up/ entrepreneurship supporting Mechanism in HEIs
-3. Prepare institute for Atal Ranking of Institutions on Innovation Achievements Framework (ARRIA)
-4.Establish Function Ecosystem for Scouting Ideas and Pre-incubation of Ideas
-5. Develop better Cognitive Ability amongst Technology Students
+          <GlassCard title="Initiatives of IIC" content={`
+- IIC focuses on the pre-incubation phase. It organizes the academic calendar of innovation activities prescribed by the MoE, ensuring students are equipped with Design Thinking, Critical Problem Solving, and Entrepreneurial skills.
+
+​Flagship Initiatives:
+- Udbhav (Annual Entrepreneurship & Financial Literacy Summit) is MNNIT’s premier event designed to bridge the gap between technical education and business acumen
+- Startup Sangam (The Startup Conclave) is an exclusive platform aimed at fostering Industry-Academia collaboration. It brings together investors, industry leaders, and budding entrepreneurs to explore funding opportunities, strategic partnerships, and market access for incubated startups.
           `} />
 
         </div>
@@ -115,13 +113,13 @@ Major Focus of IIC
             image={tedx} 
             title="TEDx MNNIT"
             description="Experience world-class speakers and ideas worth spreading."
-            link="#" 
+            link="https://www.ted.com/tedx/events/63792" 
           />
 
           <EventCard 
             image={udbhav} 
             title="Udbhav"
-            description="The flagship tech-management-cultural festival of the Institute."
+            description="The flagship entrepreneurship and financial literacy summit of the Institute."
             link="/udbhav" 
           />
           
@@ -129,7 +127,7 @@ Major Focus of IIC
             image={renaissance} 
             title="Renaissance"
             description="The annual entrepreneurship summit fostering business acumen."
-            link="#" 
+            link="https://ecell-mnnit.vercel.app/" 
           />
 
         </div>
