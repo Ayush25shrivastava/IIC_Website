@@ -106,12 +106,22 @@ export const registerForEvent = async (req, res) => {
         const actualEventId = event._id;
         let registrationType = 'individual';
 
-        // 2. Validate Team logic if the Event Type is Team
-        if (event.eventType === 'Team') {
-            if (!teamId) {
+        // 2. Validate Team vs Solo Logic
+        if (!teamId) {
+            // They are trying to register SOLO
+            if (event.minTeamSize > 1) {
                 return res.status(400).json({
                     success: false,
-                    message: 'This is a team event. Please provide a teamId.'
+                    message: `Solo registration is not allowed for this event. A minimum team size of ${event.minTeamSize} is strictly required.`
+                });
+            }
+            registrationType = 'individual';
+        } else {
+            // They are trying to register as a TEAM
+            if (event.eventType === 'Solo') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'This is a strictly solo event. Team registrations are not permitted.'
                 });
             }
 
