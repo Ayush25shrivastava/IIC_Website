@@ -1,7 +1,7 @@
 import Team from '../models/teamModel.js';
 import Event from '../models/eventModel.js';
+import User from '../models/userModel.js';
 import { generateTeamCode } from '../utils/generateTeamCode.js';
-
 export const createTeam = async (req, res) => {
     try {
         const { eventId, teamName, leaderIsMnnit } = req.body;
@@ -43,8 +43,7 @@ export const createTeam = async (req, res) => {
 
         const existingTeam = await Team.findOne({
             event: eventId,
-            'leader.email': leaderData.email.toLowerCase(),
-            'leader.collegeRegNo': leaderData.collegeRegNo
+            'leader.user': leader._id
         });
 
         if (existingTeam) {
@@ -63,16 +62,9 @@ export const createTeam = async (req, res) => {
             if (!existing) codeExists = false;
         }
 
-        const memberMatchQuery = { email: leaderData.email.toLowerCase() };
-        if (leaderData.collegeRegNo) {
-            memberMatchQuery.collegeRegNo = leaderData.collegeRegNo;
-        }
-
         const existingMemberTeam = await Team.findOne({
             event: eventId,
-            'members': {
-                $elemMatch: memberMatchQuery
-            }
+            'members.user': leader._id
         });
 
         if (existingMemberTeam) {
@@ -86,6 +78,7 @@ export const createTeam = async (req, res) => {
             name: teamName,
             event: eventId,
             leader: {
+                user: leader._id,
                 email: leaderData.email.toLowerCase(),
                 collegeRegNo: leaderData.collegeRegNo,
                 name: leaderData.name,
@@ -147,7 +140,7 @@ export const joinTeam = async (req, res) => {
             });
         }
 
-        if (team.leader.email === user.email.toLowerCase()) {
+        if (team.leader.user?.toString() === user._id.toString()) {
             return res.status(400).json({
                 success: false,
                 message: 'You are the leader of this team'
@@ -155,7 +148,7 @@ export const joinTeam = async (req, res) => {
         }
 
         const isMember = team.members.some(
-            m => m.email === user.email.toLowerCase() || (userRegNo && m.collegeRegNo === userRegNo)
+            m => m.user?.toString() === user._id.toString()
         );
 
         if (isMember) {
@@ -168,15 +161,10 @@ export const joinTeam = async (req, res) => {
         const existingTeamQuery = {
             event: event._id,
             $or: [
-                { 'leader.email': user.email.toLowerCase() },
-                { 'members.email': user.email.toLowerCase() }
+                { 'leader.user': user._id },
+                { 'members.user': user._id }
             ]
         };
-
-        if (userRegNo) {
-            existingTeamQuery.$or.push({ 'leader.collegeRegNo': userRegNo });
-            existingTeamQuery.$or.push({ 'members.collegeRegNo': userRegNo });
-        }
 
         const existingTeam = await Team.findOne(existingTeamQuery);
 
@@ -188,6 +176,7 @@ export const joinTeam = async (req, res) => {
         }
 
         team.members.push({
+            user: user._id,
             email: user.email.toLowerCase(),
             collegeRegNo: userRegNo,
             name: user.name,
@@ -274,13 +263,27 @@ export const updateTeam = async (req, res) => {
 
             const allMembers = [team.leader, ...members];
             const seen = new Set();
-            const allEmails = [];
-            const allRegNos = [];
+            const allEmails = allMembers.map(m => m.email.toLowerCase());
+            
+            const dbUsers = await User.find({ email: { $in: allEmails } });
+            const emailToUserMap = {};
+            dbUsers.forEach(u => emailToUserMap[u.email.toLowerCase()] = u);
+
+            const allUserIds = [];
 
             for (const member of allMembers) {
                 const email = member.email.toLowerCase();
-                const isMnnit = Boolean(member.isMnnit);
-                const regNo = member.collegeRegNo || '';
+                const dbUser = emailToUserMap[email];
+                
+                if (!dbUser) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `User with email '${email}' is not registered on the platform`
+                    });
+                }
+
+                const isMnnit = Boolean(member.isMnnit || dbUser.isMnnit);
+                const regNo = member.collegeRegNo || dbUser.studentId || '';
 
                 if (isMnnit && !regNo) {
                     return res.status(400).json({
@@ -289,28 +292,22 @@ export const updateTeam = async (req, res) => {
                     });
                 }
 
-                const key = regNo ? `${email}-${regNo}` : `${email}`;
+                const key = dbUser._id.toString();
 
                 if (seen.has(key)) {
                     return res.status(400).json({
                         success: false,
-                        message: `Duplicate member in request: ${member.email}`
+                        message: `Duplicate member in request: ${email}`
                     });
                 }
                 seen.add(key);
-                allEmails.push(email);
-                if (regNo) allRegNos.push(regNo);
+                allUserIds.push(dbUser._id);
             }
 
             const searchOr = [
-                { 'leader.email': { $in: allEmails } },
-                { 'members.email': { $in: allEmails } }
+                { 'leader.user': { $in: allUserIds } },
+                { 'members.user': { $in: allUserIds } }
             ];
-
-            if (allRegNos.length > 0) {
-                searchOr.push({ 'leader.collegeRegNo': { $in: allRegNos } });
-                searchOr.push({ 'members.collegeRegNo': { $in: allRegNos } });
-            }
 
             const existingMemberTeam = await Team.findOne({
                 event: team.event,
@@ -319,44 +316,23 @@ export const updateTeam = async (req, res) => {
             });
 
             if (existingMemberTeam) {
-                let duplicateMember = null;
-                let duplicateReason = '';
-
-                if (allEmails.includes(existingMemberTeam.leader.email.toLowerCase())) {
-                    duplicateMember = existingMemberTeam.leader.email;
-                    duplicateReason = 'email';
-                } else if (existingMemberTeam.leader.collegeRegNo && allRegNos.includes(existingMemberTeam.leader.collegeRegNo)) {
-                    duplicateMember = existingMemberTeam.leader.collegeRegNo;
-                    duplicateReason = 'registration number';
-                }
-
-                if (!duplicateMember) {
-                    for (const member of existingMemberTeam.members) {
-                        if (allEmails.includes(member.email.toLowerCase())) {
-                            duplicateMember = member.email;
-                            duplicateReason = 'email';
-                            break;
-                        }
-                        if (member.collegeRegNo && allRegNos.includes(member.collegeRegNo)) {
-                            duplicateMember = member.collegeRegNo;
-                            duplicateReason = 'registration number';
-                            break;
-                        }
-                    }
-                }
-
                 return res.status(400).json({
                     success: false,
-                    message: `User with ${duplicateReason} '${duplicateMember}' is already registered in another team '${existingMemberTeam.name}' for this event`
+                    message: `One or more users in your request are already registered in another team '${existingMemberTeam.name}' for this event`
                 });
             }
 
-            team.members = members.map(m => ({
-                email: m.email.toLowerCase(),
-                collegeRegNo: m.collegeRegNo || '',
-                name: m.name || '',
-                isMnnit: Boolean(m.isMnnit)
-            }));
+            team.members = members.map(m => {
+                const email = m.email.toLowerCase();
+                const dbUser = emailToUserMap[email];
+                return {
+                    user: dbUser._id,
+                    email: email,
+                    collegeRegNo: m.collegeRegNo || dbUser.studentId || '',
+                    name: m.name || dbUser.name || '',
+                    isMnnit: Boolean(m.isMnnit || dbUser.isMnnit)
+                };
+            });
         }
 
         await team.save();
@@ -419,25 +395,14 @@ export const getMyTeams = async (req, res) => {
     try {
         const user = req.user;
         const email = user.email;
-        // Fallback to empty string if undefined to prevent MongoDB query errors
         const collegeRegNo = user.studentId || ''; 
 
-        // Build the query dynamically. If they don't have a regNo, just match the email.
-        const leaderQuery = { 'leader.email': email.toLowerCase() };
-        if (collegeRegNo) leaderQuery['leader.collegeRegNo'] = collegeRegNo;
+        const leaderQuery = { 'leader.user': user._id };
 
         const asLeader = await Team.find(leaderQuery)
             .populate('event', 'name eventType date venue category description image');
 
-        const memberQuery = {
-            'members': {
-                $elemMatch: { email: email.toLowerCase() }
-            }
-        };
-        // Add regNo matching to the elemMatch only if it exists
-        if (collegeRegNo) {
-             memberQuery.members.$elemMatch.collegeRegNo = collegeRegNo;
-        }
+        const memberQuery = { 'members.user': user._id };
 
         const asMember = await Team.find(memberQuery)
             .populate('event', 'name eventType date venue category description image');
