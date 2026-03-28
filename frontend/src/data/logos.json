@@ -28,7 +28,7 @@
     "title": "Travel Partner",
     "description": "Making every journey seamless with unmatched travel solutions.",
     "logos": [
-      { "name": "AbhiBus", "fileName": "abhiBus.png", "folder": "current sponsors" }
+      { "name": "AbhiBus", "fileName": "abhiBus.jpeg", "folder": "current sponsors" }
     ]
   },
   {
@@ -37,6 +37,22 @@
     "description": "Powering opportunities and connections through a leading innovation platform.",
     "logos": [
       { "name": "Unstop", "fileName": "unstop.png", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "MERCHANDISE_PARTNER",
+    "title": "Merchandise Partner",
+    "description": "Providing premium gear and apparel for the mission.",
+    "logos": [
+      { "name": "Destiny", "fileName": "Destiny.png", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "FOOD_PARTNER",
+    "title": "Food Partner",
+    "description": "Fueling operations with high-quality provisions and refreshments.",
+    "logos": [
+      { "name": "Laal's Kitchen", "fileName": "Laals Kitchen.png", "folder": "current sponsors" }
     ]
   },
   {
