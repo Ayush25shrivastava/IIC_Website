@@ -98,7 +98,7 @@ const Sponsors = () => {
 
               {/* Cards */}
               <div className={`grid gap-x-16 gap-y-14 justify-center ${
-                (tier.id === 'TITLE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER')
+                (tier.id === 'TITLE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'FOOD_PARTNER')
                   ? 'grid-cols-1 max-w-sm mx-auto'
                   : tier.id === 'SYNDICATE'
                   ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
@@ -109,7 +109,7 @@ const Sponsors = () => {
                     key={index}
                     logo={logo}
                     sponsorType={tier.title}
-                    isRevealed={tier.id === 'TITLE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER'}
+                    isRevealed={tier.id === 'TITLE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'FOOD_PARTNER'}
                   />
                 ))}
               </div>
