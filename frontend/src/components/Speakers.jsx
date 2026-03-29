@@ -9,12 +9,12 @@ const getSpeakerImageUrl = (fileName) => {
 const speakersData = [
     {
         id: 1,
-        name: "Dr S Siddharth",
-        role: "Principal secretary to CM Bihar and ACS Education and Cabinet",
+        name: "Speaker 1",
+        role: "Company 1",
         expertise: "Governance and Public Policy",
-        designation: "IAS",
+        designation: "CEO",
         status: "RECOGNISED",
-        image: "Dr.-Siddharth.jpeg"
+        image: ""
     },
     {
         id: 2,
