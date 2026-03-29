@@ -174,6 +174,12 @@ const Events = () => {
                                             {activeEvent.description}
                                         </p>
                                     </div>
+                                    <div>
+                                        <p className="text-[9px] uppercase text-[#7C6C58] mb-3 font-bold font-mono tracking-widest">Rules</p>
+                                        <p className="font-merriweather italic text-[#D1D1D1] text-sm md:text-base leading-relaxed pl-4 border-l-2 border-[#B8A18A]/30">
+                                            {activeEvent.rules}
+                                        </p>
+                                    </div>
 
                                     <div className="text-[11px] text-[#7C6C58] font-mono leading-relaxed space-y-2 pt-4">
                                         <p>&gt; DEPLOYMENT DATE: {activeEvent.date}</p>

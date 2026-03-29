@@ -9,6 +9,8 @@ import heroImg2 from '../assets/hero-section/front image.jpeg';
 import heroImg3 from '../assets/hero-section/hostels.png';
 import heroImg4 from '../assets/hero-section/mnnit image.png';
 
+import IICFooter from "../components/IICFooter";
+
 const IICPage = () => {
   const images = [heroImg1, heroImg2, heroImg3, heroImg4];
   const [currentImg, setCurrentImg] = useState(0);
@@ -66,7 +68,7 @@ const IICPage = () => {
       </section>
 
       {/* ABOUT CARD */}
-      <section className="py-32 px-6 flex justify-center">
+      <section id="aboutus" className="py-20 px-6 flex justify-center">
         <div className="max-w-5xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -136,6 +138,8 @@ const IICPage = () => {
       <div className="pb-24">
         <LiveBar />
       </div>
+
+      <IICFooter />
 
     </div>
   );
