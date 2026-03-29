@@ -79,6 +79,9 @@ const Events = () => {
         );
     }
 
+    const RULEBOOK_LINK = "https://drive.google.com/your-rulebook-link";
+    const PROBLEM_LINK = "https://drive.google.com/your-problem-link";
+
     return (
         <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] md:pl-40 pt-32 pb-20 px-6 relative overflow-x-hidden">
             {/* Cinematic Film Grain Overlay */}
@@ -173,6 +176,33 @@ const Events = () => {
                                         <p className="font-merriweather italic text-[#D1D1D1] text-sm md:text-base leading-relaxed pl-4 border-l-2 border-[#B8A18A]/30">
                                             {activeEvent.description}
                                         </p>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex flex-col md:flex-row gap-4 pt-4">
+
+                                        {/* Rulebook Button (for ALL events) */}
+                                        <a
+                                            href={RULEBOOK_LINK}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 text-center py-3 border border-[#B8A18A] text-[#B8A18A] font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300"
+                                        >
+                                            View Rulebook
+                                        </a>
+
+                                        {/* Problem Statements Button (ONLY Hack 18) */}
+                                        {activeEvent.name === "Hack 18" && (
+                                            <a
+                                                href={PROBLEM_LINK}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex-1 text-center py-3 border border-[#7C6C58] text-[#7C6C58] font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-[#7C6C58] hover:text-white transition-all duration-300"
+                                            >
+                                                Problem Statements
+                                            </a>
+                                        )}
+
                                     </div>
 
                                     <div className="text-[11px] text-[#7C6C58] font-mono leading-relaxed space-y-2 pt-4">

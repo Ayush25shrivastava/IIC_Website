@@ -20,6 +20,7 @@ import Dashboard from './pages/dashboard';
 import CustomCursor from './components/CustomCursor';
 import Teams from './pages/Teams';
 import GlobalLandingPage from './pages/GlobalLandingPage';
+import SlidingBar from './components/SlidingBar';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -67,6 +68,16 @@ function App() {
               element={
                 <>
                   <Navbar />
+                  <div className="hidden md:block">
+                    <SlidingBar />
+                  </div>
+
+                  <Navbar />
+
+                  {/* Mobile: SlidingBar BELOW Navbar */}
+                  <div className="block md:hidden">
+                    <SlidingBar />
+                  </div>
                   <main>
                     <Hero />
                     <About />
