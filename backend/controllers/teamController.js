@@ -43,7 +43,10 @@ export const createTeam = async (req, res) => {
 
         const existingTeam = await Team.findOne({
             event: eventId,
-            'leader.user': leader._id
+            $or: [
+                { 'leader.user': leader._id },
+                { 'leader.email': leaderData.email.toLowerCase() }
+            ]
         });
 
         if (existingTeam) {
@@ -64,7 +67,10 @@ export const createTeam = async (req, res) => {
 
         const existingMemberTeam = await Team.findOne({
             event: eventId,
-            'members.user': leader._id
+            $or: [
+                { 'members.user': leader._id },
+                { 'members.email': leaderData.email.toLowerCase() }
+            ]
         });
 
         if (existingMemberTeam) {
@@ -140,7 +146,7 @@ export const joinTeam = async (req, res) => {
             });
         }
 
-        if (team.leader.user?.toString() === user._id.toString()) {
+        if (team.leader.user?.toString() === user._id.toString() || team.leader.email === user.email.toLowerCase()) {
             return res.status(400).json({
                 success: false,
                 message: 'You are the leader of this team'
@@ -148,7 +154,7 @@ export const joinTeam = async (req, res) => {
         }
 
         const isMember = team.members.some(
-            m => m.user?.toString() === user._id.toString()
+            m => m.user?.toString() === user._id.toString() || m.email === user.email.toLowerCase()
         );
 
         if (isMember) {
@@ -162,7 +168,9 @@ export const joinTeam = async (req, res) => {
             event: event._id,
             $or: [
                 { 'leader.user': user._id },
-                { 'members.user': user._id }
+                { 'leader.email': user.email.toLowerCase() },
+                { 'members.user': user._id },
+                { 'members.email': user.email.toLowerCase() }
             ]
         };
 
@@ -306,7 +314,9 @@ export const updateTeam = async (req, res) => {
 
             const searchOr = [
                 { 'leader.user': { $in: allUserIds } },
-                { 'members.user': { $in: allUserIds } }
+                { 'members.user': { $in: allUserIds } },
+                { 'leader.email': { $in: allEmails } },
+                { 'members.email': { $in: allEmails } }
             ];
 
             const existingMemberTeam = await Team.findOne({
@@ -397,12 +407,22 @@ export const getMyTeams = async (req, res) => {
         const email = user.email;
         const collegeRegNo = user.studentId || ''; 
 
-        const leaderQuery = { 'leader.user': user._id };
+        const leaderQuery = {
+            $or: [
+                { 'leader.user': user._id },
+                { 'leader.email': email.toLowerCase() }
+            ]
+        };
 
         const asLeader = await Team.find(leaderQuery)
             .populate('event', 'name eventType date venue category description image');
 
-        const memberQuery = { 'members.user': user._id };
+        const memberQuery = {
+            $or: [
+                { 'members.user': user._id },
+                { 'members': { $elemMatch: { email: email.toLowerCase() } } }
+            ]
+        };
 
         const asMember = await Team.find(memberQuery)
             .populate('event', 'name eventType date venue category description image');
