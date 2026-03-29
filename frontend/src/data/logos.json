@@ -1,33 +1,80 @@
 [
   {
-    "id": "MASTERMIND",
-    "title": "The Masterminds",
+    "id": "TITLE",
+    "title": "Title Sponsors",
     "description": "Primary entities funding the operation. Direct oversight of all project phases.",
     "logos": [
-      { "name": "Central Bank of India", "fileName": "cboi.png" }
+      { "name": "Central Bank of India", "fileName": "central bank.jpeg", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "ACCESSORIES_PARTNER",
+    "title": "Accessories Partner",
+    "description": "Providing essential technological gear and accessories for the mission.",
+    "logos": [
+      { "name": "Zebronics", "fileName": "zebronics.jpeg", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "MEDIA_PARTNER",
+    "title": "Media Partner",
+    "description": "Amplifying reach and awareness through strategic media coverage.",
+    "logos": [
+      { "name": "Dainik Jagran", "fileName": "dainik jagran.png", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "TRAVEL_PARTNER",
+    "title": "Travel Partner",
+    "description": "Making every journey seamless with unmatched travel solutions.",
+    "logos": [
+      { "name": "AbhiBus", "fileName": "abhiBus.jpeg", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "PLATFORM_PARTNER",
+    "title": "Platform Partner",
+    "description": "Powering opportunities and connections through a leading innovation platform.",
+    "logos": [
+      { "name": "Unstop", "fileName": "unstop.png", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "MERCHANDISE_PARTNER",
+    "title": "Merchandise Partner",
+    "description": "Providing premium gear and apparel for the mission.",
+    "logos": [
+      { "name": "Destiny", "fileName": "Destiny.png", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "FOOD_PARTNER",
+    "title": "Food Partner",
+    "description": "Fueling operations with high-quality provisions and refreshments.",
+    "logos": [
+      { "name": "Laal's Kitchen", "fileName": "Laals Kitchen.png", "folder": "current sponsors" }
     ]
   },
   {
     "id": "SYNDICATE",
-    "title": "The Syndicate",
+    "title": "Syndicate Sponsors",
     "description": "Strategic alliances providing high-level logistical support.",
     "logos": [
       { "name": "Zebronics", "fileName": "zebronics.jpg" },
       { "name": "Bank of Baroda", "fileName": "Bank-of-Baroda-logo.jpg" },
-      { "name": "Royal Enfield", "fileName": "Royal_Enfield_Logo_full.png" },
-      { "name": "Unstop", "fileName": "images (4).png" }
+      { "name": "Royal Enfield", "fileName": "Royal_Enfield_Logo_full.png" }
     ]
   },
   {
     "id": "INFORMANTS",
-    "title": "The Informants",
+    "title": "Informants Sponsors",
     "description": "Wide-range network providing essential intelligence and resources.",
     "logos": [
       { "name": "Campa Cola", "fileName": "campacola.jpeg" },
       { "name": "D2D Youth Story", "fileName": "D2D LOGO (1).png" },
       { "name": "Jolen New York", "fileName": "download.jpeg" },
       { "name": "Ensure", "fileName": "images (2).jpeg" },
-      { "name": "Abhibus", "fileName": "images (3).png" },
+
       { "name": "The Bull", "fileName": "images (5).png" },
       { "name": "Suzuki", "fileName": "images (6).png" },
       { "name": "Pharmabolt", "fileName": "LOGO.png" },

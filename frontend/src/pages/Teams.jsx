@@ -1,12 +1,89 @@
 import React, { useEffect, useRef } from "react";
-import faculty from "../data/faculty.json";
+import facultyData from "../data/faculty.json";
 import fourthYear from "../data/fourth_year.json";
 import thirdYear from "../data/third_year.json";
 import secondYear from "../data/second_year.json";
-import { FaLinkedin } from "react-icons/fa";
+import { FaLinkedin, FaPhoneAlt, FaEnvelope, FaExternalLinkAlt } from "react-icons/fa";
 import gsap from "gsap";
 
 import detBg from "../assets/watch.jpg";
+
+const FacultyCard = ({ member }) => {
+  return (
+    <div className="relative group w-[300px] rounded-xl transition-all duration-300 hover:scale-105">
+      {/* <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition duration-300 border-2 border-[#d6b89a] shadow-[0_0_25px_rgba(214,184,154,0.6)]"></div> */}
+
+      <div className="relative bg-[#e6d6c3] border border-[#c4ad93] rounded-xl p-5 
+      shadow-[0_18px_45px_rgba(0,0,0,0.35)] 
+      group-hover:shadow-[0_28px_65px_rgba(0,0,0,0.5)] 
+      transition-all duration-300">
+        
+        <div className="absolute inset-0 rounded-xl border border-[#f1e4d6]/40 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-10 rounded-xl pointer-events-none"></div>
+
+        <div className="relative mb-5 rounded-lg overflow-hidden border border-[#cdb79e] shadow-md">
+          <img
+            src={member.image_url}
+            alt={member.name}
+            className="w-full h-[220px] object-cover transition duration-300 group-hover:scale-105"
+          />
+        </div>
+
+        <div className="space-y-3">
+          <div className="text-center mb-4">
+            <h3 className="font-playfair text-2xl font-bold text-[#2b1f17] leading-tight mb-1">
+              {member.name}
+            </h3>
+            <p className="text-sm font-medium text-[#8b6b4d] uppercase tracking-wider">
+              {member.position}
+            </p>
+          </div>
+
+          <div className="space-y-2 pt-2 border-t border-[#c4ad93]/40">
+            {member.phone && (
+              <div className="flex items-center gap-3 text-[#5a4837] text-sm">
+                <FaPhoneAlt size={14} className="flex-shrink-0" />
+                <span className="truncate">{member.phone}</span>
+              </div>
+            )}
+            
+            {member.email && (
+              <div className="flex items-center gap-3 text-[#5a4837] text-sm">
+                <FaEnvelope size={14} className="flex-shrink-0" />
+                <span className="truncate break-all">{member.email}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center gap-2 pt-4">
+            <a
+              href={member.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-[#2b1f17] text-[#e6d6c3] rounded-lg hover:bg-[#4a3424] transition-colors"
+              title="LinkedIn Profile"
+            >
+              <FaLinkedin size={18} />
+              <span className="text-[10px] uppercase font-bold tracking-widest">LinkedIn</span>
+            </a>
+            
+            {member.profile_link && (
+              <a
+                href={member.profile_link}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center p-2.5 bg-[#c4ad93]/40 text-[#2b1f17] rounded-lg border border-[#c4ad93] hover:bg-[#c4ad93]/60 transition-colors"
+                title="View Institute Profile"
+              >
+                <FaExternalLinkAlt size={16} />
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Card = ({ member }) => {
   return (
@@ -213,14 +290,22 @@ const Teams = () => {
         {/* FACULTY INCHARGE */}
         <SectionTitle>Faculty Incharge</SectionTitle>
 
-        <div className="flex justify-center gap-16 flex-wrap mb-32">
-          {faculty.faculty.map((member, index) => (
-            <Card key={index} member={member} />
+        {/* Top row: President & Vice-President */}
+        <div className="flex justify-center gap-12 flex-wrap mb-12">
+          {facultyData.faculty.slice(0, 2).map((member, index) => (
+            <FacultyCard key={index} member={member} />
+          ))}
+        </div>
+
+        {/* Remaining: Faculty Coordinators */}
+        <div className="flex justify-center gap-10 flex-wrap mb-32">
+          {facultyData.faculty.slice(2).map((member, index) => (
+            <FacultyCard key={index + 2} member={member} />
           ))}
         </div>
 
         {/* FINAL YEAR */}
-        <SectionTitle>Final Year</SectionTitle>
+        <SectionTitle>Final Year Coordinators</SectionTitle>
 
         <section className="mb-32">
           <HorizontalScroll team={fourthYear.fourth_year} />

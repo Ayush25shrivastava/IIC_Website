@@ -15,6 +15,10 @@ const teamSchema = new Schema({
   },
 
   leader: {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    },
     email: {
       type: String,
       required: true,
@@ -37,6 +41,10 @@ const teamSchema = new Schema({
   },
 
   members: [{
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    },
     email: {
       type: String,
       required: true,

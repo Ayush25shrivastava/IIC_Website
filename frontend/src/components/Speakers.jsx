@@ -1,14 +1,20 @@
 import React, { useRef, useState } from 'react';
 import detectiveImage from '../assets/detective-image.png';
 
+const getSpeakerImageUrl = (fileName) => {
+    if (!fileName) return detectiveImage;
+    return new URL(`../assets/speakers/${fileName}`, import.meta.url).href;
+};
+
 const speakersData = [
     {
         id: 1,
-        name: "Speaker 1",
-        role: "Company 1",
-        expertise: "Tech and related fields",
-        designation: "CEO",
-        status: "RECOGNISED"
+        name: "Dr S Siddharth",
+        role: "Principal secretary to CM Bihar and ACS Education and Cabinet",
+        expertise: "Governance and Public Policy",
+        designation: "IAS",
+        status: "RECOGNISED",
+        image: "Dr.-Siddharth.jpeg"
     },
     {
         id: 2,
@@ -16,7 +22,8 @@ const speakersData = [
         role: "Company 2",
         expertise: "Tech and related fields",
         designation: "CEO",
-        status: "RECOGNISED"
+        status: "RECOGNISED",
+        image: ""
     },
     {
         id: 3,
@@ -24,7 +31,8 @@ const speakersData = [
         role: "Company 3",
         expertise: "Tech and related fields",
         designation: "CEO",
-        status: "RECOGNISED"
+        status: "RECOGNISED",
+        image: ""
     },
     {
         id: 4,
@@ -32,7 +40,8 @@ const speakersData = [
         role: "Company 4",
         expertise: "Stand Up comedy",
         designation: "Comedian",
-        status: "RECOGNISED"
+        status: "RECOGNISED",
+        image: ""
     },
     {
         id: 5,
@@ -40,7 +49,8 @@ const speakersData = [
         role: "Company 5",
         expertise: "Surveillance",
         designation: "CEO",
-        status: "RECOGNISED"
+        status: "RECOGNISED",
+        image: ""
     },
     {
         id: 6,
@@ -48,7 +58,8 @@ const speakersData = [
         role: "Company 6",
         expertise: "Retired Military Officer",
         designation: "Ex-Army Officer",
-        status: "RECOGNISED"
+        status: "RECOGNISED",
+        image: ""
     }
 ];
 
@@ -124,9 +135,9 @@ const Speakers = () => {
                             {/* Image Container */}
                             <div className="h-64 overflow-hidden mb-4 border border-[#eee] relative bg-[#333]">
                                 <img
-                                    src={detectiveImage}
+                                    src={getSpeakerImageUrl(speaker.image)}
                                     alt={speaker.name}
-                                    className="w-full h-full object-cover filter grayscale sepia-[0.3] group-hover:grayscale-0 transition-all duration-500"
+                                    className="w-full h-full object-cover filter group-hover:grayscale-0 transition-all duration-500"
                                 />
                                 {/* Fingerprint Overlay (CSS only) */}
                                 <div className="absolute bottom-2 right-2 w-12 h-12 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/fingerprint.png')]"></div>

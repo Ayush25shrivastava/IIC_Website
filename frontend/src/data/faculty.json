@@ -1,18 +1,139 @@
 {
   "faculty": [
     {
-      "name": "Prof. Mukul Shukla ",
-      "registration_no": "",
-      "team": "",
-      "linkedin": "https://www.linkedin.com/in/mukul-shukla-329a7121/",
-      "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029796/image_1_roojuv.avif"
+      "name": "Prof. Mukul Shukla",
+      "position": "President, IIC",
+      "phone": "+91-532-2271513",
+      "email": "mukulshukla@mnnit.ac.in",
+      "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029796/image_1_roojuv.avif",
+      "profile_link": "https://mnnit.ac.in/profile/mukulshukla",
+      "linkedin": "https://www.linkedin.com/in/mukul-shukla-329a7121/"
     },
     {
       "name": "Prof. Mayank Pandey",
-      "registration_no": "",
-      "team": "",
-      "linkedin": "https://www.linkedin.com/in/mayank-pandey-0b433137/",
-      "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029797/image_wj6szw.avif"
+      "position": "Vice-President, IIC",
+      "phone": "+91-532-2271362",
+      "email": "mayankpandey@mnnit.ac.in",
+      "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029797/image_wj6szw.avif",
+      "profile_link": "https://mnnit.ac.in/profile/mayankpandey",
+      "linkedin": "https://www.linkedin.com/in/mayank-pandey-0b433137/"
+    },
+    {
+      "name": "Dr. Shashank Srivastava",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-9984905199",
+      "email": "shashank12@mnnit.ac.in",
+      "image_url": "https://media.licdn.com/dms/image/v2/D5603AQE6rXp0_osVsQ/profile-displayphoto-shrink_200_200/B56ZT60xciHoBY-/0/1739374926462?e=1776297600&v=beta&t=lb0IHfijCGQtMeKUQ_a-t-g2GuD4sT9LyL1wRAmzD9E",
+      "profile_link": "https://mnnit.ac.in/profile/shashank12",
+      "linkedin": "https://www.linkedin.com/in/dr-shashank-srivastava-5b916111/"
+    },
+    {
+      "name": "Dr. Aditya Anshul",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-9968398036",
+      "email": "adityaanshul@mnnit.ac.in",
+      "image_url": "https://media.licdn.com/dms/image/v2/D4D03AQH3BHa4P8uFBA/profile-displayphoto-shrink_200_200/B4DZaQGR6MGcAY-/0/1746174303927?e=1776297600&v=beta&t=0TiNef_ODTcrbq2ntu8T1hh4p6bbSoWL12Cd-jijXp4",
+      "profile_link": "https://mnnit.ac.in/profile/adityaanshul",
+      "linkedin": "https://www.linkedin.com/in/aditya-anshul-675aab120/"
+    },
+    {
+      "name": "Dr. Abhishek Kundu",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-8420247761",
+      "email": "abhishekkunduamd@mnnit.ac.in",
+      "image_url": "https://mnnit.ac.in/userprofile/uploads/abhishekkundu45_photo.jpeg",
+      "profile_link": "https://mnnit.ac.in/profile/abhishekkunduamd",
+      "linkedin": ""
+    },
+    {
+      "name": "Dr. Joohi Chauhan",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-8920420559",
+      "email": "joohi@mnnit.ac.in",
+      "image_url": "https://mnnit.ac.in/userprofile/uploads/43336-B612_20231214_002532_672.jpg",
+      "profile_link": "https://mnnit.ac.in/profile/joohi",
+      "linkedin": "https://www.linkedin.com/in/joohi-chauhan-b21743248/"
+    },
+    {
+      "name": "Dr. Joyabrata Mal",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-7044284075",
+      "email": "joyabrata@mnnit.ac.in",
+      "image_url": "https://mnnit.ac.in/userprofile/uploads/Joy_2.jpg",
+      "profile_link": "https://mnnit.ac.in/profile/joyabrata",
+      "linkedin": "https://www.linkedin.com/in/dr-joyabrata-mal-34126a41/"
+    },
+    {
+      "name": "Dr. Ajay Kumar Mandrawalia",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-900162082",
+      "email": "ajaym@mnnit.ac.in",
+      "image_url": "https://mnnit.ac.in/userprofile/uploads/90661-DSC_6549.JPG",
+      "profile_link": "https://mnnit.ac.in/profile/ajaym",
+      "linkedin": ""
+    },
+    {
+      "name": "Dr. Parul Katiyar",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "0532-227-1581",
+      "email": "parulk@mnnit.ac.in",
+      "image_url": "https://mnnit.ac.in/userprofile/uploads/22944-parul-2.jpg",
+      "profile_link": "https://mnnit.ac.in/profile/parulk",
+      "linkedin": ""
+    },
+    {
+      "name": "Dr. Deepak Punetha",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-9410959765",
+      "email": "deepakpunetha@mnnit.ac.in",
+      "image_url": "https://mnnit.ac.in/userprofile/uploads/78120-Passport%20size.jpg",
+      "profile_link": "https://mnnit.ac.in/profile/deepakpunetha",
+      "linkedin": "https://www.linkedin.com/in/dr-deepak-punetha-b7492ab1/"
+    },
+    {
+      "name": "Dr. Niraj Kumar Choudhary",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-9455691568",
+      "email": "niraj@mnnit.ac.in",
+      "image_url": "https://mnnit.ac.in/userprofile/uploads/23482-Niraj_image.jpg",
+      "profile_link": "https://mnnit.ac.in/profile/niraj",
+      "linkedin": ""
+    },
+    {
+      "name": "Dr. Shubham Gupta",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-9520458076",
+      "email": "shubham.gupta@mnnit.ac.in",
+      "image_url": "https://mnnit.ac.in/userprofile/uploads/2388-Dr.%20Shubham%20Photo.JPG",
+      "profile_link": "https://mnnit.ac.in/profile/shubham.gupta",
+      "linkedin": "https://www.linkedin.com/in/shubham-gupta-45698184/"
+    },
+    {
+      "name": "Dr. Sumit Tiwari",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-8586985510",
+      "email": "sumit.tiwari@mnnit.ac.in",
+      "image_url": "https://mnnit.ac.in/userprofile/uploads/87139-1000267924.jpg",
+      "profile_link": "https://mnnit.ac.in/profile/sumit.tiwari",
+      "linkedin": "https://www.linkedin.com/in/dr-sumit-tiwari-9b652888/"
+    },
+    {
+      "name": "Dr. Vibhuti Bhushan Pandey",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-8218397911",
+      "email": "vbpandey@mnnit.ac.in",
+      "image_url": "https://mnnit.ac.in/userprofile/uploads/64041-p2.jpg",
+      "profile_link": "https://mnnit.ac.in/profile/vbpandey",
+      "linkedin": "https://www.linkedin.com/in/vibhuti-bhushan-pandey-phd-176297a1/"
+    },
+    {
+      "name": "Dr. Prabal Pratap Singh",
+      "position": "Faculty Coordinator, IIC",
+      "phone": "+91-7839462212",
+      "email": "prabal@mnnit.ac.in",
+      "image_url": "https://www.mnnit.ac.in/userprofile/uploads/31133-_EGI2114.JPG",
+      "profile_link": "https://www.mnnit.ac.in/profile/prabal",
+      "linkedin": "https://www.linkedin.com/in/mechaprabal/"
     }
   ]
 }

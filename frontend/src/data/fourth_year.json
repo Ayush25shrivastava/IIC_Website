@@ -1,6 +1,13 @@
 {
   "fourth_year": [
     {
+      "name": "Shivam Pathak",
+      "registration_no": "20227048",
+      "team": "Final Year",
+      "linkedin": "https://www.linkedin.com/in/shivam-raj-261b72225",
+      "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029800/Picsart_26-02-22_13-28-16-542_-_Shivam_Raj_iarbsk.avif"
+    },
+    {
       "name": "Yogesh Garg",
       "registration_no": "20222066",
       "team": "All",
@@ -15,11 +22,11 @@
       "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774031066/image_2_a5wkoj.avif"
     },
     {
-      "name": "Shivam Pathak",
-      "registration_no": "20227048",
+      "name": "Divyanshu Purbey",
+      "registration_no": "20222064",
       "team": "Final Year",
-      "linkedin": "https://www.linkedin.com/in/shivam-raj-261b72225",
-      "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029800/Picsart_26-02-22_13-28-16-542_-_Shivam_Raj_iarbsk.avif"
+      "linkedin": "https://www.linkedin.com/in/divyanshu-purbey",
+      "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774278554/IMG_E2824.JPG_le8aoo.avif"
     },
     {
       "name": "Shreepriya Tiwari",
@@ -27,13 +34,6 @@
       "team": "Final Year",
       "linkedin": "https://www.linkedin.com/in/shreepriya",
       "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774278554/WhatsApp_Image_2026-03-22_at_19.50.39_j67jeg.avif"
-    },
-    {
-      "name": "Divyanshu Purbey",
-      "registration_no": "20222064",
-      "team": "Final Year",
-      "linkedin": "https://www.linkedin.com/in/divyanshu-purbey",
-      "image_url": "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774278554/IMG_E2824.JPG_le8aoo.avif"
     }
   ]
 }

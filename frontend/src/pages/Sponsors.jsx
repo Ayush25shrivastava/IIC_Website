@@ -7,8 +7,8 @@ import topSecretImg from '../assets/top-secret.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const getImageUrl = (name) => {
-  return new URL(`../assets/past sponsors/${name}`, import.meta.url).href;
+const getImageUrl = (name, folder = "past sponsors") => {
+  return new URL(`../assets/${folder}/${name}`, import.meta.url).href;
 };
 
 const Sponsors = () => {
@@ -86,19 +86,19 @@ const Sponsors = () => {
                 <div className="w-9 h-9 bg-[#8b0000] rounded-full mx-auto mb-5 shadow-[0_0_30px_rgba(139,0,0,0.6)] border-2 border-[#4a0000]"></div>
 
                 <h2 className="font-playfair text-4xl md:text-5xl font-semibold uppercase tracking-[0.3em] text-[#f1e6d6] drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
-                  {tier.title}
+                  The {tier.title}
                 </h2>
 
                 <div className="w-32 h-[2px] bg-gradient-to-r from-transparent via-[#cbbfae] to-transparent mx-auto mt-4 mb-3"></div>
 
                 <p className="text-sm text-[#d8c9b4] italic tracking-wide">
-                  Official {tier.title} Sponsors
+                  The Official {tier.title}
                 </p>
               </div>
 
               {/* Cards */}
               <div className={`grid gap-x-16 gap-y-14 justify-center ${
-                tier.id === 'MASTERMIND'
+                (tier.id === 'TITLE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'FOOD_PARTNER')
                   ? 'grid-cols-1 max-w-sm mx-auto'
                   : tier.id === 'SYNDICATE'
                   ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
@@ -109,10 +109,7 @@ const Sponsors = () => {
                     key={index}
                     logo={logo}
                     sponsorType={tier.title}
-                    isRevealed={
-                      (tier.id === partnersData[0].id && index === 0) || 
-                      (tier.id === 'SYNDICATE' && index === 0)
-                    }
+                    isRevealed={tier.id === 'TITLE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'FOOD_PARTNER'}
                   />
                 ))}
               </div>
@@ -145,15 +142,8 @@ const SponsorCard = ({ logo, sponsorType, isRevealed }) => {
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-25 pointer-events-none"></div>
 
         <div className="bg-white p-6 rounded shadow-inner flex items-center justify-center h-44">
-          {/* 
           <img
-            src={getImageUrl(logo.fileName)}
-            alt={logo.name}
-            className="max-h-full max-w-full object-contain"
-          />
-          */}
-          <img
-            src={isRevealed ? getImageUrl(logo.fileName) : topSecretImg}
+            src={isRevealed ? getImageUrl(logo.fileName, logo.folder || "past sponsors") : topSecretImg}
             alt={logo.name}
             className="max-h-full max-w-full object-contain"
           />
@@ -164,7 +154,7 @@ const SponsorCard = ({ logo, sponsorType, isRevealed }) => {
             {logo.name}
           </h3>
           <p className="text-xs uppercase tracking-[0.25em] text-gray-700 mt-3">
-            {sponsorType} Sponsor
+            {sponsorType} 
           </p>
         </div>
 
