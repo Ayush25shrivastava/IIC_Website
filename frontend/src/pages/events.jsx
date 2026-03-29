@@ -135,27 +135,29 @@ const Events = () => {
 
                         <motion.div
                             layoutId={`card-${selectedId}`}
-                            className="relative bg-[#1E1E1E] border border-[#B8A18A]/50 w-full max-w-5xl h-[85vh] md:h-[80vh] overflow-hidden flex flex-col md:flex-row rounded-2xl shadow-[0_0_100px_rgba(184,161,138,0.2)]"
+                            className="relative bg-[#1E1E1E] border border-[#B8A18A]/50 w-full max-w-5xl h-[90vh] md:h-[80vh] overflow-hidden flex flex-col md:flex-row rounded-2xl shadow-[0_0_100px_rgba(184,161,138,0.2)]"
                         >
                             <button onClick={() => setSelectedId(null)} className="absolute top-3 right-3 md:top-4 md:right-4 z-[110] text-[#7C6C58] hover:text-white transition-all p-2 bg-black/60 rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center">✕</button>
 
-                            {/* Image Section - Mobile: Top 30%, Desktop: Left Half */}
-                            <div className="w-full h-[30%] md:h-full md:w-[45%] lg:w-1/2 relative overflow-hidden shrink-0">
+                            {/* Image Section - Fixed height on mobile so text always has enough room */}
+                            <div className="w-full h-48 sm:h-56 md:h-full md:w-[40%] lg:w-[45%] relative shrink-0">
                                 <img src={activeEvent.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80'} className="w-full h-full object-cover" alt={activeEvent.name} />
-                                {/* Gradient changes direction based on screen size */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E1E] to-transparent md:bg-gradient-to-r md:from-transparent md:to-[#1E1E1E]" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E1E] via-[#1E1E1E]/50 to-transparent md:bg-gradient-to-r md:from-transparent md:via-[#1E1E1E]/50 md:to-[#1E1E1E]" />
                             </div>
 
-                            {/* Content Section - Mobile: Bottom 70%, Desktop: Right Half */}
-                            <div className="w-full h-[70%] md:h-full md:w-[55%] lg:w-1/2 flex flex-col p-5 md:p-8 lg:p-10 overflow-hidden bg-[#1E1E1E]">
-                                <div className="flex items-center gap-3 mb-3 md:mb-4 shrink-0">
-                                    <span className="h-[1px] w-6 md:w-8 bg-[#B8A18A]/40"></span>
-                                    <span className="text-[9px] md:text-[10px] tracking-[0.5em] text-[#B8A18A] uppercase font-bold font-mono">Docket No. {activeEvent._id.slice(-6)}</span>
+                            {/* Content Section - flex-1 and min-h-0 ensure proper internal scrolling */}
+                            <div className="w-full flex-1 min-h-0 md:h-full md:w-[60%] lg:w-[55%] flex flex-col p-5 md:p-8 lg:p-10 bg-[#1E1E1E]">
+                                
+                                {/* Fixed Header Area inside Modal */}
+                                <div className="shrink-0 mb-4 md:mb-6">
+                                    <div className="flex items-center gap-3 mb-3 md:mb-4">
+                                        <span className="h-[1px] w-6 md:w-8 bg-[#B8A18A]/40"></span>
+                                        <span className="text-[9px] md:text-[10px] tracking-[0.5em] text-[#B8A18A] uppercase font-bold font-mono">Docket No. {activeEvent._id.slice(-6)}</span>
+                                    </div>
+                                    <h2 className="font-playfair text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white uppercase tracking-tight">{activeEvent.name}</h2>
                                 </div>
 
-                                <h2 className="font-playfair text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4 md:mb-6 uppercase tracking-tight shrink-0">{activeEvent.name}</h2>
-
-                                {/* Scrollable details area */}
+                                {/* Scrollable Details Area */}
                                 <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-6 mb-6">
                                     <div className="grid grid-cols-2 gap-3 md:gap-4">
                                         <div className="bg-white/5 p-3 md:p-4 rounded-xl border border-white/5">
@@ -185,7 +187,7 @@ const Events = () => {
                                         </p>
                                     </div>
 
-                                    <div className="text-[9px] sm:text-[10px] md:text-[11px] text-[#7C6C58] font-mono leading-relaxed space-y-1 md:space-y-2 pt-2 md:pt-4">
+                                    <div className="text-[9px] sm:text-[10px] md:text-[11px] text-[#7C6C58] font-mono leading-relaxed space-y-1 md:space-y-2 pt-2 md:pt-4 border-t border-[#7C6C58]/20 mt-4">
                                         <p>&gt; DEPLOYMENT DATE: {activeEvent.date}</p>
                                         <p>&gt; SECTOR (VENUE): {activeEvent.venue}</p>
                                         <p>&gt; TYPE: {activeEvent.eventType.toUpperCase()}</p>
@@ -195,7 +197,7 @@ const Events = () => {
                                 {/* Fixed action button at bottom of container */}
                                 <button 
                                     onClick={() => navigate(`/udbhav/events/${activeEvent._id}/register`)}
-                                    className="group relative w-full py-3 md:py-4 bg-[#B8A18A] text-[#0E0E0E] font-black uppercase text-[10px] md:text-xs tracking-[0.4em] md:tracking-[0.6em] rounded-xl shrink-0 hover:shadow-[0_0_25px_rgba(184,161,138,0.4)] transition-all"
+                                    className="shrink-0 mt-auto group relative w-full py-3 md:py-4 bg-[#B8A18A] text-[#0E0E0E] font-black uppercase text-[10px] md:text-xs tracking-[0.4em] md:tracking-[0.6em] rounded-xl hover:shadow-[0_0_25px_rgba(184,161,138,0.4)] transition-all"
                                 >
                                     <span className="relative z-10">Authorize Access</span>
                                 </button>
