@@ -11,7 +11,7 @@ const Events = () => {
     const [eventsData, setEventsData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedId, setSelectedId] = useState(null);
-    
+
     const cardsRef = useRef([]);
     const titleRef = useRef(null);
     const bgRef = useRef(null);
@@ -36,7 +36,17 @@ const Events = () => {
         fetchEvents();
     }, []);
 
-    // 2. Run GSAP Animations only after loading is complete
+    // 2. Lock body scroll when modal is open
+    useEffect(() => {
+        if (selectedId) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => { document.body.style.overflow = 'unset'; };
+    }, [selectedId]);
+
+    // 3. Run GSAP Animations only after loading is complete
     useEffect(() => {
         if (loading || eventsData.length === 0) return;
 
@@ -54,14 +64,14 @@ const Events = () => {
             });
 
             tl.fromTo(titleRef.current.children,
-                { opacity: 0, y: 40, skewY: 5 },
-                { opacity: 1, y: 0, skewY: 0, duration: 1.2, stagger: 0.2 }
+                { opacity: 0, y: 30, skewY: 2 },
+                { opacity: 1, y: 0, skewY: 0, duration: 0.8, stagger: 0.1 }
             );
 
             tl.fromTo(cardsRef.current,
-                { opacity: 0, y: 60, scale: 0.95 },
-                { opacity: 1, y: 0, scale: 1, duration: 1, stagger: 0.1, ease: "expo.out" },
-                "-=0.8"
+                { opacity: 0, y: 40, scale: 0.98 },
+                { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.05, ease: "power2.out" },
+                "-=0.6"
             );
         });
 
@@ -73,14 +83,55 @@ const Events = () => {
     if (loading) {
         return (
             <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] flex flex-col items-center justify-center font-mono">
-                <div className="w-16 h-16 border-t-2 border-[#B8A18A] rounded-full animate-spin mb-4"></div>
-                <p className="tracking-[0.3em] uppercase text-xs">Accessing Mainframe...</p>
+                <motion.div
+                    animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.3, 1, 0.3]
+                    }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                    className="w-24 h-24 border border-[#B8A18A]/30 rounded-full flex items-center justify-center mb-6 relative"
+                >
+                    <div className="absolute inset-0 border-t-2 border-[#B8A18A] rounded-full animate-spin"></div>
+                    <span className="text-[10px] font-bold">IIC</span>
+                </motion.div>
+                <div className="flex items-center gap-1">
+                    <span className="tracking-[0.4em] uppercase text-[10px] opacity-70">Accessing Mainframe</span>
+                    <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1, repeat: Infinity }} className="text-[#B8A18A]">_</motion.span>
+                </div>
             </div>
         );
     }
 
-    const RULEBOOK_LINK = "https://drive.google.com/your-rulebook-link";
-    const PROBLEM_LINK = "https://drive.google.com/your-problem-link";
+    const EVENT_RESOURCES = {
+        "Hack 18": {
+            rulebook: "https://drive.google.com/drive/folders/1v5YJzWdyoMROjBQrr1lWvESMGkF3fUqW?usp=sharing",
+            problemStatement: "https://drive.google.com/drive/folders/1v5YJzWdyoMROjBQrr1lWvESMGkF3fUqW?usp=sharing",
+            googleForm: "https://docs.google.com/forms/d/e/1FAIpQLSdjrCuYxC8-38w5cz5kqZEe6pyIx1uaPyASHkeU4zbd9lAhUA/viewform?usp=sharing&ouid=112142989139608804289"
+        },
+        "Case Clash": {
+            rulebook: "https://drive.google.com/drive/folders/1dRieoiF7VJ2hJzjIfI05VdaAfnFVnvLT?usp=sharing"
+        },
+        "Viral Vision": {
+            rulebook: "https://drive.google.com/drive/folders/1s3y61RVfzSgZLAKOG4TyA9iQXnVnQfWN?usp=sharing"
+        },
+        "Youth Quest": {
+            rulebook: "https://drive.google.com/drive/folders/1eL5LIpOmjc15o49Xt2Y8LN2JagMFZj26?usp=sharing"
+        },
+        "Build and Beyond": {
+            rulebook: "https://drive.google.com/drive/folders/19upnpNwihAQ_0qtfiQ_u0uQynxJfj4zq?usp=sharing"
+        },
+        "Mock IPL Auction": {
+            rulebook: "https://drive.google.com/drive/folders/1U9D9aZkFqSe5XOLZvv8C5w6UJR1fpEVl?usp=sharing"
+        },
+        "Concept Craft": {
+            rulebook: "https://drive.google.com/drive/folders/1yWvdM6J_JoYUHlsVgoUHRQGFtLK9uwhC?usp=sharing"
+        },
+        "IoT Innovation Arena": {
+            rulebook: "https://drive.google.com/drive/folders/12XLrlYBZcOoOUgofo2nlHClXvxZxgxpA?usp=sharing"
+        },
+    };
+
+    const activeResources = activeEvent ? (EVENT_RESOURCES[activeEvent.name] || { rulebook: "#" }) : { rulebook: "#" };
 
     return (
         <div className="min-h-screen bg-[#0E0E0E] text-[#B8A18A] md:pl-40 pt-32 pb-20 px-6 relative overflow-x-hidden">
@@ -92,8 +143,8 @@ const Events = () => {
                 style={{
                     backgroundImage: "url('https://fcmod.org/wp-content/uploads/2020/03/philatelist-1844080_640-e1585082769528.jpg')",
                     backgroundSize: "contain",
-                    opacity: 0.4, 
-                    filter: "contrast(1.1) brightness(0.7)" 
+                    opacity: 0.4,
+                    filter: "contrast(1.1) brightness(0.7)"
                 }}
             />
 
@@ -137,7 +188,9 @@ const Events = () => {
 
                         <motion.div
                             layoutId={`card-${selectedId}`}
-                            className="relative bg-[#1E1E1E] border border-[#B8A18A]/50 w-full max-w-5xl max-h-[85vh] md:max-h-[90vh] overflow-hidden flex flex-col md:flex-row rounded-2xl shadow-[0_0_100px_rgba(184,161,138,0.2)]"
+                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            className="relative bg-[#1E1E1E] border border-[#B8A18A]/50 w-full max-w-5xl h-[85vh] md:h-[80vh] overflow-hidden flex flex-col md:flex-row rounded-2xl shadow-[0_0_100px_rgba(184,161,138,0.2)]"
+                            style={{ overscrollBehavior: "contain" }}
                         >
                             <button onClick={() => setSelectedId(null)} className="absolute top-4 right-4 z-[110] text-[#7C6C58] hover:text-white transition-all p-2 bg-black/60 rounded-full w-10 h-10 flex items-center justify-center">✕</button>
 
@@ -146,7 +199,7 @@ const Events = () => {
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E1E] via-transparent to-transparent md:bg-gradient-to-r" />
                             </div>
 
-                            <div className="w-full md:w-1/2 flex flex-col p-6 md:p-10 lg:p-12 overflow-hidden bg-[#1E1E1E]">
+                            <div className="w-full md:w-1/2 flex flex-col p-6 md:p-10 lg:p-12 min-h-0 overflow-hidden bg-[#1E1E1E]">
                                 <div className="flex items-center gap-3 mb-4 shrink-0">
                                     <span className="h-[1px] w-8 bg-[#B8A18A]/40"></span>
                                     {/* Using a slice of the MongoDB _id to create a cool Docket number */}
@@ -155,7 +208,10 @@ const Events = () => {
 
                                 <h2 className="font-playfair text-3xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight shrink-0">{activeEvent.name}</h2>
 
-                                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-8 mb-8">
+                                <div
+                                    className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-8 mb-8 pb-4 overscroll-contain"
+                                    onWheel={(e) => e.stopPropagation()}
+                                >
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-white/5 p-4 rounded-xl border border-white/5">
                                             <p className="text-[9px] uppercase text-[#7C6C58] mb-1 font-bold">Category</p>
@@ -164,8 +220,8 @@ const Events = () => {
                                         <div className="bg-white/5 p-4 rounded-xl border border-white/5">
                                             <p className="text-[9px] uppercase text-[#7C6C58] mb-1 font-bold">Capacity</p>
                                             <p className="text-[#B8A18A] font-bold text-xs uppercase">
-                                                {activeEvent.eventType === 'Team' 
-                                                    ? `${activeEvent.minTeamSize}-${activeEvent.maxTeamSize} Members` 
+                                                {activeEvent.eventType === 'Team'
+                                                    ? `${activeEvent.minTeamSize}-${activeEvent.maxTeamSize} Members`
                                                     : 'Solo'}
                                             </p>
                                         </div>
@@ -179,40 +235,52 @@ const Events = () => {
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="flex flex-col md:flex-row gap-4 pt-4">
-
-                                        {/* Rulebook Button (for ALL events) */}
-                                        <a
-                                            href={RULEBOOK_LINK}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex-1 text-center py-3 border border-[#B8A18A] text-[#B8A18A] font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300"
-                                        >
-                                            View Rulebook
-                                        </a>
-
-                                        {/* Problem Statements Button (ONLY Hack 18) */}
-                                        {activeEvent.name === "Hack 18" && (
+                                    <div className="flex flex-col gap-4 pt-4">
+                                        <div className="flex flex-col md:flex-row gap-4">
+                                            {/* Rulebook Button (for ALL events) */}
                                             <a
-                                                href={PROBLEM_LINK}
+                                                href={activeResources.rulebook}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex-1 text-center py-3 border border-[#7C6C58] text-[#7C6C58] font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-[#7C6C58] hover:text-white transition-all duration-300"
+                                                className="flex-1 text-center py-3 border border-[#B8A18A] text-[#B8A18A] font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300"
                                             >
-                                                Problem Statements
+                                                View Rulebook
+                                            </a>
+
+                                            {/* Problem Statements Button (ONLY Hack 18) */}
+                                            {activeEvent.name === "Hack 18" && activeResources.problemStatement && (
+                                                <a
+                                                    href={activeResources.problemStatement}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex-1 text-center py-3 border border-[#7C6C58] text-[#7C6C58] font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-[#7C6C58] hover:text-white transition-all duration-300"
+                                                >
+                                                    Problem Statements
+                                                </a>
+                                            )}
+                                        </div>
+
+                                        {/* Google Form Button (ONLY Hack 18) */}
+                                        {activeEvent.name === "Hack 18" && activeResources.googleForm && (
+                                            <a
+                                                href={activeResources.googleForm}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full text-center py-3 bg-[#7C6C58]/20 border border-[#7C6C58]/50 text-white font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-[#7C6C58] transition-all duration-300"
+                                            >
+                                                Submit Mission Report (Google Form)
                                             </a>
                                         )}
-
                                     </div>
 
                                     <div className="text-[11px] text-[#7C6C58] font-mono leading-relaxed space-y-2 pt-4">
-                                        <p>&gt; DEPLOYMENT DATE: {activeEvent.date}</p>
-                                        <p>&gt; SECTOR (VENUE): {activeEvent.venue}</p>
-                                        <p>&gt; TYPE: {activeEvent.eventType.toUpperCase()}</p>
+                                        <p>&gt; EVENT DATE: {activeEvent.date}</p>
+                                        <p>&gt; VENUE: {activeEvent.venue}</p>
+                                        <p>&gt; EVENT TYPE: {activeEvent.eventType.toUpperCase()}</p>
                                     </div>
                                 </div>
 
-                                <button 
+                                <button
                                     onClick={() => navigate(`/udbhav/events/${activeEvent._id}/register`)}
                                     className="group relative w-full py-4 bg-[#B8A18A] text-[#0E0E0E] font-black uppercase text-xs tracking-[0.6em] rounded-xl shrink-0 hover:shadow-[0_0_25px_rgba(184,161,138,0.4)] transition-all"
                                 >
@@ -230,9 +298,10 @@ const Events = () => {
             </div>
 
             <style jsx>{`
-                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: #7C6C58; border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #7C6C58; border-radius: 10px; border: 1px solid rgba(184, 161, 138, 0.1); }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #B8A18A; }
             `}</style>
         </div>
     );
