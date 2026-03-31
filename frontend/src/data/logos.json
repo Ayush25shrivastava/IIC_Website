@@ -56,6 +56,14 @@
     ]
   },
   {
+    "id": "ENERGY_DRINK_PARTNER",
+    "title": "Energy Drink Partner",
+    "description": "Providing energy needed to fuel the mission.",
+    "logos": [
+      { "name": "Hell Energy", "fileName": "Hell Energy.jpeg", "folder": "current sponsors" }
+    ]
+  },
+  {
     "id": "SYNDICATE",
     "title": "Syndicate Sponsors",
     "description": "Strategic alliances providing high-level logistical support.",
