@@ -6,53 +6,53 @@ gsap.registerPlugin(ScrollTrigger);
 
 const timelineData = [
     {
-        time: "10:00 AM",
-        date: "April 4th",
-        title: "Quest Youth",
-        location: "MP Hall, MNNIT",
+        time: "10:00",
+        date: "March 30th",
+        title: "Hack18 Round 1 starts",
+        location: "Online",
         type: "Team",
-        status: "OFFLINE"
-    },
-    {
-        time: "11:30 AM",
-        date: "April 4th",
-        title: "Youth Rise",
-        location: "MP Hall, MNNIT",
-        type: "Solo",
         status: "ONLINE"
     },
     {
-        time: "02:00 PM",
+        time: "16:00",
         date: "April 4th",
-        title: "Seed Start Summit",
-        location: "IIHMF, MNNIT",
+        title: "Hack18 Offline Round",
+        location: "CSE Dept. MNNIT",
         type: "Team",
         status: "OFFLINE"
     },
     {
-        time: "04:30 PM",
-        date: "April 5th",
-        title: "Cultural Extravaganza",
-        location: "SMS Building, MNNIT",
-        type: "Team",
+        time: "16:00",
+        date: "April 4th",
+        title: "Gig Night ft. Nishaad",
+        location: "MP Hall Arena",
+        type: "Fun Event",
         status: "OFFLINE"
     },
     {
-        time: "10:00 AM",
+        time: "10:00",
         date: "April 5th",
-        title: "Venture Vault",
-        location: "IIHMF, MNNIT",
-        type: "Solo",
-        status: "ONLINE"
-    },
-    {
-        time: "01:00 PM",
-        date: "April 5th",
-        title: "Stall Mania",
-        location: "Arena, MNNIT",
+        title: "Hack18 Final Round",
+        location: "CSE Dept. MNNIT",
         type: "Team",
         status: "OFFLINE"
     },
+    // {
+    //     time: "10:00 AM",
+    //     date: "April 5th",
+    //     title: "Venture Vault",
+    //     location: "IIHMF, MNNIT",
+    //     type: "Solo",
+    //     status: "ONLINE"
+    // },
+    // {
+    //     time: "01:00 PM",
+    //     date: "April 5th",
+    //     title: "Stall Mania",
+    //     location: "Arena, MNNIT",
+    //     type: "Team",
+    //     status: "OFFLINE"
+    // },
     // {
     //     time: "10:00 AM",
     //     date: "Oct 30",
@@ -159,7 +159,7 @@ const EventTimeline = () => {
                                 <div className="w-full md:w-1/2 pl-12 md:pl-0 md:px-12">
                                     <div
                                         ref={el => cardsRef.current[index] = el}
-                                        className="relative bg-[#f5f1e6] p-1 shadow-lg transform transition-transform hover:scale-105 duration-300 postcard-border blur-[4px] select-none"
+                                        className="relative bg-[#f5f1e6] p-1 shadow-lg transform transition-transform hover:scale-105 duration-300 postcard-border select-none"
                                         style={{
                                             maxWidth: '400px',
                                             marginLeft: index % 2 === 0 ? '0' : 'auto', // Align correctly on desktop
@@ -193,6 +193,10 @@ const EventTimeline = () => {
                                                         <span>{item.time}</span>
                                                     </div>
                                                     <div className="flex items-center gap-3">
+                                                        <span className="w-4 h-4 text-[#7C6C58]">📅</span>
+                                                        <span>{item.date}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
                                                         <span className="w-4 h-4 text-[#7C6C58]">📍</span>
                                                         <span>{item.location}</span>
                                                     </div>
@@ -205,7 +209,7 @@ const EventTimeline = () => {
                                                 {/* Handwritten Note Style */}
                                                 <div className="mt-2 pt-2">
                                                     <p className="font-merriweather italic text-xs text-[#666]">
-                                                        "Participate with enthusiam and make it memorable"
+                                                        THINK | THRIVE | TRIUMPH
                                                     </p>
                                                 </div>
                                             </div>
