@@ -35,7 +35,7 @@ const speakersData = [
         designation: "Entrepreneur",
         alumniOf: "MNNIT ECE 2008",
         status: "RECOGNISED",
-        image: "https://media.licdn.com/dms/image/v2/D5603AQH9JVQtk1EQ9A/profile-displayphoto-shrink_400_400/B56Zc_13pPGQAk-/0/1749122776185?e=2147483647&v=beta&t=5M2ZXRkcbl_JsdBZb4BOaKV7BgC4MNOetILgjcdH32c",
+        image: "praveen.jpg",
         linkedin: "https://www.linkedin.com/in/praveen-kumar-iima/"
     },
     {
@@ -46,7 +46,7 @@ const speakersData = [
         designation: "Consulting Analyst",
         alumniOf: "MNNIT CHE 2022",
         status: "RECOGNISED",
-        image: "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774953907/WhatsApp_Image_2026-03-31_at_12.44.42_anlrrq.jpg",
+        image: "rishabh.jpg",
         linkedin: "https://www.linkedin.com/in/rishabh-sharma-503773187/"
     },
     {
