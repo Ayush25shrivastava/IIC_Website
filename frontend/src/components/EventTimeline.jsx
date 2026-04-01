@@ -6,6 +6,14 @@ gsap.registerPlugin(ScrollTrigger);
 
 const timelineData = [
     {
+        time: "5:00 PM",
+        date: "April 2nd",
+        title: "Mock IPL Auction Round 1",
+        location: "NLHC, MNNIT",
+        type: "Team",
+        status: "OFFLINE"
+    },
+    {
         time: "10:00",
         date: "March 30th",
         title: "Hack18 Round 1 starts",
@@ -37,14 +45,6 @@ const timelineData = [
         type: "Team",
         status: "OFFLINE"
     },
-    // {
-    //     time: "10:00 AM",
-    //     date: "April 5th",
-    //     title: "Venture Vault",
-    //     location: "IIHMF, MNNIT",
-    //     type: "Solo",
-    //     status: "ONLINE"
-    // },
     // {
     //     time: "01:00 PM",
     //     date: "April 5th",

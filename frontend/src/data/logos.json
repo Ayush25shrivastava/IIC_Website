@@ -1,7 +1,7 @@
 [
   {
     "id": "TITLE",
-    "title": "Title Sponsors",
+    "title": "Title Sponsor",
     "description": "Primary entities funding the operation. Direct oversight of all project phases.",
     "logos": [
       { "name": "Central Bank of India", "fileName": "central bank.jpeg", "folder": "current sponsors" }
@@ -9,7 +9,7 @@
   },
   {
     "id": "ASSOCIATE",
-    "title": "Associate Sponsors",
+    "title": "Associate Sponsor",
     "description": "Entities providing support to the operation.",
     "logos": [
       { "name": "Prayagraj Power Generation Company Limited", "fileName": "ppgcl.jpg", "folder": "current sponsors" }
@@ -70,5 +70,13 @@
     "logos": [
       { "name": "Hell Energy", "fileName": "Hell Energy.jpeg", "folder": "current sponsors" }
     ]
-  }  
+  },  
+  {
+    "id": "DESSERT_PARTNER",
+    "title": "Dessert Partner",
+    "description": "Sweetening the mission with delicious treats.",
+    "logos": [
+      { "name": "Gokul Ice Cream", "fileName": "gokul.png", "folder": "current sponsors" }
+    ]
+  }
 ]
