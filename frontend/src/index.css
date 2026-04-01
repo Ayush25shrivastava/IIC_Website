@@ -69,10 +69,23 @@ html.lenis body {
 }
 
 .animate-scroll {
-    animation: scroll 30s linear infinite;
+    animation: scroll 15s linear infinite;
 }
 
-.animate-scroll:hover {
+@keyframes scroll-reverse {
+    0% {
+        transform: translateX(-50%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.animate-scroll-reverse {
+    animation: scroll-reverse 15s linear infinite;
+}
+
+.animate-scroll:hover, .animate-scroll-reverse:hover {
     animation-play-state: paused;
 }
 

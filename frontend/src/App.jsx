@@ -8,6 +8,7 @@ import LoginSuccess from './components/LoginSuccess';
 import EventSection from './components/EventSection';
 import EventTimeline from './components/EventTimeline';
 import PastSponsors from './components/PastSponsors';
+import CurrentSponsors from './components/CurrentSponsors';
 import Speakers from './components/Speakers';
 import ContactFooter from './components/ContactFooter';
 import Events from './pages/events';
@@ -81,6 +82,7 @@ function App() {
                   <main>
                     <Hero />
                     <About />
+                    <CurrentSponsors />
                     <EventSection />
                     <EventTimeline />
                     <PastSponsors />
