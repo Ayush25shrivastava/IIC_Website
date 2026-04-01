@@ -18,6 +18,8 @@ const EventSection = () => {
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
 
+    const [scrollProgress, setScrollProgress] = useState(0);
+
     // Fetch Events from Server
     useEffect(() => {
         const fetchEvents = async () => {
@@ -37,6 +39,33 @@ const EventSection = () => {
 
         fetchEvents();
     }, []);
+
+    // Sync slider with scroll position
+    useEffect(() => {
+        const container = triggerRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            const scrollWidth = container.scrollWidth - container.clientWidth;
+            if (scrollWidth <= 0) return;
+            const progress = (container.scrollLeft / scrollWidth) * 100;
+            setScrollProgress(progress);
+        };
+
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, [eventsData]);
+
+    const handleSliderChange = (e) => {
+        const container = triggerRef.current;
+        if (!container) return;
+
+        const value = parseFloat(e.target.value);
+        setScrollProgress(value);
+
+        const scrollWidth = container.scrollWidth - container.clientWidth;
+        container.scrollLeft = (value / 100) * scrollWidth;
+    };
 
     const handleMouseDown = (e) => {
         setIsDragging(true);
@@ -77,7 +106,7 @@ const EventSection = () => {
 
             <div 
                 ref={triggerRef} 
-                className="flex md:overflow-x-auto overflow-y-hidden gap-8 px-8 md:px-20 py-8 cursor-grab active:cursor-grabbing no-scrollbar flex-col md:flex-row scroll-smooth"
+                className="flex md:overflow-x-auto md:ml-24 overflow-y-hidden gap-8 px-8 md:px-20 py-8 cursor-grab active:cursor-grabbing no-scrollbar flex-col md:flex-row scroll-smooth"
                 onMouseDown={handleMouseDown}
                 onMouseLeave={handleMouseLeave}
                 onMouseUp={handleMouseUp}
@@ -179,27 +208,57 @@ const EventSection = () => {
                     </div>
                 ))}
             </div>
-            <style jsx>{`
+
+            {/* Custom Slider / Scrollbar */}
+            <div className="hidden md:flex flex-col items-center mt-12 px-20">
+                <div className="relative w-full max-w-3xl h-[1.5px] bg-[#0E0E0E]/10 rounded-full">
+                    <input 
+                        type="range" 
+                        min="0" 
+                        max="100" 
+                        step="0.1"
+                        value={scrollProgress} 
+                        onChange={handleSliderChange}
+                        className="custom-scrollbar-slider absolute -top-[9px] w-full bg-transparent appearance-none cursor-pointer z-20"
+                    />
+                    <div 
+                        className="absolute top-0 left-0 h-full bg-[#0E0E0E]/60"
+                        style={{ width: `${scrollProgress}%` }}
+                    ></div>
+                </div>
+                <div className="flex justify-between w-full max-w-3xl mt-2 font-mono text-[8px] uppercase tracking-[0.2em] opacity-40">
+                    <span>Evidence Start</span>
+                    <span>Operation Progress</span>
+                    <span>Evidence End</span>
+                </div>
+            </div>
+
+            <style>{`
                 .theme-detective {
                     background-image: repeating-linear-gradient(45deg, #dcd9d2 0px, #dcd9d2 10px, #d4d1ca 10px, #d4d1ca 11px);
                 }
                 .no-scrollbar::-webkit-scrollbar {
-                    height: 8px;
-                }
-                .no-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .no-scrollbar::-webkit-scrollbar-thumb {
-                    background: #0E0E0E33;
-                    border-radius: 10px;
-                }
-                .no-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #0E0E0E66;
+                    display: none;
                 }
                 .no-scrollbar {
                     -ms-overflow-style: none;
-                    scrollbar-width: thin;
-                    scrollbar-color: #0E0E0E33 transparent;
+                    scrollbar-width: none;
+                }
+                
+                .custom-scrollbar-slider::-webkit-slider-thumb {
+                    appearance: none;
+                    width: 2px;
+                    height: 20px;
+                    background: #0E0E0E;
+                    border-radius: 2px;
+                    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+                }
+                .custom-scrollbar-slider::-moz-range-thumb {
+                    width: 2px;
+                    height: 20px;
+                    background: #0E0E0E;
+                    border-radius: 2px;
+                    border: none;
                 }
             `}</style>
         </section>
