@@ -46,36 +46,36 @@ const speakersData = [
         image: "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774956049/Screenshot_2026-03-31_165025_jlucjw.png", 
         linkedin: "https://www.linkedin.com/in/ialok/"
     },
-    {
-        id: 4,
-        name: "Speaker 4",
-        role: "Company 4",
-        expertise: "Stand Up comedy",
-        designation: "Comedian",
-        status: "RECOGNISED",
-        image: "",
-        linkedin: "https://linkedin.com"
-    },
-    {
-        id: 5,
-        name: "Speaker 5",
-        role: "Company 5",
-        expertise: "Surveillance",
-        designation: "CEO",
-        status: "RECOGNISED",
-        image: "",
-        linkedin: "https://linkedin.com"
-    },
-    {
-        id: 6,
-        name: "Speaker 6",
-        role: "Company 6",
-        expertise: "Retired Military Officer",
-        designation: "Ex-Army Officer",
-        status: "RECOGNISED",
-        image: "",
-        linkedin: "https://linkedin.com"
-    }
+    // {
+    //     id: 4,
+    //     name: "Speaker 4",
+    //     role: "Company 4",
+    //     expertise: "Stand Up comedy",
+    //     designation: "Comedian",
+    //     status: "RECOGNISED",
+    //     image: "",
+    //     linkedin: "https://linkedin.com"
+    // },
+    // {
+    //     id: 5,
+    //     name: "Speaker 5",
+    //     role: "Company 5",
+    //     expertise: "Surveillance",
+    //     designation: "CEO",
+    //     status: "RECOGNISED",
+    //     image: "",
+    //     linkedin: "https://linkedin.com"
+    // },
+    // {
+    //     id: 6,
+    //     name: "Speaker 6",
+    //     role: "Company 6",
+    //     expertise: "Retired Military Officer",
+    //     designation: "Ex-Army Officer",
+    //     status: "RECOGNISED",
+    //     image: "",
+    //     linkedin: "https://linkedin.com"
+    // }
 ];
 
 const Speakers = () => {

@@ -8,6 +8,14 @@
     ]
   },
   {
+    "id": "ASSOCIATE",
+    "title": "Associate Sponsors",
+    "description": "Entities providing support to the operation.",
+    "logos": [
+      { "name": "Prayagraj Power Generation Company Limited", "fileName": "ppgcl.jpg", "folder": "current sponsors" }
+    ]
+  },
+  {
     "id": "ACCESSORIES_PARTNER",
     "title": "Accessories Partner",
     "description": "Providing essential technological gear and accessories for the mission.",
@@ -62,31 +70,5 @@
     "logos": [
       { "name": "Hell Energy", "fileName": "Hell Energy.jpeg", "folder": "current sponsors" }
     ]
-  },
-  {
-    "id": "SYNDICATE",
-    "title": "Syndicate Sponsors",
-    "description": "Strategic alliances providing high-level logistical support.",
-    "logos": [
-      { "name": "Zebronics", "fileName": "zebronics.jpg" },
-      { "name": "Bank of Baroda", "fileName": "Bank-of-Baroda-logo.jpg" },
-      { "name": "Royal Enfield", "fileName": "Royal_Enfield_Logo_full.png" }
-    ]
-  },
-  {
-    "id": "INFORMANTS",
-    "title": "Informants Sponsors",
-    "description": "Wide-range network providing essential intelligence and resources.",
-    "logos": [
-      { "name": "Campa Cola", "fileName": "campacola.jpeg" },
-      { "name": "D2D Youth Story", "fileName": "D2D LOGO (1).png" },
-      { "name": "Jolen New York", "fileName": "download.jpeg" },
-      { "name": "Ensure", "fileName": "images (2).jpeg" },
-
-      { "name": "The Bull", "fileName": "images (5).png" },
-      { "name": "Suzuki", "fileName": "images (6).png" },
-      { "name": "Pharmabolt", "fileName": "LOGO.png" },
-      { "name": "Sault", "fileName": "WhatsApp Image 2025-04-23 at 4.36.29 PM (1).jpeg" }
-    ]
-  }
+  }  
 ]

@@ -15,6 +15,56 @@ const Sponsors = () => {
   const boardRef = useRef(null);
 
   useEffect(() => {
+    let isScrolling = true;
+    let animationFrameId;
+
+    const stopScrolling = () => {
+      isScrolling = false;
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      // Remove listeners to clean up
+      window.removeEventListener('mousedown', stopScrolling);
+      window.removeEventListener('keydown', stopScrolling);
+      window.removeEventListener('wheel', stopScrolling);
+      window.removeEventListener('touchstart', stopScrolling);
+    };
+
+    const scroll = () => {
+      if (!isScrolling) return;
+      
+      // Check if we've reached the bottom of the page
+      const scrollHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const clientHeight = document.documentElement.clientHeight;
+
+      if (scrollTop + clientHeight >= scrollHeight - 1) {
+        stopScrolling();
+        return;
+      }
+
+      window.scrollBy(0, 4); // speed of autoscroll
+      animationFrameId = requestAnimationFrame(scroll);
+    };
+
+    // Initial delay to let the page load/render if needed
+    const timeoutId = setTimeout(() => {
+      animationFrameId = requestAnimationFrame(scroll);
+    }, 1000);
+
+    // Add event listeners to stop scrolling on interaction
+    window.addEventListener('mousedown', stopScrolling);
+    window.addEventListener('keydown', stopScrolling);
+    window.addEventListener('wheel', stopScrolling);
+    window.addEventListener('touchstart', stopScrolling);
+
+    return () => {
+      clearTimeout(timeoutId);
+      stopScrolling();
+    };
+  }, []);
+
+  useEffect(() => {
     let ctx = gsap.context(() => {
       gsap.utils.toArray('.sponsor-card').forEach((card) => {
         gsap.from(card, {
@@ -98,7 +148,7 @@ const Sponsors = () => {
 
               {/* Cards */}
               <div className={`grid gap-x-16 gap-y-14 justify-center ${
-                (tier.id === 'TITLE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'FOOD_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER')
+                (tier.id === 'TITLE' || tier.id === 'ASSOCIATE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'FOOD_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER')
                   ? 'grid-cols-1 max-w-sm mx-auto'
                   : tier.id === 'SYNDICATE'
                   ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
@@ -109,7 +159,7 @@ const Sponsors = () => {
                     key={index}
                     logo={logo}
                     sponsorType={tier.title}
-                    isRevealed={tier.id === 'TITLE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'FOOD_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER'}
+                    isRevealed={tier.id === 'TITLE' || tier.id === 'ASSOCIATE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'FOOD_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER'}
                   />
                 ))}
               </div>
