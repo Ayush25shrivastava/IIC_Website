@@ -60,6 +60,31 @@ const speakersData = [
         image: "nikky.png",
         linkedin: "https://www.linkedin.com/in/nikkykumarjha/"
     },
+    {
+        id: 3,
+        name: "Rishabh Sharma",
+        data: "MNNIT CE 2022",
+        role: "UPSC CSE Rank 116 | Consulting Analyst at Deloitte ",
+        expertise: "Public Policy, Consulting, Data Analysis",
+        designation: "Consulting Analyst at Deloitte",
+        status: "RECOGNISED",
+        image: "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774953907/WhatsApp_Image_2026-03-31_at_12.44.42_anlrrq.jpg",
+        linkedin: "https://www.linkedin.com/in/rishabh-sharma-503773187/"
+    },
+    {
+        id: 4,
+        name: "Nikky Kumar Jha",
+        // data: "MNNIT ECE 2008",
+        role: "Co-Founder at Saptkrishi Scientific",
+        expertise: "Agriculture Innovation, Cold Storage Solutions, Social Entrepreneurship",
+        designation: "Co-Founder",
+        status: "RECOGNISED",
+        image: "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774956241/Screenshot_2026-03-31_165349_dgycrv.png",
+        linkedin: "https://www.linkedin.com/in/nikkykumarjha/"
+    },
+    
+    
+    
     // {
     //     id: 5,
     //     name: "Speaker 5",
@@ -168,10 +193,15 @@ const Speakers = () => {
                                         </a>
                                     )}
                                 </div>
+                                <p className="font-merriweather text-[#7C6C58] italic text-sm">
+                                    {speaker.data}
+                                </p>
 
                                 <p className="font-merriweather text-[#7C6C58] italic text-sm">
                                     {speaker.role}
                                 </p>
+
+                                
 
                                 <div className="mt-4 text-left bg-[#f0ebd8] p-3 text-xs font-mono text-[#555] border-l-2 border-[#7C6C58]">
                                     {/* <div className="flex justify-between mb-1">

@@ -129,6 +129,9 @@ const Events = () => {
         "IoT Innovation Arena": {
             rulebook: "https://drive.google.com/drive/folders/12XLrlYBZcOoOUgofo2nlHClXvxZxgxpA?usp=sharing"
         },
+        "Optimech Design":{
+            rulebook: "https://docs.google.com/document/d/13RgSrKIqgPatxBHmyptAk3qiS8gjd_Zliazl4Pi3tcA/edit?tab=t.0#heading=h.un5qm6tam10t"
+        }
     };
 
     const activeResources = activeEvent ? (EVENT_RESOURCES[activeEvent.name] || { rulebook: "#" }) : { rulebook: "#" };
