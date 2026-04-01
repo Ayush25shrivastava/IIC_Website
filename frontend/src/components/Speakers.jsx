@@ -30,7 +30,7 @@ const speakersData = [
         id: 2,
         name: "Rishabh Sharma",
         role: "UPSC CSE Rank 116 | Consulting Analyst at Deloitte ",
-        expertise: "Public Policy, Consulting, Data Analysis, Problem Solving",
+        expertise: "Public Policy, Consulting, Data Analysis",
         designation: "Consulting Analyst at Deloitte",
         status: "RECOGNISED",
         image: "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774953907/WhatsApp_Image_2026-03-31_at_12.44.42_anlrrq.jpg",
@@ -48,34 +48,34 @@ const speakersData = [
     },
     {
         id: 4,
-        name: "Speaker 4",
-        role: "Company 4",
-        expertise: "Stand Up comedy",
-        designation: "Comedian",
+        name: "Praveen Kumar",
+        role: "Building in AI × LegalTech",
+        expertise: "Entrepreneurship, AI, Finance, Management Consulting",
+        designation: "Entrepreneur",
         status: "RECOGNISED",
-        image: "",
-        linkedin: "https://linkedin.com"
+        image: "https://media.licdn.com/dms/image/v2/D5603AQH9JVQtk1EQ9A/profile-displayphoto-shrink_400_400/B56Zc_13pPGQAk-/0/1749122776185?e=2147483647&v=beta&t=5M2ZXRkcbl_JsdBZb4BOaKV7BgC4MNOetILgjcdH32c",
+        linkedin: "https://www.linkedin.com/in/praveen-kumar-iima/"
     },
-    {
-        id: 5,
-        name: "Speaker 5",
-        role: "Company 5",
-        expertise: "Surveillance",
-        designation: "CEO",
-        status: "RECOGNISED",
-        image: "",
-        linkedin: "https://linkedin.com"
-    },
-    {
-        id: 6,
-        name: "Speaker 6",
-        role: "Company 6",
-        expertise: "Retired Military Officer",
-        designation: "Ex-Army Officer",
-        status: "RECOGNISED",
-        image: "",
-        linkedin: "https://linkedin.com"
-    }
+    // {
+    //     id: 5,
+    //     name: "Speaker 5",
+    //     role: "Company 5",
+    //     expertise: "Surveillance",
+    //     designation: "CEO",
+    //     status: "RECOGNISED",
+    //     image: "",
+    //     linkedin: "https://linkedin.com"
+    // },
+    // {
+    //     id: 6,
+    //     name: "Speaker 6",
+    //     role: "Company 6",
+    //     expertise: "Retired Military Officer",
+    //     designation: "Ex-Army Officer",
+    //     status: "RECOGNISED",
+    //     image: "",
+    //     linkedin: "https://linkedin.com"
+    // }
 ];
 
 const Speakers = () => {
@@ -129,7 +129,7 @@ const Speakers = () => {
 
                         <div className="bg-[#fdfbf7] p-4 shadow-[5px_5px_15px_rgba(0,0,0,0.15)] border border-[#d1ccc0] relative group transition-transform duration-300 hover:-translate-y-2">
 
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-12 border-4 border-[#888] rounded-full z-20 border-b-0"></div>
+                            {/* <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-8 h-12 border-4 border-[#888] rounded-full z-20 border-b-0"></div> */}
 
                             <div className="absolute top-4 right-4 border-2 border-red-700 text-red-700 px-2 py-1 transform rotate-12 opacity-70 font-black uppercase text-[10px] tracking-wider border-double z-10">
                                 {speaker.status}
@@ -192,7 +192,7 @@ const Speakers = () => {
                 ))}
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .no-scrollbar::-webkit-scrollbar {
                     display: none;
                 }

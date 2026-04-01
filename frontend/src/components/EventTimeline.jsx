@@ -26,7 +26,7 @@ const timelineData = [
         date: "April 4th",
         title: "Gig Night ft. Nishaad",
         location: "MP Hall Arena",
-        type: "Fun Event",
+        type: "Musical Event",
         status: "OFFLINE"
     },
     {
@@ -222,7 +222,7 @@ const EventTimeline = () => {
                 </div>
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .postcard-border {
                     background: repeating-linear-gradient(
                         135deg,
