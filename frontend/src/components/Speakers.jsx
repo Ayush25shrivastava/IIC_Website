@@ -18,25 +18,47 @@ const getSpeakerImageUrl = (image) => {
 const speakersData = [
     {
         id: 1,
-        data: "MNNIT ECE 2008",
         name: "Alok Sharma",
         role: "Head of Data Platforms & Security Engineering at Meesho",
-        expertise: "Data Platforms, Security Engineering, Scalable Systems, Startup Leadership",
-        designation: "Engineering Leader",
+        // expertise: "Data Platforms, Security Engineering, Scalable Systems, Startup Leadership",
+        designation: "Leading role at Meesho",
+        alumniOf: "MNNIT ECE 2008",
         status: "RECOGNISED",
-        image: "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774956049/Screenshot_2026-03-31_165025_jlucjw.png", 
+        image: "alok.jpeg", 
         linkedin: "https://www.linkedin.com/in/ialok/"
     },
     {
         id: 2,
-        data: "MNNIT ECE 2008",
         name: "Praveen Kumar",
         role: "Building in AI × LegalTech",
-        expertise: "Entrepreneurship, AI, Finance, Management Consulting",
+        // expertise: "Entrepreneurship, AI, Finance, Management Consulting",
         designation: "Entrepreneur",
+        alumniOf: "MNNIT ECE 2008",
         status: "RECOGNISED",
         image: "https://media.licdn.com/dms/image/v2/D5603AQH9JVQtk1EQ9A/profile-displayphoto-shrink_400_400/B56Zc_13pPGQAk-/0/1749122776185?e=2147483647&v=beta&t=5M2ZXRkcbl_JsdBZb4BOaKV7BgC4MNOetILgjcdH32c",
         linkedin: "https://www.linkedin.com/in/praveen-kumar-iima/"
+    },
+    {
+        id: 3,
+        name: "Rishabh Sharma",
+        role: "UPSC CSE Rank 116 | Consulting Analyst at Deloitte ",
+        // expertise: "Public Policy, Consulting, Data Analysis",
+        designation: "Consulting Analyst",
+        alumniOf: "MNNIT CHE 2022",
+        status: "RECOGNISED",
+        image: "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774953907/WhatsApp_Image_2026-03-31_at_12.44.42_anlrrq.jpg",
+        linkedin: "https://www.linkedin.com/in/rishabh-sharma-503773187/"
+    },
+    {
+        id: 4,
+        name: "Nikky Kumar Jha",
+        role: "Co-Founder at Saptkrishi Scientific",
+        // expertise: "Agriculture Innovation, Cold Storage Solutions, Social Entrepreneurship",
+        designation: "Co-Founder",
+        alumniOf: "IIT Kanpur 2024",
+        status: "RECOGNISED",
+        image: "nikky.png",
+        linkedin: "https://www.linkedin.com/in/nikkykumarjha/"
     },
     {
         id: 3,
@@ -182,14 +204,20 @@ const Speakers = () => {
                                 
 
                                 <div className="mt-4 text-left bg-[#f0ebd8] p-3 text-xs font-mono text-[#555] border-l-2 border-[#7C6C58]">
-                                    <div className="flex justify-between mb-1">
+                                    {/* <div className="flex justify-between mb-1">
                                         <span className="uppercase font-bold">Expertise:</span>
                                         <span>{speaker.expertise}</span>
-                                    </div>
-                                    <div className="flex justify-between">
+                                    </div> */}
+                                    <div className="flex justify-between mb-1">
                                         <span className="uppercase font-bold">Designation:</span>
                                         <span>{speaker.designation}</span>
                                     </div>
+                                    {speaker.alumniOf && (
+                                        <div className="flex justify-between">
+                                            <span className="uppercase font-bold">Alumnus:</span>
+                                            <span>{speaker.alumniOf}</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
