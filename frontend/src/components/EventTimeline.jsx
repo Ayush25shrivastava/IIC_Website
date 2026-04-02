@@ -6,7 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const timelineData = [
     {
-        time: "10:00",
+        time: "10:00 AM",
         date: "March 30th",
         title: "Hack18 Round 1 starts",
         location: "Online",
@@ -14,23 +14,15 @@ const timelineData = [
         status: "ONLINE"
     },
     {
-        time: "12:00 PM",
-        date: "April 1st",
-        title: "Case Clash Round 1 starts",
+        time: "11:59 AM",
+        date: "April 3rd",
+        title: "Case Clash Round 1 Deadline",
         location: "Online",
         type: "Team",
         status: "ONLINE"
     },
     {
-        time: "5:00 PM",
-        date: "April 2nd",
-        title: "Mock IPL Auction Round 1",
-        location: "NLHC, MNNIT",
-        type: "Team",
-        status: "OFFLINE"
-    },
-    {
-        time: "16:00",
+        time: "04:00 PM",
         date: "April 4th",
         title: "Hack18 Offline Round",
         location: "CSE Dept. MNNIT",
@@ -38,7 +30,7 @@ const timelineData = [
         status: "OFFLINE"
     },
     {
-        time: "16:00",
+        time: "04:00 PM",
         date: "April 4th",
         title: "Gig Night ft. Nishaad",
         location: "MP Hall Arena",
@@ -46,7 +38,15 @@ const timelineData = [
         status: "OFFLINE"
     },
     {
-        time: "10:00",
+        time: "05:00 PM",
+        date: "April 4th",
+        title: "Mock IPL Auction Round 2",
+        location: "NLHC, MNNIT",
+        type: "Team",
+        status: "OFFLINE"
+    },
+    {
+        time: "10:00 AM",
         date: "April 5th",
         title: "Hack18 Final Round",
         location: "CSE Dept. MNNIT",

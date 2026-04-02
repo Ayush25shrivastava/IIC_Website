@@ -64,8 +64,8 @@
     ]
   },
   {
-    "id": "BEVERAGES_PARTNER",
-    "title": "Beverages Partner",
+    "id": "BEVERAGE_PARTNER",
+    "title": "Beverage Partner",
     "description": "Delivering iconic refreshments for every moment.",
     "logos": [
       { "name": "Coca Cola", "fileName": "cocacola.png", "folder": "current sponsors" }
