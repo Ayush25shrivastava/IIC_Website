@@ -64,6 +64,14 @@
     ]
   },
   {
+    "id": "BEVERAGES_PARTNER",
+    "title": "Beverages Partner",
+    "description": "Delivering iconic refreshments for every moment.",
+    "logos": [
+      { "name": "Coca Cola", "fileName": "cocacola.png", "folder": "current sponsors" }
+    ]
+  },
+  {
     "id": "ENERGY_DRINK_PARTNER",
     "title": "Energy Drink Partner",
     "description": "Providing energy needed to fuel the mission.",
