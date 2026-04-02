@@ -81,7 +81,7 @@ const Hero = () => {
                 </h1>
 
                 <p className="font-merriweather text-lg md:text-2xl text-[#dcd9d2] max-w-2xl font-light italic">
-                    Vision • Venture • Victory
+                    Think • Thrive • Triumph
                 </p>
 
                 <div className="mt-8 flex flex-col md:flex-row gap-6">
