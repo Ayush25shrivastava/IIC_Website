@@ -13,6 +13,8 @@ const Hero = () => {
     const bgImageRef = useRef(null);
     const textRef = useRef(null);
 
+    const [showPopup, setShowPopup] = useState(true);
+
     const [user] = useState(() => {
         const savedJwt = localStorage.getItem('jwt');
         return !!savedJwt;
@@ -93,6 +95,28 @@ const Hero = () => {
                     </Link>
                 </div>
             </div>
+
+            {showPopup && (
+    <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-[999]">
+        <div className="bg-[#0E0E0E] border border-[#B8A18A] p-8 rounded-xl text-center max-w-md mx-4">
+            <h2 className="text-2xl font-playfair text-[#B8A18A] mb-4">
+                Problem statements of all events are now active!
+            </h2>
+            <p className="text-[#dcd9d2] font-merriweather mb-6">
+                
+            </p>
+            <button
+                onClick={() => {
+    localStorage.setItem('popupSeen', 'true');
+    setShowPopup(false);
+}}
+                className="px-6 py-2 bg-[#B8A18A] text-[#0E0E0E] font-bold uppercase hover:scale-105 transition"
+            >
+                Got it
+            </button>
+        </div>
+    </div>
+)}
         </section>
     );
 };
