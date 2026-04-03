@@ -227,7 +227,7 @@ const Events = () => {
                                                     href={activeResources.problemStatement}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex-1 text-center py-3 border border-[#7C6C58] text-[#7C6C58] font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-[#7C6C58] hover:text-white transition-all duration-300"
+                                                    className="flex-1 text-center py-3 border border-[#B8A18A] text-[#B8A18A] font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-[#B8A18A] hover:text-[#0E0E0E] transition-all duration-300"
                                                 >
                                                     Problem Statements
                                                 </a>
@@ -242,7 +242,7 @@ const Events = () => {
                                                 rel="noopener noreferrer"
                                                 className="w-full text-center py-3 bg-[#7C6C58]/20 border border-[#7C6C58]/50 text-white font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-[#7C6C58] transition-all duration-300"
                                             >
-                                                Submit Mission Report (Google Form)
+                                                Submit Google Form
                                             </a>
                                         )}
                                     </div>
