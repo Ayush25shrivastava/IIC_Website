@@ -32,19 +32,28 @@
     ]
   },
   {
+    "id": "PLATFORM_PARTNER",
+    "title": "Platform Partner",
+    "description": "Providing leading innovation platforms and cutting-edge 3D design solutions.",
+    "logos": [
+      { "name": "Unstop", "fileName": "unstop.png", "folder": "current sponsors" },
+      { "name": "SolidWorks", "fileName": "SolidWorks.jpg", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "SPORTING_PARTNER",
+    "title": "Sporting Partner",
+    "description": "Fueling the mission with high-performance sports gear and athletic excellence.",
+    "logos": [
+      { "name": "Decathlon", "fileName": "Decathlon.png", "folder": "current sponsors" }
+    ]
+  },
+  {
     "id": "TRAVEL_PARTNER",
     "title": "Travel Partner",
     "description": "Making every journey seamless with unmatched travel solutions.",
     "logos": [
       { "name": "AbhiBus", "fileName": "abhiBus.jpeg", "folder": "current sponsors" }
-    ]
-  },
-  {
-    "id": "PLATFORM_PARTNER",
-    "title": "Platform Partner",
-    "description": "Powering opportunities and connections through a leading innovation platform.",
-    "logos": [
-      { "name": "Unstop", "fileName": "unstop.png", "folder": "current sponsors" }
     ]
   },
   {
@@ -56,10 +65,19 @@
     ]
   },
   {
+    "id": "DINING_PARTNER",
+    "title": "Exclusive Dining Partner",
+    "description": "Offering a premium, interactive culinary experience with signature grilled specialties.",
+    "logos": [
+      { "name": "Barbeque Nation", "fileName": "bbqnation.png", "folder": "current sponsors" }
+    ]
+  },
+  {
     "id": "FOOD_PARTNER",
     "title": "Food Partner",
-    "description": "Fueling operations with high-quality provisions and refreshments.",
+    "description": "Fueling the mission with premium provisions and delicious refreshments.",
     "logos": [
+      { "name": "Pizza Galleria", "fileName": "Pizza-Galleria.png", "folder": "current sponsors" },
       { "name": "Laal's Kitchen", "fileName": "Laals Kitchen.png", "folder": "current sponsors" }
     ]
   },
