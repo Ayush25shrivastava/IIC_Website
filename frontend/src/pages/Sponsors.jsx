@@ -148,7 +148,9 @@ const Sponsors = () => {
 
               {/* Cards */}
               <div className={`grid gap-x-16 gap-y-14 justify-center ${
-                (tier.id === 'TITLE' || tier.id === 'ASSOCIATE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'FOOD_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER' || tier.id === 'DESSERT_PARTNER' || tier.id === 'BEVERAGE_PARTNER')
+                (tier.id === 'FOOD_PARTNER' || tier.id === 'PLATFORM_PARTNER')
+                  ? 'grid-cols-1 sm:grid-cols-2 max-w-4xl mx-auto'
+                  : (tier.id === 'TITLE' || tier.id === 'ASSOCIATE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER' || tier.id === 'DESSERT_PARTNER' || tier.id === 'BEVERAGE_PARTNER' || tier.id === 'DINING_PARTNER' || tier.id === 'SPORTING_PARTNER')
                   ? 'grid-cols-1 max-w-sm mx-auto'
                   : tier.id === 'SYNDICATE'
                   ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
@@ -159,7 +161,7 @@ const Sponsors = () => {
                     key={index}
                     logo={logo}
                     sponsorType={tier.title}
-                    isRevealed={tier.id === 'TITLE' || tier.id === 'ASSOCIATE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'PLATFORM_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'FOOD_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER' || tier.id === 'DESSERT_PARTNER' || tier.id === 'BEVERAGE_PARTNER'}
+                    isRevealed={true} // Revealed logic can be simplified if most are revealed, otherwise we can keep the long list
                   />
                 ))}
               </div>
