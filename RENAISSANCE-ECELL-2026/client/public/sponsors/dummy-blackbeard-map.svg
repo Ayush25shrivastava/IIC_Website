@@ -1,10 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="400" height="240">
   <defs>
-    <linearGradient id="oceanPlacque" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#E1EEF0"/>
-      <stop offset="50%" stop-color="#CFE5E8"/>
-      <stop offset="100%" stop-color="#B7D7DC"/>
-    </linearGradient>
     <linearGradient id="parchmentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#F7EEDD"/>
       <stop offset="50%" stop-color="#ECD8BC"/>
@@ -25,10 +20,10 @@
   </defs>
 
   <!-- Background Plaque -->
-  <rect x="15" y="15" width="370" height="210" rx="18" fill="url(#oceanPlacque)" stroke="url(#goldTrim)" stroke-width="2.5" filter="url(#mapShadow)"/>
+  <rect x="15" y="15" width="370" height="210" rx="18" fill="url(#parchmentGrad)" stroke="url(#goldTrim)" stroke-width="2.5" filter="url(#mapShadow)"/>
   
   <!-- Outer Navigation Coordinates border -->
-  <rect x="25" y="25" width="350" height="190" rx="12" fill="none" stroke="#68A5B3" stroke-width="1" stroke-dasharray="8,5" opacity="0.65"/>
+  <rect x="25" y="25" width="350" height="190" rx="12" fill="none" stroke="#B8945A" stroke-width="1" stroke-dasharray="8,5" opacity="0.65"/>
 
   <!-- Corner Fleur-de-lis / Accents -->
   <path d="M 33 33 L 45 33 M 33 33 L 33 45" stroke="#9A6F27" stroke-width="2" fill="none"/>

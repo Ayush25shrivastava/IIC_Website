@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaLinkedinIn, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import { FaLinkedinIn, FaInstagram, FaYoutube } from "react-icons/fa";
 import { Mail, MapPin, Compass } from "lucide-react";
 
 export default function ContactFooter() {
@@ -48,16 +48,6 @@ export default function ContactFooter() {
             </a>
 
             <a
-              href="https://twitter.com/ecellmnnit"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Twitter"
-              className="w-9 h-9 rounded-full border border-[#38BDF8]/30 bg-[#040f21]/80 flex items-center justify-center text-[#38BDF8] hover:bg-[#38BDF8] hover:text-[#020610] hover:border-[#38BDF8] transition-all duration-300 shadow-[0_0_15px_rgba(56,189,248,0.2)]"
-            >
-              <FaTwitter className="w-4 h-4" />
-            </a>
-
-            <a
               href="https://youtube.com/@ecellmnnit"
               target="_blank"
               rel="noopener noreferrer"
@@ -97,7 +87,7 @@ export default function ContactFooter() {
           </div>
           <div className="flex items-center gap-2 text-xs text-[#38BDF8] font-mono font-semibold mt-1">
             <Mail className="w-3.5 h-3.5" />
-            <a href="mailto:ecell@mnnit.ac.in" className="hover:underline">ecell@mnnit.ac.in</a>
+            <a href="mailto:renaissance@mnnit.ac.in" className="hover:underline">renaissance@mnnit.ac.in</a>
           </div>
         </div>
       </div>

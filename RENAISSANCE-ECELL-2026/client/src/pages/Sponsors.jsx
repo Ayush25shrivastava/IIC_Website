@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Compass,
   Anchor,
+  ArrowRight,
   Sparkles,
   Star,
   Navigation,
@@ -10,11 +12,12 @@ import {
 
 import ContactFooter from "../components/ContactFooter";
 import SocialSideRail from "../components/SocialSideRail";
+import ScrollIndicatorRail from "../components/ScrollIndicatorRail";
 import { SPONSOR_TIERS } from "../data/sponsorsData";
 
 /* ================================================================
    SPONSORS PAGE — RENAISSANCE OCEANIC EXPEDITION
-   Theme: Consistent Warm Caribbean Oceanic Sea
+   Theme: Warm Beach Sand + Caribbean Oceanic Sea (No Stark White)
    Hero: Previous bg image kept with smooth drift animation
    Boat: Boat thing completely removed!
 ================================================================ */
@@ -24,6 +27,8 @@ export default function Sponsors({ embedded = false }) {
   const principalAllies = SPONSOR_TIERS?.[0]?.sponsors?.slice(1) || [];
   const goldenFleet = SPONSOR_TIERS?.[1]?.sponsors || [];
   const voyageFellowship = SPONSOR_TIERS?.[2]?.sponsors || [];
+
+  const [activeSponsor, setActiveSponsor] = useState(null);
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -40,21 +45,21 @@ export default function Sponsors({ embedded = false }) {
         w-full
         overflow-hidden
         bg-gradient-to-b
-        from-[#DFECEE]
-        via-[#D4E8EA]
-        to-[#C8E1E5]
+        from-[#EADDC9]
+        via-[#D8ECEE]
+        to-[#E6D4BC]
         text-[#0C2B3D]
-        selection:bg-[#C5A25F]
+        selection:bg-[#EADDC9]
         selection:text-white
       "
     >
       {/* ============================================================
-          GLOBAL SANDY + PARCHMENT ATMOSPHERE (Consistent Theme)
+          GLOBAL SANDY + OCEANIC ATMOSPHERE
       ============================================================ */}
       <SandyOceanAtmosphere />
-      <FloatingStickers />
 
       {!embedded && <SocialSideRail />}
+      {!embedded && <ScrollIndicatorRail />}
 
       {/* ============================================================
           HERO: Previous bg image + background drift animation KEPT
@@ -73,14 +78,16 @@ export default function Sponsors({ embedded = false }) {
             />
 
             {/* Subtle marine depth tint */}
-            <div className="absolute inset-0 bg-[#062538]/20 mix-blend-multiply" />            {/* Bright oceanic sea wash */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#D2E9ED]/30 via-transparent to-[#DFECEE]/95" />
+            <div className="absolute inset-0 bg-[#062538]/20 mix-blend-multiply" />
 
-            {/* Soft oceanic morning wash */}
-            <div className="absolute left-0 top-0 h-full w-[72%] bg-gradient-to-r from-[#DFECEE]/92 via-[#DFECEE]/50 to-transparent" />
+            {/* Bright oceanic sea wash */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#D2E9ED]/30 via-transparent to-[#EADDC9]/95" />
 
-            {/* Bottom oceanic blend into the page */}
-            <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#DFECEE] via-[#DFECEE]/85 to-transparent" />
+            {/* Warm morning sunlight sand wash */}
+            <div className="absolute left-0 top-0 h-full w-[72%] bg-gradient-to-r from-[#EADDC9]/92 via-[#EADDC9]/50 to-transparent" />
+
+            {/* Bottom sandy shoreline blend into the page */}
+            <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#EADDC9] via-[#EADDC9]/85 to-transparent" />
           </div>
 
           {/* Decorative horizon line */}
@@ -110,7 +117,7 @@ export default function Sponsors({ embedded = false }) {
             <div className="max-w-3xl">
               {/* Eyebrow */}
               <div className="mb-7 flex items-center gap-4">
-                <span className="h-px w-12 bg-[#125D73]" />
+                <span className="h-px w-12 bg-[#A37A32]" />
                 <span
                   className="
                     font-mono
@@ -118,14 +125,14 @@ export default function Sponsors({ embedded = false }) {
                     font-bold
                     uppercase
                     tracking-[0.35em]
-                    text-[#125D73]
+                    text-[#8E6422]
                     sm:text-[10px]
                   "
                 >
                   Our Voyage Partners
                 </span>
                 <Compass
-                  className="h-5 w-5 text-[#125D73]"
+                  className="h-5 w-5 text-[#A37A32]"
                   strokeWidth={1.3}
                 />
               </div>
@@ -134,32 +141,36 @@ export default function Sponsors({ embedded = false }) {
               <h1
                 className="
                   font-cinzel
-                  text-5xl
+                  text-[40px]
                   font-extrabold
-                  leading-[1.1]
-                  tracking-wider
+                  uppercase
+                  leading-[1.02]
+                  tracking-[0.015em]
                   text-[#0C2B3D]
-                  sm:text-6xl
-                  lg:text-7xl
-                  xl:text-[80px]
+                  sm:text-5xl
+                  md:text-6xl
+                  lg:text-[72px]
                 "
               >
-                THE ALLIES
+                The Allies
                 <br />
-                <span className="text-[#104252]">BEHIND THE</span>
+                <span className="text-[#165D73]">Behind The</span>
                 <br />
-                <span className="text-[#1A6278]">EXPEDITION</span>
+                <span className="text-[#9E6D1F]">Expedition</span>
               </h1>
 
+              {/* Subtitle */}
               <p
                 className="
-                  mt-8
-                  max-w-xl
+                  mt-7
+                  max-w-2xl
                   font-montserrat
                   text-sm
-                  leading-relaxed
-                  text-[#1D4A5E]
+                  leading-7
+                  text-[#2C5263]
                   sm:text-base
+                  md:text-lg
+                  font-medium
                 "
               >
                 Great journeys are never sailed alone. Meet the organizations,
@@ -167,17 +178,17 @@ export default function Sponsors({ embedded = false }) {
                 known.
               </p>
 
-              {/* Aesthetic secondary line */}
-              <div className="mt-12 flex items-center gap-5 opacity-70">
-                <div className="h-px w-24 bg-gradient-to-r from-transparent to-[#125D73]" />
+              {/* Navigation-style line */}
+              <div className="mt-9 flex flex-wrap items-center gap-4">
+                <div className="h-px w-20 bg-[#B58B3E]/70" />
                 <span
                   className="
                     font-mono
-                    text-[7px]
-                    font-bold
+                    text-[8px]
+                    font-semibold
                     uppercase
-                    tracking-[0.4em]
-                    text-[#1A6278]
+                    tracking-[0.28em]
+                    text-[#855D1E]
                   "
                 >
                   Different Minds · Same Destination
@@ -230,7 +241,7 @@ export default function Sponsors({ embedded = false }) {
       )}
 
       {/* ============================================================
-          PARTNER NAVIGATION BAR (Oceanic Glass Strip)
+          PARTNER NAVIGATION BAR (Warm Sand + Lagoon Glass Strip)
       ============================================================ */}
       <section className="relative z-30 mx-auto -mt-7 max-w-[1280px] px-5 sm:px-8">
         <div
@@ -238,8 +249,8 @@ export default function Sponsors({ embedded = false }) {
             overflow-hidden
             rounded-2xl
             border
-            border-[#68A5B3]/55
-            bg-[#DFECEE]/95
+            border-[#C2A169]/55
+            bg-[#EADDC9]/95
             shadow-[0_14px_40px_rgba(20,50,65,0.12)]
             backdrop-blur-md
           "
@@ -338,7 +349,7 @@ export default function Sponsors({ embedded = false }) {
               overflow-hidden
               rounded-[28px]
               border-2
-              border-[#C5A25F]/70
+              border-[#EADDC9]/70
               bg-gradient-to-br
               from-[#EEDFCA]
               via-[#E6D6C0]
@@ -411,22 +422,7 @@ export default function Sponsors({ embedded = false }) {
                 <div className="pointer-events-none absolute left-4 top-4 h-6 w-6 border-l border-t border-[#9E6D1F]/55" />
                 <div className="pointer-events-none absolute bottom-4 right-4 h-6 w-6 border-b border-r border-[#9E6D1F]/55" />
 
-                <img
-                  src={presentingSponsor.image}
-                  alt={presentingSponsor.name}
-                  className="
-                    relative
-                    z-10
-                    max-h-44
-                    max-w-[82%]
-                    scale-[1.35]
-                    object-contain
-                    drop-shadow-[0_4px_10px_rgba(20,55,70,0.15)]
-                    transition-transform
-                    duration-500
-                    group-hover:scale-[1.45]
-                  "
-                />
+                <div className="relative z-10 text-9xl font-cinzel font-bold text-[#0C2B3D]/80 drop-shadow-[0_4px_10px_rgba(20,55,70,0.15)] transition-transform duration-500 group-hover:scale-105">{presentingSponsor.number}</div>
               </div>
 
               {/* Information - Centre aligned */}
@@ -462,7 +458,7 @@ export default function Sponsors({ embedded = false }) {
                   {presentingSponsor.name}
                 </h3>
 
-                <span className="mt-2 inline-block rounded-full border border-[#C5A25F]/50 bg-[#E8D7C2] px-4 py-1 font-mono text-[10px] font-bold text-[#14556C]">
+                <span className="mt-2 inline-block rounded-full border border-[#EADDC9]/50 bg-[#E8D7C2] px-4 py-1 font-mono text-[10px] font-bold text-[#14556C]">
                   {presentingSponsor.category}
                 </span>
 
@@ -483,12 +479,44 @@ export default function Sponsors({ embedded = false }) {
                 </p>
 
                 <div className="mt-7 flex flex-wrap items-center justify-center gap-4">
-                  <div className="flex items-center gap-2 rounded-full border border-[#C5A25F]/60 bg-[#E8D7C2]/70 px-5 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-[#7A5418] shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => setActiveSponsor(presentingSponsor)}
+                    className="
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-full
+                      border
+                      border-[#A87E35]
+                      bg-gradient-to-r
+                      from-[#B58B3E]
+                      to-[#9E6D1F]
+                      px-6
+                      py-2.5
+                      font-cinzel
+                      text-xs
+                      font-bold
+                      uppercase
+                      tracking-wider
+                      text-white
+                      shadow-md
+                      transition-all
+                      hover:brightness-110
+                      hover:scale-105
+                      cursor-pointer
+                    "
+                  >
+                    <span>View Dossier</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+
+                  <div className="flex items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-[#5A7E8C]">
                     <Ship
                       className="h-4 w-4 text-[#9E6D1F]"
                       strokeWidth={1.3}
                     />
-                    <span>Flagship Ally · Sailing With Renaissance</span>
+                    <span>Sailing With Renaissance</span>
                   </div>
                 </div>
               </div>
@@ -509,11 +537,12 @@ export default function Sponsors({ embedded = false }) {
           sponsors={principalAllies}
           size="large"
           theme="sandy"
+          onInspect={(s) => setActiveSponsor(s)}
         />
       )}
 
       {/* ============================================================
-          STRATEGIC PARTNERS (The Golden Fleet)
+          STRATEGIC PARTNERS (The Golden Fleet — Oceanic Lagoon Wash)
       ============================================================ */}
       {goldenFleet.length > 0 && (
         <SponsorSection
@@ -523,11 +552,13 @@ export default function Sponsors({ embedded = false }) {
           subtitle="Organizations sailing alongside us to turn ideas into impact."
           sponsors={goldenFleet}
           size="medium"
+          theme="oceanic"
+          onInspect={(s) => setActiveSponsor(s)}
         />
       )}
 
       {/* ============================================================
-          VOYAGE FELLOWSHIP (Our Wider Fellowship)
+          VOYAGE FELLOWSHIP (Our Wider Fellowship — Warm Sand Tone)
       ============================================================ */}
       {voyageFellowship.length > 0 && (
         <SponsorSection
@@ -537,10 +568,170 @@ export default function Sponsors({ embedded = false }) {
           subtitle="Media, community and event partners carrying the voyage further."
           sponsors={voyageFellowship}
           size="small"
+          theme="sandy"
+          onInspect={(s) => setActiveSponsor(s)}
         />
       )}
 
+      {/* ============================================================
+          JOIN THE VOYAGE (Deep Oceanic Contrast Section)
+      ============================================================ */}
+      {!embedded && (
+        <section
+          className="
+            relative
+            z-10
+            overflow-hidden
+            border-t
+            border-[#6B9CA9]/40
+            bg-[#0F3549]
+          "
+        >
+          {/* Ocean glow */}
+          <div
+            className="
+              pointer-events-none
+              absolute
+              inset-x-0
+              top-0
+              h-44
+              bg-gradient-to-b
+              from-[#4CA1B5]/20
+              to-transparent
+            "
+          />
 
+          {/* Compass watermark */}
+          <div
+            className="
+              pointer-events-none
+              absolute
+              -left-24
+              top-1/2
+              hidden
+              -translate-y-1/2
+              opacity-[0.08]
+              md:block
+            "
+          >
+            <Compass
+              className="h-80 w-80 text-[#E2D09A]"
+              strokeWidth={0.6}
+            />
+          </div>
+
+          {/* Anchor watermark */}
+          <div
+            className="
+              pointer-events-none
+              absolute
+              -right-20
+              bottom-[-100px]
+              opacity-[0.07]
+            "
+          >
+            <Anchor
+              className="h-80 w-80 text-[#E2D09A]"
+              strokeWidth={0.7}
+            />
+          </div>
+
+          <div className="relative mx-auto max-w-4xl px-6 py-28 text-center sm:px-8">
+            <Anchor
+              className="mx-auto mb-7 h-10 w-10 text-[#D7B86D]"
+              strokeWidth={1.2}
+            />
+
+            <p
+              className="
+                mb-4
+                font-mono
+                text-[9px]
+                font-bold
+                uppercase
+                tracking-[0.35em]
+                text-[#D7B86D]
+              "
+            >
+              Chart A New Course
+            </p>
+
+            <h2
+              className="
+                font-cinzel
+                text-3xl
+                font-bold
+                uppercase
+                tracking-wide
+                text-[#FFF9ED]
+                sm:text-4xl
+                md:text-5xl
+              "
+            >
+              Join The Voyage
+            </h2>
+
+            <p
+              className="
+                mx-auto
+                mt-6
+                max-w-xl
+                font-montserrat
+                text-sm
+                leading-7
+                text-[#CBE0E4]
+                sm:text-base
+                font-light
+              "
+            >
+              Every meaningful expedition begins with those willing to explore
+              beyond the familiar. Become a partner and help us shape the next
+              horizon.
+            </p>
+
+            <Link
+              to="/contact"
+              className="
+                group
+                mt-9
+                inline-flex
+                items-center
+                gap-3
+                rounded-full
+                border
+                border-[#D5B66B]
+                bg-[#D5B66B]
+                px-8
+                py-4
+                font-cinzel
+                text-sm
+                font-bold
+                uppercase
+                tracking-[0.15em]
+                text-[#0B2838]
+                shadow-[0_8px_30px_rgba(0,0,0,0.22)]
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:bg-[#E5CA88]
+                hover:shadow-[0_15px_40px_rgba(0,0,0,0.3)]
+                cursor-pointer
+              "
+            >
+              <span>Become a Partner</span>
+              <ArrowRight
+                className="
+                  h-4
+                  w-4
+                  transition-transform
+                  duration-300
+                  group-hover:translate-x-1
+                "
+              />
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* ============================================================
           FOOTER (Matching Warm Beach Sand Tone)
@@ -551,6 +742,63 @@ export default function Sponsors({ embedded = false }) {
         </div>
       )}
 
+      {/* ============================================================
+          SPONSOR DOSSIER MODAL (Sandy-Oceanic Glass Modal)
+      ============================================================ */}
+      {activeSponsor && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#072433]/70 p-4 backdrop-blur-sm"
+          onClick={() => setActiveSponsor(null)}
+        >
+          <div
+            className="relative w-full max-w-md overflow-hidden rounded-3xl border-2 border-[#EADDC9] bg-gradient-to-b from-[#F2E5D4] to-[#E8D7C2] p-6 text-[#0C2B3D] shadow-[0_24px_70px_rgba(12,45,60,0.3)] sm:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top gold bar */}
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#EADDC9] to-transparent" />
+
+            <button
+              type="button"
+              onClick={() => setActiveSponsor(null)}
+              className="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full border border-[#BFA275] bg-[#EEDFCA] text-sm font-bold text-[#5A4526] hover:text-[#0C2B3D] cursor-pointer"
+              aria-label="Close sponsor details"
+            >
+              ✕
+            </button>
+
+            <div className="flex flex-col items-center text-center space-y-4">
+              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.3em] text-[#8E6422] border-b border-[#EADDC9]/40 pb-1">
+                Official Fleet Partner
+              </span>
+
+              <div className="flex h-36 w-full items-center justify-center rounded-2xl border border-[#97BFC7] bg-[#E4ECEB] p-5 shadow-inner">
+                <div className="text-7xl font-cinzel font-bold text-[#0C2B3D]/80 filter drop-shadow-[0_2px_8px_rgba(20,61,77,0.15)]">{activeSponsor.number}</div>
+              </div>
+
+              <h3 className="font-cinzel text-2xl font-bold text-[#0C2B3D]">
+                {activeSponsor.name}
+              </h3>
+
+              <span className="rounded-full border border-[#EADDC9]/50 bg-[#E8D7C2] px-3.5 py-0.5 font-mono text-[10px] font-bold text-[#14556C]">
+                {activeSponsor.category}
+              </span>
+
+              <p className="font-montserrat text-xs leading-relaxed text-[#2C5263] font-medium">
+                {activeSponsor.description ||
+                  "Official fleet partner for Renaissance 2026, sailing with the voyage and empowering entrepreneurship across uncharted horizons."}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => setActiveSponsor(null)}
+                className="mt-2 rounded-xl bg-[#0F3549] px-6 py-2.5 font-cinzel text-xs font-bold uppercase tracking-wider text-white shadow-md hover:bg-[#164963] cursor-pointer"
+              >
+                Close Dossier
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ============================================================
           PAGE ANIMATIONS (Hero Drift & Compass Kept, Boat Removed)
@@ -668,6 +916,11 @@ function SectionHeading({ icon, eyebrow, title, subtitle }) {
         {subtitle}
       </p>
 
+      <div className="mx-auto mt-7 flex items-center justify-center gap-3">
+        <span className="h-px w-14 bg-[#C2A169]/50" />
+        <span className="h-1.5 w-1.5 rotate-45 border border-[#8E6422]" />
+        <span className="h-px w-14 bg-[#C2A169]/50" />
+      </div>
     </div>
   );
 }
@@ -683,16 +936,33 @@ function SponsorSection({
   subtitle,
   sponsors,
   size,
+  theme = "sandy",
+  onInspect,
 }) {
+  const isOceanic = theme === "oceanic";
+
   return (
     <section
       id={id}
-      className="
+      className={`
         relative
         z-10
-      "
+        border-t
+        ${
+          isOceanic
+            ? "bg-[#D7EAEC]/65 border-[#80B2BE]/45"
+            : "bg-[#EFE2CF]/60 border-[#C2A169]/40"
+        }
+      `}
       style={{ contentVisibility: "auto", containIntrinsicSize: "400px" }}
     >
+      {/* Section horizon line */}
+      <div
+        className={`pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent ${
+          isOceanic ? "via-[#5EA5B4]/45" : "via-[#C2A169]/50"
+        } to-transparent`}
+      />
+
       <div className="mx-auto max-w-[1280px] px-5 py-24 sm:px-8 lg:py-28">
         <SectionHeading
           icon={<Compass className="h-5 w-5" />}
@@ -723,16 +993,18 @@ function SponsorSection({
                 w-full
                 ${
                   size === "large"
-                    ? "sm:w-[calc(50%-1.25rem)] max-w-[480px]"
+                    ? "sm:w-[calc(50%-1.25rem)] max-w-[440px]"
                     : size === "medium"
-                    ? "sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[430px]"
-                    : "w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[400px]"
+                    ? "sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[370px]"
+                    : "w-[calc(50%-0.75rem)] sm:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.5rem)] max-w-[280px]"
                 }
               `}
             >
               <SponsorCard
                 sponsor={sponsor}
                 size={size}
+                theme={theme}
+                onInspect={() => onInspect && onInspect(sponsor)}
               />
             </div>
           ))}
@@ -743,111 +1015,216 @@ function SponsorSection({
 }
 
 /* =================================================================
-   SPONSOR CARD (Authentic Pirate Parchment Frame & Maritime Assets)
+   SPONSOR CARD (Rich Sandy & Oceanic Tones, Centre Aligned)
 ================================================================= */
 
-function SponsorCard({ sponsor, size = "medium" }) {
+function SponsorCard({ sponsor, size = "medium", theme = "sandy", onInspect }) {
   const isLarge = size === "large";
   const isSmall = size === "small";
+  const isOceanic = theme === "oceanic";
 
   return (
     <article
-      className="
+      onClick={onInspect}
+      className={`
         sponsor-card
         group
         relative
-        flex
         w-full
-        min-h-[200px]
-        sm:min-h-[250px]
-        items-center
-        justify-center
+        flex
+        flex-col
+        justify-between
         overflow-hidden
-        rounded-[18px]
+        rounded-[22px]
         border
-        border-[#BFA275]/60
-        bg-[#F2E5D4]
-        p-8
-        shadow-[0_14px_38px_rgba(12,38,50,0.10)]
+        ${
+          isOceanic
+            ? "border-[#86B4BF]/65 bg-gradient-to-b from-[#E7EEED] to-[#DBE8EA] hover:border-[#388D9E]"
+            : "border-[#C2A169]/65 bg-gradient-to-b from-[#EFE3D2] to-[#E8D7C2] hover:border-[#8E6422]"
+        }
+        shadow-[0_10px_30px_rgba(20,55,70,0.10)]
         transition-all
-        duration-400
-        hover:-translate-y-1.5
-        hover:shadow-[0_22px_55px_rgba(12,38,50,0.18)]
-        hover:border-[#B58B3E]/80
-      "
+        duration-300
+        hover:shadow-[0_18px_45px_rgba(20,55,70,0.18)]
+        hover:-translate-y-1
+        cursor-pointer
+      `}
     >
-      {/* Inner navigation frame */}
+      {/* Gold top edge bar */}
+      <div className="absolute inset-x-0 top-0 z-30 h-[3px] bg-gradient-to-r from-transparent via-[#EADDC9] to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
+
+      {/* Decorative Brass Corners */}
       <div
-        className="
-          pointer-events-none
-          absolute
-          inset-3
-          sm:inset-4
-          rounded-xl
-          border
-          border-[#A87E35]/35
-          transition-colors
-          duration-400
-          group-hover:border-[#9E6D1F]/50
-        "
+        className={`pointer-events-none absolute left-3 top-3 z-30 h-7 w-7 border-l-2 border-t-2 ${
+          isOceanic ? "border-[#629FA8]/50" : "border-[#A87E35]/45"
+        } group-hover:border-[#9E6D1F] transition-colors`}
+      />
+      <div
+        className={`pointer-events-none absolute right-3 top-3 z-30 h-7 w-7 border-r-2 border-t-2 ${
+          isOceanic ? "border-[#629FA8]/50" : "border-[#A87E35]/45"
+        } group-hover:border-[#9E6D1F] transition-colors`}
       />
 
-      <div className="pointer-events-none absolute left-3 sm:left-4 top-3 sm:top-4 h-5 w-5 sm:h-6 sm:w-6 border-l border-t border-[#9E6D1F]/55" />
-      <div className="pointer-events-none absolute bottom-3 sm:bottom-4 right-3 sm:right-4 h-5 w-5 sm:h-6 sm:w-6 border-b border-r border-[#9E6D1F]/55" />
-
-      {/* Central Content Area */}
-      <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-[1.05] z-10">
-        <img
-          src={sponsor.image}
-          alt={sponsor.name}
-          loading="lazy"
-          className="max-h-full max-w-[85%] scale-[1.35] object-contain drop-shadow-[0_4px_10px_rgba(20,55,70,0.15)]"
+      {/* Visual / Logo Area in warm sand/ocean tones */}
+      <div
+        className={`
+          relative
+          overflow-hidden
+          border-b
+          ${isOceanic ? "border-[#A8CDD4]/60" : "border-[#D5C29E]/60"}
+          bg-gradient-to-b
+          ${
+            isOceanic
+              ? "from-[#DFECEE] via-[#D3E5E8] to-[#C9DFE2]"
+              : "from-[#EADDC9] via-[#E4D4BD] to-[#DCBFA2]"
+          }
+          flex
+          items-center
+          justify-center
+          p-5
+          ${isLarge ? "h-[240px]" : isSmall ? "h-[145px]" : "h-[190px]"}
+        `}
+      >
+        {/* Subtle Nautical Chart Texture in the Card */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.08] bg-cover bg-center"
+          style={{ backgroundImage: "url('/ship-map-hero.jpg')" }}
         />
+
+        {/* Logo Plaque (Sandy/Oceanic Tint) */}
+        <div
+          className={`
+            relative
+            z-10
+            flex
+            h-[80%]
+            w-[86%]
+            items-center
+            justify-center
+            rounded-xl
+            border
+            ${
+              isOceanic
+                ? "border-[#99C5CF] bg-[#E8F2F3]"
+                : "border-[#D0B78B] bg-[#F5EAD9]"
+            }
+            p-3
+            shadow-[0_4px_16px_rgba(20,55,70,0.08)]
+            transition-all
+            duration-300
+            group-hover:scale-105
+          `}
+        >
+          <div className="text-6xl font-cinzel font-bold text-[#0C2B3D]/80 filter drop-shadow-[0_2px_8px_rgba(20,55,70,0.14)]">{sponsor.number}</div>
+        </div>
+
+        {/* Tier badge */}
+        <div
+          className={`
+            absolute
+            bottom-2.5
+            left-1/2
+            z-20
+            -translate-x-1/2
+            whitespace-nowrap
+            rounded-full
+            border
+            ${
+              isOceanic
+                ? "border-[#77ABB6] bg-[#D4E8EA]"
+                : "border-[#EADDC9]/60 bg-[#E8D7C2]"
+            }
+            px-3.5
+            py-0.5
+            shadow-sm
+          `}
+        >
+          <span
+            className={`font-mono text-[7px] font-bold uppercase tracking-[0.2em] ${
+              isOceanic ? "text-[#0F4B5A]" : "text-[#7A5418]"
+            }`}
+          >
+            {isLarge
+              ? "Captain's Ally"
+              : isSmall
+              ? "Voyage Ally"
+              : "Golden Fleet"}
+          </span>
+        </div>
+      </div>
+
+      {/* Card Information - Centre Aligned */}
+      <div
+        className={`relative flex flex-1 flex-col items-center justify-between text-center ${
+          isLarge ? "p-6 sm:p-7" : isSmall ? "p-4" : "p-5"
+        }`}
+      >
+        <div className="flex flex-col items-center justify-center text-center w-full">
+          {/* Centered Decorative Accent */}
+          <div className="mb-2.5 flex items-center justify-center gap-2">
+            <span className="h-px w-6 bg-[#B58B3E]/60" />
+            <span className="h-1.5 w-1.5 rotate-45 bg-[#8E6422]" />
+            <span className="h-px w-6 bg-[#B58B3E]/60" />
+          </div>
+
+          <h3 className="font-cinzel text-lg font-bold text-[#0C2B3D] transition-colors group-hover:text-[#8E6422] sm:text-xl">
+            {sponsor.name}
+          </h3>
+
+          <p
+            className={`mt-1 font-mono text-[10px] uppercase tracking-wider font-bold ${
+              isOceanic ? "text-[#125D73]" : "text-[#855D1E]"
+            }`}
+          >
+            {sponsor.category}
+          </p>
+
+          {sponsor.description && (
+            <p className="mt-2 text-xs font-montserrat text-[#315768] font-medium leading-relaxed max-w-[280px] line-clamp-2">
+              {sponsor.description}
+            </p>
+          )}
+        </div>
+
+        <div
+          className={`mt-4 flex items-center justify-center gap-2 border-t ${
+            isOceanic ? "border-[#BCD8DE]" : "border-[#DDCBBA]"
+          } pt-3 text-[10px] font-mono font-bold text-[#8E6422] group-hover:text-[#0C2B3D] transition-colors w-full`}
+        >
+          <Anchor className="h-3.5 w-3.5 text-[#8E6422]" />
+          <span>Inspect Fleet Dossier</span>
+          <span>→</span>
+        </div>
       </div>
     </article>
   );
 }
 
 /* =================================================================
-   GLOBAL SANDY + PARCHMENT ATMOSPHERE (Consistent Theme)
+   GLOBAL SANDY + OCEANIC ATMOSPHERE (No White, Warm Beach & Sea)
 ================================================================= */
 
 function SandyOceanAtmosphere() {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      {/* Soft Caribbean Blue Depth Wash */}
+      <div className="absolute right-[-10%] top-[16%] h-[600px] w-[600px] rounded-full bg-[#5FB0C3]/12 blur-[90px]" />
+      <div className="absolute left-[-10%] top-[50%] h-[550px] w-[550px] rounded-full bg-[#3F95A9]/10 blur-[90px]" />
+
       {/* Warm sunlight sand glow */}
-      <div className="absolute right-[-10%] top-[16%] h-[600px] w-[600px] rounded-full bg-[#E8C87A]/10 blur-[120px]" />
-      <div className="absolute left-[-10%] top-[50%] h-[550px] w-[550px] rounded-full bg-[#E2B766]/8 blur-[120px]" />
-      <div className="absolute left-[28%] top-[-5%] h-[500px] w-[500px] rounded-full bg-[#E8C87A]/12 blur-[120px]" />
+      <div className="absolute left-[28%] top-[-5%] h-[500px] w-[500px] rounded-full bg-[#E8C87A]/15 blur-[100px]" />
 
       {/* Fine sand parchment grain texture */}
       <div
-        className="absolute inset-0 opacity-[0.05]"
+        className="absolute inset-0 opacity-[0.08]"
         style={{
           backgroundImage: `
-            radial-gradient(circle at 20% 20%, rgba(20,65,80,.18) 0 1px, transparent 1px),
-            radial-gradient(circle at 75% 75%, rgba(165,120,45,.15) 0 1px, transparent 1px)
+            radial-gradient(circle at 20% 20%, rgba(20,65,80,.25) 0 1px, transparent 1px),
+            radial-gradient(circle at 75% 75%, rgba(165,120,45,.22) 0 1px, transparent 1px)
           `,
           backgroundSize: "44px 44px, 58px 58px",
         }}
       />
-    </div>
-  );
-}
-
-/* =================================================================
-   DECORATIVE STICKERS
-================================================================= */
-function FloatingStickers() {
-  return (
-    <div className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
-      <img src="/sticker-compass.png" alt="compass" className="absolute top-[8%] left-[-2%] w-48 opacity-60 drop-shadow-xl" />
-      <img src="/sticker-anchor.png" alt="anchor" className="absolute top-[25%] right-[2%] w-56 opacity-60 drop-shadow-xl -rotate-12" />
-      <img src="/sticker-ship.png" alt="ship" className="absolute top-[70%] left-[-4%] w-72 opacity-60 drop-shadow-2xl" />
-      <img src="/sticker-wheel.png" alt="wheel" className="absolute top-[50%] right-[3%] w-44 opacity-60 drop-shadow-xl rotate-12" />
-      <img src="/sticker-watch.png" alt="watch" className="absolute top-[18%] right-[20%] w-32 opacity-40 drop-shadow-xl rotate-12" />
-      <img src="/sticker-bottle.png" alt="bottle" className="absolute top-[85%] left-[12%] w-64 opacity-60 drop-shadow-xl -rotate-6" />
-      <img src="/sticker-skull.png" alt="skull" className="absolute top-[35%] left-[45%] w-40 opacity-20 drop-shadow-lg" />
     </div>
   );
 }

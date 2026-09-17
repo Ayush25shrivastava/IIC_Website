@@ -1,10 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="400" height="240">
   <defs>
-    <linearGradient id="oceanPlacque" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#E1EEF0"/>
-      <stop offset="50%" stop-color="#CFE5E8"/>
-      <stop offset="100%" stop-color="#B7D7DC"/>
-    </linearGradient>
     <linearGradient id="galleonBg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#F3E9DA"/>
       <stop offset="50%" stop-color="#E7D8C4"/>
@@ -20,8 +15,8 @@
     </filter>
   </defs>
 
-  <rect x="15" y="15" width="370" height="210" rx="18" fill="url(#oceanPlacque)" stroke="url(#goldFiligree)" stroke-width="2.5" filter="url(#galleonShadow)"/>
-  <rect x="25" y="25" width="350" height="190" rx="12" fill="none" stroke="#68A5B3" stroke-width="1.2" stroke-dasharray="7,4"/>
+  <rect x="15" y="15" width="370" height="210" rx="18" fill="url(#galleonBg)" stroke="url(#goldFiligree)" stroke-width="2.5" filter="url(#galleonShadow)"/>
+  <rect x="25" y="25" width="350" height="190" rx="12" fill="none" stroke="#B8945A" stroke-width="1.2" stroke-dasharray="7,4"/>
 
   <!-- Sun Rays behind Flagship -->
   <g stroke="#D0A861" stroke-width="1.2" opacity="0.35">
