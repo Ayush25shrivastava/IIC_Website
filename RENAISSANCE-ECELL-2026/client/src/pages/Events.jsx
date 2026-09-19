@@ -213,6 +213,57 @@ export default function Events({ embedded = false }) {
       ],
       visualPosition: "78% 50%",
     },
+    {
+      id: "biz-tech-quiz",
+      title: "Biz-Tech Quiz",
+      category: "Quizzes & Treasure Hunt",
+      categories: ["Quizzes & Treasure Hunt", "Strategy & Planning"],
+      label: "Quizzes & Treasure Hunt",
+      time: "TBD",
+      location: "MNNIT",
+      description: "Put your business acumen and tech knowledge to the test! Biz-Tech Quiz, conducted by the Gnosis Quiz Club, brings together intriguing questions at the intersection of business, technology, startups, and innovation.",
+      eyebrow: "Quiz Challenge",
+      compactModal: true,
+      detailDescription: [
+        "Put your business acumen and tech knowledge to the test!",
+        "Biz-Tech Quiz, conducted by the Gnosis Quiz Club, brings together intriguing questions at the intersection of business, technology, startups, and innovation."
+      ],
+      visualPosition: "30% 40%",
+    },
+    {
+      id: "treasure-hunt",
+      title: "Treasure Hunt",
+      category: "Quizzes & Treasure Hunt",
+      categories: ["Quizzes & Treasure Hunt"],
+      label: "Quizzes & Treasure Hunt",
+      time: "TBD",
+      location: "MNNIT",
+      description: "Get ready for an exciting adventure across the MNNIT campus! Treasure Hunt challenges participants to crack clues, explore hidden corners, and race against time to uncover the treasure, with exciting prizes and goodies waiting at the finish line.",
+      eyebrow: "Campus Adventure",
+      compactModal: true,
+      detailDescription: [
+        "Get ready for an exciting adventure across the MNNIT campus!",
+        "Treasure Hunt challenges participants to crack clues, explore hidden corners, and race against time to uncover the treasure, with exciting prizes and goodies waiting at the finish line."
+      ],
+      visualPosition: "50% 50%",
+    },
+    {
+      id: "mock-ipl-auction",
+      title: "Mock IPL Auction",
+      category: "Finance",
+      categories: ["Finance", "Strategy & Planning"],
+      label: "Finance",
+      time: "TBD",
+      location: "MNNIT",
+      description: "Step into the shoes of an IPL franchise owner! In this Mock IPL Auction, participants receive a limited pool of tokens and compete to build their dream teams by strategically bidding on players, balancing budgets, and making every bid count.",
+      eyebrow: "Auction Simulation",
+      compactModal: true,
+      detailDescription: [
+        "Step into the shoes of an IPL franchise owner!",
+        "In this Mock IPL Auction, participants receive a limited pool of tokens and compete to build their dream teams by strategically bidding on players, balancing budgets, and making every bid count."
+      ],
+      visualPosition: "70% 60%",
+    },
   ];
 
   if (!embedded) {
