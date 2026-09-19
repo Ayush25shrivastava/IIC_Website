@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 
 import ContactFooter from "../components/ContactFooter";
-import SocialSideRail from "../components/SocialSideRail";
 import { SPONSOR_TIERS } from "../data/sponsorsData";
 
 /* ================================================================
@@ -19,13 +18,47 @@ import { SPONSOR_TIERS } from "../data/sponsorsData";
    Boat: Boat thing completely removed!
 ================================================================ */
 
+const SHOW_SPONSORS_COMING_SOON = true;
+
 export default function Sponsors({ embedded = false }) {
-  const presentingSponsor = {
-    name: "To Be Revealed Soon",
-    category: "Our Journey Partners",
-    image: "/sponsors/to-be-revealed.png",
-    description: "The sponsors of our expedition will be revealed soon. Stay tuned for the grand announcement as we chart new territories together.",
-  };
+
+  if (SHOW_SPONSORS_COMING_SOON) {
+    return (
+      <main className="relative min-h-[100svh] w-full overflow-hidden bg-[#061823] text-[#E6DFD3]">
+        {/* Preserve the Sponsors page atmosphere/background while the
+            sponsor cards remain disabled. Original implementation is below. */}
+        <SandyOceanAtmosphere />
+        <FloatingStickers />
+
+        <div className="absolute inset-0 z-[1]">
+          <img
+            src="/bg_images/events.png"
+            alt=""
+            aria-hidden="true"
+            className="sponsor-hero-raster h-full w-full object-cover object-center select-none pointer-events-none"
+            draggable="false"
+          />
+          <div className="absolute inset-0 bg-[#062538]/35 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0A2634]/15 via-[#061923]/35 to-[#020610]/78" />
+        </div>
+
+        <section className="relative z-10 grid min-h-[100svh] w-full place-items-center px-4 py-24 sm:px-6">
+          <h1 className="mx-auto w-full max-w-4xl text-center font-cinzel text-3xl font-bold uppercase tracking-[0.04em] text-[#F3E9D2] drop-shadow-[0_6px_24px_rgba(0,0,0,0.72)] sm:text-5xl lg:text-6xl">
+            To be announced soon...
+          </h1>
+        </section>
+
+        {!embedded && <ContactFooter />}
+      </main>
+    );
+  }
+
+  // Original Sponsors page, hero, navigation and every sponsor card remain
+  // preserved below. Toggle SHOW_SPONSORS_COMING_SOON to restore them.
+  const presentingSponsor = SPONSOR_TIERS?.[0]?.sponsors?.[0];
+  const principalAllies = SPONSOR_TIERS?.[0]?.sponsors?.slice(1) || [];
+  const goldenFleet = SPONSOR_TIERS?.[1]?.sponsors || [];
+  const voyageFellowship = SPONSOR_TIERS?.[2]?.sponsors || [];
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -55,8 +88,6 @@ export default function Sponsors({ embedded = false }) {
       ============================================================ */}
       <SandyOceanAtmosphere />
       <FloatingStickers />
-
-      {!embedded && <SocialSideRail />}
 
       {/* ============================================================
           HERO: Previous bg image + background drift animation KEPT
@@ -231,7 +262,6 @@ export default function Sponsors({ embedded = false }) {
         </section>
       )}
 
-
       {/* ============================================================
           PRESENTING PARTNER (Sandy-Oceanic Sovereign Vault)
       ============================================================ */}
@@ -335,23 +365,9 @@ export default function Sponsors({ embedded = false }) {
                 <div className="pointer-events-none absolute left-4 top-4 h-6 w-6 border-l border-t border-[#9E6D1F]/55" />
                 <div className="pointer-events-none absolute bottom-4 right-4 h-6 w-6 border-b border-r border-[#9E6D1F]/55" />
 
-                <img
-                  src={presentingSponsor.image}
-                  alt={presentingSponsor.name}
-                  className="
-                    relative
-                    z-10
-                    max-h-44
-                    max-w-[82%]
-                    scale-[1.35]
-                    object-contain
-                    mix-blend-multiply
-                    drop-shadow-[0_4px_10px_rgba(20,55,70,0.15)]
-                    transition-transform
-                    duration-500
-                    group-hover:scale-[1.45]
-                  "
-                />
+                <span className="relative z-10 font-mono text-sm sm:text-base font-bold text-[#0C2B3D]/80 uppercase tracking-widest text-center px-4">
+                  To be announced soon...
+                </span>
                 
                 {/* Vintage Globe Sticker Accent */}
                 <img src="/card-decor-globe.png" alt="" className="absolute -bottom-8 -right-6 w-28 sm:w-36 opacity-[0.75] mix-blend-multiply drop-shadow-xl z-20 pointer-events-none group-hover:rotate-6 transition-transform duration-500" />
@@ -379,24 +395,20 @@ export default function Sponsors({ embedded = false }) {
                 <h3
                   className="
                     font-cinzel
-                    text-3xl
+                    text-2xl
                     font-bold
                     uppercase
                     tracking-wide
                     text-[#0C2B3D]
-                    sm:text-4xl
+                    sm:text-3xl
                   "
                 >
-                  {presentingSponsor.name}
+                  To be announced soon...
                 </h3>
-
-                <span className="mt-2 inline-block rounded-full border border-[#C5A25F]/50 bg-[#E8D7C2] px-4 py-1 font-mono text-[10px] font-bold text-[#14556C]">
-                  {presentingSponsor.category}
-                </span>
 
                 <p
                   className="
-                    mt-5
+                    mt-4
                     max-w-xl
                     font-montserrat
                     text-sm
@@ -406,8 +418,7 @@ export default function Sponsors({ embedded = false }) {
                     mx-auto
                   "
                 >
-                  {presentingSponsor.description ||
-                    "Our flagship partner in this journey of ideas, collaboration, innovation and maritime discovery. Archiving uncharted archipelagos and powering Renaissance 2026."}
+                  Our official presenting partner for Renaissance 2026 will be announced soon.
                 </p>
 
                 <div className="mt-7 flex flex-wrap items-center justify-center gap-4">
@@ -424,7 +435,6 @@ export default function Sponsors({ embedded = false }) {
           </div>
         </section>
       )}
-
 
       {/* ============================================================
           FOOTER (Matching Warm Beach Sand Tone)
@@ -680,12 +690,9 @@ function SponsorCard({ sponsor, size = "medium" }) {
 
         {/* Central Content Area */}
         <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-[1.05] z-10">
-          <img
-            src={sponsor.image}
-            alt={sponsor.name}
-            loading="lazy"
-            className="max-h-full max-w-[85%] scale-[1.35] object-contain mix-blend-multiply drop-shadow-[0_4px_10px_rgba(20,55,70,0.15)]"
-          />
+          <span className="font-mono text-xs sm:text-sm font-bold text-[#0C2B3D]/80 uppercase tracking-wider text-center px-3">
+            To be announced soon...
+          </span>
 
           {/* Vintage Watch Accent for Sponsor Cards */}
           <img src="/card-decor-watch.png" alt="" className="absolute -bottom-5 -right-5 w-20 sm:w-28 opacity-[0.65] mix-blend-multiply drop-shadow-lg z-20 pointer-events-none group-hover:-rotate-12 transition-transform duration-500" />
@@ -693,8 +700,8 @@ function SponsorCard({ sponsor, size = "medium" }) {
       </article>
 
       {/* Sponsor Name Below Card */}
-      <h3 className="mt-6 font-cinzel text-xl sm:text-2xl font-bold text-[#0C2B3D] tracking-wider text-center transition-colors duration-300 group-hover:text-[#9E6D1F]">
-        {sponsor.name}
+      <h3 className="mt-4 font-cinzel text-sm sm:text-base font-bold text-[#0C2B3D] tracking-wider text-center opacity-75">
+        To be announced soon...
       </h3>
     </div>
   );

@@ -117,17 +117,17 @@ function FeaturedSpeakersGrid({ speakers }) {
     <section className="relative w-full bg-transparent flex flex-col items-center justify-center px-4 sm:px-12 pt-20 sm:pt-32 pb-20 sm:pb-32 overflow-hidden select-none z-20">
       <div className="max-w-6xl w-full mx-auto flex flex-col items-center justify-center relative z-10 my-auto">
         <div className="speakers-header text-center mb-12 sm:mb-20">
-          <span className="text-[11px] sm:text-[13px] text-[#E6DFD3] font-black uppercase tracking-[0.3em] block mb-3 opacity-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+          <span className="text-xs sm:text-sm text-[#E6DFD3] font-black uppercase tracking-[0.3em] block mb-3 opacity-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
             Eminent Voyagers
           </span>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight drop-shadow-[0_4px_24px_rgba(2,6,16,0.95)] drop-shadow-[0_2px_8px_rgba(2,6,16,0.9)] animate-deepsea-shine pb-2">
+          <h2 className="text-[2.2rem] sm:text-5xl md:text-6xl font-black tracking-tight animate-renaissance-theme pb-2 leading-tight">
             Featured Keynote Speakers
           </h2>
         </div>
 
         <div ref={gridRef} className="w-full flex items-center justify-center">
-          <div className="speaker-card relative flex w-full max-w-2xl translate-y-[20px] items-center justify-center px-6 py-10 sm:px-12 sm:py-14 bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl opacity-0 shadow-[0_15px_35px_rgba(0,0,0,0.5)] transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-            <span className="text-[#E6DFD3] font-mono text-lg sm:text-2xl lg:text-3xl font-extrabold tracking-[0.14em] text-center uppercase opacity-90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">
+          <div className="speaker-card relative flex w-full max-w-2xl translate-y-[20px] items-center justify-center px-6 py-10 sm:px-12 sm:py-14 rounded-2xl sm:rounded-3xl border border-[#d4af37]/60 bg-[#F4EBD9]/95 text-[#0C2B3D] backdrop-blur-md shadow-[0_15px_40px_rgba(0,0,0,0.5)] opacity-0 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+            <span className="font-mono text-lg sm:text-2xl lg:text-3xl font-extrabold tracking-[0.14em] text-center uppercase text-[#0C2B3D]">
               To be announced soon...
             </span>
           </div>
@@ -183,11 +183,11 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
   return (
     <section className="relative w-full pt-16 pb-20 sm:pt-24 sm:pb-28 px-4 bg-transparent flex flex-col items-center justify-center z-20 select-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-8 sm:mb-12 text-center relative z-10">
-        <span className="text-[10px] sm:text-xs font-mono text-[#E6DFD3] uppercase tracking-[0.25em] font-bold block mb-2 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]">
+        <span className="text-xs sm:text-sm font-mono text-[#E6DFD3] uppercase tracking-[0.25em] font-bold block mb-2 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]">
           {subtitle}
         </span>
 
-        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight animate-whitegold-shine drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
+        <h2 className="text-[2.2rem] sm:text-5xl font-extrabold tracking-tight animate-black-gold leading-tight">
           {title}
         </h2>
       </div>
@@ -271,7 +271,7 @@ function StaggeredSponsorsGrid({ title, subtitle, sponsors }) {
         {sponsors.map((sponsor, idx) => (
           <div
             key={idx}
-            className="sponsor-item aspect-video flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-5 opacity-0 translate-y-10 will-change-[transform,opacity] transition-all duration-800 ease-[cubic-bezier(0.25,1,0.5,1)]"
+            className="sponsor-item aspect-video flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-5 opacity-0 translate-y-10 transition-all duration-800 ease-[cubic-bezier(0.25,1,0.5,1)]"
           >
             {sponsor.image ? (
               <img
@@ -319,6 +319,7 @@ export default function Home() {
   const statCard3Ref = useRef(null);
   const statCard4Ref = useRef(null);
   const aboutCtaRef = useRef(null);
+  const scrollIndicatorRef = useRef(null);
 
   const speakersSectionRef = useRef(null);
 
@@ -327,6 +328,21 @@ export default function Home() {
 
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
+
+      // Fade out scroll indicator as user begins scrolling
+      if (scrollIndicatorRef.current && heroSectionRef.current) {
+        gsap.to(scrollIndicatorRef.current, {
+          opacity: 0,
+          y: 20,
+          ease: "power1.out",
+          scrollTrigger: {
+            trigger: heroSectionRef.current,
+            start: "top top",
+            end: "bottom 85%",
+            scrub: 0.3,
+          },
+        });
+      }
 
       // Desktop Only (min-width: 768px): Pinned Parallax Timeline
       mm.add("(min-width: 768px)", () => {
@@ -384,6 +400,7 @@ export default function Home() {
           gsap.set(wheelImgRef.current, { transformOrigin: "50% 50%" });
         }
 
+        let lastRippleTime = 0;
         const mainTl = gsap.timeline({
           scrollTrigger: {
             trigger: eventsSectionRef.current,
@@ -399,7 +416,34 @@ export default function Home() {
         if (wheelImgRef.current) {
           mainTl.to(
             wheelImgRef.current,
-            { rotation: 540, ease: "none", duration: 10 },
+            {
+              rotation: 540,
+              ease: "none",
+              duration: 10,
+              onUpdate: function () {
+                const now = performance.now();
+                if (now - lastRippleTime < 35) return;
+                lastRippleTime = now;
+
+                // When wheel rotates, interact with the WebGL ocean water along the moving wheel rim!
+                const progress = this.progress();
+                const angle = (progress * 540 * Math.PI) / 180;
+                const isMobile = window.innerWidth < 768;
+                const cx = isMobile ? window.innerWidth / 2 : 0;
+                const cy = window.innerHeight / 2;
+                const radius = window.innerHeight * (isMobile ? 0.38 : 0.46);
+                const rippleX = cx + Math.cos(angle) * radius;
+                const rippleY = cy + Math.sin(angle) * radius;
+
+                window.dispatchEvent(
+                  new PointerEvent("pointermove", {
+                    clientX: Math.max(0, Math.min(window.innerWidth, rippleX)),
+                    clientY: Math.max(0, Math.min(window.innerHeight, rippleY)),
+                    bubbles: false,
+                  })
+                );
+              },
+            },
             0
           );
         }
@@ -578,8 +622,11 @@ export default function Home() {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/90 text-xs font-mono overflow-visible">
-          <span className="tracking-widest uppercase text-[10px]">
+        <div
+          ref={scrollIndicatorRef}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/90 text-xs font-mono overflow-visible pointer-events-none transition-opacity duration-300"
+        >
+          <span className="tracking-widest uppercase text-[10px] sm:text-[11px] font-semibold">
             Scroll To Navigate
           </span>
           <div className="w-4 h-7 border border-[#38BDF8]/40 rounded-full flex items-start justify-center p-1 overflow-visible">
@@ -598,14 +645,14 @@ export default function Home() {
         <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center justify-center px-0 text-center sm:px-4">
           <h2
             ref={aboutTitleRef}
-            className="z-10 mb-5 font-sans text-4xl font-black tracking-tight drop-shadow-[0_4px_30px_rgba(0,0,0,0.85)] animate-whitegold-shine sm:mb-6 sm:text-7xl md:text-8xl"
+            className="z-10 mb-4 font-sans text-[2.4rem] sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight animate-renaissance-theme sm:mb-6 leading-tight"
           >
             About Renaissance
           </h2>
 
           <p
             ref={aboutDescRef}
-            className="text-base sm:text-xl text-[#f3e5ab] font-light leading-relaxed mb-10 max-w-3xl z-10 drop-shadow-[ 0_4px_10px_#000 ]"
+            className="text-sm sm:text-base md:text-xl text-[#F4EBD9] font-medium leading-relaxed mb-8 sm:mb-10 max-w-3xl z-10 drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"
           >
             The Institution’s Innovation Council and Entrepreneurship Cell at
             MNNIT Allahabad present the 10th edition of Renaissance. The summit
@@ -614,51 +661,51 @@ export default function Home() {
           </p>
 
           {/* Summit Statistics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 w-full my-6 z-10">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 w-full my-4 sm:my-6 z-10">
             <div
               ref={statCard1Ref}
-              className="flex flex-col items-center justify-center p-4 sm:p-5 rounded-2xl bg-[#040f21]/60 border border-[#d4af37]/30 backdrop-blur-md"
+              className="flex flex-col items-center justify-center p-3 sm:p-5 rounded-2xl bg-[#040f21]/60 border border-[#d4af37]/30 backdrop-blur-md"
             >
               <span className="text-2xl sm:text-3xl font-extrabold font-mono text-[#d4af37] tracking-tight">
                 5000+
               </span>
-              <span className="text-[10px] sm:text-xs font-mono text-[#CBD5E1] uppercase tracking-wider font-semibold mt-1.5">
+              <span className="text-[11px] sm:text-xs font-mono text-[#CBD5E1] uppercase tracking-wider font-bold mt-1.5">
                 Footfall
               </span>
             </div>
 
             <div
               ref={statCard2Ref}
-              className="flex flex-col items-center justify-center p-4 sm:p-5 rounded-2xl bg-[#040f21]/60 border border-[#d4af37]/30 backdrop-blur-md"
+              className="flex flex-col items-center justify-center p-3 sm:p-5 rounded-2xl bg-[#040f21]/60 border border-[#d4af37]/30 backdrop-blur-md"
             >
               <span className="whitespace-nowrap text-[1.35rem] sm:text-2xl md:text-3xl font-extrabold font-mono text-[#d4af37] tracking-tight leading-none">
                 ₹2.5 Lakh+
               </span>
-              <span className="text-[10px] sm:text-xs font-mono text-[#CBD5E1] uppercase tracking-wider font-semibold mt-1.5">
+              <span className="text-[11px] sm:text-xs font-mono text-[#CBD5E1] uppercase tracking-wider font-bold mt-1.5">
                 Prize Pool
               </span>
             </div>
 
             <div
               ref={statCard3Ref}
-              className="flex flex-col items-center justify-center p-4 sm:p-5 rounded-2xl bg-[#040f21]/60 border border-[#d4af37]/30 backdrop-blur-md"
+              className="flex flex-col items-center justify-center p-3 sm:p-5 rounded-2xl bg-[#040f21]/60 border border-[#d4af37]/30 backdrop-blur-md"
             >
               <span className="text-2xl sm:text-3xl font-extrabold font-mono text-[#d4af37] tracking-tight">
                 20+
               </span>
-              <span className="text-[10px] sm:text-xs font-mono text-[#CBD5E1] uppercase tracking-wider font-semibold mt-1.5">
+              <span className="text-[11px] sm:text-xs font-mono text-[#CBD5E1] uppercase tracking-wider font-bold mt-1.5">
                 Startups & VCs
               </span>
             </div>
 
             <div
               ref={statCard4Ref}
-              className="flex flex-col items-center justify-center p-4 sm:p-5 rounded-2xl bg-[#040f21]/60 border border-[#d4af37]/30 backdrop-blur-md"
+              className="flex flex-col items-center justify-center p-3 sm:p-5 rounded-2xl bg-[#040f21]/60 border border-[#d4af37]/30 backdrop-blur-md"
             >
               <span className="text-2xl sm:text-3xl font-extrabold font-mono text-[#d4af37] tracking-tight">
                 10th
               </span>
-              <span className="text-[10px] sm:text-xs font-mono text-[#CBD5E1] uppercase tracking-wider font-semibold mt-1.5">
+              <span className="text-[11px] sm:text-xs font-mono text-[#CBD5E1] uppercase tracking-wider font-bold mt-1.5">
                 Edition
               </span>
             </div>
@@ -677,14 +724,14 @@ export default function Home() {
         {/* Giant Rotating Nautical Wheel */}
         <div
           ref={wheelContainerRef}
-          className="featured-events-wheel pointer-events-none absolute left-1/2 top-1/2 z-10 flex h-[120vw] w-[120vw] max-h-[560px] max-w-[560px] sm:h-[110vw] sm:w-[110vw] sm:max-h-[600px] sm:max-w-[600px] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-visible opacity-45 md:left-0 md:h-[135vh] md:w-[135vh] lg:h-[145vh] lg:w-[145vh] md:opacity-100"
+          className="featured-events-wheel pointer-events-none absolute left-1/2 top-1/2 z-10 flex h-[120vw] w-[120vw] max-h-[520px] max-w-[520px] sm:h-[110vw] sm:w-[110vw] sm:max-h-[560px] sm:max-w-[560px] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-visible opacity-45 md:left-0 md:h-[calc(100svh-8px)] md:w-[calc(100svh-8px)] md:max-h-[calc(100svh-8px)] md:max-w-[calc(100svh-8px)] md:opacity-100 aspect-square"
         >
-          <div className="absolute w-[80%] h-[80%] rounded-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.18)_0%,rgba(217,119,6,0.08)_35%,rgba(56,189,248,0.08)_60%,transparent_75%)] blur-2xl pointer-events-none" />
+          <div className="absolute w-[88%] h-[88%] rounded-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.22)_0%,rgba(56,189,248,0.18)_38%,rgba(4,16,33,0.55)_65%,transparent_80%)] blur-2xl pointer-events-none" />
           <img
             ref={wheelImgRef}
             src="/pirate-wheel-transparent.png"
             alt="Nautical Wheel"
-            className="w-full h-full object-contain filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] md:drop-shadow-[0_25px_60px_rgba(0,0,0,0.95)] md:drop-shadow-[0_0_50px_rgba(56,189,248,0.45)] select-none pointer-events-none will-change-transform overflow-visible"
+            className="w-full h-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)] select-none pointer-events-none will-change-transform overflow-visible"
           />
         </div>
 
@@ -697,11 +744,11 @@ export default function Home() {
               className="featured-events-header w-full flex items-end justify-between pb-2 border-b border-white/10"
             >
               <div>
-                <span className="text-xs sm:text-sm font-mono text-white uppercase tracking-[0.25em] font-extrabold flex items-center gap-1.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] mb-1">
-                  <Compass className="w-4 h-4 text-white" />
+                <span className="text-[11px] sm:text-xs font-mono text-white uppercase tracking-[0.25em] font-extrabold flex items-center gap-1.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] mb-1">
+                  <Compass className="w-3.5 h-3.5 text-white" />
                   <span>Summit Flagships</span>
                 </span>
-                <h2 className="text-3.5xl sm:text-5xl md:text-6xl font-black tracking-tight drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] animate-whitegold-shine pb-1 sm:pb-2 text-[2rem] leading-none">
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] animate-whitegold-shine pb-1 sm:pb-2">
                   Featured Events
                 </h2>
               </div>

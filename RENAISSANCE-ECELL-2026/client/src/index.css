@@ -1733,6 +1733,71 @@ a, button, .cursor-pointer {
   }
 }
 
+@keyframes blackGoldShine {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.animate-black-gold {
+  background: linear-gradient(
+    90deg,
+    #050505 0%,
+    #171717 18%,
+    #c59b27 38%,
+    #fef08a 50%,
+    #c59b27 62%,
+    #171717 82%,
+    #050505 100%
+  );
+  background-size: 200% auto;
+  color: transparent !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: blackGoldShine 5s linear infinite;
+  display: inline-block;
+  will-change: background-position;
+}
+
+@keyframes renaissanceThemeShine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-renaissance-theme {
+  background: linear-gradient(
+    115deg,
+    #020b18 0%,
+    #08203e 18%,
+    #0f3460 32%,
+    #c59b27 48%,
+    #f3e5ab 52%,
+    #c59b27 56%,
+    #0f3460 70%,
+    #08203e 84%,
+    #020b18 100%
+  );
+  background-size: 260% 100%;
+  color: transparent !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: renaissanceThemeShine 5s ease-in-out infinite;
+  display: inline-block;
+  will-change: background-position;
+}
+
 .animate-whitegold-shine, .animate-pure-gold {
   background: linear-gradient(
     90deg, 
@@ -1804,16 +1869,26 @@ body,
   }
 }
 
+/* Nautical Wheel on Desktop: perfectly sized so outer spoke handles almost touch screen edges */
+@media (min-width: 768px) {
+  .featured-events-wheel {
+    width: calc(100vh - 8px) !important;
+    width: calc(100svh - 8px) !important;
+    height: calc(100vh - 8px) !important;
+    height: calc(100svh - 8px) !important;
+    max-width: calc(100vh - 8px) !important;
+    max-width: calc(100svh - 8px) !important;
+    max-height: calc(100vh - 8px) !important;
+    max-height: calc(100svh - 8px) !important;
+    aspect-ratio: 1 / 1 !important;
+  }
+}
+
 /* Short laptop screens: keep the full pinned Featured Events card visible. */
 @media (min-width: 768px) and (max-height: 900px) {
   .featured-events-section {
     padding-top: 4.75rem !important;
     padding-bottom: 0.5rem !important;
-  }
-
-  .featured-events-wheel {
-    width: 94vh !important;
-    height: 94vh !important;
   }
 
   .featured-events-header {
@@ -1860,11 +1935,6 @@ body,
 @media (min-width: 768px) and (max-height: 760px) {
   .featured-events-section {
     padding-top: 4rem !important;
-  }
-
-  .featured-events-wheel {
-    width: 86vh !important;
-    height: 86vh !important;
   }
 
   .featured-events-showcase {
