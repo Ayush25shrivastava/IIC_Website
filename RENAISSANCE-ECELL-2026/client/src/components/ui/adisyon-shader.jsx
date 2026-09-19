@@ -324,7 +324,7 @@ export default function AdisyonShader({ className = "" }) {
     const timeAnimated = Math.abs(UNIFORMS.timeScale) > 0.0001
 
     const resizeCanvas = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.25)
       const width = Math.max(1, Math.round(bounds.width * dpr))
       const height = Math.max(1, Math.round(bounds.height * dpr))
       if (canvas.width !== width || canvas.height !== height) {
@@ -352,7 +352,7 @@ export default function AdisyonShader({ className = "" }) {
     }
     const onPointerMove = (event) => {
       pointerKnown = true; pointerClientX = event.clientX; pointerClientY = event.clientY
-      bounds = canvas.getBoundingClientRect(); updatePointerTarget()
+      updatePointerTarget()
     }
     const onPointerLeave = () => { pointerKnown = false; targetPresence = 0; requestRender() }
     const updateLayout = () => { bounds = canvas.getBoundingClientRect(); resizeCanvas(); updatePointerTarget(); requestRender() }
@@ -361,7 +361,6 @@ export default function AdisyonShader({ className = "" }) {
     if (UNIFORMS.cursorEnabled) {
       window.addEventListener("pointermove", onPointerMove, { passive: true })
       window.addEventListener("pointercancel", onPointerLeave)
-      window.addEventListener("scroll", updateLayout, true)
       window.addEventListener("blur", onPointerLeave)
       document.documentElement.addEventListener("pointerleave", onPointerLeave)
     }
@@ -390,7 +389,6 @@ export default function AdisyonShader({ className = "" }) {
       mouseX += (targetX - mouseX) * follow
       mouseY += (targetY - mouseY) * follow
       cursorPresence += (targetPresence - cursorPresence) * follow
-      resizeCanvas()
       gl.uniform4f(uni.scene, canvas.width, canvas.height, ((now - start) / 1000) * UNIFORMS.timeScale, UNIFORMS.colorCount)
       gl.uniform4f(uni.space, UNIFORMS.offsetX, UNIFORMS.offsetY, mouseX, mouseY)
       gl.uniform4f(uni.cursor, UNIFORMS.cursorEnabled ? cursorPresence : 0, UNIFORMS.cursorEffect, UNIFORMS.cursorStrength, UNIFORMS.cursorRadius)
@@ -409,7 +407,6 @@ export default function AdisyonShader({ className = "" }) {
       if (UNIFORMS.cursorEnabled) {
         window.removeEventListener("pointermove", onPointerMove)
         window.removeEventListener("pointercancel", onPointerLeave)
-        window.removeEventListener("scroll", updateLayout, true)
         window.removeEventListener("blur", onPointerLeave)
         document.documentElement.removeEventListener("pointerleave", onPointerLeave)
       }

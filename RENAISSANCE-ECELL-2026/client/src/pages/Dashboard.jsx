@@ -24,20 +24,20 @@ export default function Dashboard({ embedded = false }) {
   };
 
   return (
-    <div className={`${embedded ? "py-16" : "min-h-screen pt-28 pb-12"} bg-transparent text-[#F4EBD9] flex flex-col justify-between`}>
-      <div className="max-w-5xl mx-auto px-6 w-full mb-16">
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#020610]/80 backdrop-blur-xl border border-[#C5A25F]/25 shadow-2xl mb-8">
-          <div className="flex items-center justify-between pb-4 border-b border-[#C5A25F]/20">
-            <div>
+    <div className={`${embedded ? "py-12 sm:py-16" : "min-h-[100svh] pt-24 pb-12 sm:pt-28"} flex flex-col justify-between overflow-x-hidden bg-transparent text-[#F4EBD9]`}>
+      <div className="mx-auto mb-12 w-full max-w-5xl px-3 sm:mb-16 sm:px-6">
+        <div className="mb-6 rounded-2xl border border-[#C5A25F]/25 bg-[#020610]/80 p-4 shadow-2xl backdrop-blur-xl sm:mb-8 sm:rounded-3xl sm:p-8">
+          <div className="flex flex-col items-stretch justify-between gap-4 border-b border-[#C5A25F]/20 pb-4 sm:flex-row sm:items-center">
+            <div className="min-w-0">
               <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono tracking-widest text-[#C5A25F] bg-[#041021] border border-[#C5A25F]/30 uppercase mb-2 font-semibold">
                 Participant Docket
               </span>
-              <h1 className="font-cinzel text-3xl font-bold mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">User Dashboard</h1>
-              <p className="font-mono text-xs text-[#E2E8F0]">ID: {profile.studentId} • {profile.collegeName}</p>
+              <h1 className="mb-1 font-cinzel text-2xl font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] sm:text-3xl">User Dashboard</h1>
+              <p className="break-words font-mono text-[11px] text-[#E2E8F0] sm:text-xs">ID: {profile.studentId} • {profile.collegeName}</p>
             </div>
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="px-4 py-2 rounded-lg border border-[#C5A25F] text-[#C5A25F] font-montserrat text-xs font-bold uppercase cursor-pointer hover:bg-[#C5A25F] hover:text-[#020610] transition-colors shadow-md"
+              className="w-full cursor-pointer rounded-lg border border-[#C5A25F] px-4 py-2.5 font-montserrat text-xs font-bold uppercase text-[#C5A25F] shadow-md transition-colors hover:bg-[#C5A25F] hover:text-[#020610] sm:w-auto sm:py-2"
             >
               {isEditing ? "Cancel" : "Edit Profile"}
             </button>

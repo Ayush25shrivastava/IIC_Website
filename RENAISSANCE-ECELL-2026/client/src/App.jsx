@@ -89,7 +89,7 @@ export default function App() {
         <Navbar />
 
         {/* Main route views */}
-        <div className="relative z-10 min-h-screen bg-transparent text-[#F4EBD9]">
+        <div className="renaissance-page-shell relative z-10 min-h-screen w-full overflow-x-clip bg-transparent text-[#F4EBD9]">
           <Suspense
             fallback={<div className="min-h-screen bg-transparent" />}
           >

@@ -76,7 +76,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 border-white/10 px-3 py-3 sm:px-6 sm:py-4">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-white/10 px-4 py-4 sm:px-6">
         <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between">
           {/* Renaissance Logo */}
           <Link

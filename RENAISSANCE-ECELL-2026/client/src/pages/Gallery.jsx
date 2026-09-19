@@ -79,7 +79,7 @@ export default function Gallery() {
   }, [selectedImage]);
 
   return (
-    <main className="relative w-full min-h-screen bg-fixed bg-gradient-to-br from-[#9AC8DB] via-[#D3E3DD] to-[#F4EBD9] text-[#0C2B3D] overflow-x-hidden font-montserrat selection:bg-[#C5A25F] selection:text-white">
+    <main className="relative min-h-[100svh] w-full overflow-x-hidden bg-scroll bg-gradient-to-br from-[#9AC8DB] via-[#D3E3DD] to-[#F4EBD9] font-montserrat text-[#0C2B3D] selection:bg-[#C5A25F] selection:text-white md:bg-fixed">
       
       <style>{`
         .hide-scrollbar::-webkit-scrollbar {
@@ -92,7 +92,7 @@ export default function Gallery() {
       `}</style>
 
       {/* Intro Header */}
-      <section className="relative z-10 w-full min-h-[60vh] flex flex-col justify-end px-6 lg:px-24 pb-24 overflow-hidden">
+      <section className="relative z-10 flex min-h-[52svh] w-full flex-col justify-end overflow-hidden px-4 pb-12 pt-24 sm:min-h-[60vh] sm:px-6 sm:pb-24 lg:px-24">
         {/* Ocean Image Background fading into transparent */}
         <div className="absolute inset-0 pointer-events-none -z-10 [mask-image:linear-gradient(to_bottom,black_40%,transparent_100%)]">
           <img
@@ -155,12 +155,18 @@ export default function Gallery() {
             ref={marqueeRef}
             onMouseEnter={() => isHovered.current = true}
             onMouseLeave={() => isHovered.current = false}
-            onTouchStart={() => isHovered.current = true}
-            onTouchEnd={() => isHovered.current = false}
-            className="flex w-full overflow-x-auto hide-scrollbar py-8 cursor-grab active:cursor-grabbing"
+            className="flex w-full cursor-grab overflow-x-auto py-5 active:cursor-grabbing hide-scrollbar sm:py-8"
           >
             {[...PAST_SPEAKERS, ...PAST_SPEAKERS, ...PAST_SPEAKERS, ...PAST_SPEAKERS].map((speaker, idx) => (
-              <div key={`${speaker.id}-${idx}`} className="w-64 sm:w-80 flex-shrink-0 mx-4 sm:mx-8 group cursor-pointer">
+              <div
+                key={`${speaker.id}-${idx}`}
+                onClick={() => {
+                  if (window.matchMedia("(pointer: coarse)").matches) {
+                    isHovered.current = !isHovered.current;
+                  }
+                }}
+                className="group mx-3 w-[78vw] max-w-[280px] flex-shrink-0 cursor-pointer sm:mx-8 sm:w-80 sm:max-w-none"
+              >
                 
                 {/* Image Container with Offset Square */}
                 <div className="relative w-full aspect-square mb-6">
@@ -172,7 +178,7 @@ export default function Gallery() {
                     <img 
                       src={speaker.img} 
                       alt={speaker.name} 
-                      className={`w-full h-full object-cover ${speaker.objectPosition || 'object-center'} filter grayscale contrast-125 brightness-90 group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]`} 
+                      className={`w-full h-full object-cover ${speaker.objectPosition || 'object-center'} filter lg:grayscale lg:contrast-125 lg:brightness-90 lg:group-hover:grayscale-0 lg:group-hover:contrast-100 lg:group-hover:brightness-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]`} 
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-[#C5A25F]/10 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -211,7 +217,7 @@ export default function Gallery() {
           </motion.div>
         </div>
 
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-3 sm:gap-6">
+        <div className="columns-1 gap-3 min-[480px]:columns-2 sm:gap-6 md:columns-3 lg:columns-4">
           {MASONRY_IMAGES.map((img, index) => (
             <motion.div
               key={img.id}
@@ -225,7 +231,7 @@ export default function Gallery() {
               }}
               layoutId={`gallery-img-${img.id}`}
               onClick={() => setSelectedImage(img)}
-              className={`relative mb-3 sm:mb-6 overflow-hidden rounded-xl break-inside-avoid shadow-lg hover:shadow-2xl transition-shadow duration-500 bg-[#E8D7C2]/30 group cursor-pointer inline-block w-full`}
+              className={`relative mb-3 sm:mb-6 overflow-hidden rounded-xl break-inside-avoid shadow-lg hover:shadow-2xl transition-shadow duration-500 bg-[#E8D7C2]/30 group cursor-pointer block w-full`}
             >
               <img
                 src={img.src}
@@ -250,7 +256,7 @@ export default function Gallery() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedImage(null)}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0C2B3D]/90 backdrop-blur-md p-4 sm:p-8 pt-24 cursor-zoom-out"
+            className="fixed inset-0 z-[100] flex min-h-[100dvh] items-center justify-center bg-[#0C2B3D]/90 p-3 pt-16 backdrop-blur-md cursor-zoom-out sm:p-8 sm:pt-20"
           >
             {/* Close Button */}
             <button

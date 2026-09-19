@@ -100,8 +100,8 @@ export default function Registration({ embedded = false }) {
   return (
     <div
       className={`${
-        embedded ? "py-4 sm:py-6" : "min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16"
-      } bg-transparent text-white flex flex-col justify-center items-center relative overflow-hidden px-3 sm:px-6`}
+        embedded ? "py-4 sm:py-6" : "min-h-[100svh] pt-20 sm:pt-24 pb-12 sm:pb-16"
+      } relative flex items-center justify-center overflow-x-hidden bg-transparent px-3 text-white sm:px-6`}
     >
       {/* Background Glow Decors */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-80 h-80 bg-[#C5A25F]/10 rounded-full blur-[100px] pointer-events-none" />
@@ -158,7 +158,7 @@ export default function Registration({ embedded = false }) {
           </div>
 
           {/* Registration Mode Tabs */}
-          <div className="grid grid-cols-3 gap-1 sm:gap-2 p-1 sm:p-1.5 rounded-2xl bg-[#020713]/80 border border-white/10 mb-6 sm:mb-8">
+      <div className="mb-6 grid grid-cols-1 gap-1 rounded-2xl border border-white/10 bg-[#020713]/80 p-1 sm:mb-8 sm:grid-cols-3 sm:gap-2 sm:p-1.5">
             <button
               type="button"
               onClick={() => setActiveTab("solo")}

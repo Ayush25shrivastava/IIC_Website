@@ -122,7 +122,7 @@ const MemberCard = ({ member, compact = false }) => (
 */
 
 const FacultyCard = ({ member }) => (
-  <article className="teams-member-card teams-faculty-card group flex w-[calc((100vw-60px)/2)] shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-2.5 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:w-[232px] sm:rounded-2xl sm:p-4">
+  <article className="teams-member-card teams-faculty-card group flex w-full max-w-[280px] shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-3 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:w-[232px] sm:rounded-2xl sm:p-4">
     <div className="aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC]">
       <img
         src={member.image_url}
@@ -215,7 +215,7 @@ const ScrollingMemberRow = ({
 
 export default function Teams({ embedded = false }) {
   return (
-    <div className={`${embedded ? "py-16" : "teams-page-root min-h-screen pt-[68px] pb-12 sm:pt-24"} bg-[radial-gradient(ellipse_at_15%_18%,rgba(249,231,196,0.60)_0%,transparent_34%),radial-gradient(ellipse_at_85%_76%,rgba(128,199,220,0.35)_0%,transparent_36%),linear-gradient(180deg,#E9DFC9_0%,#C6DEE0_20%,#D7E1D9_44%,#F2E8C8_72%,#FFD9A5_100%)] text-[#173F56] flex flex-col justify-between`}>
+    <div className={`${embedded ? "py-12 sm:py-16" : "teams-page-root min-h-[100svh] pt-[68px] sm:pt-24"} flex flex-col justify-between overflow-x-hidden bg-[radial-gradient(ellipse_at_15%_18%,rgba(249,231,196,0.60)_0%,transparent_34%),radial-gradient(ellipse_at_85%_76%,rgba(128,199,220,0.35)_0%,transparent_36%),linear-gradient(180deg,#E9DFC9_0%,#C6DEE0_20%,#D7E1D9_44%,#F2E8C8_72%,#FFD9A5_100%)] text-[#173F56]`}>
       <style>{`
         @keyframes teams-member-scroll {
           from { transform: translateX(0); }
@@ -323,7 +323,7 @@ export default function Teams({ embedded = false }) {
           }
         }
       `}</style>
-      <div className="teams-content mx-auto w-full max-w-6xl px-4 mb-36 sm:px-6">
+      <div className="teams-content mx-auto mb-16 w-full max-w-6xl px-3 sm:mb-36 sm:px-6">
         <header className="teams-team-banner relative mb-4 rounded-[22px] border border-[#C9953D] bg-[#FDF6E8] p-1 shadow-[0_16px_32px_rgba(92,67,27,0.18)] sm:mb-6 sm:rounded-[30px] sm:p-2">
           <div className="teams-team-banner__inner relative flex min-h-[142px] flex-col items-center justify-center overflow-hidden rounded-[17px] border border-[#E1BC73] px-4 py-4 text-center sm:min-h-[200px] sm:rounded-[23px] sm:px-5 sm:py-6">
             <span className="absolute left-3 top-2 font-serif text-sm text-[#B98531] sm:left-4 sm:top-3">✦</span>
@@ -360,7 +360,7 @@ export default function Teams({ embedded = false }) {
               <span className="transition-transform duration-300 group-hover:scale-105">Faculty Incharge</span>
               <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%] sm:mt-3 sm:w-24" />
             </h2>
-            <div className="teams-faculty-cards flex justify-center gap-3 px-1 pb-2 sm:gap-12">
+            <div className="teams-faculty-cards flex flex-col items-center justify-center gap-4 px-1 pb-2 sm:flex-row sm:gap-12">
               {facultyIncharges.map((member) => (
                 <FacultyCard key={member.name} member={member} />
               ))}

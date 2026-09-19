@@ -22,38 +22,23 @@ export default function Events({ embedded = false }) {
     offset: ["start start", "end start"],
   });
   const heroParallaxY = useSpring(
-    useTransform(heroScrollProgress, [0, 1], [0, 108]),
-    { stiffness: 88, damping: 24, mass: 0.35 },
+    useTransform(heroScrollProgress, [0, 1], [0, 32]),
+    { stiffness: 40, damping: 30, mass: 0.8 },
   );
   const heroParallaxX = useSpring(
-    useTransform(heroScrollProgress, [0, 1], [0, -42]),
-    { stiffness: 88, damping: 24, mass: 0.35 },
+    useTransform(heroScrollProgress, [0, 1], [0, -12]),
+    { stiffness: 40, damping: 30, mass: 0.8 },
   );
-  const heroScale = useTransform(heroScrollProgress, [0, 1], [1.045, 1.13]);
+  const heroScale = useTransform(heroScrollProgress, [0, 1], [1.02, 1.06]);
   const heroCueOpacity = useTransform(heroScrollProgress, [0, 0.42], [1, 0]);
+  // Pointer parallax disabled — was causing jank on scroll
   const heroPointerX = useMotionValue(0);
   const heroPointerY = useMotionValue(0);
-  const heroPointerSpringX = useSpring(heroPointerX, { stiffness: 110, damping: 22, mass: 0.28 });
-  const heroPointerSpringY = useSpring(heroPointerY, { stiffness: 110, damping: 22, mass: 0.28 });
-  const heroCombinedX = useTransform(
-    [heroParallaxX, heroPointerSpringX],
-    ([scrollX, pointerX]) => scrollX + pointerX,
-  );
-  const heroCombinedY = useTransform(
-    [heroParallaxY, heroPointerSpringY],
-    ([scrollY, pointerY]) => scrollY + pointerY,
-  );
+  const heroCombinedX = heroParallaxX;
+  const heroCombinedY = heroParallaxY;
 
-  const handleHeroPointerMove = (event) => {
-    if (prefersReducedMotion || !heroRef.current) return;
-
-    const bounds = heroRef.current.getBoundingClientRect();
-    if (event.clientY > bounds.bottom) return;
-
-    const normalizedX = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const normalizedY = (event.clientY - bounds.top) / bounds.height - 0.5;
-    heroPointerX.set(normalizedX * 18);
-    heroPointerY.set(normalizedY * 10);
+  const handleHeroPointerMove = (_event) => {
+    // Intentionally no-op — pointer parallax removed for performance
   };
 
   const resetHeroPointer = () => {
@@ -147,60 +132,38 @@ export default function Events({ embedded = false }) {
   const standaloneEvents = [
     {
       id: "summit-keynote",
-      title: "B-Plan",
+      title: "B-plan",
       category: "Strategy & Planning",
       categories: [
         "Strategy & Planning",
         "Business Development",
         "Finance",
       ],
-      time: "09:30 AM",
-      location: "Main Auditorium",
-      description: "Got a million-dollar idea? Prove it.",
-      eyebrow: "Flagship Business Plan",
+      time: "TBD",
+      location: "MNNIT",
+      description: "Shape a venture idea into a credible business plan, then pitch it with clarity and conviction to an expert panel.",
+      eyebrow: "Opening Summit",
       cardImage: "/b-plan-card.jpeg",
       compactModal: true,
-      registrationUrl: "http://unstop.com/o/UL8OJ4R?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
+      registrationUrl: "https://unstop.com/competitions/b-plan-renaissance-100-motilal-nehru-national-institute-of-technology-1755448?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
       detailDescription: [
-        "Got a million-dollar idea? Prove it.",
-        "B-Plan is the flagship business-plan showdown of Renaissance - India’s premier student entrepreneurship summit. This isn’t just about dreaming big; it’s about building smart. Present a rock-solid plan, defend it before expert judges, and turn your concept into a venture that investors notice.",
-        "All you need to know about B-Plan (Fish Tank-Business Plan) : Business plan pitching competetion at Renaissance 10.0",
-        "Reward & Prizes: Total prize pool worth ₹25,000 to winners.",
+        "Overview",
+        "Have a venture idea worth backing? Bring it to the table.",
+        "B-Plan invites you to turn a promising concept into a persuasive business case. Define the opportunity, shape a workable model, and show an expert panel why your idea can succeed beyond the drawing board.",
+        "As Renaissance 10.0’s Fish Tank business-plan challenge, it is a place for emerging founders to pitch with clarity, answer tough questions, and take the first meaningful step toward building their venture.",
       ],
       visualPosition: "18% 58%",
     },
     {
-      id: "product-masterclass",
-      title: "Strategy-Wiz",
-      category: "Strategy & Planning",
-      categories: ["Strategy & Planning", "Quizzes & Treasure Hunt"],
-      label: "Strategy & Planning",
-      time: "02:00 PM",
-      location: "Learning Deck",
-      description: "From Product to Phenomenon: Architecting Iconic Launches",
-      eyebrow: "Ultimate Strategy Challenge",
-      cardImage: "/strategy-wiz-card.jpeg",
-      cardImageFit: "cover",
-      compactModal: true,
-      registrationUrl: "https://unstop.com/competitions/strategy-wiz-renaissance-100-motilal-nehru-national-institute-of-technology-1755423?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
-      detailDescription: [
-        "“From Product to Phenomenon: Architecting Iconic Launches”",
-        "A great product can fail; a legendary launch builds an empire. The product is ready, the market is waiting. Do you have the masterplan to make it iconic?",
-        "Strategy-Wiz, the ultimate strategy challenge, is designed for future business leaders and innovators. Teams will craft the blueprint for market domination: analyse markets, design innovative launch plans, and compete to showcase the most impactful marketing strategy. Strategies will be scrutinised, creativity challenged, and ideas forged into a powerful GTM plan through direct feedback from industry experts.",
-        "Rewards & Prizes: Total prize pool worth ₹15,000 to winners.",
-      ],
-      visualPosition: "78% 50%",
-    },
-    {
       id: "hackathon-sprint",
-      title: "Business Wars",
+      title: "Biz-War",
       category: "Strategy & Planning",
       categories: ["Strategy & Planning", "Quizzes & Treasure Hunt"],
       label: "Strategy & Planning",
-      time: "11:30 AM",
-      location: "Innovation Hub",
-      description: "Think Fast. Strategize Better. Win the Market",
-      eyebrow: "Market Strategy Competition",
+      time: "TBD",
+      location: "MNNIT",
+      description: "Navigate market challenges, build decisive business strategies, and defend every move in a high-pressure competition.",
+      eyebrow: "Innovation Lab",
       cardImage: "/biz-war-card.jpeg",
       cardImageFit: "cover",
       cardImagePosition: "right center",
@@ -208,12 +171,32 @@ export default function Events({ embedded = false }) {
       registrationUrl: "https://unstop.com/competitions/biz-wars-renaissance-100-motilal-nehru-national-institute-of-technology-1756444?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
       detailDescription: [
         "Think Fast. Strategize Better. Win the Market:",
-        "In business, having a good idea is only the beginning. The real challenge is making the right decisions when the stakes are high and your competitors are waiting for you to slip.",
         "Business Wars is a high-pressure business strategy competition where teams step into the shoes of competing businesses and battle through real-world market scenarios. Analyse the situation, identify opportunities, build strategies, respond to challenges, and defend your decisions against the competition.",
         "This is not just about knowing business. It is about thinking strategically, adapting quickly, and making decisions that create an edge.",
-        "Rewards & Prizes: Total prize pool worth ₹15,000 to winners.",
       ],
       visualPosition: "52% 48%",
+    },
+    {
+      id: "product-masterclass",
+      title: "Strategy-Wiz",
+      category: "Strategy & Planning",
+      categories: ["Strategy & Planning", "Quizzes & Treasure Hunt"],
+      label: "Strategy & Planning",
+      time: "TBD",
+      location: "MNNIT",
+      description: "Read the market, design a standout launch plan, and turn sharp insight into a compelling go-to-market strategy.",
+      eyebrow: "Builder's Deck",
+      cardImage: "/strategy-wiz-card.jpeg",
+      cardImageFit: "cover",
+      compactModal: true,
+      registrationUrl: "https://unstop.com/competitions/strategy-wiz-renaissance-100-motilal-nehru-national-institute-of-technology-1755423",
+      detailDescription: [
+        "Overview",
+        "Build the launch strategy that turns a strong product into a market moment.",
+        "Strategy-Wiz challenges teams to think beyond the product itself: read the market, identify the audience, and create a launch plan with a clear point of difference. Your task is to connect sharp insight with a campaign that can earn attention and drive adoption.",
+        "Bring a bold go-to-market vision, defend the choices behind it, and refine your approach under expert scrutiny. It is a strategic arena for future business leaders who can translate ideas into lasting brand impact.",
+      ],
+      visualPosition: "78% 50%",
     },
   ];
 
@@ -242,7 +225,7 @@ export default function Events({ embedded = false }) {
         {/* The hero copy sits in the clear left side of the supplied artwork. */}
         <motion.div
           ref={heroRef}
-          className="pointer-events-none absolute inset-x-0 top-0 h-[330px] overflow-hidden sm:h-[360px] lg:h-[390px]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[380px] overflow-hidden sm:h-[400px] lg:h-[420px]"
         >
           <motion.div
             className="absolute -inset-[3%]"
@@ -250,10 +233,10 @@ export default function Events({ embedded = false }) {
               prefersReducedMotion
                 ? undefined
                 : {
-                    x: heroCombinedX,
-                    y: heroCombinedY,
-                    scale: heroScale,
-                  }
+                  x: heroCombinedX,
+                  y: heroCombinedY,
+                  scale: heroScale,
+                }
             }
           >
             <motion.img
@@ -262,20 +245,7 @@ export default function Events({ embedded = false }) {
               aria-hidden="true"
               className="h-full w-full object-cover object-top will-change-transform"
               draggable="false"
-              initial={
-                prefersReducedMotion
-                  ? false
-                  : { x: 46, y: 4, scale: 1.055, rotate: 0.08 }
-              }
-              animate={
-                prefersReducedMotion
-                  ? undefined
-                  : { x: -34, y: -4, scale: 1.085, rotate: -0.08 }
-              }
-              transition={{
-                duration: 14.5,
-                ease: [0.22, 0.68, 0.26, 1],
-              }}
+
             />
           </motion.div>
 
@@ -339,107 +309,21 @@ export default function Events({ embedded = false }) {
             animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
           >
-            <h1 className="font-cinzel text-5xl font-black leading-none tracking-[-0.015em] drop-shadow-[0_3px_12px_rgba(255,255,255,.75)] sm:text-7xl lg:text-[104px]">
-              <span className="relative inline-block pb-3 bg-gradient-to-b from-[#155d78] via-[#0b4259] to-[#062d40] bg-clip-text text-transparent after:absolute after:bottom-0 after:left-[6%] after:h-px after:w-[88%] after:bg-gradient-to-r after:from-transparent after:via-[#c99535] after:to-transparent">
+            <h1 className="font-cinzel text-5xl font-black leading-none tracking-[-0.015em] drop-shadow-[0_3px_16px_rgba(255,255,255,.9)] sm:text-7xl lg:text-[104px]">
+              <span className="relative inline-block pb-3 text-[#0C2340] after:absolute after:bottom-0 after:left-[6%] after:h-px after:w-[88%] after:bg-gradient-to-r after:from-transparent after:via-[#c99535] after:to-transparent">
                 Events
               </span>
             </h1>
-            <p className="mt-2 font-montserrat text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#164f66] drop-shadow-[0_2px_8px_rgba(255,255,255,.9)] sm:text-xs lg:mt-3 lg:text-sm">
+            <p className="mt-2 font-montserrat text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#0C2340] drop-shadow-[0_2px_8px_rgba(255,255,255,.9)] sm:text-xs lg:mt-3 lg:text-sm">
               <span className="relative inline-block pb-2 after:absolute after:bottom-0 after:left-[8%] after:h-px after:w-[84%] after:bg-gradient-to-r after:from-transparent after:via-[#c99535] after:to-transparent">
                 Renaissance 10.0 — MNNIT Allahabad
               </span>
             </p>
           </motion.div>
 
-          <motion.div
-            className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 items-center gap-2 rounded-full border border-white/45 bg-[#073b4d]/35 px-3.5 py-2 font-montserrat text-[9px] font-bold uppercase tracking-[0.18em] text-white/90 backdrop-blur-md sm:flex"
-            style={prefersReducedMotion ? undefined : { opacity: heroCueOpacity }}
-            animate={prefersReducedMotion ? undefined : { y: [0, 5, 0] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <span>Scroll to explore</span>
-            <span className="text-[#efc96f]">↓</span>
-          </motion.div>
         </motion.div>
 
-        <section className="relative z-10 mx-auto w-full max-w-[1540px] px-3 pb-14 pt-[255px] sm:px-5 sm:pt-[282px] lg:px-8 lg:pt-[304px]">
-          {/* One restrained discovery rail instead of nested pill containers. */}
-          <motion.div
-            initial={prefersReducedMotion ? false : { opacity: 0, y: 22 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.72 }}
-            transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
-            className="grid overflow-hidden rounded-[12px] border border-[#cfbd99]/80 bg-[#fbf5e9]/95 shadow-[0_10px_28px_rgba(31,64,70,.10)] backdrop-blur-xl lg:grid-cols-[minmax(225px,.42fr)_minmax(0,1.58fr)] lg:items-stretch"
-          >
-            <label className="flex min-h-[52px] min-w-0 items-center gap-3 border-b border-[#dccdb3] bg-[#fffaf1]/72 px-4 sm:px-5 lg:border-b-0 lg:border-r">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-4 w-4 shrink-0 text-[#165d73]"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                aria-hidden="true"
-              >
-                <circle cx="11" cy="11" r="7" />
-                <path d="m20 20-3.5-3.5" />
-              </svg>
-              <span className="sr-only">Search events</span>
-              <input
-                value={eventSearch}
-                onChange={(event) => setEventSearch(event.target.value)}
-                placeholder="Search the programme"
-                className="min-w-0 flex-1 bg-transparent py-2.5 font-montserrat text-[12px] font-semibold tracking-[0.01em] text-[#173f51] outline-none placeholder:font-medium placeholder:text-[#84959b] sm:text-[13px]"
-              />
-            </label>
-
-            <div className="flex min-w-0 overflow-x-auto bg-transparent [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-5 lg:overflow-visible">
-              {standaloneCategories.map((label) => {
-                const isActive = eventFilter === label;
-                return (
-                  <motion.button
-                    key={label}
-                    type="button"
-                    onClick={() => setEventFilter(label)}
-                    whileHover={prefersReducedMotion ? undefined : { y: -1 }}
-                    whileTap={prefersReducedMotion ? undefined : { scale: 0.985 }}
-                    transition={{ duration: 0.16, ease: "easeOut" }}
-                    className={`group/filter relative flex min-h-[52px] min-w-[142px] flex-1 items-center justify-center gap-2 border-r border-[#e1d4bc] px-3 py-2 font-montserrat text-[9px] font-extrabold leading-tight transition-colors duration-200 sm:min-w-[156px] sm:text-[10px] lg:min-w-0 ${
-                      isActive
-                        ? "bg-[#0d5b73] text-white shadow-[inset_0_-2px_0_#d8ad55]"
-                        : "bg-transparent text-[#315f6f] hover:bg-[#f1e7d5] hover:text-[#123f55]"
-                    }`}
-                    aria-pressed={isActive}
-                  >
-                    <span
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center transition-colors duration-200 ${
-                        isActive
-                          ? "text-[#f1cd78]"
-                          : "text-[#ad792b] group-hover/filter:text-[#8f6220]"
-                      }`}
-                      aria-hidden="true"
-                    >
-                      {renderStandaloneCategoryIcon(label)}
-                    </span>
-                    <span className="max-w-[110px] text-center">{label}</span>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </motion.div>
-
-          <div className="relative z-10 mt-8 flex flex-col gap-2 border-b border-[#cdb98f]/65 pb-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="font-mono text-[8px] font-bold uppercase tracking-[0.26em] text-[#9b6a27]">
-                Curated programme
-              </p>
-              <h2 className="mt-1 font-cinzel text-xl font-bold tracking-[-0.01em] text-[#173f51] sm:text-2xl">
-                {visibleEvents.length} {visibleEvents.length === 1 ? "event" : "events"} on the horizon
-              </h2>
-            </div>
-            <p className="font-montserrat text-[9px] font-bold uppercase tracking-[0.18em] text-[#6f8187]">
-              Renaissance 10.0 · MNNIT Allahabad
-            </p>
-          </div>
+        <section className="relative z-10 mx-auto w-full max-w-[1540px] px-3 pb-10 pt-[240px] sm:px-5 sm:pt-[280px] lg:px-8 lg:pt-[310px]">
 
           {/* Slow decorative currents behind the fleet, transform-only for smooth scrolling. */}
           <div className="pointer-events-none absolute inset-x-0 top-[360px] -z-0 h-[620px] overflow-hidden">
@@ -465,136 +349,126 @@ export default function Events({ embedded = false }) {
           </div>
 
           {visibleEvents.length > 0 ? (
-            <motion.div layout className="relative z-10 mt-5 grid auto-rows-fr grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+            <motion.div layout className="relative z-10 mt-4 grid auto-rows-fr grid-cols-1 items-stretch gap-3 sm:grid-cols-2 md:grid-cols-3 lg:gap-4">
               <AnimatePresence mode="popLayout">
-              {visibleEvents.map((event, index) => (
-                <motion.article
-                  layout
-                  key={event.id}
-                  initial={
-                    prefersReducedMotion
-                      ? false
-                      : { opacity: 0, y: 28 }
-                  }
-                  whileInView={{ opacity: 1, y: 0 }}
-                  exit={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
-                  viewport={{ once: true, amount: 0.16 }}
-                  transition={{
-                    duration: 0.46,
-                    delay: prefersReducedMotion ? 0 : (index % 3) * 0.055,
-                    ease: [0.22, 1, 0.36, 1],
-                    layout: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
-                  }}
-                  whileHover={prefersReducedMotion ? undefined : { y: -3 }}
-                  className="group relative isolate h-full overflow-hidden rounded-[14px] border border-[#d2bf98] bg-[#faf5e9] shadow-[0_14px_34px_rgba(38,64,65,.10)] transition-[border-color,box-shadow] duration-300 hover:border-[#b99655] hover:shadow-[0_20px_46px_rgba(38,64,65,.15)]"
-                  style={{ contentVisibility: "auto", containIntrinsicSize: "430px" }}
-                >
-                  <motion.button
-                    type="button"
-                    onClick={() => openStandaloneEvent(event)}
-                    whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
-                    transition={{ duration: 0.1, ease: "easeOut" }}
-                    className="relative flex h-full w-full flex-col text-left"
-                    aria-label={`View details for ${event.title}`}
+                {visibleEvents.map((event, index) => (
+                  <motion.article
+                    layout
+                    key={event.id}
+                    initial={
+                      prefersReducedMotion
+                        ? false
+                        : { opacity: 0, y: 42, x: index % 2 === 0 ? -10 : 10, scale: 0.975 }
+                    }
+                    whileInView={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+                    exit={prefersReducedMotion ? undefined : { opacity: 0, y: 16, scale: 0.98 }}
+                    viewport={{ once: true, amount: 0.16 }}
+                    transition={{
+                      duration: 0.56,
+                      delay: prefersReducedMotion ? 0 : (index % 3) * 0.065,
+                      ease: [0.22, 1, 0.36, 1],
+                      layout: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
+                    }}
+                    whileHover={prefersReducedMotion ? undefined : { y: -6, scale: 1.008 }}
+                    className="group relative isolate flex flex-col h-full overflow-hidden rounded-2xl border border-[#d4af37]/60 bg-[#F4EBD9]/95 text-[#0C2B3D] shadow-[0_15px_40px_rgba(0,0,0,0.18)] backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:border-[#d4af37] hover:shadow-[0_20px_50px_rgba(0,0,0,0.25),0_0_20px_rgba(212,175,55,.15)]"
+                    style={{ contentVisibility: "auto", containIntrinsicSize: "350px" }}
                   >
-                    <div className="relative h-[176px] overflow-hidden border-b border-[#cfbd99]/70 bg-[#ded0b5] sm:h-[190px] lg:h-[205px]">
-                      <motion.div
-                        className="absolute -inset-3 bg-cover will-change-transform transition-transform duration-500 group-hover:scale-[1.035]"
-                        style={{
-                          backgroundImage: event.cardImage
-                            ? `url('${event.cardImage}')`
-                            : "linear-gradient(180deg, rgba(4,35,50,.08), rgba(4,35,50,.46)), url('/ship-map-hero.jpg')",
-                          backgroundPosition: event.cardImage
-                            ? (event.cardImagePosition ?? "center")
-                            : event.visualPosition,
-                          backgroundSize: event.cardImage ? (event.cardImageFit ?? "contain") : undefined,
-                          backgroundRepeat: event.cardImage ? "no-repeat" : undefined,
-                          backgroundColor: event.cardImage ? "#eee1c5" : undefined,
-                        }}
-                        initial={
-                          prefersReducedMotion || event.cardImage
-                            ? false
-                            : { x: 18, y: 2, scale: 1.05 }
-                        }
-                        whileInView={
-                          prefersReducedMotion || event.cardImage
-                            ? undefined
-                            : { x: -12, y: -2, scale: 1.07 }
-                        }
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{
-                          duration: 10.5 + (index % 3) * 0.8,
-                          ease: [0.2, 0.65, 0.24, 1],
-                          delay: index * 0.2,
-                        }}
-                      />
+                    <motion.button
+                      type="button"
+                      onClick={() => openStandaloneEvent(event)}
+                      whileTap={prefersReducedMotion ? undefined : { scale: 0.985 }}
+                      transition={{ duration: 0.12, ease: "easeOut" }}
+                      className="relative flex h-full w-full flex-col text-left"
+                      aria-label={`View details for ${event.title}`}
+                    >
+                      <div className="relative h-[110px] overflow-hidden rounded-t-2xl sm:h-[145px] lg:h-[160px] border-b border-[#d4af37]/40 group-hover:border-[#d4af37]/70 transition-colors duration-300">
+                        <motion.div
+                          className={`absolute -inset-3 bg-cover will-change-transform transition-[transform,filter] duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${event.cardImage ? "brightness-95 group-hover:brightness-105" : "group-hover:scale-[1.055]"}`}
+                          style={{
+                            backgroundImage: event.cardImage
+                              ? `url('${event.cardImage}')`
+                              : "linear-gradient(180deg, rgba(4,35,50,.08), rgba(4,35,50,.46)), url('/ship-map-hero.jpg')",
+                            backgroundPosition: event.cardImage
+                              ? (event.cardImagePosition ?? "center")
+                              : event.visualPosition,
+                            backgroundSize: event.cardImage ? (event.cardImageFit ?? "contain") : undefined,
+                            backgroundRepeat: event.cardImage ? "no-repeat" : undefined,
+                            backgroundColor: event.cardImage ? "#eee1c5" : undefined,
+                          }}
+                          initial={
+                            prefersReducedMotion || event.cardImage
+                              ? false
+                              : { x: 24, y: 3, scale: 1.075 }
+                          }
+                          whileInView={
+                            prefersReducedMotion || event.cardImage
+                              ? undefined
+                              : { x: -20, y: -3, scale: 1.1 }
+                          }
+                          viewport={{ once: true, amount: 0.3 }}
+                          transition={{
+                            duration: 11.5 + (index % 3) * 0.9,
+                            ease: [0.2, 0.65, 0.24, 1],
+                            delay: index * 0.28,
+                          }}
+                        />
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#062d3e]/65 via-[#062d3e]/8 to-transparent" />
+                        {!event.cardImage && (
+                          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,27,39,.12)_0%,rgba(2,27,39,.08)_48%,rgba(2,27,39,.68)_100%)]" />
+                        )}
 
-                      <span className="absolute left-4 top-4 z-10 border border-white/35 bg-[#083f53]/85 px-2.5 py-1.5 font-mono text-[8px] font-bold tracking-[0.18em] text-[#f0cf7b] backdrop-blur-md">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+                        {!prefersReducedMotion && (
+                          <motion.div
+                            className="absolute -left-[35%] bottom-[18%] h-px w-[54%] bg-gradient-to-r from-transparent via-white/55 to-transparent"
+                            animate={{ x: [520, 0], opacity: [0, 0.48, 0] }}
+                            transition={{
+                              duration: 10.5 + (index % 3) * 0.55,
+                              ease: "easeOut",
+                              delay: 0.8 + index * 0.24,
+                            }}
+                          />
+                        )}
 
-                      <div className="absolute inset-x-0 bottom-0 z-10 px-5 pb-4 pt-12">
-                        <span className="font-montserrat text-[8px] font-extrabold uppercase tracking-[0.18em] text-[#f4d58d]">
-                          {event.eyebrow}
-                        </span>
+                        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
                       </div>
 
-                      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
-                    </div>
+                      <div className="relative flex flex-1 flex-col px-3 pb-3 pt-3 sm:px-5 sm:pb-5 sm:pt-4">
 
-                    <div className="relative flex flex-1 flex-col p-4 sm:p-5 lg:p-6">
-                      <div className="flex items-center gap-2.5">
-                        <span className="h-px w-6 bg-[#b78633]" />
-                        <span className="font-montserrat text-[8px] font-black uppercase tracking-[0.16em] text-[#8b6428]">
-                          {event.category}
-                        </span>
-                      </div>
+                        <h2 className="font-cinzel text-[17px] font-bold leading-[1.2] text-[#0C2B3D] transition-colors duration-300 group-hover:text-[#0C2B3D]/75 sm:text-[20px] lg:text-[22px]">
+                          {event.title}
+                        </h2>
 
-                      <h2 className="mt-3 font-cinzel text-[23px] font-bold leading-[1.08] tracking-[-0.02em] text-[#123f55] transition-colors duration-300 group-hover:text-[#81551b] sm:text-[25px] lg:text-[27px]">
-                        {event.title}
-                      </h2>
-
-                      <p className="mt-3 line-clamp-2 min-h-[42px] font-montserrat text-[11px] leading-[1.7] text-[#60767e] sm:text-xs">
-                        {event.description}
-                      </p>
-
-                      <div className="mt-5 grid grid-cols-2 border-y border-[#ddcfb5] py-3.5">
-                        <div className="pr-4">
-                          <span className="block font-mono text-[7px] font-bold uppercase tracking-[0.18em] text-[#9a8561]">
-                            Time
-                          </span>
-                          <strong className="mt-1 block font-montserrat text-[10px] font-extrabold text-[#244f60] sm:text-[11px]">
+                        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-montserrat text-[10px] font-bold text-[#0C2B3D]/60 sm:mt-3 sm:text-[11px]">
+                          <div className="flex items-center gap-1.5">
+                            <svg className="h-3.5 w-3.5 text-[#d4af37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
                             {event.time}
-                          </strong>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <svg className="h-3.5 w-3.5 text-[#d4af37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                            <span className="truncate max-w-[150px]">{event.location}</span>
+                          </div>
                         </div>
-                        <div className="border-l border-[#ddcfb5] pl-4">
-                          <span className="block font-mono text-[7px] font-bold uppercase tracking-[0.18em] text-[#9a8561]">
-                            Venue
-                          </span>
-                          <strong className="mt-1 block font-montserrat text-[10px] font-extrabold text-[#244f60] sm:text-[11px]">
-                            {event.location}
-                          </strong>
-                        </div>
-                      </div>
 
-                      <div className="mt-auto flex items-center justify-between pt-5">
-                        <span className="font-mono text-[7px] font-bold uppercase tracking-[0.2em] text-[#9a8664]">
-                          Renaissance 10.0
-                        </span>
-                        <span className="inline-flex items-center gap-2 font-montserrat text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#0d5b73] transition-colors duration-200 group-hover:text-[#8c5d1f]">
-                          View event
-                          <svg className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                            <path d="M5 12h14" strokeLinecap="round" />
-                            <path d="m14 7 5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </span>
+                        <p className="mt-2 line-clamp-2 font-montserrat text-[11px] leading-[1.6] text-[#0C2B3D]/75 sm:mt-3 sm:line-clamp-3 sm:text-xs relative z-10">
+                          {event.description}
+                        </p>
+
+                        <div className="mt-auto flex items-center justify-between border-t border-[#0C2B3D]/10 pt-3 group-hover:border-[#d4af37]/40 transition-colors duration-300">
+                          <span className="font-montserrat text-[9px] font-black uppercase tracking-[0.2em] text-[#0C2B3D]/50 group-hover:text-[#0C2B3D]/70 transition-colors duration-300">
+                            Inspect Mission
+                          </span>
+                          <span className="inline-flex h-[30px] items-center justify-center gap-2 rounded-full border border-[#0C2B3D]/25 bg-transparent px-4 font-cinzel text-[10px] font-bold uppercase tracking-[0.12em] text-[#0C2B3D] transition-all duration-300 group-hover:border-[#d4af37] group-hover:bg-[#d4af37]/10 group-hover:text-[#0C2B3D] shadow-[0_2px_8px_rgba(0,0,0,.04)]">
+                            Details
+                            <svg className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-[3px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                              <path d="M5 12h14" strokeLinecap="round" />
+                              <path d="m14 7 5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </motion.button>
-                </motion.article>
-              ))}
+                    </motion.button>
+                  </motion.article>
+                ))}
               </AnimatePresence>
             </motion.div>
           ) : (
@@ -639,7 +513,7 @@ export default function Events({ embedded = false }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.18, ease: "easeOut" }}
-                className="fixed inset-0 z-[100] flex items-end justify-center bg-[#020b12]/82 p-0 backdrop-blur-[2px] sm:items-center sm:p-5"
+                className="fixed inset-0 z-50 flex items-center justify-center bg-[#020b12]/80 p-3 sm:p-5"
                 onClick={() => setSelectedEventModal(null)}
               >
                 <div
@@ -656,27 +530,27 @@ export default function Events({ embedded = false }) {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97, y: 8 }}
                   transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative max-h-[92svh] w-full max-w-[760px] overflow-y-auto overscroll-contain rounded-t-[20px] border border-[#cfae68] bg-[#f7eedc] text-[#173f51] shadow-[0_26px_80px_rgba(0,0,0,.48),0_1px_0_rgba(255,255,255,.55)_inset] sm:max-h-[88svh] sm:rounded-[18px]"
+                  className="relative w-full max-w-[720px] overflow-hidden rounded-[18px] border border-[#d4ad58] bg-[#f4ead4] text-[#173f51] shadow-[0_28px_100px_rgba(0,0,0,.58),0_0_0_1px_rgba(255,255,255,.2)_inset]"
                   onClick={(event) => event.stopPropagation()}
                   role="dialog"
                   aria-modal="true"
                   aria-label={`${selectedEventModal.title} event notice`}
                 >
-                  {/* Compact event masthead */}
-                  <div className="sticky top-0 z-20 flex min-h-[50px] items-center justify-between border-b border-[#d5b15e]/55 bg-[linear-gradient(180deg,#0d4257_0%,#082f40_100%)] px-4 shadow-[0_8px_24px_rgba(2,24,34,.12)] sm:px-5">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-7 w-7 items-center justify-center border border-[#e5c26e]/55 bg-[#e1b957]/8 text-[#efca73]">
+                  {/* Game-style notice masthead — deep navy matching homepage */}
+                  <div className="relative flex min-h-[58px] items-center justify-between border-b border-[#d5b15e]/65 bg-[linear-gradient(180deg,#0C2340_0%,#061830_100%)] px-4 sm:px-6">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center border border-[#e5c26e]/60 bg-[#e1b957]/10 text-[#efca73]">
                         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                           <circle cx="12" cy="12" r="8.5" />
                           <path d="m14.8 9.2-1.7 3.9-3.9 1.7 1.7-3.9 3.9-1.7Z" />
                         </svg>
                       </span>
                       <div>
-                        <p className="font-montserrat text-[7px] font-bold uppercase tracking-[0.24em] text-[#d9b967]">
-                          Renaissance 10.0 · Programme
+                        <p className="font-montserrat text-[8px] font-bold uppercase tracking-[0.26em] text-[#d9b967]">
+                          Renaissance // System Notice
                         </p>
-                        <p className="mt-0.5 font-cinzel text-[13px] font-black uppercase tracking-[0.1em] text-white sm:text-sm">
-                          Event details
+                        <p className="mt-0.5 font-cinzel text-sm font-black uppercase tracking-[0.11em] text-white sm:text-base">
+                          Event Notice
                         </p>
                       </div>
                     </div>
@@ -711,100 +585,79 @@ export default function Events({ embedded = false }) {
                       </div>
                     )}
 
-                    <div className="relative p-4 sm:p-6">
-                      <div className="absolute right-0 top-0 h-14 w-14 border-r border-t border-[#cba352]/28" />
-                      <div className="absolute bottom-0 left-0 h-10 w-10 border-b border-l border-[#cba352]/20" />
+                    <div className="relative p-5 sm:p-6">
+                      <div className="absolute right-0 top-0 h-16 w-16 border-r border-t border-[#cba352]/35" />
+                      <div className="absolute bottom-0 left-0 h-12 w-12 border-b border-l border-[#cba352]/25" />
 
-                      <p className="font-montserrat text-[7px] font-extrabold uppercase tracking-[0.22em] text-[#9d7a36] sm:text-[8px]">
-                        Event brief
+                      <p className="font-montserrat text-[8px] font-extrabold uppercase tracking-[0.24em] text-[#9d7a36]">
+                        Voyage briefing
                       </p>
-                      <h2 className="mt-1 font-cinzel text-[25px] font-black leading-[1.08] tracking-[-0.015em] text-[#123f55] sm:text-3xl">
+                      <h2 className="mt-1 font-cinzel text-xl font-black leading-[1.16] text-[#0C2340] sm:text-2xl">
                         {selectedEventModal.title}
                       </h2>
-
-                      {selectedEventModal.compactModal && (
-                        <div className="mt-4 grid grid-cols-2 gap-px overflow-hidden border border-[#d8c7a7] bg-[#d8c7a7] font-montserrat text-[10px] sm:grid-cols-3">
-                          <div className="bg-[#fcf7ec] px-3 py-2.5">
-                            <span className="block text-[7px] font-black uppercase tracking-[0.16em] text-[#9b8a69]">Time</span>
-                            <strong className="mt-1 block text-[#234d5d]">{selectedEventModal.time}</strong>
-                          </div>
-                          <div className="bg-[#fcf7ec] px-3 py-2.5">
-                            <span className="block text-[7px] font-black uppercase tracking-[0.16em] text-[#9b8a69]">Venue</span>
-                            <strong className="mt-1 block truncate text-[#234d5d]">{selectedEventModal.location}</strong>
-                          </div>
-                          <div className="col-span-2 bg-[#fcf7ec] px-3 py-2.5 sm:col-span-1">
-                            <span className="block text-[7px] font-black uppercase tracking-[0.16em] text-[#9b8a69]">Category</span>
-                            <strong className="mt-1 block truncate text-[#234d5d]">{selectedEventModal.category}</strong>
-                          </div>
-                        </div>
-                      )}
 
                       {!selectedEventModal.compactModal && (
                         <div className="mt-4 grid grid-cols-2 gap-px overflow-hidden border border-[#d6c7aa] bg-[#d6c7aa] font-montserrat text-[10px] sm:grid-cols-3">
                           <div className="bg-[#fbf6ea] px-3 py-2.5">
                             <span className="block text-[7px] font-black uppercase tracking-[0.17em] text-[#9b8a69]">Time</span>
-                            <strong className="mt-1 block text-[#234d5d]">{selectedEventModal.time}</strong>
+                            <strong className="mt-1 block text-[#0C2340]">{selectedEventModal.time}</strong>
                           </div>
                           <div className="bg-[#fbf6ea] px-3 py-2.5">
                             <span className="block text-[7px] font-black uppercase tracking-[0.17em] text-[#9b8a69]">Location</span>
-                            <strong className="mt-1 block truncate text-[#234d5d]">{selectedEventModal.location}</strong>
+                            <strong className="mt-1 block truncate text-[#0C2340]">{selectedEventModal.location}</strong>
                           </div>
                           <div className="col-span-2 bg-[#fbf6ea] px-3 py-2.5 sm:col-span-1">
                             <span className="block text-[7px] font-black uppercase tracking-[0.17em] text-[#9b8a69]">Class</span>
-                            <strong className="mt-1 block text-[#234d5d]">{selectedEventModal.category}</strong>
+                            <strong className="mt-1 block text-[#0C2340]">{selectedEventModal.category}</strong>
                           </div>
                         </div>
                       )}
 
-                      <div className="mt-4 space-y-3 border-l-2 border-[#cfa552] pl-3.5 pr-1 font-montserrat text-[11px] leading-[1.65] text-[#5f747c] sm:text-[13px]">
+                      <div className="mt-4 space-y-3 border-l-2 border-[#0C2340]/40 pl-3 font-montserrat text-xs leading-relaxed text-[#2a3d4a] sm:text-[13px]">
                         {(selectedEventModal.detailDescription ?? [selectedEventModal.description]).map((paragraph, index) => (
-                          <p key={paragraph} className={index === 0 && selectedEventModal.detailDescription ? "font-bold text-[#234d5d]" : undefined}>
+                          <p key={paragraph} className={index === 0 && selectedEventModal.detailDescription ? "font-bold text-[#0C2340]" : undefined}>
                             {paragraph}
                           </p>
                         ))}
                       </div>
 
-                      <div className="mt-5 grid gap-2.5 border-t border-[#d9c9ab] pt-4 sm:grid-cols-[minmax(0,1fr)_auto]">
-                        <div className="grid min-w-0 gap-2.5 sm:grid-cols-2">
-                          {selectedEventModal.registrationUrl ? (
-                            <a
-                              href={selectedEventModal.registrationUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="flex min-h-[44px] items-center justify-center gap-2 rounded-[10px] border border-[#0b5870] bg-[#0b5870] px-4 py-2.5 text-center font-montserrat text-[10px] font-extrabold uppercase tracking-[0.12em] text-white shadow-[0_6px_16px_rgba(11,88,112,.18)] transition hover:bg-[#08495e]"
-                            >
-                              <span>Register on Unstop</span>
-                              <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                            </a>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedEventModal(null);
-                                navigate(`/events/${selectedEventModal.id}/register`);
-                              }}
-                              className="min-h-[44px] rounded-[10px] border border-[#0c5870] bg-[#0c5870] px-4 py-2.5 font-cinzel text-[10px] font-black uppercase tracking-[0.13em] text-white shadow-[0_6px_16px_rgba(12,88,112,.18)] transition hover:bg-[#08485d]"
-                            >
-                              Enter Event
-                            </button>
-                          )}
+                      <div className="mt-6 flex flex-wrap items-center gap-3">
+                        {selectedEventModal.registrationUrl ? (
                           <a
-                            href="https://whatsapp.com/channel/0029VbDqDCA8V0tjtrkBsT46"
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex min-h-[44px] items-center justify-center gap-2 rounded-[10px] border border-[#8db39a] bg-[#edf5ee] px-4 py-2.5 text-center font-montserrat text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#1b6b3e] transition hover:border-[#63a179] hover:bg-[#e4f1e7]"
+                            href={selectedEventModal.registrationUrl}
+                            className="flex-1 sm:flex-none rounded-sm border border-[#0C2340] bg-[#0C2340] px-6 py-2.5 text-center font-cinzel text-[11px] font-bold uppercase tracking-[0.12em] text-white shadow-[0_4px_12px_rgba(12,35,64,.3)] transition hover:bg-[#061830]"
                           >
-                            <svg className="h-5 w-5" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <path d="M16 3.5a12.5 12.5 0 0 0-10.7 19l-1.45 5.15 5.25-1.4A12.5 12.5 0 1 0 16 3.5Z" />
-                              <path d="M12.1 9.6c.25-.55.55-.6.9-.6h.62c.3 0 .55.16.67.45l.95 2.18c.13.3.08.65-.13.9l-.7.82c.78 1.62 2.08 2.92 3.7 3.7l.82-.7c.25-.21.6-.26.9-.13l2.18.95c.29.12.45.37.45.67V18.5c0 .35-.05.65-.6.9-.67.3-1.7.5-2.82.15-1.46-.45-3.15-1.48-4.74-3.07-1.59-1.59-2.62-3.28-3.07-4.74-.35-1.12-.15-2.15.15-2.82Z" />
-                            </svg>
-                            WhatsApp Community
+                            Enter Event
                           </a>
-                        </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedEventModal(null);
+                              navigate(`/events/${selectedEventModal.id}/register`);
+                            }}
+                            className="flex-1 sm:flex-none rounded-sm border border-[#0C2340] bg-[#0C2340] px-6 py-2.5 font-cinzel text-[11px] font-bold uppercase tracking-[0.12em] text-white shadow-[0_4px_12px_rgba(12,35,64,.3)] transition hover:bg-[#061830]"
+                          >
+                            Enter Event
+                          </button>
+                        )}
+                        <a
+                          href="https://whatsapp.com/channel/0029VbDqDCA8V0tjtrkBsT46"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-sm border border-[#1dad59] bg-[#25d366] px-5 py-2.5 text-center font-montserrat text-[10px] font-bold uppercase tracking-[0.1em] text-white shadow-[0_4px_12px_rgba(37,211,102,.2)] transition hover:bg-[#1ebe5d]"
+                        >
+                          <svg className="h-5 w-5 shrink-0" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M16 3.5a12.5 12.5 0 0 0-10.7 19l-1.45 5.15 5.25-1.4A12.5 12.5 0 1 0 16 3.5Z" />
+                            <path d="M12.1 9.6c.25-.55.55-.6.9-.6h.62c.3 0 .55.16.67.45l.95 2.18c.13.3.08.65-.13.9l-.7.82c.78 1.62 2.08 2.92 3.7 3.7l.82-.7c.25-.21.6-.26.9-.13l2.18.95c.29.12.45.37.45.67V18.5c0 .35-.05.65-.6.9-.67.3-1.7.5-2.82.15-1.46-.45-3.15-1.48-4.74-3.07-1.59-1.59-2.62-3.28-3.07-4.74-.35-1.12-.15-2.15.15-2.82Z" />
+                          </svg>
+                          WhatsApp Community
+                        </a>
+
                         <button
                           type="button"
                           onClick={() => setSelectedEventModal(null)}
-                          className="min-h-[44px] rounded-[10px] border border-[#cfc1a5] bg-[#fffaf0] px-5 py-2.5 font-montserrat text-[9px] font-extrabold uppercase tracking-[0.12em] text-[#68716d] transition hover:border-[#bfa364] hover:bg-white hover:text-[#173f51]"
+                          className="w-full sm:w-auto sm:ml-auto rounded-sm border border-[#cfc1a5] bg-transparent px-4 py-2.5 font-montserrat text-[10px] font-bold uppercase tracking-[0.12em] text-[#4a5568] transition hover:border-[#0C2340] hover:bg-white hover:text-[#0C2340]"
                         >
                           Dismiss
                         </button>
@@ -832,8 +685,8 @@ export default function Events({ embedded = false }) {
           id: "event-1-keynote",
           title: "Summit Keynote & Inaugural",
           category: "Flagship Session",
-          time: "09:30 AM",
-          location: "Main Auditorium",
+          time: "TBD",
+          location: "MNNIT",
           icon: "compass",
           prize: "Summit Access",
           tag: "Flagship",
@@ -849,8 +702,8 @@ export default function Events({ embedded = false }) {
           id: "event-1-hackathon",
           title: "Hackathon Sprint: Round 1",
           category: "Technical Challenge",
-          time: "11:30 AM",
-          location: "Innovation Hub",
+          time: "TBD",
+          location: "MNNIT",
           icon: "swords",
           prize: "₹2,50,000 Bounty",
           tag: "Team (2-4)",
@@ -874,8 +727,8 @@ export default function Events({ embedded = false }) {
           id: "event-2-finals",
           title: "Hackathon Finals & Pitch",
           category: "Product Pitch",
-          time: "10:00 AM",
-          location: "Main Auditorium",
+          time: "TBD",
+          location: "MNNIT",
           icon: "swords",
           prize: "₹2,50,000 Bounty",
           tag: "Jury Round",
@@ -891,8 +744,8 @@ export default function Events({ embedded = false }) {
           id: "event-2-startup-arena",
           title: "Startup Arena & Angel Pitch",
           category: "Venture Capital",
-          time: "01:30 PM",
-          location: "Exhibition Concourse",
+          time: "TBD",
+          location: "MNNIT",
           icon: "anchor",
           prize: "₹10,00,000+ Deals",
           tag: "Pitch Battle",
@@ -908,8 +761,8 @@ export default function Events({ embedded = false }) {
           id: "event-2-valedictory",
           title: "Valedictory & Awards Gala",
           category: "Grand Ceremony",
-          time: "05:00 PM",
-          location: "Main Auditorium",
+          time: "TBD",
+          location: "MNNIT",
           icon: "trophy",
           prize: "Trophies & Honors",
           tag: "Grand Finale",
@@ -1009,9 +862,8 @@ export default function Events({ embedded = false }) {
 
   return (
     <div
-      className={`relative w-full min-h-screen text-slate-100 select-none ${
-        embedded ? "pt-2 pb-2" : "pt-24 sm:pt-28 pb-16"
-      } px-4 sm:px-6 flex flex-col justify-start items-center overflow-x-hidden`}
+      className={`relative w-full min-h-screen text-slate-100 select-none ${embedded ? "pt-2 pb-2" : "pt-24 sm:pt-28 pb-16"
+        } px-4 sm:px-6 flex flex-col justify-start items-center overflow-x-hidden`}
       style={{
         background:
           "radial-gradient(ellipse 95% 75% at 50% 18%, #030b17 0%, #020710 45%, #000205 100%)",
@@ -1045,18 +897,16 @@ export default function Events({ embedded = false }) {
             <button
               key={d}
               onClick={() => setActiveDay(d)}
-              className={`px-4 sm:px-6 py-1 sm:py-1.5 rounded-xl font-cinzel text-xs font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer flex items-center gap-1.5 sm:gap-2 ${
-                activeDay === d
+              className={`px-4 sm:px-6 py-1 sm:py-1.5 rounded-xl font-cinzel text-xs font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer flex items-center gap-1.5 sm:gap-2 ${activeDay === d
                   ? "bg-gradient-to-r from-[#38BDF8]/25 to-[#38BDF8]/10 text-[#38BDF8] border border-[#38BDF8]/60 shadow-[0_0_15px_rgba(56,189,248,0.35)] scale-105"
                   : "text-slate-400 hover:text-slate-200 hover:border-white/20 border border-transparent"
-              }`}
+                }`}
             >
               <span
-                className={`w-1.5 h-1.5 rounded-full ${
-                  activeDay === d
+                className={`w-1.5 h-1.5 rounded-full ${activeDay === d
                     ? "bg-[#38BDF8] shadow-[0_0_6px_#38BDF8]"
                     : "bg-slate-600"
-                }`}
+                  }`}
               />
               <span>Day {d}</span>
             </button>
@@ -1149,11 +999,10 @@ export default function Events({ embedded = false }) {
             <div className="absolute -inset-3 rounded-full border border-[#38BDF8]/50 border-dashed animate-spin-slow pointer-events-none" />
           )}
           <div
-            className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-300 backdrop-blur-md ${
-              activeDay === 1
+            className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-300 backdrop-blur-md ${activeDay === 1
                 ? "bg-[#040e1f] border-[#38BDF8] shadow-[0_0_25px_rgba(56,189,248,0.7)] scale-110"
                 : "bg-[#020612]/90 border-white/30 group-hover:border-[#38BDF8] group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(56,189,248,0.3)]"
-            }`}
+              }`}
           >
             <span className="font-cinzel text-xs font-black text-[#38BDF8]">
               01
@@ -1183,11 +1032,10 @@ export default function Events({ embedded = false }) {
             <div className="absolute -inset-3 rounded-full border border-[#38BDF8]/50 border-dashed animate-spin-slow pointer-events-none" />
           )}
           <div
-            className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-300 backdrop-blur-md ${
-              activeDay === 2
+            className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-300 backdrop-blur-md ${activeDay === 2
                 ? "bg-[#040e1f] border-[#38BDF8] shadow-[0_0_25px_rgba(56,189,248,0.7)] scale-110"
                 : "bg-[#020612]/90 border-white/30 group-hover:border-[#38BDF8] group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(56,189,248,0.3)]"
-            }`}
+              }`}
           >
             <span className="font-cinzel text-xs font-black text-[#38BDF8]">
               02
