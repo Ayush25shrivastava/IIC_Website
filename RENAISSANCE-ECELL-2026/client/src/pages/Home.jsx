@@ -628,15 +628,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/90 text-xs font-mono overflow-visible">
-          <span className="tracking-widest uppercase text-[10px]">
-            Scroll To Navigate
-          </span>
-          <div className="w-4 h-7 border border-[#38BDF8]/40 rounded-full flex items-start justify-center p-1 overflow-visible">
-            <div className="w-1.5 h-1.5 bg-[#38BDF8] rounded-full animate-bounce" />
-          </div>
-        </div>
+        
       </section>
 
       {/* ============================================================ */}
