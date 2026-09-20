@@ -7,6 +7,8 @@ import {
   Calendar,
   Users,
   Image,
+  GraduationCap,
+  LogIn,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -129,10 +131,10 @@ export default function Navbar() {
 
           {/* Desktop Sign In */}
           <div className="hidden items-center md:flex">
-            
           </div>
 
-          {/* Mobile Menu Toggle */}
+          {/* Portal Menu */}
+          <div className="relative">
           <button
             type="button"
             onClick={() =>
@@ -144,7 +146,7 @@ export default function Navbar() {
                 : "Open navigation menu"
             }
             aria-expanded={isOpen}
-            className="relative z-50 rounded-xl border border-white/80 bg-[#ECF6F5]/90 p-2.5 text-[#0C2B3D] shadow-[0_6px_20px_rgba(12,43,61,0.18)] backdrop-blur-xl transition-all hover:text-[#9E6D1F] active:scale-95 md:hidden"
+            className="relative z-50 rounded-xl border border-white/80 bg-[#ECF6F5]/90 p-2.5 text-[#0C2B3D] shadow-[0_6px_20px_rgba(12,43,61,0.18)] backdrop-blur-xl transition-all hover:text-[#9E6D1F] active:scale-95"
           >
             {isOpen ? (
               <FiX
@@ -155,6 +157,36 @@ export default function Navbar() {
               <FiMenu size={22} />
             )}
           </button>
+
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                transition={{ duration: 0.18 }}
+                className="absolute right-0 top-14 z-50 hidden w-64 rounded-2xl border border-[#C5A25F]/35 bg-[#ECF6F5]/95 p-2 shadow-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl md:block"
+              >
+                <Link
+                  to="/campus-ambassador"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-[#0C2B3D] transition-colors hover:bg-[#F4EBD9]/90"
+                >
+                  <GraduationCap className="h-5 w-5 text-[#9E6D1F]" />
+                  Campus Ambassador
+                </Link>
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-[#0C2B3D] transition-colors hover:bg-[#F4EBD9]/90"
+                >
+                  <LogIn className="h-5 w-5 text-[#9E6D1F]" />
+                  Sign In
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          </div>
         </div>
       </nav>
 
@@ -261,7 +293,24 @@ export default function Navbar() {
                 }}
                 className="pt-4"
               >
-                
+                <div className="grid grid-cols-1 gap-2">
+                  <Link
+                    to="/campus-ambassador"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-xl border border-[#C5A25F]/45 bg-[#F4EBD9]/80 px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#0C2B3D]"
+                  >
+                    <GraduationCap className="h-4 w-4 text-[#9E6D1F]" />
+                    Campus Ambassador
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-xl border border-[#7FB6C7]/30 bg-white/45 px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#416678]"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Sign In
+                  </Link>
+                </div>
               </motion.div>
             </div>
 
