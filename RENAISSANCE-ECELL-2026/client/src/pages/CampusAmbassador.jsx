@@ -54,68 +54,68 @@ export default function CampusAmbassador() {
 
   if (!isAuthenticated) {
     return (
-      <main className="min-h-screen px-4 pb-16 pt-32 text-[#F4EBD9] sm:px-6">
-        <section className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-3xl border border-[#C5A25F]/30 bg-[#020610]/80 shadow-2xl backdrop-blur-xl md:grid-cols-2">
-          <div className="relative flex flex-col justify-center overflow-hidden p-7 sm:p-12">
+      <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.32),transparent_45%)] px-4 pb-16 pt-32 text-[#173247] sm:px-6">
+        <section className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-3xl border border-white/70 bg-white/25 shadow-[0_24px_70px_rgba(12,43,61,0.3)] backdrop-blur-2xl md:grid-cols-2">
+          <div className="relative flex flex-col justify-center overflow-hidden bg-white/20 p-7 sm:p-12">
             <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#0EA5E9]/15 blur-3xl" />
-            <span className="relative mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-[#C5A25F]/40 bg-[#041021] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#C5A25F]">
+            <span className="relative mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-[#9E6D1F]/45 bg-white/45 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#815719] shadow-sm">
               <GraduationCap className="h-3.5 w-3.5" />
               Campus Ambassador Portal
             </span>
-            <h1 className="relative mb-4 font-cinzel text-3xl font-bold leading-tight sm:text-4xl">
+            <h1 className="relative mb-4 font-cinzel text-3xl font-bold leading-tight text-[#102C40] sm:text-4xl">
               Lead the voyage from your campus.
             </h1>
-            <p className="relative max-w-md text-sm leading-7 text-[#CBD5E1]">
+            <p className="relative max-w-md text-sm leading-7 text-[#365467]">
               Manage your ambassador tasks, share your unique promo code, and
               help your campus experience Renaissance 2026.
             </p>
             <div className="relative mt-8 grid grid-cols-2 gap-3 text-xs">
-              <div className="rounded-2xl border border-[#C5A25F]/20 bg-[#041021]/80 p-4">
-                <p className="mb-1 text-[#94A3B8]">Event dates</p>
-                <p className="font-semibold text-[#F4EBD9]">18–19 April 2026</p>
+              <div className="rounded-2xl border border-white/70 bg-white/35 p-4 shadow-sm backdrop-blur-xl">
+                <p className="mb-1 text-[#527486]">Event dates</p>
+                <p className="font-semibold text-[#173247]">18–19 April 2026</p>
               </div>
-              <div className="rounded-2xl border border-[#C5A25F]/20 bg-[#041021]/80 p-4">
-                <p className="mb-1 text-[#94A3B8]">Your role</p>
-                <p className="font-semibold text-[#F4EBD9]">Campus Captain</p>
+              <div className="rounded-2xl border border-white/70 bg-white/35 p-4 shadow-sm backdrop-blur-xl">
+                <p className="mb-1 text-[#527486]">Your role</p>
+                <p className="font-semibold text-[#173247]">Campus Captain</p>
               </div>
             </div>
           </div>
 
-          <form onSubmit={handleLogin} className="border-t border-[#C5A25F]/20 bg-[#041021]/70 p-7 sm:p-12 md:border-l md:border-t-0">
+          <form onSubmit={handleLogin} className="border-t border-white/60 bg-white/35 p-7 backdrop-blur-2xl sm:p-12 md:border-l md:border-t-0">
             <div className="mb-8">
-              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C5A25F]/15 text-[#C5A25F]">
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C5A25F]/40 bg-[#F4EBD9]/70 text-[#815719] shadow-sm">
                 <LockKeyhole className="h-5 w-5" />
               </div>
-              <h2 className="font-cinzel text-2xl font-bold text-[#F4EBD9]">Ambassador login</h2>
-              <p className="mt-2 text-xs leading-6 text-[#94A3B8]">
+              <h2 className="font-cinzel text-2xl font-bold text-[#102C40]">Ambassador login</h2>
+              <p className="mt-2 text-xs leading-6 text-[#527486]">
                 Use the credentials issued by the Renaissance team.
               </p>
             </div>
-            <label className="mb-4 block text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
+            <label className="mb-4 block text-xs font-semibold uppercase tracking-wider text-[#365467]">
               Email address
               <input
                 type="email"
                 value={credentials.email}
                 onChange={(event) => setCredentials({ ...credentials, email: event.target.value })}
                 placeholder="you@college.edu"
-                className="mt-2 w-full rounded-xl border border-[#C5A25F]/20 bg-[#020610] px-4 py-3 text-sm text-white outline-none transition focus:border-[#C5A25F]"
+                className="mt-2 w-full rounded-xl border border-white/80 bg-white/55 px-4 py-3 text-sm text-[#173247] shadow-inner outline-none transition placeholder:text-[#6B8492] focus:border-[#C5A25F] focus:bg-white/75"
               />
             </label>
-            <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[#94A3B8]">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[#365467]">
               Password
               <input
                 type="password"
                 value={credentials.password}
                 onChange={(event) => setCredentials({ ...credentials, password: event.target.value })}
                 placeholder="Enter your password"
-                className="mt-2 w-full rounded-xl border border-[#C5A25F]/20 bg-[#020610] px-4 py-3 text-sm text-white outline-none transition focus:border-[#C5A25F]"
+                className="mt-2 w-full rounded-xl border border-white/80 bg-white/55 px-4 py-3 text-sm text-[#173247] shadow-inner outline-none transition placeholder:text-[#6B8492] focus:border-[#C5A25F] focus:bg-white/75"
               />
             </label>
             {loginError && <p className="mt-3 text-xs text-red-300">{loginError}</p>}
             <button type="submit" className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#C5A25F] px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#020610] transition hover:bg-[#E1C276]">
               Enter portal
             </button>
-            <p className="mt-5 text-center text-[11px] text-[#64748B]">
+            <p className="mt-5 text-center text-[11px] text-[#527486]">
               Demo portal: any non-empty credentials will open the dashboard.
             </p>
           </form>
