@@ -73,7 +73,7 @@ export default function CampusAmbassador() {
             <div className="relative mt-8 grid grid-cols-2 gap-3 text-xs">
               <div className="rounded-2xl border border-white/70 bg-white/35 p-4 shadow-sm backdrop-blur-xl">
                 <p className="mb-1 text-[#527486]">Event dates</p>
-                <p className="font-semibold text-[#173247]">18–19 April 2026</p>
+                <p className="font-semibold text-[#173247]">25–26 October 2026</p>
               </div>
               <div className="rounded-2xl border border-white/70 bg-white/35 p-4 shadow-sm backdrop-blur-xl">
                 <p className="mb-1 text-[#527486]">Your role</p>
