@@ -28,6 +28,8 @@ const Teams = lazy(() => import("./pages/Teams"));
 const Sponsors = lazy(() => import("./pages/Sponsors"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const LoginSuccess = lazy(() => import("./pages/LoginSuccess"));
+const Login = lazy(() => import("./pages/Login"));
+const CampusAmbassador = lazy(() => import("./pages/CampusAmbassador"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -162,6 +164,13 @@ export default function App() {
               />
 
               {/* Auth callback */}
+              <Route path="/login" element={<Login />} />
+
+              <Route
+                path="/campus-ambassador"
+                element={<CampusAmbassador />}
+              />
+
               <Route
                 path="/login/success"
                 element={<LoginSuccess />}
