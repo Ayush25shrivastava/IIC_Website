@@ -54,8 +54,9 @@ export default function CampusAmbassador() {
 
   if (!isAuthenticated) {
     return (
-      <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.32),transparent_45%)] px-4 pb-16 pt-32 text-[#173247] sm:px-6">
-        <section className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-3xl border border-white/70 bg-white/25 shadow-[0_24px_70px_rgba(12,43,61,0.3)] backdrop-blur-2xl md:grid-cols-2">
+      <>
+        <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.32),transparent_45%)] px-4 pb-16 pt-32 text-[#173247] sm:px-6">
+          <section className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-3xl border border-white/70 bg-white/25 shadow-[0_24px_70px_rgba(12,43,61,0.3)] backdrop-blur-2xl md:grid-cols-2">
           <div className="relative flex flex-col justify-center overflow-hidden bg-white/20 p-7 sm:p-12">
             <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#0EA5E9]/15 blur-3xl" />
             <span className="relative mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-[#9E6D1F]/45 bg-white/45 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#815719] shadow-sm">
@@ -119,15 +120,17 @@ export default function CampusAmbassador() {
               Demo portal: any non-empty credentials will open the dashboard.
             </p>
           </form>
-        </section>
+          </section>
+        </main>
         <ContactFooter />
-      </main>
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen px-4 pb-16 pt-32 text-[#F4EBD9] sm:px-6">
-      <section className="mx-auto w-full max-w-6xl">
+    <>
+      <main className="min-h-screen px-4 pb-16 pt-32 text-[#F4EBD9] sm:px-6">
+        <section className="mx-auto w-full max-w-6xl">
         <div className="mb-6 flex flex-col justify-between gap-5 rounded-3xl border border-[#C5A25F]/30 bg-[#020610]/80 p-6 shadow-2xl backdrop-blur-xl sm:flex-row sm:items-center sm:p-8">
           <div>
             <span className="mb-2 inline-block font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#C5A25F]">Ambassador dashboard</span>
@@ -191,8 +194,9 @@ export default function CampusAmbassador() {
             ))}
           </div>
         </section>
-      </section>
+        </section>
+      </main>
       <ContactFooter />
-    </main>
+    </>
   );
 }
