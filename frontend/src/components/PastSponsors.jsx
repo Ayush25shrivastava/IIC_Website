@@ -2,7 +2,10 @@ import React from 'react';
 
 // Import images from assets/past sponsors
 const images = import.meta.glob('../assets/past sponsors/*', { eager: true, query: '?url', import: 'default' });
-const sponsorLogos = Object.values(images);
+const sponsorLogos = Object.entries(images).map(([path, src]) => ({
+    src,
+    name: path.split('/').pop()?.replace(/\.[^/.]+$/, '') || 'Sponsor',
+}));
 
 const PastSponsors = () => {
     return (
