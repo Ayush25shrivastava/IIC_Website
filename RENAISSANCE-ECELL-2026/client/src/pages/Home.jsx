@@ -88,6 +88,7 @@ const CURRENT_SPONSORS = [
 ];
 
 const PAST_SPONSORS = [
+  { name: "Paytm Build for India", image: "/sponsors/paytm-build-for-india.png" },
   { name: "Dalal Street", image: "/sponsors/dalal-street.png" },
   { name: "ICICI Bank", image: "/sponsors/icici.png" },
   { name: "OLA", image: "/sponsors/ola.png" },
