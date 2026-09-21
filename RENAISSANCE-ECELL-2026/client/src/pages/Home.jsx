@@ -318,6 +318,36 @@ function StaggeredSponsorsGrid({ title, subtitle, sponsors }) {
   );
 }
 
+function AccommodationSection() {
+  return (
+    <section className="relative w-full py-20 sm:py-28 px-4 bg-transparent flex flex-col items-center justify-center z-20 select-none overflow-hidden">
+      {/* Decorative ambient light */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[200px] bg-[#38BDF8]/10 blur-[100px] pointer-events-none" />
+      
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10 flex flex-col items-center">
+        <span className="text-xs sm:text-sm font-mono text-[#E6DFD3] uppercase tracking-[0.25em] font-bold block mb-3 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]">
+          Stay With Us
+        </span>
+        <h2 className="text-[2.2rem] sm:text-5xl font-extrabold tracking-tight animate-renaissance-theme leading-tight mb-6">
+          Book Your Accommodation
+        </h2>
+        <p className="text-sm sm:text-base md:text-lg text-[#CBD5E1] font-medium leading-relaxed mb-10 max-w-2xl drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+          Join the 10th edition of Renaissance by staying right at the heart of the summit. Ensure a seamless experience by booking your campus accommodation in advance.
+        </p>
+        <Link
+          to="/tickets-accommodation"
+          className="group relative flex items-center justify-center gap-2.5 px-8 sm:px-10 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-[#f3e5ab] via-[#d4af37] to-[#d4af37] text-[#0C2B3D] font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.6)] transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] border border-[#d4af37]/60 w-full sm:w-auto"
+        >
+          <span className="text-xs sm:text-sm font-extrabold tracking-widest uppercase">
+            Reserve Now
+          </span>
+          <ExternalLink className="w-4 h-4 text-[#0C2B3D] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 const SPEAKERS = [
   { id: 1, label: "Speaker 01" },
   { id: 2, label: "Speaker 02" },
@@ -888,6 +918,11 @@ export default function Home() {
       {/* ============================================================ */}
       {/* 6. KEYNOTE SPEAKERS SECTION */}
       <FeaturedSpeakersGrid speakers={SPEAKERS} />
+
+      {/* ============================================================ */}
+      {/* 6.5. ACCOMMODATION SECTION                                   */}
+      {/* ============================================================ */}
+      <AccommodationSection />
 
       {/* ============================================================ */}
       {/* 7. SPONSORS SECTION                                          */}
