@@ -624,14 +624,14 @@ export default function Home() {
 
           {/* Action CTAs: Register Now + Explore Events */}
           <div className="overflow-visible flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 w-full max-w-xs sm:max-w-none mx-auto">
-            <button
-              type="button"
+            <Link
+              to="/login"
               aria-label="Register Now"
               className="group relative flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-[#f3e5ab] via-[#d4af37] to-[#d4af37] text-[#0C2B3D] font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.6)] transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] overflow-visible cursor-pointer border border-[#d4af37]/60 w-full sm:w-auto"
             >
               <UserCheck className="w-4 h-4 text-[#0C2B3D] overflow-visible" />
               <span>Register Now</span>
-            </button>
+            </Link>
 
             <a
               href="#events"
