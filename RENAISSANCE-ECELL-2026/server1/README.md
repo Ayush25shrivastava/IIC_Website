@@ -154,3 +154,68 @@ npm run admin:create -- --name="Main Admin" --email=admin@example.com --role=SUP
 ```
 
 Admin authentication lives under `/api/v1/admin/auth`. Protected management APIs live under `/api/v1/admin` and cover ambassadors, promo codes, task assignment/progress, and promo-attributed registrations. Deleting an ambassador archives the account instead of destroying historical referral/task links.
+
+## Docker deployment
+
+`server1` has its own Docker build and Compose configuration. The legacy sibling `server/` directory is deliberately not part of this image or Compose service.
+
+From `RENAISSANCE-ECELL-2026/server1`:
+
+```bash
+cp .env.example .env
+```
+
+Set real production values in `.env`, especially:
+
+```env
+MONGODB_URI=mongodb+srv://...
+CLIENT_ORIGIN=https://your-frontend.example.com
+JWT_ACCESS_SECRET=<unique-random-secret>
+JWT_REFRESH_SECRET=<different-unique-random-secret>
+TRUST_PROXY_HOPS=1
+AUTH_COOKIE_SAME_SITE=none
+```
+
+If the API and frontend are same-site, `AUTH_COOKIE_SAME_SITE=lax` is usually sufficient. `NODE_ENV=production` and secure cookies are enforced by the container configuration/application.
+
+Build and run:
+
+```bash
+docker compose build
+docker compose up -d
+docker compose ps
+```
+
+Check liveness and readiness:
+
+```bash
+curl http://localhost:5001/api/v1/health
+curl http://localhost:5001/api/v1/ready
+```
+
+The image uses the HTTP health endpoint for container liveness. `/api/v1/ready` remains the database-aware readiness check.
+
+Create the first admin inside the running container:
+
+```bash
+docker compose exec api npm run admin:create -- --name="Main Admin" --email=admin@example.com --role=SUPER_ADMIN
+```
+
+Stop the service:
+
+```bash
+docker compose down
+```
+
+To publish to a registry:
+
+```bash
+docker build -t <registry-user>/renaissance-server1:latest .
+docker push <registry-user>/renaissance-server1:latest
+```
+
+The frontend must use the deployed API base URL including `/api/v1`, for example:
+
+```env
+VITE_SERVER1_API_URL=https://api.example.com/api/v1
+```
