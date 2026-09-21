@@ -3,23 +3,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import ContactFooter from "../components/ContactFooter";
 
 const MASONRY_IMAGES = [
-  { id: 6, src: "/past_events/Copy of REN (5).png", delay: 0.1 },
-  { id: 9, src: "/past_events/Copy of REN (8).png", delay: 0.2 },
-  { id: 1, src: "/past_events/Copy of REN.png", delay: 0.15 },
-  { id: 2, src: "/past_events/Copy of REN (1).png", delay: 0.25 },
-  { id: 3, src: "/past_events/Copy of REN (2).png", delay: 0.1 },
-  { id: 4, src: "/past_events/Copy of REN (3).png", delay: 0.2 },
-  { id: 5, src: "/past_events/Copy of REN (4).png", delay: 0.3 },
-  { id: 7, src: "/past_events/Copy of REN (6).png", delay: 0.15 },
-  { id: 8, src: "/past_events/Copy of REN (7).png", delay: 0.25 },
-  { id: 10, src: "/past_events/Copy of REN (9).png", delay: 0.1 },
+  { id: 1, src: "/past_events/Copy of REN (1).png", delay: 0.1, span: "col-span-2 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  { id: 10, src: "/past_events/Untitled design (3).png", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-2" },
+  { id: 3, src: "/past_events/Copy of REN (5).png", delay: 0.2, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-2 xl:row-span-1" },
+  { id: 14, src: "/past_events/Untitled design (8).png", delay: 0.15, span: "col-span-2 row-span-1 md:col-span-2 md:row-span-1 xl:col-span-1 xl:row-span-1" },
+  { id: 5, src: "/past_events/Copy of REN (9).png", delay: 0.1, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  
+  { id: 12, src: "/past_events/Untitled design (6).png", delay: 0.25, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
+  { id: 7, src: "/past_events/Copy of REN.png", delay: 0.2, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-2 xl:row-span-1" },
+  { id: 8, src: "/past_events/Untitled design (1).png", delay: 0.25, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  { id: 2, src: "/past_events/Copy of REN (4).png", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-2 xl:col-span-1 xl:row-span-2" },
+  { id: 16, src: "/past_events/Untitled design (10).png", delay: 0.25, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
 
-  { id: 12, src: "/past_events/Copy of REN (11).png", delay: 0.15 },
-  { id: 13, src: "/past_events/Copy of REN (12).png", delay: 0.2 },
-  { id: 14, src: "/past_events/Copy of REN (13).png", delay: 0.1 },
-  { id: 15, src: "/past_events/Copy of REN (14).png", delay: 0.25 },
-  { id: 16, src: "/past_events/Copy of REN (15).png", delay: 0.15 },
-  { id: 17, src: "/past_events/Copy of REN (16).png", delay: 0.2 }
+  { id: 11, src: "/past_events/Untitled design (4).png", delay: 0.2, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  { id: 6, src: "/past_events/Copy of REN (12).png", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-2 xl:col-span-1 xl:row-span-2" },
+  { id: 13, src: "/past_events/Untitled design (7).png", delay: 0.1, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-2 xl:row-span-1" },
+  { id: 4, src: "/past_events/Copy of REN (8).png", delay: 0.25, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
+  { id: 15, src: "/past_events/Untitled design (9).png", delay: 0.2, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+
+  { id: 9, src: "/past_events/Untitled design (2).png", delay: 0.1, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
+  { id: 17, src: "/past_events/Untitled design (11).png", delay: 0.1, span: "col-span-1 row-span-1 md:col-span-2 md:row-span-1 xl:col-span-2 xl:row-span-1" },
+  { id: 18, src: "/past_events/Untitled design (12).png", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  { id: 19, src: "/past_events/Untitled design.png", delay: 0.2, span: "col-span-2 row-span-1 md:col-span-2 md:row-span-1 xl:col-span-1 xl:row-span-1" }
 ];
 
 const PAST_SPEAKERS = [
@@ -217,7 +222,7 @@ export default function Gallery() {
           </motion.div>
         </div>
 
-        <div className="columns-1 gap-3 min-[480px]:columns-2 sm:gap-6 md:columns-3 lg:columns-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 auto-rows-[120px] sm:auto-rows-[140px] lg:auto-rows-[160px] gap-3 sm:gap-4 md:gap-5 grid-flow-dense w-full">
           {MASONRY_IMAGES.map((img, index) => (
             <motion.div
               key={img.id}
@@ -231,15 +236,14 @@ export default function Gallery() {
               }}
               layoutId={`gallery-img-${img.id}`}
               onClick={() => setSelectedImage(img)}
-              className={`relative mb-3 sm:mb-6 overflow-hidden rounded-xl break-inside-avoid shadow-lg hover:shadow-2xl transition-shadow duration-500 bg-[#E8D7C2]/30 group cursor-pointer block w-full`}
+              className={`relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-500 bg-[#E8D7C2]/30 group cursor-pointer w-full h-full ${img.span || ''}`}
             >
               <img
                 src={img.src}
                 alt={`Archive capture ${index + 1}`}
-                className="w-full h-auto block filter contrast-[1.05] brightness-[1.02] transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105"
+                className="w-full h-full object-cover object-center block filter contrast-[1.05] brightness-[1.02] transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105"
                 loading="lazy"
               />
-              {/* Subtle ambient overlay to blend with theme */}
               <div className="absolute inset-0 bg-[#0A2239] opacity-[0.03] mix-blend-overlay pointer-events-none group-hover:opacity-0 transition-opacity duration-500" />
             </motion.div>
           ))}
