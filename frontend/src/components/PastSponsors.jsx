@@ -32,13 +32,13 @@ const PastSponsors = () => {
                     {/* First set of logos */}
                     {sponsorLogos.map(({ src, name }, idx) => (
                         <div key={`sponsor-1-${idx}`} className="mx-8 w-32 h-16 flex items-center justify-center transition-all duration-300 transform hover:scale-110">
-                            <img src={src} alt={name} className="max-w-full max-h-full object-contain filter drop-shadow-md" />
+                            <img src={src} alt={name} loading="lazy" decoding="async" className="max-w-full max-h-full object-contain filter drop-shadow-md" />
                         </div>
                     ))}
                     {/* Second set for infinite loop (MUST match first set structure exactly) */}
-                    {sponsorLogos.map(({ src, name }, idx) => (
+                    {sponsorLogos.map(({ src }, idx) => (
                         <div key={`sponsor-2-${idx}`} className="mx-8 w-32 h-16 flex items-center justify-center transition-all duration-300 transform hover:scale-110">
-                            <img src={src} alt="" aria-hidden="true" className="max-w-full max-h-full object-contain filter drop-shadow-md" />
+                            <img src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" className="max-w-full max-h-full object-contain filter drop-shadow-md" />
                         </div>
                     ))}
                 </div>
