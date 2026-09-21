@@ -92,6 +92,7 @@ const PAST_SPONSORS = [
   { name: "Haldiram Bhujiawala", image: "/sponsors/haldiram-bhujiawala.png" },
   { name: "Superhits Red FM 93.5", image: "/sponsors/red-fm-93-5.png" },
   { name: "Dainik Jagran Inext", image: "/sponsors/dainik-jagran-inext.png" },
+  { name: "HDFC Bank", image: "/sponsors/hdfc-bank.png" },
   { name: "Dalal Street", image: "/sponsors/dalal-street.png" },
   { name: "ICICI Bank", image: "/sponsors/icici.png" },
   { name: "OLA", image: "/sponsors/ola.png" },
