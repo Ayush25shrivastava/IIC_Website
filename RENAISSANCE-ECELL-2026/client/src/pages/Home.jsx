@@ -104,11 +104,6 @@ const PAST_SPONSORS = [
   { name: "Coca Cola", image: "/sponsors/coca-cola.png" },
   { name: "KDM", image: "/sponsors/kdm.png" },
   { name: "Domino's", image: "/sponsors/dominos.png" },
-  { name: "Government of Uttar Pradesh", image: "/sponsors/Government-of-Uttar-Pradesh.png" },
-  { name: "Paytm Build for India", image: "/sponsors/Paytm-Build-for-India.png" },
-  { name: "Kratikal", image: "/sponsors/Kratikal.png" },
-  { name: "HDFC Bank", image: "/sponsors/HDFC-Bank.png" },
-  { name: "Red FM 93.5", image: "/sponsors/Red-FM-93.5.png" },
 ];
 
 function FeaturedSpeakersGrid({ speakers }) {
