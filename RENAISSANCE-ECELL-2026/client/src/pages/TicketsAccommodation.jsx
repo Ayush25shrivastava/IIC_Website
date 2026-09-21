@@ -26,7 +26,7 @@ const TICKET_OPTIONS = [
   {
     id: "1-day",
     name: "1-Day Accommodation",
-    price: "₹800",
+    price: "₹1,750",
     duration: "1 Night / 1 Day",
     benefits: [
       "Access to all day 1 events",
@@ -39,7 +39,7 @@ const TICKET_OPTIONS = [
   {
     id: "2-day",
     name: "2-Day Accommodation",
-    price: "₹1,500",
+    price: "₹2,450",
     duration: "2 Nights / 2 Days",
     benefits: [
       "Access to full summit (Both Days)",
@@ -52,7 +52,7 @@ const TICKET_OPTIONS = [
   {
     id: "event-only",
     name: "Event Ticket (Both Days)",
-    price: "₹500",
+    price: "₹900",
     duration: "2 Days (No Accommodation)",
     benefits: [
       "Access to full summit (Both Days)",
