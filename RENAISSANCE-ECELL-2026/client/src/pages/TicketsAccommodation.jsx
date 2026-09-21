@@ -74,6 +74,7 @@ const TICKET_OPTIONS = [
 export default function TicketsAccommodation() {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -145,7 +146,8 @@ export default function TicketsAccommodation() {
       return;
     }
 
-    alert(`Registration Details Submitted!\n\nTicket: ${activeTicketData.name}\nName: ${formData.name}\n\n(This is a UI demonstration. Backend integration is pending.)`);
+    setShowPayment(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const activeTicketData = TICKET_OPTIONS.find(t => t.id === selectedTicket);
@@ -224,7 +226,7 @@ export default function TicketsAccommodation() {
       <section className="relative z-10 mx-auto w-full max-w-[1400px] px-4 pb-24 pt-[240px] sm:px-6 sm:pt-[290px] lg:px-8 lg:pt-[330px]">
         
         <AnimatePresence mode="wait">
-          {!showForm ? (
+          {!showForm && !showPayment ? (
             <motion.div
               key="selection-view"
               initial={{ opacity: 0, y: 20 }}
@@ -431,7 +433,7 @@ export default function TicketsAccommodation() {
                 </button>
               </div>
             </motion.div>
-          ) : (
+          ) : showForm && !showPayment ? (
             <motion.div
               key="form-view"
               initial={{ opacity: 0, scale: 0.98, y: 10 }}
@@ -643,6 +645,71 @@ export default function TicketsAccommodation() {
                       </button>
                     </div>
                   </form>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="payment-view"
+              initial={{ opacity: 0, scale: 0.98, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98, y: 10 }}
+              transition={{ duration: 0.3 }}
+              className="max-w-2xl mx-auto"
+            >
+              <button
+                type="button"
+                onClick={() => setShowPayment(false)}
+                className="flex items-center gap-2 text-[#2C5263] hover:text-[#9E6D1F] transition-colors mb-6 font-mono text-xs uppercase tracking-widest font-bold"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Details
+              </button>
+
+              <div className="rounded-[28px] border-2 border-[#C5A25F]/70 bg-gradient-to-br from-[#EEDFCA] via-[#E6D6C0] to-[#DCECEE] shadow-[0_22px_70px_rgba(20,55,70,0.15)] overflow-hidden relative p-8 sm:p-12 text-center">
+                <h3 className="font-cinzel text-2xl font-black text-[#0C2B3D] mb-4">Complete Your Payment</h3>
+                <p className="font-montserrat text-[#1A3B4D] mb-8 font-semibold">
+                  Scan the QR code below to pay <span className="text-[#9E6D1F] font-black">{activeTicketData?.price}</span> for your {activeTicketData?.name}.
+                </p>
+                
+                <div className="bg-white p-4 rounded-2xl inline-block shadow-lg border-2 border-[#C5A25F]/40 mb-8">
+                  <img 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=dummy@upi&pn=Renaissance&am=${activeTicketData?.price.replace('₹', '').replace(',', '')}&cu=INR`} 
+                    alt="Payment QR Code"
+                    className="w-48 h-48 sm:w-64 sm:h-64 object-contain"
+                  />
+                </div>
+                
+                <div className="space-y-4 max-w-md mx-auto">
+                  <div className="bg-[#F4EBD9]/80 border-2 border-[#C5A25F]/40 p-4 rounded-xl text-left">
+                    <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                      Transaction ID / UTR Number *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter 12-digit UTR number"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-[#C5A25F]/30 text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/40 focus:outline-none focus:border-[#9E6D1F] transition-colors"
+                    />
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={() => {
+                      alert("Payment Details Submitted Successfully!");
+                      setShowPayment(false);
+                      setShowForm(false);
+                      setSelectedTicket(null);
+                      setFormData({
+                        name: "", email: "", phone: "", college: "", city: "", checkInDate: "", checkOutDate: "", accommodationPreferences: "",
+                      });
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="group relative flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#0C2B3D] text-[#F2E5D4] font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_8px_30px_rgba(12,43,61,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer border border-[#0C2B3D] w-full overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-[#16435E] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                    <span className="relative z-10">Verify & Complete Registration</span>
+                    <CheckCircle2 className="relative z-10 w-4 h-4 group-hover:scale-110 transition-transform" />
+                  </button>
                 </div>
               </div>
             </motion.div>
