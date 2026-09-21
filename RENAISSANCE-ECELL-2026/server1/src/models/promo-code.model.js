@@ -73,6 +73,10 @@ const promoCodeSchema = new Schema(
       type: Date,
       default: null,
     },
+    archivedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     collection: "promo_codes",
@@ -116,6 +120,10 @@ promoCodeSchema.index(
 promoCodeSchema.index(
   { isActive: 1, validFrom: 1, validUntil: 1 },
   { name: "idx_promo_code_active_validity" },
+);
+promoCodeSchema.index(
+  { archivedAt: 1, createdAt: -1 },
+  { name: "idx_promo_code_archived_created_at" },
 );
 
 export const PromoCode =

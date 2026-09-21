@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import helmet from "helmet";
 import { env } from "./config/env.js";
+import { requireDatabaseReady } from "./middleware/database-ready.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { notFoundHandler } from "./middleware/not-found.js";
 import { requestLogger } from "./middleware/request-context.js";
@@ -61,10 +62,10 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1", healthRouter);
-app.use("/api/v1/ambassador/auth", ambassadorAuthRouter);
-app.use("/api/v1/ambassador", ambassadorDashboardRouter);
-app.use("/api/v1/admin/auth", adminAuthRouter);
-app.use("/api/v1/admin", adminManagementRouter);
+app.use("/api/v1/ambassador/auth", requireDatabaseReady, ambassadorAuthRouter);
+app.use("/api/v1/ambassador", requireDatabaseReady, ambassadorDashboardRouter);
+app.use("/api/v1/admin/auth", requireDatabaseReady, adminAuthRouter);
+app.use("/api/v1/admin", requireDatabaseReady, adminManagementRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

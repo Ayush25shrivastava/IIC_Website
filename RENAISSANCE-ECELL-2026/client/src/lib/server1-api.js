@@ -73,17 +73,50 @@ async function send(path, { method = "GET", body, query, signal } = {}) {
   });
 }
 
+const refreshRequests = new Map();
+
+async function refreshAuth(authScope) {
+  const existing = refreshRequests.get(authScope);
+  if (existing) return existing;
+
+  const refreshPath = authScope === "admin"
+    ? "/admin/auth/refresh"
+    : "/ambassador/auth/refresh";
+
+  const refreshPromise = (async () => {
+    const response = await send(refreshPath, { method: "POST" });
+
+    if (response.ok) {
+      return { ok: true, status: response.status, error: null };
+    }
+
+    if (response.status >= 500) {
+      try {
+        await readResponse(response);
+      } catch (error) {
+        return { ok: false, status: response.status, error };
+      }
+    }
+
+    return { ok: false, status: response.status, error: null };
+  })().finally(() => {
+    refreshRequests.delete(authScope);
+  });
+
+  refreshRequests.set(authScope, refreshPromise);
+  return refreshPromise;
+}
+
 async function request(path, options = {}, authScope = null, retry = true) {
   let response = await send(path, options);
 
   if (response.status === 401 && retry && authScope) {
-    const refreshPath = authScope === "admin"
-      ? "/admin/auth/refresh"
-      : "/ambassador/auth/refresh";
+    const refreshResult = await refreshAuth(authScope);
 
-    const refreshResponse = await send(refreshPath, { method: "POST" });
-    if (refreshResponse.ok) {
+    if (refreshResult.ok) {
       response = await send(path, options);
+    } else if (refreshResult.error) {
+      throw refreshResult.error;
     }
   }
 
@@ -148,6 +181,11 @@ export const adminApi = {
     { method: "DELETE" },
     "admin",
   ),
+  hardDeleteAmbassador: (id) => request(
+    `/admin/ambassadors/${encodeURIComponent(id)}/hard`,
+    { method: "DELETE" },
+    "admin",
+  ),
   promoCodes: (query) => request("/admin/promo-codes", { query }, "admin"),
   createPromoCode: (body) => request("/admin/promo-codes", { method: "POST", body }, "admin"),
   updatePromoCode: (promoId, body) => request(
@@ -158,6 +196,16 @@ export const adminApi = {
   setPromoCodeStatus: (promoId, isActive) => request(
     `/admin/promo-codes/${encodeURIComponent(promoId)}/status`,
     { method: "PATCH", body: { isActive } },
+    "admin",
+  ),
+  archivePromoCode: (promoId) => request(
+    `/admin/promo-codes/${encodeURIComponent(promoId)}`,
+    { method: "DELETE" },
+    "admin",
+  ),
+  hardDeletePromoCode: (promoId) => request(
+    `/admin/promo-codes/${encodeURIComponent(promoId)}/hard`,
+    { method: "DELETE" },
     "admin",
   ),
   tasks: (query) => request("/admin/tasks", { query }, "admin"),

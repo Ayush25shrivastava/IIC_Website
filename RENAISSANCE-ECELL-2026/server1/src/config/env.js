@@ -27,6 +27,11 @@ const schema = z.object({
   MONGO_SERVER_SELECTION_TIMEOUT_MS: z.coerce.number().int().min(1000).max(60000).default(10000),
   MONGO_MAX_POOL_SIZE: z.coerce.number().int().min(1).max(200).default(20),
   MONGO_MIN_POOL_SIZE: z.coerce.number().int().min(0).max(100).default(0),
+  MONGO_FAMILY: z.coerce.number().int().refine((value) => [0, 4, 6].includes(value), {
+    message: "MONGO_FAMILY must be 0, 4, or 6",
+  }).default(4),
+  MONGO_CONNECT_TIMEOUT_MS: z.coerce.number().int().min(1000).max(60000).default(10000),
+  MONGO_SOCKET_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120000).default(45000),
   JWT_ACCESS_SECRET: z.string().min(32, "JWT_ACCESS_SECRET must be at least 32 characters"),
   JWT_REFRESH_SECRET: z.string().min(32, "JWT_REFRESH_SECRET must be at least 32 characters"),
   JWT_ISSUER: z.string().min(1).default("renaissance-server1"),

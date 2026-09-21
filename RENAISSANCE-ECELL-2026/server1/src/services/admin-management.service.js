@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import mongoose from "mongoose";
 import { AMBASSADOR_STATUS, REGISTRATION_STATUS, TASK_STATUS } from "../constants/domain.js";
-import { CampusAmbassador, PromoCode, Registration, Task } from "../models/index.js";
+import { AuthSession, CampusAmbassador, PromoCode, Registration, Task } from "../models/index.js";
 import { revokeAmbassadorSessions } from "./ambassador-auth.service.js";
 import { publicPromoCode, publicTask } from "./ambassador-dashboard.service.js";
 import { ApiError } from "../utils/api-error.js";
@@ -55,6 +55,8 @@ function adminPromoView(promo) {
   return {
     ...view,
     ambassadorId: promo.ambassadorId?.toString?.() ?? String(promo.ambassadorId),
+    isArchived: Boolean(promo.archivedAt),
+    archivedAt: promo.archivedAt ?? null,
     createdAt: promo.createdAt,
     updatedAt: promo.updatedAt,
   };
@@ -149,6 +151,42 @@ export function archiveAmbassadorByAdmin(id) {
   return setAmbassadorStatusByAdmin(id, AMBASSADOR_STATUS.ARCHIVED);
 }
 
+export async function hardDeleteAmbassadorByAdmin(id) {
+  const ambassador = await CampusAmbassador.findOne(ambassadorLookup(id)).lean();
+  if (!ambassador) {
+    throw new ApiError(404, "Campus ambassador was not found", "AMBASSADOR_NOT_FOUND");
+  }
+  if (ambassador.status !== AMBASSADOR_STATUS.ARCHIVED) {
+    throw new ApiError(
+      409,
+      "Archive the ambassador before permanently deleting the account",
+      "AMBASSADOR_NOT_ARCHIVED",
+    );
+  }
+
+  const referralCount = await Registration.countDocuments({ ambassadorId: ambassador._id });
+  if (referralCount > 0) {
+    throw new ApiError(
+      409,
+      "This ambassador has referral history and cannot be hard deleted. Keep the account archived to preserve registration attribution.",
+      "AMBASSADOR_HAS_REFERRALS",
+    );
+  }
+
+  await Promise.all([
+    AuthSession.deleteMany({ ambassadorId: ambassador._id }),
+    Task.deleteMany({ ambassadorId: ambassador._id }),
+    PromoCode.deleteMany({ ambassadorId: ambassador._id }),
+  ]);
+  await CampusAmbassador.deleteOne({ _id: ambassador._id });
+
+  return {
+    deleted: true,
+    ambassadorId: ambassador.ambassadorId,
+    email: ambassador.email,
+  };
+}
+
 export async function createPromoByAdmin(input) {
   const ambassador = await CampusAmbassador.findById(input.ambassadorId);
   if (!ambassador || ambassador.status === AMBASSADOR_STATUS.ARCHIVED) {
@@ -177,6 +215,9 @@ export async function listPromosByAdmin({ page, limit, ambassadorId, isActive, s
 export async function updatePromoByAdmin(promoId, input) {
   const promo = await PromoCode.findById(promoId);
   if (!promo) throw new ApiError(404, "Promo code was not found", "PROMO_NOT_FOUND");
+  if (promo.archivedAt) {
+    throw new ApiError(409, "Archived promo codes cannot be edited", "PROMO_ARCHIVED");
+  }
 
   if (input.isPrimary === true && !promo.isPrimary) {
     const conflict = await PromoCode.exists({
@@ -194,8 +235,52 @@ export async function updatePromoByAdmin(promoId, input) {
   return adminPromoView(promo);
 }
 
-export function setPromoStatusByAdmin(promoId, isActive) {
-  return updatePromoByAdmin(promoId, { isActive });
+export async function setPromoStatusByAdmin(promoId, isActive) {
+  const promo = await PromoCode.findById(promoId);
+  if (!promo) throw new ApiError(404, "Promo code was not found", "PROMO_NOT_FOUND");
+  if (promo.archivedAt) {
+    throw new ApiError(409, "Archived promo codes cannot be enabled or disabled", "PROMO_ARCHIVED");
+  }
+
+  promo.isActive = isActive;
+  await promo.save();
+  return adminPromoView(promo);
+}
+
+export async function archivePromoByAdmin(promoId) {
+  const promo = await PromoCode.findById(promoId);
+  if (!promo) throw new ApiError(404, "Promo code was not found", "PROMO_NOT_FOUND");
+
+  promo.isActive = false;
+  promo.isPrimary = false;
+  if (!promo.archivedAt) promo.archivedAt = new Date();
+  await promo.save();
+
+  return adminPromoView(promo);
+}
+
+export async function hardDeletePromoByAdmin(promoId) {
+  const promo = await PromoCode.findById(promoId).lean();
+  if (!promo) throw new ApiError(404, "Promo code was not found", "PROMO_NOT_FOUND");
+  if (!promo.archivedAt) {
+    throw new ApiError(
+      409,
+      "Archive the promo code before permanently deleting it",
+      "PROMO_NOT_ARCHIVED",
+    );
+  }
+
+  const referralCount = await Registration.countDocuments({ promoCodeId: promo._id });
+  if (referralCount > 0) {
+    throw new ApiError(
+      409,
+      "This promo code has registration history and cannot be hard deleted. Keep it archived to preserve referral attribution.",
+      "PROMO_HAS_REFERRALS",
+    );
+  }
+
+  await PromoCode.deleteOne({ _id: promo._id });
+  return { deleted: true, promoCode: promo.code };
 }
 
 export async function createTaskByAdmin(input, adminId) {
@@ -308,7 +393,7 @@ export async function getAdminDashboard() {
     CampusAmbassador.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
     Task.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
     Registration.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
-    PromoCode.countDocuments({ isActive: true }),
+    PromoCode.countDocuments({ isActive: true, archivedAt: null }),
   ]);
   return {
     ambassadors: countMap(ambassadorRows, Object.values(AMBASSADOR_STATUS)),

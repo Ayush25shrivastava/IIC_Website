@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   Anchor,
+  Archive,
   ArrowRight,
   Building2,
   CheckCircle2,
@@ -49,8 +50,9 @@ function message(error, fallback) {
 function ShellCard({ children, className = "" }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-[26px] border border-[#258EA4]/25 bg-[rgba(235,249,251,0.88)] shadow-[0_22px_58px_rgba(7,61,80,0.18),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-xl ${className}`}
+      className={`relative overflow-hidden rounded-[24px] border border-white/65 bg-[linear-gradient(135deg,rgba(247,253,254,0.94),rgba(224,246,249,0.88))] shadow-[0_16px_42px_rgba(5,63,83,0.14),inset_0_1px_0_rgba(255,255,255,0.92)] ring-1 ring-[#2A91A6]/10 backdrop-blur-xl ${className}`}
     >
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent" />
       {children}
     </div>
   );
@@ -79,19 +81,28 @@ function statusTone(status) {
 
 function StatusPill({ status }) {
   return (
-    <span className={`inline-flex rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] ${statusTone(status)}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] ${statusTone(status)}`}>
+      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-75" />
       {nice(status)}
     </span>
   );
 }
 
-function StatCard({ icon: Icon, label, value, detail }) {
+function StatCard({ icon: Icon, label, value, detail, decorSrc, gold = false }) {
   return (
-    <ShellCard className="group min-h-[128px] p-4 sm:p-5">
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-8 -right-8 h-24 w-24 rounded-full border border-[#2393A9]/12" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-4 -right-4 h-16 w-16 rounded-full border border-[#B98B3C]/12" />
-      <div className="relative z-10 flex h-full items-start gap-3.5">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#38A7BA]/20 bg-[#CFF2F6]/85 text-[#0782A0] shadow-[inset_0_1px_0_rgba(255,255,255,0.78)]">
+    <ShellCard className="group min-h-[118px] p-4 sm:p-4.5">
+      {decorSrc && (
+        <img
+          src={decorSrc}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-8 right-5 w-28 select-none opacity-[0.075] grayscale mix-blend-multiply"
+        />
+      )}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-[linear-gradient(180deg,transparent,rgba(57,171,193,0.08))]" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-10 -right-7 h-24 w-24 rounded-full border border-[#2393A9]/14" />
+      <div className="relative z-10 flex h-full items-start gap-3">
+        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_6px_18px_rgba(12,118,143,0.08)] ${gold ? "border-[#D6B267]/30 bg-[#F8ECCF]/90 text-[#A87527]" : "border-[#38A7BA]/22 bg-[#D8F5F7]/90 text-[#0782A0]"}`}>
           <Icon className="h-5 w-5" strokeWidth={1.9} />
         </span>
         <div className="min-w-0 flex-1 pt-0.5">
@@ -99,7 +110,7 @@ function StatCard({ icon: Icon, label, value, detail }) {
           <p className="mt-1 text-[30px] font-black leading-none text-[#153D50] sm:text-[34px]">{value}</p>
           <p className="mt-2 text-[10px] leading-4 text-[#64838E]">{detail}</p>
         </div>
-        <span className="mt-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#118FAA]/85 text-white opacity-70 transition group-hover:translate-x-0.5 group-hover:opacity-100">
+        <span className="mt-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/60 bg-[#0C7894] text-white shadow-[0_6px_16px_rgba(5,86,109,0.18)] transition group-hover:translate-x-0.5 group-hover:bg-[#075F75]">
           <ArrowRight className="h-3.5 w-3.5" />
         </span>
       </div>
@@ -115,6 +126,18 @@ function EmptyState({ icon: Icon, title, detail }) {
       </span>
       <p className="mt-3 text-xs font-black text-[#214F60]">{title}</p>
       <p className="mt-1 max-w-sm text-[10px] leading-4 text-[#6B8892]">{detail}</p>
+    </div>
+  );
+}
+
+function VoyageDecor() {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      <img src="/sticker-compass.png" alt="" className="absolute -left-14 top-[16%] w-56 -rotate-12 opacity-[0.10] grayscale mix-blend-multiply sm:w-72" />
+      <img src="/sticker-anchor.png" alt="" className="absolute -right-14 top-[32%] w-52 rotate-12 opacity-[0.08] grayscale mix-blend-multiply sm:w-64" />
+      <img src="/sticker-wheel.png" alt="" className="absolute left-[3%] top-[60%] w-44 -rotate-12 opacity-[0.07] grayscale mix-blend-multiply sm:w-56" />
+      <img src="/card-decor-stamp.png" alt="" className="absolute right-[5%] top-[72%] w-36 rotate-12 opacity-[0.09] grayscale mix-blend-multiply sm:w-48" />
+      <img src="/sticker-ship.png" alt="" className="absolute -left-10 top-[82%] w-56 opacity-[0.075] grayscale mix-blend-multiply sm:w-72" />
     </div>
   );
 }
@@ -140,40 +163,182 @@ function AdminLogin({ onAuthenticated }) {
   }
 
   return (
-    <main className="min-h-screen px-4 pb-12 pt-[112px] text-[#173F52] sm:px-6">
-      <ShellCard className="mx-auto max-w-lg p-6 sm:p-8">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-[#208AA0]/30 bg-white/60 text-[#B17E2E]">
-          <ShieldCheck className="h-6 w-6" />
-        </div>
-        <div className="mt-4 text-center">
-          <p className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-[#39788A]">Renaissance command authority</p>
-          <h1 className="mt-2 font-cinzel text-2xl font-black uppercase text-[#163E51]">Campus Ambassador Admin</h1>
-          <p className="mt-2 text-xs leading-5 text-[#587B87]">Manage ambassadors, promo codes, missions and referral performance.</p>
-        </div>
-        <form onSubmit={submit} className="mt-6 space-y-4">
-          <label className="block">
-            <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-[#315B6B]">Admin email</span>
-            <span className="relative block">
-              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0D7892]" />
-              <input type="email" value={credentials.email} onChange={(e) => setCredentials((v) => ({ ...v, email: e.target.value }))} autoComplete="email" className={`${fieldClass} pl-10`} required />
+    <main className="relative min-h-screen overflow-hidden px-3 pb-7 pt-[94px] text-[#173F52] sm:px-5 lg:px-7">
+      <section className="relative z-10 mx-auto grid w-full max-w-[1040px] gap-3.5 lg:grid-cols-[1.03fr_0.97fr]">
+        <ShellCard className="relative hidden min-h-[476px] p-6 lg:flex lg:flex-col lg:justify-between lg:p-7">
+          <img
+            src="/sticker-compass.png"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-16 -top-14 w-72 rotate-12 select-none opacity-[0.10] grayscale mix-blend-multiply"
+          />
+          <img
+            src="/pirate-wheel-half.png"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-20 -left-20 w-64 -rotate-12 select-none opacity-[0.09] grayscale mix-blend-multiply"
+          />
+          <img
+            src="/sticker-ship.png"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-8 right-5 w-52 select-none opacity-[0.10] grayscale mix-blend-multiply"
+          />
+
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-60 [background-image:radial-gradient(circle_at_18%_16%,rgba(255,255,255,0.68),transparent_32%),linear-gradient(rgba(23,116,139,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(23,116,139,0.035)_1px,transparent_1px)] [background-size:auto,28px_28px,28px_28px]"
+          />
+
+          <div className="relative z-10">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#1689A0]/25 bg-white/58 px-3 py-1.5 font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#176C82] shadow-sm">
+              <Compass className="h-3.5 w-3.5" />
+              Renaissance X · Command bridge
             </span>
-          </label>
-          <label className="block">
-            <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-[#315B6B]">Password</span>
-            <span className="relative block">
-              <LockKeyhole className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0D7892]" />
-              <input type={show ? "text" : "password"} value={credentials.password} onChange={(e) => setCredentials((v) => ({ ...v, password: e.target.value }))} autoComplete="current-password" className={`${fieldClass} pl-10 pr-10`} required />
-              <button type="button" onClick={() => setShow((v) => !v)} className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-[#587B87] hover:bg-[#0D7892]/10" aria-label={show ? "Hide password" : "Show password"}>
-                {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+
+            <p className="mt-5 font-mono text-[8px] font-black uppercase tracking-[0.28em] text-[#4B7B8A]">
+              Fleet administration
+            </p>
+            <h1 className="mt-2 max-w-[500px] font-cinzel text-[32px] font-black uppercase leading-[1.04] tracking-[-0.025em] text-[#153E51]">
+              Navigate the
+              <span className="block text-[#B17E2E]">ambassador fleet</span>
+            </h1>
+            <p className="mt-3.5 max-w-[480px] text-[11px] leading-5 text-[#466D7A]">
+              A secure command deck for managing campus captains, promo codes,
+              missions and referral activity across Renaissance.
+            </p>
+
+            <div className="my-4 flex items-center gap-3 text-[#1F8CA2]" aria-hidden="true">
+              <span className="h-px w-20 bg-gradient-to-r from-transparent to-[#1F8CA2]/55" />
+              <Anchor className="h-4 w-4 text-[#B17E2E]" />
+              <span className="h-px w-20 bg-gradient-to-l from-transparent to-[#1F8CA2]/55" />
+            </div>
+
+            <div className="grid grid-cols-3 gap-2.5">
+              {[
+                [Users, "Crew roster", "Ambassadors"],
+                [Tag, "Signal flags", "Promo codes"],
+                [ClipboardList, "Mission log", "Tasks"],
+              ].map(([Icon, title, detail]) => (
+                <div key={title} className="rounded-2xl border border-[#248EA4]/20 bg-white/48 p-3 backdrop-blur-sm">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#2A98AC]/18 bg-[#D8F3F6]/80 text-[#0A819C]">
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <p className="mt-2 text-[9px] font-black uppercase tracking-[0.08em] text-[#234F60]">{title}</p>
+                  <p className="mt-1 text-[9px] text-[#6A8791]">{detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="relative z-10 flex items-center justify-between gap-4 rounded-2xl border border-[#B98B3C]/20 bg-[#F8F2E5]/55 px-4 py-2.5">
+            <span className="flex items-center gap-2 text-[10px] font-semibold text-[#6A552C]">
+              <ShieldCheck className="h-4 w-4 text-[#A87527]" />
+              Restricted command access
+            </span>
+            <span className="font-mono text-[8px] font-black uppercase tracking-[0.16em] text-[#7C6A46]">
+              Authorized officers only
+            </span>
+          </div>
+        </ShellCard>
+
+        <ShellCard className="relative flex min-h-[476px] flex-col justify-center p-5 sm:p-6 lg:p-7">
+          <img
+            src="/sticker-compass.png"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-16 -top-16 w-52 select-none opacity-[0.07] grayscale mix-blend-multiply lg:hidden"
+          />
+
+          <div className="relative z-10 mx-auto w-full max-w-[430px]">
+            <div className="text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-[#208AA0]/30 bg-[radial-gradient(circle_at_42%_34%,rgba(255,255,255,0.96),rgba(207,241,245,0.92)_72%)] text-[#B17E2E] shadow-[0_10px_26px_rgba(8,96,119,0.14)]">
+                <KeyRound className="h-6 w-6" />
+              </div>
+              <p className="mt-3 font-mono text-[8px] font-black uppercase tracking-[0.22em] text-[#39788A]">
+                Renaissance command authority
+              </p>
+              <h2 className="mt-1.5 font-cinzel text-[25px] font-black uppercase leading-tight text-[#163E51]">
+                Admin command deck
+              </h2>
+              <p className="mx-auto mt-2 max-w-sm text-[11px] leading-5 text-[#587B87]">
+                Authenticate to manage the Campus Ambassador programme.
+              </p>
+            </div>
+
+            <div className="my-4 flex items-center gap-3 text-[#238FA5]/70" aria-hidden="true">
+              <span className="h-px flex-1 bg-gradient-to-r from-transparent to-current" />
+              <span className="h-1.5 w-1.5 rotate-45 border border-[#B17E2E]/70" />
+              <span className="h-px flex-1 bg-gradient-to-l from-transparent to-current" />
+            </div>
+
+            <form onSubmit={submit} className="space-y-4">
+              <label className="block">
+                <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.12em] text-[#315B6B]">Admin email</span>
+                <span className="relative block">
+                  <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0D7892]" />
+                  <input
+                    type="email"
+                    value={credentials.email}
+                    onChange={(e) => setCredentials((v) => ({ ...v, email: e.target.value }))}
+                    autoComplete="email"
+                    placeholder="admin@renaissance.com"
+                    className={`${fieldClass} h-11 pl-10`}
+                    required
+                  />
+                </span>
+              </label>
+
+              <label className="block">
+                <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.12em] text-[#315B6B]">Password</span>
+                <span className="relative block">
+                  <LockKeyhole className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0D7892]" />
+                  <input
+                    type={show ? "text" : "password"}
+                    value={credentials.password}
+                    onChange={(e) => setCredentials((v) => ({ ...v, password: e.target.value }))}
+                    autoComplete="current-password"
+                    placeholder="Enter secure password"
+                    className={`${fieldClass} h-11 pl-10 pr-11`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShow((v) => !v)}
+                    className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-[#587B87] transition hover:bg-[#0D7892]/10 hover:text-[#0D7892]"
+                    aria-label={show ? "Hide password" : "Show password"}
+                  >
+                    {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </span>
+              </label>
+
+              {error && (
+                <div className="rounded-xl border border-red-300/80 bg-red-50/90 px-3.5 py-3 text-[11px] leading-5 text-red-700 shadow-sm">
+                  <span className="font-black">Command link unavailable. </span>
+                  {error}
+                </div>
+              )}
+
+              <button type="submit" disabled={loading} className={`${primaryButton} h-11 w-full text-[11px]`}>
+                {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserCog className="h-4 w-4" />}
+                {loading ? "Establishing secure link..." : "Enter admin portal"}
               </button>
-            </span>
-          </label>
-          {error && <p className="rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>}
-          <button type="submit" disabled={loading} className={`${primaryButton} w-full`}>
-            {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserCog className="h-4 w-4" />} Enter admin portal
-          </button>
-        </form>
-      </ShellCard>
+            </form>
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="rounded-xl border border-[#258EA4]/18 bg-white/42 px-3 py-2.5 text-[9px] font-semibold text-[#557986]">
+                <ShieldCheck className="mb-1 h-3.5 w-3.5 text-[#0D7892]" />
+                Protected admin session
+              </div>
+              <div className="rounded-xl border border-[#B98B3C]/18 bg-[#FBF5E8]/45 px-3 py-2.5 text-[9px] font-semibold text-[#6F6247]">
+                <Anchor className="mb-1 h-3.5 w-3.5 text-[#A87527]" />
+                Server-backed authority
+              </div>
+            </div>
+          </div>
+        </ShellCard>
+      </section>
     </main>
   );
 }
@@ -357,6 +522,24 @@ export default function CampusAmbassadorAdmin() {
     finally { setBusy(false); }
   }
 
+  async function hardDeleteAmbassador(item) {
+    const confirmed = window.confirm(
+      `Permanently delete ${item.name}? This removes the account, sessions, tasks and unused promo codes. This cannot be undone.`,
+    );
+    if (!confirmed) return;
+
+    setBusy(true); setError(""); setNotice("");
+    try {
+      await adminApi.hardDeleteAmbassador(item.id);
+      setNotice(`${item.name} was permanently deleted.`);
+      await loadAdminData();
+    } catch (requestError) {
+      setError(message(requestError, "Could not permanently delete ambassador."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function createPromo(event) {
     event.preventDefault(); setBusy(true); setError("");
     try {
@@ -382,6 +565,38 @@ export default function CampusAmbassadorAdmin() {
     try { await adminApi.setPromoCodeStatus(promo.id, !promo.isActive); await loadAdminData(); }
     catch (requestError) { setError(message(requestError, "Could not update promo code.")); }
     finally { setBusy(false); }
+  }
+
+  async function archivePromo(promo) {
+    const confirmed = window.confirm(`Archive promo code ${promo.code}? It will be disabled and detached as the primary promo code.`);
+    if (!confirmed) return;
+
+    setBusy(true); setError(""); setNotice("");
+    try {
+      await adminApi.archivePromoCode(promo.id);
+      setNotice(`Promo code ${promo.code} was archived.`);
+      await loadAdminData();
+    } catch (requestError) {
+      setError(message(requestError, "Could not archive promo code."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function hardDeletePromo(promo) {
+    const confirmed = window.confirm(`Permanently delete promo code ${promo.code}? This cannot be undone.`);
+    if (!confirmed) return;
+
+    setBusy(true); setError(""); setNotice("");
+    try {
+      await adminApi.hardDeletePromoCode(promo.id);
+      setNotice(`Promo code ${promo.code} was permanently deleted.`);
+      await loadAdminData();
+    } catch (requestError) {
+      setError(message(requestError, "Could not permanently delete promo code."));
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function createTask(event) {
@@ -441,28 +656,33 @@ export default function CampusAmbassadorAdmin() {
 
   return (
     <>
-      <main className="min-h-screen bg-transparent px-3 pb-16 pt-[106px] text-[#173F52] sm:px-5 lg:px-8">
-        <section className="mx-auto w-full max-w-[1500px] space-y-4">
-          <ShellCard className="min-h-[156px] border-[#B98B3C]/30 p-5 sm:p-7 lg:p-8">
-            <div aria-hidden="true" className="pointer-events-none absolute right-[17%] top-1/2 hidden -translate-y-1/2 text-[#168AA2]/[0.08] xl:block">
-              <Compass className="h-36 w-36" strokeWidth={0.8} />
-            </div>
-            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#B98B3C]/45 to-transparent" />
-            <div className="relative z-10 flex min-h-[104px] flex-col justify-between gap-5 lg:flex-row lg:items-center">
+      <main className="relative min-h-screen bg-transparent px-3 pb-16 pt-[106px] text-[#173F52] sm:px-5 lg:px-8">
+        <VoyageDecor />
+        <section className="relative z-10 mx-auto w-full max-w-[1500px] space-y-3.5">
+          <ShellCard className="min-h-[144px] border-[#C69A4A]/35 p-5 sm:p-6 lg:px-8 lg:py-6">
+            <img src="/sticker-compass.png" alt="" aria-hidden="true" className="pointer-events-none absolute right-[26%] top-1/2 hidden w-40 -translate-y-1/2 select-none opacity-[0.075] grayscale mix-blend-multiply xl:block" />
+            <img src="/card-decor-stamp.png" alt="" aria-hidden="true" className="pointer-events-none absolute -bottom-16 left-[52%] hidden w-44 -translate-x-1/2 select-none opacity-[0.04] grayscale mix-blend-multiply 2xl:block" />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#C3923D]/50 to-transparent" />
+            <div className="relative z-10 flex min-h-[92px] flex-col justify-between gap-5 lg:flex-row lg:items-center">
               <div>
-                <p className="font-mono text-[9px] font-black uppercase tracking-[0.28em] text-[#2D7185] sm:text-[10px]">Renaissance X · Admin command</p>
-                <h1 className="mt-2 font-cinzel text-[28px] font-black uppercase leading-[1.05] tracking-[-0.02em] text-[#143E52] sm:text-[34px] lg:text-[40px]">
+                <p className="font-mono text-[9px] font-black uppercase tracking-[0.3em] text-[#2D7185] sm:text-[10px]">Renaissance X · Admin command</p>
+                <h1 className="mt-2 font-cinzel text-[29px] font-black uppercase leading-[1.02] tracking-[-0.025em] text-[#143E52] sm:text-[36px] lg:text-[44px]">
                   Campus Ambassador Operations
                 </h1>
                 <p className="mt-2 text-xs font-medium text-[#64818C] sm:text-sm">Signed in as {admin.name} · {admin.role}</p>
               </div>
-              <div className="flex flex-wrap items-center gap-2.5">
-                <button type="button" onClick={refreshAll} disabled={busy} className={`${primaryButton} min-w-[116px]`}>
-                  <RefreshCw className={`h-4 w-4 ${busy ? "animate-spin" : ""}`} /> Refresh
-                </button>
-                <button type="button" onClick={logout} className={`${secondaryButton} min-w-[116px] border-[#B98B3C]/28 text-[#315B6B]`}>
-                  <LogOut className="h-4 w-4" /> Sign out
-                </button>
+              <div className="flex flex-col items-start gap-2 lg:items-end">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <button type="button" onClick={refreshAll} disabled={busy} className={`${primaryButton} min-w-[116px]`}>
+                    <RefreshCw className={`h-4 w-4 ${busy ? "animate-spin" : ""}`} /> Refresh
+                  </button>
+                  <button type="button" onClick={logout} className={`${secondaryButton} min-w-[116px] border-[#B98B3C]/28 text-[#315B6B]`}>
+                    <LogOut className="h-4 w-4" /> Sign out
+                  </button>
+                </div>
+                <p className="hidden font-mono text-[7px] font-black uppercase tracking-[0.2em] text-[#6D8B95] lg:block">
+                  “Different shores · A brighter tomorrow”
+                </p>
               </div>
             </div>
           </ShellCard>
@@ -477,13 +697,13 @@ export default function CampusAmbassadorAdmin() {
           {error && <div className="rounded-2xl border border-red-300/80 bg-red-50/92 px-4 py-3 text-xs font-semibold text-red-700 shadow-sm backdrop-blur-xl sm:text-sm">{error}</div>}
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard icon={Users} label="Active ambassadors" value={dashboard?.ambassadors?.ACTIVE ?? 0} detail="Building tomorrow's leaders" />
-            <StatCard icon={ClipboardList} label="Open tasks" value={(dashboard?.tasks?.ASSIGNED ?? 0) + (dashboard?.tasks?.IN_PROGRESS ?? 0)} detail="Actions awaiting completion" />
-            <StatCard icon={ShieldCheck} label="Verified referrals" value={dashboard?.referrals?.VERIFIED ?? 0} detail="Trusted voices, bigger impact" />
-            <StatCard icon={Tag} label="Active promo codes" value={dashboard?.activePromoCodes ?? 0} detail="Spreading the Renaissance" />
+            <StatCard icon={Users} label="Active ambassadors" value={dashboard?.ambassadors?.ACTIVE ?? 0} detail="Building tomorrow's leaders" decorSrc="/sticker-compass.png" />
+            <StatCard icon={ClipboardList} label="Open tasks" value={(dashboard?.tasks?.ASSIGNED ?? 0) + (dashboard?.tasks?.IN_PROGRESS ?? 0)} detail="Actions awaiting completion" decorSrc="/sticker-watch.png" gold />
+            <StatCard icon={ShieldCheck} label="Verified referrals" value={dashboard?.referrals?.VERIFIED ?? 0} detail="Trusted voices, bigger impact" decorSrc="/sticker-lighthouse.png" />
+            <StatCard icon={Tag} label="Active promo codes" value={dashboard?.activePromoCodes ?? 0} detail="Spreading the Renaissance" decorSrc="/sticker-anchor.png" />
           </div>
 
-          <ShellCard className="rounded-[22px] p-2 sm:p-2.5">
+          <ShellCard className="rounded-[20px] p-2 sm:p-2.5">
             <div className="flex items-center justify-between gap-4">
               <div className="min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <div className="flex min-w-max items-center gap-1">
@@ -492,14 +712,16 @@ export default function CampusAmbassadorAdmin() {
                       key={value}
                       type="button"
                       onClick={() => setTab(value)}
-                      className={`inline-flex h-11 items-center gap-2 rounded-xl px-4 text-xs font-black transition sm:px-5 ${tab === value ? "bg-[#08758D] text-white shadow-[0_8px_20px_rgba(8,117,141,0.22)]" : "text-[#2D6273] hover:bg-white/62"}`}
+                      className={`relative inline-flex h-11 items-center gap-2 rounded-xl px-4 text-xs font-black transition sm:px-5 ${tab === value ? "bg-[#08758D] text-white shadow-[0_8px_20px_rgba(8,117,141,0.22)]" : "text-[#2D6273] hover:bg-white/62"}`}
                     >
                       <Icon className="h-4 w-4" /> {label}
+                      {tab === value && <span aria-hidden="true" className="absolute inset-x-5 -bottom-0.5 h-[2px] rounded-full bg-[#D3A340]" />}
                     </button>
                   ))}
                 </div>
               </div>
               <div className="hidden shrink-0 items-center gap-2 pr-3 xl:flex">
+                <span className="h-7 w-px bg-[#C59A4A]/45" />
                 <Compass className="h-4 w-4 text-[#B98B3C]" />
                 <span className="font-mono text-[8px] font-black uppercase tracking-[0.24em] text-[#66838D]">Chart people · Build impact · Sail together</span>
                 <Anchor className="h-5 w-5 text-[#9C7131]" />
@@ -509,50 +731,53 @@ export default function CampusAmbassadorAdmin() {
 
           {tab === "ambassadors" && (
             <>
-              <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-                <ShellCard className="p-5 sm:p-6">
-                  <div className="flex items-start gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#D7F2F5] text-[#08758D]"><Anchor className="h-5 w-5" /></span>
+              <div className="grid gap-3.5 xl:grid-cols-[0.82fr_1.18fr]">
+                <ShellCard className="p-4 sm:p-5">
+                  <img src="/sticker-anchor.png" alt="" aria-hidden="true" className="pointer-events-none absolute -right-8 -top-9 w-28 rotate-12 select-none opacity-[0.075] grayscale mix-blend-multiply" />
+                  <img src="/sticker-compass.png" alt="" aria-hidden="true" className="pointer-events-none absolute -bottom-12 right-4 w-28 select-none opacity-[0.055] grayscale mix-blend-multiply" />
+                  <div className="relative z-10 flex items-start gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#36A4B7]/18 bg-[#D7F2F5] text-[#08758D]"><Anchor className="h-5 w-5" /></span>
                     <div>
-                      <h2 className="font-cinzel text-xl font-black uppercase text-[#163E51]">Add ambassador</h2>
-                      <p className="mt-1 text-[10px] font-medium text-[#68858F]">Bring new changemakers on board</p>
+                      <h2 className="font-cinzel text-[19px] font-black uppercase text-[#163E51]">Add ambassador</h2>
+                      <p className="mt-0.5 text-[10px] font-medium text-[#68858F]">Bring new changemakers on board</p>
                     </div>
                   </div>
-                  <form onSubmit={createAmbassador} className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <form onSubmit={createAmbassador} className="relative z-10 mt-4 grid gap-2.5 sm:grid-cols-2">
                     <label className="block">
                       <span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.12em] text-[#456E7C]">Full name</span>
-                      <span className="relative block"><UserPlus className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} placeholder="Full name" value={ambassadorForm.name} onChange={(e) => setAmbassadorForm((v) => ({ ...v, name: e.target.value }))} required /></span>
-                    </label>
-                    <label className="block">
-                      <span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.12em] text-[#456E7C]">Phone</span>
-                      <span className="relative block"><Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} placeholder="Phone (optional)" value={ambassadorForm.phone} onChange={(e) => setAmbassadorForm((v) => ({ ...v, phone: e.target.value }))} /></span>
+                      <span className="relative block"><UserPlus className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} placeholder="Enter full name" value={ambassadorForm.name} onChange={(e) => setAmbassadorForm((v) => ({ ...v, name: e.target.value }))} required /></span>
                     </label>
                     <label className="block">
                       <span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.12em] text-[#456E7C]">Email address</span>
-                      <span className="relative block"><Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} type="email" placeholder="you@college.edu" value={ambassadorForm.email} onChange={(e) => setAmbassadorForm((v) => ({ ...v, email: e.target.value }))} required /></span>
+                      <span className="relative block"><Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} type="email" placeholder="Enter email address" value={ambassadorForm.email} onChange={(e) => setAmbassadorForm((v) => ({ ...v, email: e.target.value }))} required /></span>
                     </label>
                     <label className="block">
-                      <span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.12em] text-[#456E7C]">College / institution</span>
-                      <span className="relative block"><Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} placeholder="College / institution" value={ambassadorForm.college} onChange={(e) => setAmbassadorForm((v) => ({ ...v, college: e.target.value }))} required /></span>
+                      <span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.12em] text-[#456E7C]">Phone number</span>
+                      <span className="relative block"><Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} placeholder="Phone (optional)" value={ambassadorForm.phone} onChange={(e) => setAmbassadorForm((v) => ({ ...v, phone: e.target.value }))} /></span>
                     </label>
-                    <button disabled={busy} className={`${primaryButton} mt-1 w-full sm:col-span-2`}><Anchor className="h-4 w-4" /> Add ambassador</button>
+                    <label className="block">
+                      <span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.12em] text-[#456E7C]">College / university</span>
+                      <span className="relative block"><Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} placeholder="College / university" value={ambassadorForm.college} onChange={(e) => setAmbassadorForm((v) => ({ ...v, college: e.target.value }))} required /></span>
+                    </label>
+                    <button disabled={busy} className="mt-1 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#A87527]/30 bg-[linear-gradient(100deg,#C49542,#A87527)] px-4 text-xs font-black text-white shadow-[0_10px_22px_rgba(155,108,35,0.22)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50 sm:col-span-2"><Plus className="h-4 w-4" /> Add ambassador</button>
                   </form>
                 </ShellCard>
 
-                <ShellCard className="p-5 sm:p-6">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <ShellCard className="p-4 sm:p-5">
+                  <img src="/card-decor-globe.png" alt="" aria-hidden="true" className="pointer-events-none absolute -bottom-20 -right-14 w-48 select-none opacity-[0.035] grayscale mix-blend-multiply" />
+                  <div className="relative z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-start gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#D7F2F5] text-[#08758D]"><Users className="h-5 w-5" /></span>
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#36A4B7]/18 bg-[#D7F2F5] text-[#08758D]"><Users className="h-5 w-5" /></span>
                       <div>
-                        <h2 className="font-cinzel text-xl font-black uppercase text-[#163E51]">Ambassador directory</h2>
-                        <p className="mt-1 text-[10px] font-medium text-[#68858F]">Manage and view all campus ambassadors</p>
+                        <h2 className="font-cinzel text-[19px] font-black uppercase text-[#163E51]">Ambassador directory</h2>
+                        <p className="mt-0.5 text-[10px] font-medium text-[#68858F]">Manage and view all campus ambassadors</p>
                       </div>
                     </div>
                     <label className="relative block sm:w-64"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#587B87]" /><input className={`${fieldClass} pl-10`} placeholder="Search ambassadors..." value={ambassadorSearch} onChange={(e) => setAmbassadorSearch(e.target.value)} /></label>
                   </div>
 
                   {editingAmbassador && (
-                    <form onSubmit={saveAmbassador} className="mt-4 grid gap-2 rounded-2xl border border-[#258EA4]/20 bg-white/48 p-3 sm:grid-cols-2">
+                    <form onSubmit={saveAmbassador} className="relative z-10 mt-3 grid gap-2 rounded-2xl border border-[#258EA4]/20 bg-white/55 p-3 sm:grid-cols-2">
                       <input className={fieldClass} value={editingAmbassador.name} onChange={(e) => setEditingAmbassador((v) => ({ ...v, name: e.target.value }))} />
                       <input className={fieldClass} type="email" value={editingAmbassador.email} onChange={(e) => setEditingAmbassador((v) => ({ ...v, email: e.target.value }))} />
                       <input className={fieldClass} value={editingAmbassador.phone || ""} onChange={(e) => setEditingAmbassador((v) => ({ ...v, phone: e.target.value }))} placeholder="Phone" />
@@ -561,28 +786,30 @@ export default function CampusAmbassadorAdmin() {
                     </form>
                   )}
 
-                  <div className="mt-4 overflow-x-auto rounded-2xl border border-[#258EA4]/16 bg-white/44">
-                    <table className="w-full min-w-[760px] text-left text-[11px]">
-                      <thead className="border-b border-[#258EA4]/14 bg-[#D9F2F5]/55 text-[9px] font-black uppercase tracking-[0.1em] text-[#32697A]">
-                        <tr><th className="px-3 py-3">Name</th><th className="px-3 py-3">Email</th><th className="px-3 py-3">College</th><th className="px-3 py-3">Ambassador ID</th><th className="px-3 py-3">Status</th><th className="px-3 py-3 text-right">Actions</th></tr>
+                  <div className="relative z-10 mt-3 overflow-x-auto rounded-2xl border border-[#258EA4]/16 bg-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+                    <table className="w-full min-w-[800px] text-left text-[11px]">
+                      <thead className="border-b border-[#258EA4]/14 bg-[#D9F2F5]/68 text-[9px] font-black uppercase tracking-[0.1em] text-[#32697A]">
+                        <tr><th className="px-3 py-2.5">#</th><th className="px-3 py-2.5">Name</th><th className="px-3 py-2.5">Email</th><th className="px-3 py-2.5">College</th><th className="px-3 py-2.5">Ambassador ID</th><th className="px-3 py-2.5">Status</th><th className="px-3 py-2.5 text-right">Actions</th></tr>
                       </thead>
                       <tbody>
                         {visibleAmbassadors.length === 0 ? (
-                          <tr><td colSpan="6" className="px-4 py-8 text-center text-[#6C8993]">No ambassadors onboard yet.</td></tr>
-                        ) : visibleAmbassadors.map((item) => (
-                          <tr key={item.id} className="border-b border-[#258EA4]/10 last:border-0 hover:bg-white/35">
-                            <td className="px-3 py-3 font-black text-[#214B5B]">{item.name}</td>
-                            <td className="px-3 py-3 text-[#557783]">{item.email}</td>
-                            <td className="px-3 py-3 text-[#557783]">{item.college}</td>
-                            <td className="px-3 py-3 font-mono text-[10px] font-bold text-[#3A7080]">{item.ambassadorId}</td>
-                            <td className="px-3 py-3"><StatusPill status={item.status} /></td>
-                            <td className="px-3 py-3">
+                          <tr><td colSpan="7" className="px-4 py-8 text-center text-[#6C8993]">No ambassadors onboard yet.</td></tr>
+                        ) : visibleAmbassadors.map((item, index) => (
+                          <tr key={item.id} className="border-b border-[#258EA4]/10 last:border-0 transition hover:bg-[#EAF8FA]/65">
+                            <td className="px-3 py-2.5 font-mono text-[9px] font-black text-[#7B929A]">{index + 1}</td>
+                            <td className="px-3 py-2.5 font-black text-[#214B5B]">{item.name}</td>
+                            <td className="px-3 py-2.5 text-[#557783]">{item.email}</td>
+                            <td className="px-3 py-2.5 text-[#557783]">{item.college}</td>
+                            <td className="px-3 py-2.5 font-mono text-[9px] font-bold text-[#3A7080]">{item.ambassadorId}</td>
+                            <td className="px-3 py-2.5"><StatusPill status={item.status} /></td>
+                            <td className="px-3 py-2.5">
                               <div className="flex items-center justify-end gap-1.5">
-                                <select value={item.status} disabled={item.status === "ARCHIVED" || busy} onChange={(e) => setAmbassadorStatus(item.id, e.target.value)} className="h-8 rounded-lg border border-[#258EA4]/20 bg-white/70 px-2 text-[10px] font-bold text-[#315B6B] outline-none">
+                                <select value={item.status} disabled={item.status === "ARCHIVED" || busy} onChange={(e) => setAmbassadorStatus(item.id, e.target.value)} className="h-8 rounded-lg border border-[#258EA4]/20 bg-white/78 px-2 text-[10px] font-bold text-[#315B6B] outline-none">
                                   <option value="ACTIVE">Active</option><option value="DISABLED">Disabled</option><option value="ARCHIVED">Archived</option>
                                 </select>
-                                <button type="button" onClick={() => setEditingAmbassador({ ...item })} className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#258EA4]/20 bg-white/65 text-[#237083] transition hover:bg-white" disabled={item.status === "ARCHIVED"} aria-label={`Edit ${item.name}`}><Pencil className="h-3.5 w-3.5" /></button>
-                                <button type="button" onClick={() => archiveAmbassador(item.id)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-200 bg-rose-50/70 text-rose-600 transition hover:bg-rose-100" disabled={item.status === "ARCHIVED"} aria-label={`Archive ${item.name}`}><Trash2 className="h-3.5 w-3.5" /></button>
+                                <button type="button" onClick={() => setEditingAmbassador({ ...item })} className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#258EA4]/20 bg-white/75 text-[#237083] transition hover:bg-white" disabled={item.status === "ARCHIVED"} aria-label={`Edit ${item.name}`}><Pencil className="h-3.5 w-3.5" /></button>
+                                <button type="button" onClick={() => archiveAmbassador(item.id)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-200 bg-amber-50/85 text-amber-700 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-35" disabled={item.status === "ARCHIVED" || busy} title="Soft archive" aria-label={`Archive ${item.name}`}><Archive className="h-3.5 w-3.5" /></button>
+                                <button type="button" onClick={() => hardDeleteAmbassador(item)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-300 bg-rose-50/90 text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-35" disabled={item.status !== "ARCHIVED" || busy} title={item.status === "ARCHIVED" ? "Permanently delete" : "Archive before permanent delete"} aria-label={`Permanently delete ${item.name}`}><Trash2 className="h-3.5 w-3.5" /></button>
                               </div>
                             </td>
                           </tr>
@@ -595,14 +822,15 @@ export default function CampusAmbassadorAdmin() {
 
               <div className="grid gap-3 md:grid-cols-3">
                 {[
-                  ["promos", Tag, "Promo code management", "Create and manage promotional codes"],
-                  ["tasks", ClipboardList, "Task management", "Assign and track ambassador tasks"],
-                  ["referrals", CheckCircle2, "Referral tracking", "Monitor referrals and conversions"],
-                ].map(([target, Icon, title, detail]) => (
-                  <button key={target} type="button" onClick={() => setTab(target)} className="group flex min-h-[92px] items-center gap-3 rounded-[22px] border border-[#258EA4]/22 bg-[rgba(235,249,251,0.86)] p-4 text-left shadow-[0_14px_34px_rgba(7,61,80,0.14)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-[rgba(242,252,253,0.94)]">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#D0F0F4] text-[#0782A0]"><Icon className="h-5 w-5" /></span>
-                    <span className="min-w-0 flex-1"><span className="block font-cinzel text-sm font-black uppercase text-[#173F52]">{title}</span><span className="mt-1 block text-[10px] text-[#68858F]">{detail}</span></span>
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#258EA4]/20 bg-white/60 text-[#18778C] transition group-hover:translate-x-0.5"><ChevronRight className="h-4 w-4" /></span>
+                  ["promos", Tag, "Promo code management", "Create and manage promotional codes", "Manage codes", "/card-decor-stamp.png"],
+                  ["tasks", ClipboardList, "Task management", "Assign and track ambassador tasks", "View tasks", "/sticker-wheel.png"],
+                  ["referrals", CheckCircle2, "Referral tracking", "Monitor referrals and conversions", "View referrals", "/sticker-lighthouse.png"],
+                ].map(([target, Icon, title, detail, action, decorSrc]) => (
+                  <button key={target} type="button" onClick={() => setTab(target)} className="group relative flex min-h-[78px] items-center gap-3 overflow-hidden rounded-[20px] border border-white/65 bg-[linear-gradient(135deg,rgba(247,253,254,0.94),rgba(224,246,249,0.88))] p-3.5 text-left shadow-[0_12px_30px_rgba(7,61,80,0.12)] ring-1 ring-[#258EA4]/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(7,61,80,0.16)]">
+                    <img src={decorSrc} alt="" aria-hidden="true" className="pointer-events-none absolute -right-5 -top-8 w-28 select-none opacity-[0.08] grayscale mix-blend-multiply" />
+                    <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#2C9BAE]/18 bg-[#D9F4F7] text-[#0782A0]"><Icon className="h-4.5 w-4.5" /></span>
+                    <span className="relative z-10 min-w-0 flex-1"><span className="block font-cinzel text-[13px] font-black uppercase text-[#173F52]">{title}</span><span className="mt-0.5 block text-[9px] text-[#68858F]">{detail}</span></span>
+                    <span className="relative z-10 hidden h-9 shrink-0 items-center gap-1 rounded-xl border border-[#258EA4]/18 bg-white/76 px-3 text-[9px] font-black uppercase tracking-[0.04em] text-[#246579] transition group-hover:bg-white sm:inline-flex">{action}<ChevronRight className="h-3.5 w-3.5" /></span>
                   </button>
                 ))}
               </div>
@@ -629,7 +857,7 @@ export default function CampusAmbassadorAdmin() {
                   <table className="w-full min-w-[720px] text-left text-[11px]">
                     <thead className="border-b border-[#258EA4]/14 bg-[#D9F2F5]/55 text-[9px] font-black uppercase tracking-[0.1em] text-[#32697A]"><tr><th className="px-3 py-3">Code</th><th className="px-3 py-3">Ambassador</th><th className="px-3 py-3">Discount</th><th className="px-3 py-3">Usage</th><th className="px-3 py-3">Status</th><th className="px-3 py-3 text-right">Action</th></tr></thead>
                     <tbody>{promoCodes.length === 0 ? <tr><td colSpan="6" className="px-4 py-8 text-center text-[#6C8993]">No active promo codes yet.</td></tr> : promoCodes.map((promo) => (
-                      <tr key={promo.id} className="border-b border-[#258EA4]/10 last:border-0 hover:bg-white/35"><td className="px-3 py-3 font-mono font-black text-[#A9752B]">{promo.code}</td><td className="px-3 py-3 font-semibold text-[#315B6B]">{ambassadorName(promo.ambassadorId)}</td><td className="px-3 py-3 text-[#557783]">{nice(promo.discountType)} · {promo.discountValue}</td><td className="px-3 py-3 text-[#557783]">{promo.usageCount} / {promo.maxUses ?? "∞"}</td><td className="px-3 py-3"><StatusPill status={promo.isActive ? "ACTIVE" : "DISABLED"} /></td><td className="px-3 py-3 text-right"><button type="button" disabled={busy} onClick={() => togglePromo(promo)} className={secondaryButton}>{promo.isActive ? "Disable" : "Enable"}</button></td></tr>
+                      <tr key={promo.id} className="border-b border-[#258EA4]/10 last:border-0 hover:bg-white/35"><td className="px-3 py-3 font-mono font-black text-[#A9752B]">{promo.code}</td><td className="px-3 py-3 font-semibold text-[#315B6B]">{ambassadorName(promo.ambassadorId)}</td><td className="px-3 py-3 text-[#557783]">{nice(promo.discountType)} · {promo.discountValue}</td><td className="px-3 py-3 text-[#557783]">{promo.usageCount} / {promo.maxUses ?? "∞"}</td><td className="px-3 py-3"><StatusPill status={promo.isArchived ? "ARCHIVED" : promo.isActive ? "ACTIVE" : "DISABLED"} /></td><td className="px-3 py-3"><div className="flex items-center justify-end gap-1.5"><button type="button" disabled={busy || promo.isArchived} onClick={() => togglePromo(promo)} className="h-8 rounded-lg border border-[#258EA4]/20 bg-white/70 px-2.5 text-[10px] font-black text-[#315B6B] disabled:opacity-35">{promo.isActive ? "Disable" : "Enable"}</button><button type="button" disabled={busy || promo.isArchived} onClick={() => archivePromo(promo)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-200 bg-amber-50/80 text-amber-700 disabled:opacity-35" title="Soft archive" aria-label={`Archive ${promo.code}`}><Archive className="h-3.5 w-3.5" /></button><button type="button" disabled={busy || !promo.isArchived} onClick={() => hardDeletePromo(promo)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-300 bg-rose-50/85 text-rose-700 disabled:opacity-35" title={promo.isArchived ? "Permanently delete" : "Archive before permanent delete"} aria-label={`Permanently delete ${promo.code}`}><Trash2 className="h-3.5 w-3.5" /></button></div></td></tr>
                     ))}</tbody>
                   </table>
                 </div>

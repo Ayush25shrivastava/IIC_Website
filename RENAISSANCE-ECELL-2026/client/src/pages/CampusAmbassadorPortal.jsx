@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
 import {
   Anchor,
+  BarChart3,
   CheckCircle2,
+  ChevronDown,
   ClipboardList,
   Compass,
+  Copy,
   Eye,
   EyeOff,
   GraduationCap,
+  Heart,
   KeyRound,
+  Lightbulb,
   LoaderCircle,
   LockKeyhole,
   LogOut,
   Mail,
+  Megaphone,
   RefreshCw,
   Save,
   ShieldCheck,
@@ -49,6 +55,21 @@ function PortalCard({ children, className = "" }) {
       {children}
     </div>
   );
+}
+
+function DashboardCard({ children, className = "" }) {
+  return (
+    <div className={`relative overflow-hidden rounded-[24px] border border-white/70 bg-[linear-gradient(135deg,rgba(248,253,253,0.95),rgba(223,246,249,0.90))] shadow-[0_16px_42px_rgba(5,63,83,0.14),inset_0_1px_0_rgba(255,255,255,0.92)] ring-1 ring-[#2A91A6]/10 backdrop-blur-xl ${className}`}>
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
+      {children}
+    </div>
+  );
+}
+
+function taskTone(status) {
+  if (status === "COMPLETED") return "border-emerald-300/70 bg-emerald-50/85 text-emerald-700";
+  if (status === "IN_PROGRESS") return "border-amber-300/70 bg-amber-50/85 text-amber-700";
+  return "border-[#57AFC0]/35 bg-[#E4F7F9]/90 text-[#176C82]";
 }
 
 function LoadingScreen() {
@@ -291,7 +312,6 @@ export default function CampusAmbassadorPortal() {
   const [ambassador, setAmbassador] = useState(null);
   const [dashboard, setDashboard] = useState(null);
   const [tasks, setTasks] = useState([]);
-  const [referrals, setReferrals] = useState([]);
   const [taskDrafts, setTaskDrafts] = useState({});
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [loginPending, setLoginPending] = useState(false);
@@ -299,6 +319,9 @@ export default function CampusAmbassadorPortal() {
   const [error, setError] = useState("");
   const [savingTaskId, setSavingTaskId] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [expandedTaskId, setExpandedTaskId] = useState("");
+  const [showAllTasks, setShowAllTasks] = useState(false);
 
   function applyTasks(nextTasks) {
     setTasks(nextTasks);
@@ -315,15 +338,13 @@ export default function CampusAmbassadorPortal() {
   }
 
   async function loadPortalData() {
-    const [dashboardData, taskData, referralData] = await Promise.all([
+    const [dashboardData, taskData] = await Promise.all([
       ambassadorApi.dashboard(),
       ambassadorApi.tasks({ page: 1, limit: 50 }),
-      ambassadorApi.referrals({ page: 1, limit: 20 }),
     ]);
     setDashboard(dashboardData);
     setAmbassador(dashboardData.ambassador);
     applyTasks(taskData.tasks || []);
-    setReferrals(referralData.referrals || []);
   }
 
   useEffect(() => {
@@ -381,7 +402,6 @@ export default function CampusAmbassadorPortal() {
     setAmbassador(null);
     setDashboard(null);
     setTasks([]);
-    setReferrals([]);
     setCredentials({ email: "", password: "" });
     setError("");
   }
@@ -402,6 +422,31 @@ export default function CampusAmbassadorPortal() {
       setError(errorMessage(requestError, "Could not refresh dashboard data."));
     } finally {
       setRefreshing(false);
+    }
+  }
+
+  async function copyReferralCode() {
+    const code = dashboard?.promoCode?.code;
+    if (!code) return;
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(code);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = code;
+        textArea.setAttribute("readonly", "");
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        textArea.remove();
+      }
+      setCopiedCode(true);
+      window.setTimeout(() => setCopiedCode(false), 1600);
+    } catch {
+      setError("Could not copy the referral code. Please copy it manually.");
     }
   }
 
@@ -472,171 +517,250 @@ export default function CampusAmbassadorPortal() {
   const promoCode = dashboard?.promoCode;
   const taskStats = dashboard?.taskStats || {};
   const referralStats = dashboard?.referralStats || {};
+  const visibleTasks = showAllTasks ? tasks : tasks.slice(0, 3);
 
   return (
     <>
-      <main className="min-h-screen px-4 pb-16 pt-[112px] text-[#173F52] sm:px-6">
-        <section className="mx-auto w-full max-w-6xl space-y-5">
-          <PortalCard className="p-5 sm:p-7">
-            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
+      <main className="min-h-screen bg-transparent px-3 pb-14 pt-[106px] text-[#173F52] sm:px-5 lg:px-8">
+        <section className="mx-auto w-full max-w-[1500px] space-y-3.5">
+          <DashboardCard className="min-h-[146px] border-[#C69A4A]/35 p-5 sm:p-6 lg:px-8 lg:py-6">
+            <img src="/card-decor-globe.png" alt="" aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-[31%] hidden h-full w-[58%] object-cover object-center select-none opacity-[0.055] grayscale mix-blend-multiply lg:block" />
+            <img src="/sticker-compass.png" alt="" aria-hidden="true" className="pointer-events-none absolute right-[22%] top-1/2 hidden w-40 -translate-y-1/2 select-none opacity-[0.075] grayscale mix-blend-multiply xl:block" />
+            <img src="/sticker-anchor.png" alt="" aria-hidden="true" className="pointer-events-none absolute -bottom-10 right-4 w-24 select-none opacity-[0.05] grayscale mix-blend-multiply" />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#C3923D]/50 to-transparent" />
+            <div className="relative z-10 flex min-h-[92px] flex-col justify-between gap-5 lg:flex-row lg:items-center">
               <div>
-                <span className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-[#39788A]">Ambassador command deck</span>
-                <h1 className="mt-1 font-cinzel text-3xl font-black text-[#163E51]">Welcome, {ambassador?.name || "Captain"}</h1>
-                <p className="mt-2 text-sm text-[#557986]">{ambassador?.college} · {ambassador?.ambassadorId}</p>
+                <p className="font-mono text-[9px] font-black uppercase tracking-[0.3em] text-[#2D7185] sm:text-[10px]">Ambassador command deck</p>
+                <h1 className="mt-2 font-cinzel text-[28px] font-black uppercase leading-[1.02] tracking-[-0.02em] text-[#143E52] sm:text-[36px] lg:text-[43px]">
+                  Welcome, {ambassador?.name || "Captain"}
+                </h1>
+                <p className="mt-2 text-xs font-medium text-[#64818C] sm:text-sm">{ambassador?.college} · {ambassador?.ambassadorId}</p>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2.5">
                 <button
                   type="button"
                   onClick={refreshPortal}
                   disabled={refreshing}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#208AA0]/25 bg-white/55 px-4 text-xs font-bold text-[#276578] hover:bg-white/80 disabled:opacity-50"
+                  className="inline-flex h-11 min-w-[116px] items-center justify-center gap-2 rounded-xl border border-[#208AA0]/22 bg-white/75 px-4 text-xs font-black text-[#276578] shadow-[0_8px_18px_rgba(11,92,113,0.10)] transition hover:bg-white disabled:opacity-50"
                 >
                   <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} /> Refresh
                 </button>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#B17E2E]/25 bg-[#B17E2E]/10 px-4 text-xs font-bold text-[#80591F] hover:bg-[#B17E2E]/15"
+                  className="inline-flex h-11 min-w-[116px] items-center justify-center gap-2 rounded-xl border border-[#A87527]/30 bg-[linear-gradient(110deg,#C49542,#A87527)] px-4 text-xs font-black text-white shadow-[0_9px_20px_rgba(151,105,35,0.20)] transition hover:brightness-105"
                 >
                   <LogOut className="h-4 w-4" /> Sign out
                 </button>
               </div>
             </div>
-          </PortalCard>
+          </DashboardCard>
 
           {error && <p className="rounded-2xl border border-red-300 bg-red-50/95 px-4 py-3 text-sm text-red-700 shadow-sm">{error}</p>}
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {[
-              [ClipboardList, "Assigned tasks", taskStats.total ?? 0],
-              [CheckCircle2, "Completed", taskStats.completed ?? 0],
-              [GraduationCap, "Registrations", referralStats.total ?? 0],
-              [Users, "Verified", referralStats.verified ?? 0],
-            ].map(([Icon, label, value]) => (
-              <PortalCard key={label} className="p-5">
-                <Icon className="h-5 w-5 text-[#0D7892]" />
-                <p className="mt-3 text-3xl font-black text-[#163E51]">{value}</p>
-                <p className="mt-1 text-xs font-semibold text-[#587B87]">{label}</p>
-              </PortalCard>
+              [ClipboardList, "Assigned tasks", taskStats.total ?? 0, "Tasks awaiting your action", "/sticker-wheel.png", false],
+              [CheckCircle2, "Completed", taskStats.completed ?? 0, "Tasks successfully completed", "/sticker-compass.png", true],
+              [GraduationCap, "Registrations", referralStats.total ?? 0, "People registered via you", "/card-decor-globe.png", false],
+              [ShieldCheck, "Verified", referralStats.verified ?? 0, "Verified registrations", "/sticker-anchor.png", true],
+            ].map(([Icon, label, value, detail, decorSrc, gold]) => (
+              <DashboardCard key={label} className="min-h-[120px] p-4">
+                <img src={decorSrc} alt="" aria-hidden="true" className="pointer-events-none absolute -bottom-8 right-2 w-28 select-none opacity-[0.065] grayscale mix-blend-multiply" />
+                <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-11 bg-[linear-gradient(180deg,transparent,rgba(70,184,204,0.08))]" />
+                <div className="relative z-10 flex items-start gap-3">
+                  <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] ${gold ? "border-[#D6B267]/30 bg-[#F8ECCF]/90 text-[#A87527]" : "border-[#38A7BA]/22 bg-[#D8F5F7]/90 text-[#0782A0]"}`}>
+                    <Icon className="h-5 w-5" strokeWidth={1.9} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-black uppercase tracking-[0.12em] text-[#245B6D] sm:text-[10px]">{label}</p>
+                    <p className="mt-1 text-[32px] font-black leading-none text-[#153D50]">{value}</p>
+                    <p className="mt-2 text-[10px] leading-4 text-[#64838E]">{detail}</p>
+                  </div>
+                </div>
+              </DashboardCard>
             ))}
           </div>
 
-          <PortalCard className="overflow-hidden p-5 sm:p-7">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <p className="font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#39788A]">Your referral code</p>
-                <p className="mt-1 font-mono text-3xl font-black tracking-[0.08em] text-[#B17E2E]">{promoCode?.code || "NOT ASSIGNED"}</p>
+          <DashboardCard className="min-h-[106px] border-[#C69A4A]/28 px-5 py-4 sm:px-7">
+            <img src="/sticker-anchor.png" alt="" aria-hidden="true" className="pointer-events-none absolute -right-5 -top-7 w-24 select-none opacity-[0.06] grayscale mix-blend-multiply" />
+            <img src="/sticker-compass.png" alt="" aria-hidden="true" className="pointer-events-none absolute bottom-[-52px] left-[30%] w-32 select-none opacity-[0.045] grayscale mix-blend-multiply" />
+            <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-[#39788A]">Your referral code</p>
+                  <Tag className="h-3.5 w-3.5 text-[#A87527]" />
+                </div>
+                {promoCode?.code ? (
+                  <>
+                    <p className="mt-1 font-cinzel text-[28px] font-black uppercase tracking-[0.08em] text-[#A87527] sm:text-[34px]">{promoCode.code}</p>
+                    <p className="mt-0.5 text-[10px] text-[#64818C]">Share this code and bring more voyagers aboard!</p>
+                  </>
+                ) : (
+                  <p className="mt-2 text-sm font-semibold text-[#64818C]">No referral code assigned yet.</p>
+                )}
               </div>
-              <div className="grid grid-cols-2 gap-3 text-right text-xs text-[#557986] sm:grid-cols-3">
-                <div><strong className="block text-lg text-[#163E51]">{promoCode?.usageCount ?? 0}</strong>Uses</div>
-                <div><strong className="block text-lg text-[#163E51]">{promoCode?.remainingUses ?? "∞"}</strong>Remaining</div>
-                <div><strong className="block text-lg text-[#163E51]">{promoCode?.effectiveStatus || "N/A"}</strong>Status</div>
+
+              <div className="flex flex-wrap items-center gap-3 sm:gap-5">
+                <div className="min-w-[58px] text-center">
+                  <strong className="block text-xl font-black text-[#153E50]">{promoCode?.usageCount ?? 0}</strong>
+                  <span className="text-[10px] text-[#64818C]">Uses</span>
+                </div>
+                <span className="hidden h-12 w-px bg-[#2A91A6]/20 sm:block" />
+                <div className="min-w-[70px] text-center">
+                  <strong className="block text-xl font-black text-[#153E50]">{promoCode?.remainingUses ?? "∞"}</strong>
+                  <span className="text-[10px] text-[#64818C]">Remaining</span>
+                </div>
+                <span className="hidden h-12 w-px bg-[#2A91A6]/20 sm:block" />
+                <div className="min-w-[74px] text-center">
+                  <strong className={`block text-base font-black ${promoCode?.effectiveStatus === "ACTIVE" ? "text-emerald-700" : "text-[#153E50]"}`}>{promoCode?.effectiveStatus || "N/A"}</strong>
+                  <span className="text-[10px] text-[#64818C]">Status</span>
+                </div>
+                {promoCode?.code && (
+                  <button
+                    type="button"
+                    onClick={copyReferralCode}
+                    className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#0B6680] px-4 text-xs font-black text-white shadow-[0_9px_20px_rgba(9,91,113,0.18)] transition hover:bg-[#07576E]"
+                  >
+                    <Copy className="h-4 w-4" /> {copiedCode ? "Copied" : "Copy code"}
+                  </button>
+                )}
               </div>
             </div>
-          </PortalCard>
+          </DashboardCard>
 
-          <PortalCard className="p-5 sm:p-7">
-            <div className="mb-5">
-              <h2 className="font-cinzel text-2xl font-black text-[#163E51]">Assigned missions</h2>
-              <p className="mt-1 text-xs text-[#587B87]">Task changes are stored directly in the Renaissance backend.</p>
-            </div>
+          <div className="grid gap-3.5 xl:grid-cols-[2.05fr_0.85fr]">
+            <DashboardCard className="p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#2A91A6]/18 bg-[#D9F4F7] text-[#0D7892]"><ClipboardList className="h-4 w-4" /></span>
+                  <h2 className="font-cinzel text-[16px] font-black uppercase text-[#173F52]">Active missions</h2>
+                </div>
+                {tasks.length > 3 && (
+                  <button type="button" onClick={() => setShowAllTasks((value) => !value)} className="text-[9px] font-black uppercase tracking-[0.06em] text-[#2D7185] hover:text-[#0D7892]">
+                    {showAllTasks ? "Show less" : "View all"}
+                  </button>
+                )}
+              </div>
 
-            {tasks.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-[#208AA0]/30 bg-white/35 p-8 text-center text-sm text-[#557986]">No missions assigned yet.</div>
-            ) : (
-              <div className="space-y-4">
-                {tasks.map((task) => {
-                  const draft = taskDrafts[task.taskId] || { remarks: "", completionDetails: "" };
-                  const saving = savingTaskId === task.taskId;
-                  return (
-                    <article key={task.taskId} className="rounded-2xl border border-[#208AA0]/20 bg-white/48 p-4 sm:p-5">
-                      <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
-                        <div>
-                          <p className="font-mono text-[9px] font-bold uppercase tracking-wider text-[#39788A]">{task.taskId}</p>
-                          <h3 className="mt-1 font-bold text-[#173F52]">{task.title}</h3>
-                          <p className="mt-1 max-w-3xl text-xs leading-5 text-[#587B87]">{task.description}</p>
+              {tasks.length === 0 ? (
+                <div className="mt-3 rounded-2xl border border-dashed border-[#208AA0]/25 bg-white/45 px-4 py-8 text-center">
+                  <Compass className="mx-auto h-6 w-6 text-[#7AA8B3]" />
+                  <p className="mt-2 text-xs font-black text-[#315B6B]">No active missions yet.</p>
+                  <p className="mx-auto mt-1 max-w-xs text-[10px] leading-4 text-[#6A8791]">Your next mission will appear here when assigned by the Renaissance team.</p>
+                </div>
+              ) : (
+                <div className="mt-3 space-y-2">
+                  {visibleTasks.map((task) => {
+                    const draft = taskDrafts[task.taskId] || { remarks: "", completionDetails: "" };
+                    const saving = savingTaskId === task.taskId;
+                    const expanded = expandedTaskId === task.taskId;
+
+                    return (
+                      <article key={task.taskId} className="overflow-hidden rounded-2xl border border-[#258EA4]/16 bg-white/62">
+                        <div className="flex items-center gap-3 p-3">
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DDF4F6] text-[#0D7892]">
+                            <Megaphone className="h-4 w-4" />
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[11px] font-black text-[#214B5B]">{task.title}</p>
+                            <p className="mt-0.5 line-clamp-1 text-[9px] text-[#68858F]">{task.description}</p>
+                          </div>
+                          <span className={`hidden rounded-lg border px-2 py-1 text-[8px] font-black uppercase tracking-[0.07em] sm:inline-flex ${taskTone(task.status)}`}>{statusLabel(task.status)}</span>
+                          <button type="button" onClick={() => setExpandedTaskId(expanded ? "" : task.taskId)} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#258EA4]/16 bg-white/80 text-[#2D7185]" aria-label={`${expanded ? "Close" : "Open"} ${task.title}`}>
+                            <ChevronDown className={`h-4 w-4 transition ${expanded ? "rotate-180" : ""}`} />
+                          </button>
                         </div>
-                        <select
-                          value={task.status}
-                          disabled={saving}
-                          onChange={(event) => updateTaskStatus(task.taskId, event.target.value)}
-                          className="h-10 rounded-xl border border-[#208AA0]/25 bg-white/75 px-3 text-xs font-bold text-[#23667A] outline-none disabled:opacity-60"
-                        >
-                          {allowedTaskStatuses(task.status).map((option) => (
-                            <option key={option.value} value={option.value}>{option.label}</option>
-                          ))}
-                        </select>
-                      </div>
 
-                      <div className="mt-4 grid gap-3 md:grid-cols-2">
-                        <textarea
-                          rows={3}
-                          value={draft.remarks}
-                          onChange={(event) => setTaskDrafts((current) => ({
-                            ...current,
-                            [task.taskId]: { ...draft, remarks: event.target.value },
-                          }))}
-                          placeholder="Remarks"
-                          className="rounded-xl border border-[#208AA0]/20 bg-white/65 p-3 text-xs outline-none focus:border-[#0D7892]"
-                        />
-                        <textarea
-                          rows={3}
-                          value={draft.completionDetails}
-                          onChange={(event) => setTaskDrafts((current) => ({
-                            ...current,
-                            [task.taskId]: { ...draft, completionDetails: event.target.value },
-                          }))}
-                          placeholder="Completion details"
-                          className="rounded-xl border border-[#208AA0]/20 bg-white/65 p-3 text-xs outline-none focus:border-[#0D7892]"
-                        />
-                      </div>
+                        {expanded && (
+                          <div className="border-t border-[#258EA4]/12 bg-[#F5FCFC]/72 p-3">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                              <select
+                                value={task.status}
+                                disabled={saving}
+                                onChange={(event) => updateTaskStatus(task.taskId, event.target.value)}
+                                className="h-9 rounded-xl border border-[#208AA0]/22 bg-white/85 px-3 text-[10px] font-bold text-[#23667A] outline-none disabled:opacity-60"
+                              >
+                                {allowedTaskStatuses(task.status).map((option) => (
+                                  <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                              </select>
+                              <span className="font-mono text-[8px] font-bold uppercase tracking-[0.08em] text-[#6D8B95]">{task.taskId}</span>
+                            </div>
 
-                      <div className="mt-3 flex items-center justify-between gap-3">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#63838D]">Status: {statusLabel(task.status)}</span>
-                        <button
-                          type="button"
-                          disabled={saving}
-                          onClick={() => saveTaskDetails(task.taskId)}
-                          className="inline-flex h-9 items-center gap-2 rounded-xl border border-[#B17E2E]/25 bg-[#B17E2E]/10 px-4 text-xs font-bold text-[#80591F] hover:bg-[#B17E2E]/15 disabled:opacity-50"
-                        >
-                          {saving ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save details
-                        </button>
-                      </div>
-                    </article>
-                  );
-                })}
+                            <div className="mt-2 grid gap-2">
+                              <textarea
+                                rows={2}
+                                value={draft.remarks}
+                                onChange={(event) => setTaskDrafts((current) => ({
+                                  ...current,
+                                  [task.taskId]: { ...draft, remarks: event.target.value },
+                                }))}
+                                placeholder="Remarks"
+                                className="rounded-xl border border-[#208AA0]/18 bg-white/80 p-2.5 text-[10px] outline-none focus:border-[#0D7892]"
+                              />
+                              <textarea
+                                rows={2}
+                                value={draft.completionDetails}
+                                onChange={(event) => setTaskDrafts((current) => ({
+                                  ...current,
+                                  [task.taskId]: { ...draft, completionDetails: event.target.value },
+                                }))}
+                                placeholder="Completion details"
+                                className="rounded-xl border border-[#208AA0]/18 bg-white/80 p-2.5 text-[10px] outline-none focus:border-[#0D7892]"
+                              />
+                            </div>
+
+                            <button
+                              type="button"
+                              disabled={saving}
+                              onClick={() => saveTaskDetails(task.taskId)}
+                              className="mt-2 inline-flex h-9 items-center gap-2 rounded-xl border border-[#B17E2E]/24 bg-[#B17E2E]/10 px-3 text-[10px] font-black text-[#80591F] hover:bg-[#B17E2E]/15 disabled:opacity-50"
+                            >
+                              {saving ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save mission details
+                            </button>
+                          </div>
+                        )}
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </DashboardCard>
+
+            <DashboardCard className="p-4">
+              <img src="/card-decor-stamp.png" alt="" aria-hidden="true" className="pointer-events-none absolute -bottom-12 -right-8 w-32 select-none opacity-[0.065] grayscale mix-blend-multiply" />
+              <div className="relative z-10 flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#D2AC65]/22 bg-[#FBF0D6]/80 text-[#A87527]"><Compass className="h-4 w-4" /></span>
+                <h2 className="font-cinzel text-[16px] font-black uppercase text-[#173F52]">Captain&apos;s tips</h2>
               </div>
-            )}
-          </PortalCard>
 
-          <PortalCard className="p-5 sm:p-7">
-            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
-              <div>
-                <h2 className="font-cinzel text-2xl font-black text-[#163E51]">Recent registrations</h2>
-                <p className="mt-1 text-xs text-[#587B87]">Only referral-safe registration information is shown here.</p>
+              <div className="relative z-10 mt-3 space-y-2">
+                {[
+                  [Lightbulb, "Share your referral code everywhere", "Classrooms, groups and social media."],
+                  [Users, "Help your peers understand", "What makes Renaissance special."],
+                  [BarChart3, "Track your progress", "Aim for new milestones."],
+                  [Heart, "You are more than an ambassador", "You are a changemaker."],
+                ].map(([Icon, title, detail], index) => (
+                  <div key={title} className="flex items-start gap-2.5 rounded-xl border border-[#258EA4]/12 bg-white/58 p-2.5">
+                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${index === 0 ? "bg-[#FFF2CA] text-[#B37C16]" : index === 3 ? "bg-rose-50 text-rose-500" : "bg-[#DDF4F6] text-[#0D7892]"}`}>
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <p className="text-[10px] font-black leading-4 text-[#315B6B]">{title}</p>
+                      <p className="text-[9px] leading-4 text-[#708B94]">{detail}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <span className="text-xs font-semibold text-[#39788A]">Latest {referrals.length} referrals</span>
-            </div>
-            <div className="mt-4 overflow-x-auto rounded-2xl border border-[#208AA0]/18 bg-white/45">
-              <table className="min-w-full text-left text-xs">
-                <thead className="border-b border-[#208AA0]/15 bg-white/45 text-[10px] uppercase tracking-wider text-[#39788A]">
-                  <tr><th className="px-4 py-3">Registration</th><th className="px-4 py-3">Participant</th><th className="px-4 py-3">Package</th><th className="px-4 py-3">Status</th></tr>
-                </thead>
-                <tbody>
-                  {referrals.length === 0 ? (
-                    <tr><td colSpan="4" className="px-4 py-7 text-center text-[#63838D]">No promo registrations yet.</td></tr>
-                  ) : referrals.map((referral) => (
-                    <tr key={referral.id} className="border-b border-[#208AA0]/10 last:border-0">
-                      <td className="px-4 py-3 font-mono font-bold text-[#315B6B]">{referral.registrationId}</td>
-                      <td className="px-4 py-3">{referral.participantName}</td>
-                      <td className="px-4 py-3">{referral.packageName || referral.packageCode}</td>
-                      <td className="px-4 py-3 font-semibold text-[#0D7892]">{statusLabel(referral.status)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </PortalCard>
+            </DashboardCard>
+          </div>
+
+          <div className="flex items-center justify-center gap-3 py-1 text-center">
+            <span className="h-px w-16 bg-gradient-to-r from-transparent to-white/65" />
+            <p className="font-mono text-[8px] font-black uppercase tracking-[0.22em] text-white/75">Renaissance · A voyage towards a brighter tomorrow</p>
+            <span className="h-px w-16 bg-gradient-to-l from-transparent to-white/65" />
+          </div>
         </section>
       </main>
       <ContactFooter />
