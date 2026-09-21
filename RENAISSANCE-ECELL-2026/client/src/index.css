@@ -1711,11 +1711,11 @@ a, button, .cursor-pointer {
 .animate-deepsea-shine {
   background: linear-gradient(
     90deg, 
-    #e0f2fe 0%, 
+    #38bdf8 0%, 
     #0284c7 25%, 
     #082f49 50%, 
-    #38bdf8 75%, 
-    #e0f2fe 100%
+    #0369a1 75%, 
+    #38bdf8 100%
   );
   background-size: 200% auto;
   color: transparent;
@@ -1731,6 +1731,71 @@ a, button, .cursor-pointer {
   100% {
     background-position: 300% center;
   }
+}
+
+@keyframes blackGoldShine {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.animate-black-gold {
+  background: linear-gradient(
+    90deg,
+    #050505 0%,
+    #171717 18%,
+    #c59b27 38%,
+    #fef08a 50%,
+    #c59b27 62%,
+    #171717 82%,
+    #050505 100%
+  );
+  background-size: 200% auto;
+  color: transparent !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: blackGoldShine 5s linear infinite;
+  display: inline-block;
+  will-change: background-position;
+}
+
+@keyframes renaissanceThemeShine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-renaissance-theme {
+  background: linear-gradient(
+    115deg,
+    #020b18 0%,
+    #08203e 18%,
+    #0f3460 32%,
+    #c59b27 48%,
+    #f3e5ab 52%,
+    #c59b27 56%,
+    #0f3460 70%,
+    #08203e 84%,
+    #020b18 100%
+  );
+  background-size: 260% 100%;
+  color: transparent !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: renaissanceThemeShine 5s ease-in-out infinite;
+  display: inline-block;
+  will-change: background-position;
 }
 
 .animate-whitegold-shine, .animate-pure-gold {
@@ -1804,16 +1869,58 @@ body,
   }
 }
 
+/* Nautical Wheel on Desktop: perfectly sized so outer spoke handles touch screen edges */
+@media (min-width: 768px) {
+  .featured-events-wheel {
+    width: calc(100vh - 4px) !important;
+    width: calc(100svh - 4px) !important;
+    height: calc(100vh - 4px) !important;
+    height: calc(100svh - 4px) !important;
+    max-width: calc(100vh - 4px) !important;
+    max-width: calc(100svh - 4px) !important;
+    max-height: calc(100vh - 4px) !important;
+    max-height: calc(100svh - 4px) !important;
+    aspect-ratio: 1 / 1 !important;
+  }
+}
+
+@keyframes prizePulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.4));
+    opacity: 0.88;
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.95)) drop-shadow(0 0 16px rgba(234, 179, 8, 0.65));
+    opacity: 1;
+  }
+}
+
+.prize-glow-animated {
+  display: inline-flex;
+  animation: prizePulseGlow 2.2s ease-in-out infinite;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.event-card-simple-animate {
+  animation: cardFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+
 /* Short laptop screens: keep the full pinned Featured Events card visible. */
 @media (min-width: 768px) and (max-height: 900px) {
   .featured-events-section {
     padding-top: 4.75rem !important;
     padding-bottom: 0.5rem !important;
-  }
-
-  .featured-events-wheel {
-    width: 94vh !important;
-    height: 94vh !important;
   }
 
   .featured-events-header {
@@ -1860,11 +1967,6 @@ body,
 @media (min-width: 768px) and (max-height: 760px) {
   .featured-events-section {
     padding-top: 4rem !important;
-  }
-
-  .featured-events-wheel {
-    width: 86vh !important;
-    height: 86vh !important;
   }
 
   .featured-events-showcase {

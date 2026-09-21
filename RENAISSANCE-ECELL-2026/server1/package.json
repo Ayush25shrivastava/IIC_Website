@@ -1,0 +1,38 @@
+{
+  "name": "renaissance-server1",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Renaissance 2026 Express + MongoDB backend foundation for the campus ambassador and event flows.",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test",
+    "check": "node --check src/server.js && node --check src/app.js && node --check src/config/env.js && node --check src/config/db.js && node --check src/config/indexes.js && node --check src/constants/domain.js && node --check src/models/campus-ambassador.model.js && node --check src/models/promo-code.model.js && node --check src/models/task.model.js && node --check src/models/registration.model.js && node --check tests/models.test.js && node --check src/models/auth-session.model.js && node --check src/utils/password.js && node --check src/utils/tokens.js && node --check src/utils/auth-cookies.js && node --check src/middleware/async-handler.js && node --check src/middleware/validate.js && node --check src/middleware/trusted-origin.js && node --check src/middleware/ambassador-auth.js && node --check src/validators/ambassador-auth.schemas.js && node --check src/services/ambassador-auth.service.js && node --check src/controllers/ambassador-auth.controller.js && node --check src/routes/ambassador-auth.routes.js && node --check scripts/create-ambassador.js && node --check tests/auth.test.js && node --check src/validators/ambassador-dashboard.schemas.js && node --check src/services/ambassador-dashboard.service.js && node --check src/controllers/ambassador-dashboard.controller.js && node --check src/routes/ambassador-dashboard.routes.js && node --check tests/dashboard.test.js && node --check src/models/admin.model.js && node --check src/models/admin-auth-session.model.js && node --check src/utils/admin-tokens.js && node --check src/utils/admin-auth-cookies.js && node --check src/services/admin-auth.service.js && node --check src/middleware/admin-auth.js && node --check src/validators/admin-auth.schemas.js && node --check src/controllers/admin-auth.controller.js && node --check src/routes/admin-auth.routes.js && node --check src/validators/admin-management.schemas.js && node --check src/services/admin-management.service.js && node --check src/controllers/admin-management.controller.js && node --check src/routes/admin-management.routes.js && node --check scripts/create-admin.js && node --check tests/admin.test.js && node --check src/middleware/error-handler.js && node --check src/middleware/database-ready.js",
+    "ambassador:create": "node scripts/create-ambassador.js",
+    "admin:create": "node scripts/create-admin.js"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "dependencies": {
+    "argon2": "^0.44.0",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.1",
+    "pino": "^9.9.4",
+    "pino-http": "^10.5.0",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4"
+  }
+}

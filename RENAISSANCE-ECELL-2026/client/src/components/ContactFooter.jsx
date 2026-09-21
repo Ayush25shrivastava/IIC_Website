@@ -27,7 +27,10 @@ export default function ContactFooter() {
       <div className="relative z-10 mx-auto mb-10 grid max-w-7xl grid-cols-1 gap-10 text-xs sm:mb-12 md:grid-cols-12 md:gap-8 lg:gap-12">
         {/* Brand */}
         <div className="flex flex-col items-start gap-4 md:col-span-5">
-          <Link to="/" className="group flex items-center gap-3">
+          <Link 
+            to="/" 
+            className="group flex w-fit items-center gap-3 px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-white/85 via-white/70 to-white/50 border border-white/80 backdrop-blur-lg shadow-[0_4px_25px_rgba(255,255,255,0.2)] transition-all hover:from-white/95 hover:to-white/65"
+          >
             <img
               src="/renaissance-logo-clean.png"
               alt="Renaissance 10th Edition Logo"
@@ -77,7 +80,7 @@ export default function ContactFooter() {
             </a>
 
             <a
-              href="https://www.facebook.com/mnnitecell/"
+              href="https://www.facebook.com/ecellmnnit"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
