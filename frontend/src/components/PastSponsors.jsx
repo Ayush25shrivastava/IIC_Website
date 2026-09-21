@@ -30,9 +30,9 @@ const PastSponsors = () => {
 
                 <div className="flex w-max animate-scroll hover:pause">
                     {/* First set of logos */}
-                    {sponsorLogos.map((src, idx) => (
+                    {sponsorLogos.map(({ src, name }, idx) => (
                         <div key={`sponsor-1-${idx}`} className="mx-8 w-32 h-16 flex items-center justify-center transition-all duration-300 transform hover:scale-110">
-                            <img src={src} alt={`Sponsor ${idx}`} className="max-w-full max-h-full object-contain filter drop-shadow-md" />
+                            <img src={src} alt={name} className="max-w-full max-h-full object-contain filter drop-shadow-md" />
                         </div>
                     ))}
                     {/* Second set for infinite loop (MUST match first set structure exactly) */}
