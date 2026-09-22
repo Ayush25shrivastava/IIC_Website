@@ -99,6 +99,16 @@ const PAST_SPONSORS = [
   { name: "Coca Cola", image: "/sponsors/coca-cola.png" },
   { name: "KDM", image: "/sponsors/kdm.png" },
   { name: "Domino's", image: "/sponsors/dominos.png" },
+  { name: "The Baking Co.", image: "/sponsors/baking-co.png" },
+  { name: "Decathlon", image: "/sponsors/decathlon.png" },
+  { name: "Veggie Veg", image: "/sponsors/veggie-veg.png" },
+  { name: "Himalayan Weekenders", image: "/sponsors/himalayan-weekenders.png" },
+  { name: "Kratikal", image: "/sponsors/kratikal.png" },
+  { name: "Dhyeya IAS", image: "/sponsors/dhyeya-ias.png" },
+  { name: "Career Launcher", image: "/sponsors/career-launcher.png" },
+  { name: "GreenSole", image: "/sponsors/greensole.png" },
+  { name: "Coding Blocks", image: "/sponsors/coding-blocks.png" },
+  { name: "Abhibus", image: "/sponsors/abhibus.png" },
 ];
 
 function FeaturedSpeakersGrid({ speakers }) {
