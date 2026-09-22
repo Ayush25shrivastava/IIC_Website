@@ -3,28 +3,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import ContactFooter from "../components/ContactFooter";
 
 const MASONRY_IMAGES = [
-  { id: 1, src: "/past_events/Copy of REN (1).png", delay: 0.1, span: "col-span-2 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
-  { id: 10, src: "/past_events/Untitled design (3).png", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-2" },
-  { id: 3, src: "/past_events/Copy of REN (5).png", delay: 0.2, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-2 xl:row-span-1" },
-  { id: 14, src: "/past_events/Untitled design (8).png", delay: 0.15, span: "col-span-2 row-span-1 md:col-span-2 md:row-span-1 xl:col-span-1 xl:row-span-1" },
-  { id: 5, src: "/past_events/Copy of REN (9).png", delay: 0.1, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  { id: 1, src: "/past_events/Copy of REN (1).jpg", delay: 0.1, span: "col-span-2 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  { id: 10, src: "/past_events/Untitled design (3).jpg", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-2" },
+  { id: 3, src: "/past_events/Copy of REN (5).jpg", delay: 0.2, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-2 xl:row-span-1" },
+  { id: 14, src: "/past_events/Untitled design (8).jpg", delay: 0.15, span: "col-span-2 row-span-1 md:col-span-2 md:row-span-1 xl:col-span-1 xl:row-span-1" },
+  { id: 5, src: "/past_events/Copy of REN (9).jpg", delay: 0.1, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
   
-  { id: 12, src: "/past_events/Untitled design (6).png", delay: 0.25, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
-  { id: 7, src: "/past_events/Copy of REN.png", delay: 0.2, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-2 xl:row-span-1" },
-  { id: 8, src: "/past_events/Untitled design (1).png", delay: 0.25, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
-  { id: 2, src: "/past_events/Copy of REN (4).png", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-2 xl:col-span-1 xl:row-span-2" },
-  { id: 16, src: "/past_events/Untitled design (10).png", delay: 0.25, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
+  { id: 12, src: "/past_events/Untitled design (6).jpg", delay: 0.25, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
+  { id: 7, src: "/past_events/Copy of REN.jpg", delay: 0.2, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-2 xl:row-span-1" },
+  { id: 8, src: "/past_events/Untitled design (1).jpg", delay: 0.25, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  { id: 2, src: "/past_events/Copy of REN (4).jpg", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-2 xl:col-span-1 xl:row-span-2" },
+  { id: 16, src: "/past_events/Untitled design (10).jpg", delay: 0.25, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
 
-  { id: 11, src: "/past_events/Untitled design (4).png", delay: 0.2, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
-  { id: 6, src: "/past_events/Copy of REN (12).png", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-2 xl:col-span-1 xl:row-span-2" },
-  { id: 13, src: "/past_events/Untitled design (7).png", delay: 0.1, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-2 xl:row-span-1" },
-  { id: 4, src: "/past_events/Copy of REN (8).png", delay: 0.25, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
-  { id: 15, src: "/past_events/Untitled design (9).png", delay: 0.2, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  { id: 11, src: "/past_events/Untitled design (4).jpg", delay: 0.2, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  { id: 6, src: "/past_events/Copy of REN (12).jpg", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-2 xl:col-span-1 xl:row-span-2" },
+  { id: 13, src: "/past_events/Untitled design (7).jpg", delay: 0.1, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-2 xl:row-span-1" },
+  { id: 4, src: "/past_events/Copy of REN (8).jpg", delay: 0.25, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
+  { id: 15, src: "/past_events/Untitled design (9).jpg", delay: 0.2, span: "col-span-1 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
 
-  { id: 9, src: "/past_events/Untitled design (2).png", delay: 0.1, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
-  { id: 17, src: "/past_events/Untitled design (11).png", delay: 0.1, span: "col-span-1 row-span-1 md:col-span-2 md:row-span-1 xl:col-span-2 xl:row-span-1" },
-  { id: 18, src: "/past_events/Untitled design (12).png", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-2 xl:col-span-2 xl:row-span-2" },
-  { id: 19, src: "/past_events/Untitled design.png", delay: 0.2, span: "col-span-2 row-span-1 md:col-span-2 md:row-span-1 xl:col-span-1 xl:row-span-1" }
+  { id: 9, src: "/past_events/Untitled design (2).jpg", delay: 0.1, span: "col-span-2 row-span-1 md:col-span-1 md:row-span-1 xl:col-span-1 xl:row-span-1" },
+  { id: 17, src: "/past_events/Untitled design (11).jpg", delay: 0.1, span: "col-span-1 row-span-1 md:col-span-2 md:row-span-1 xl:col-span-2 xl:row-span-1" },
+  { id: 18, src: "/past_events/Untitled design (12).jpg", delay: 0.15, span: "col-span-1 row-span-1 md:col-span-1 md:row-span-2 xl:col-span-2 xl:row-span-2" },
+  { id: 19, src: "/past_events/Untitled design.jpg", delay: 0.2, span: "col-span-2 row-span-1 md:col-span-2 md:row-span-1 xl:col-span-1 xl:row-span-1" }
 ];
 
 const PAST_SPEAKERS = [
