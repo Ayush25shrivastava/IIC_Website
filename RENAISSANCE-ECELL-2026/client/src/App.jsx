@@ -31,6 +31,7 @@ const LoginSuccess = lazy(() => import("./pages/LoginSuccess"));
 const Login = lazy(() => import("./pages/Login"));
 const CampusAmbassador = lazy(() => import("./pages/CampusAmbassadorPortal"));
 const CampusAmbassadorAdmin = lazy(() => import("./pages/CampusAmbassadorAdmin"));
+const TicketsAccommodation = lazy(() => import("./pages/TicketsAccommodation"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -135,6 +136,16 @@ export default function App() {
               <Route
                 path="/udbhav/events"
                 element={<Events />}
+              />
+
+              {/* Tickets & Accommodation */}
+              <Route
+                path="/tickets-accommodation"
+                element={<TicketsAccommodation />}
+              />
+              <Route
+                path="/udbhav/tickets-accommodation"
+                element={<TicketsAccommodation />}
               />
 
               {/* Dashboard */}
