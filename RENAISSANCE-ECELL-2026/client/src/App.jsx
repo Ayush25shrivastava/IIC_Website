@@ -29,7 +29,9 @@ const Sponsors = lazy(() => import("./pages/Sponsors"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const LoginSuccess = lazy(() => import("./pages/LoginSuccess"));
 const Login = lazy(() => import("./pages/Login"));
-const CampusAmbassador = lazy(() => import("./pages/CampusAmbassador"));
+const CampusAmbassadorPortal = lazy(() => import("./pages/CampusAmbassadorPortal"));
+const CampusAmbassadorAdmin = lazy(() => import("./pages/CampusAmbassadorAdmin"));
+const TicketsAccommodation = lazy(() => import("./pages/TicketsAccommodation"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -136,6 +138,16 @@ export default function App() {
                 element={<Events />}
               />
 
+              {/* Tickets & Accommodation */}
+              <Route
+                path="/tickets-accommodation"
+                element={<TicketsAccommodation />}
+              />
+              <Route
+                path="/udbhav/tickets-accommodation"
+                element={<TicketsAccommodation />}
+              />
+
               {/* Dashboard */}
               <Route
                 path="/dashboard"
@@ -168,7 +180,12 @@ export default function App() {
 
               <Route
                 path="/campus-ambassador"
-                element={<CampusAmbassador />}
+                element={<CampusAmbassadorPortal />}
+              />
+
+              <Route
+                path="/campus-ambassador/admin"
+                element={<CampusAmbassadorAdmin />}
               />
 
               <Route

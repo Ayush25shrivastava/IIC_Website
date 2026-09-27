@@ -1,11 +1,12 @@
-name: renaissance-server1
+name: renaissance
 
 services:
   server1:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ${SERVER1_IMAGE:-renaissance-server1:latest}
+      target: server1
+    image: ${SERVER1_IMAGE:-aayush20253534/renaissance-server1:latest}
     env_file:
       - ./RENAISSANCE-ECELL-2026/server1/.env
     environment:
@@ -23,3 +24,28 @@ services:
     cap_drop:
       - ALL
     stop_grace_period: 15s
+    networks:
+      - renaissance-network
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: client
+      args:
+        VITE_SERVER1_API_URL: ${VITE_SERVER1_API_URL:-http://localhost:5001/api/v1}
+    image: ${CLIENT_IMAGE:-aayush20253534/iic-web-client:latest}
+    ports:
+      - "${CLIENT_HOST_PORT:-5173}:80"
+    depends_on:
+      server1:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - renaissance-network
+
+networks:
+  renaissance-network:
+    driver: bridge

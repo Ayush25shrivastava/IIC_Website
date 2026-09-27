@@ -9,6 +9,7 @@ import {
   Image,
   GraduationCap,
   LogIn,
+  Ticket,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -41,6 +42,11 @@ export default function Navbar() {
       name: "Gallery",
       path: "/gallery",
       icon: Image,
+    },
+    {
+      name: "Tickets",
+      path: "/tickets-accommodation",
+      icon: Ticket,
     },
   ];
 
