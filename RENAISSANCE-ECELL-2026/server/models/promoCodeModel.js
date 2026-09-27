@@ -11,7 +11,7 @@ const promoCodeSchema = new mongoose.Schema({
     },
 
     ambassador: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Ambassador'
     },
 
