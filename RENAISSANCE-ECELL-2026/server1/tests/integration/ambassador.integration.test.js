@@ -112,7 +112,9 @@ test("database-backed ambassador session and ownership flow", { skip: !mongoUri 
       adminId: "AD-TEST-CAPTAIN", name: "Test Admin", email: "admin@example.test",
       passwordHash, mustChangePassword: false,
     });
-    const adminToken = signAdminAccessToken(admin);
+    const sessionId = randomUUID();
+    await models.AdminAuthSession.create({ sessionId, adminId: admin._id, tokenHash: "test-token-hash", expiresAt: new Date(Date.now() + 60000) });
+    const adminToken = signAdminAccessToken(admin, sessionId);
     const adminRequest = (method, path) => request(app)[method](`/api/v1/admin/tasks${path}`)
       .set("Authorization", `Bearer ${adminToken}`).set("Origin", "http://localhost:5173");
     const created = await adminRequest("post", "").send({

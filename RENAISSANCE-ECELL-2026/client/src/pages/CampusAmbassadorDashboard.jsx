@@ -278,6 +278,14 @@ export default function CampusAmbassadorDashboard() {
     return () => { active = false; };
   }, [revision, handleAuthError]);
 
+  // Pick up admin assignments, reviews and promo edits without discarding an open task draft.
+  useEffect(() => {
+    const refresh = () => { if (document.visibilityState === "visible") setRevision((n) => n + 1); };
+    const timer = setInterval(refresh, 30000);
+    window.addEventListener("focus", refresh);
+    return () => { clearInterval(timer); window.removeEventListener("focus", refresh); };
+  }, []);
+
   // Update local task state when saved via modal
   const handleTaskSaved = (savedTask) => {
     setEditingTask(savedTask);
@@ -669,6 +677,7 @@ export default function CampusAmbassadorDashboard() {
                           <p className="ca-task-instructions">{task.description}</p>
                         )}
 
+                        {task.reviewFeedback && <p className="ca-task-remark"><strong>Admin feedback:</strong> {task.reviewFeedback}</p>}
                         {task.remarks && (
                           <div className="ca-task-remark">
                             <strong>Your remark:</strong> {task.remarks}
@@ -817,7 +826,8 @@ export default function CampusAmbassadorDashboard() {
                         <p className="ca-task-instructions">{task.description}</p>
                       )}
 
-                      {task.remarks && (
+                      {task.reviewFeedback && <p className="ca-task-remark"><strong>Admin feedback:</strong> {task.reviewFeedback}</p>}
+                        {task.remarks && (
                         <div className="ca-task-remark">
                           <strong>Your remark:</strong> {task.remarks}
                         </div>

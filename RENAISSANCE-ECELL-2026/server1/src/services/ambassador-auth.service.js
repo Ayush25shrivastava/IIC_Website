@@ -10,8 +10,10 @@ function refreshExpiryDate() {
 }
 
 export async function verifyAmbassadorPassword(ambassador, password) {
-  if (typeof ambassador.password === "string") return ambassador.password === password;
-  // Legacy hashes are verified only to preserve access during conversion.
+  if (typeof ambassador.password === "string") {
+    const hash = (value) => crypto.createHash("sha256").update(value).digest();
+    return crypto.timingSafeEqual(hash(ambassador.password), hash(password));
+  }
   if (typeof ambassador.passwordHash === "string") return verifyPassword(ambassador.passwordHash, password);
   return false;
 }

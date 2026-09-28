@@ -52,6 +52,20 @@ test("admin JWTs are isolated from ambassador token types", () => {
   assert.equal(refresh.sid, "admin-session");
 });
 
+test("valid admin requests fail promptly when the database is unavailable", async () => {
+  const admin = new Admin({ _id: "507f1f77bcf86cd799439011", authVersion: 0 });
+  const token = signAdminAccessToken(admin, "test-database-unavailable");
+  const response = await request(app).get("/api/v1/admin/dashboard")
+    .set("Authorization", `Bearer ${token}`).expect(503);
+  assert.equal(response.body.error.code, "DATABASE_UNAVAILABLE");
+});
+
+test("invalid admin login input is validated before database access", async () => {
+  const response = await request(app).post("/api/v1/admin/auth/login")
+    .set("Origin", "http://localhost:5173").send({ email: "invalid", password: "" }).expect(400);
+  assert.equal(response.body.error.code, "VALIDATION_ERROR");
+});
+
 test("ambassador creation validation normalizes identity fields", () => {
   const parsed = createAmbassadorSchema.parse({
     ambassadorId: "ca-rnx-0042",
@@ -61,6 +75,16 @@ test("ambassador creation validation normalizes identity fields", () => {
   });
   assert.equal(parsed.ambassadorId, "CA-RNX-0042");
   assert.equal(parsed.email, "captain@example.com");
+});
+
+test("admin-chosen ambassador passwords preserve input and reject invalid values", () => {
+  const profile = { name: "Captain", email: "captain@example.test", college: "Test College" };
+  const password = " captain2026 ";
+  assert.equal(createAmbassadorSchema.parse({ ...profile, password }).password, password);
+  for (const invalid of ["", "short", "        ", "a".repeat(129), null]) {
+    assert.throws(() => createAmbassadorSchema.parse({ ...profile, password: invalid }));
+  }
+  assert.equal(createAmbassadorSchema.parse(profile).password, undefined);
 });
 
 test("promo validation rejects malformed codes", () => {

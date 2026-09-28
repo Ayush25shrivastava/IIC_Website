@@ -1,3 +1,4 @@
+import { requireDatabaseReady } from "../middleware/database-ready.js";
 import { Router } from "express";
 import {
   adminChangePassword,
@@ -16,9 +17,9 @@ import { adminChangePasswordSchema, adminLoginSchema } from "../validators/admin
 
 export const adminAuthRouter = Router();
 
-adminAuthRouter.post("/login", requireTrustedOrigin, adminLoginLimiter, validateBody(adminLoginSchema), asyncHandler(adminLogin));
-adminAuthRouter.post("/refresh", requireTrustedOrigin, adminRefreshLimiter, asyncHandler(adminRefresh));
-adminAuthRouter.post("/logout", requireTrustedOrigin, asyncHandler(adminLogout));
+adminAuthRouter.post("/login", requireTrustedOrigin, adminLoginLimiter, validateBody(adminLoginSchema), requireDatabaseReady, asyncHandler(adminLogin));
+adminAuthRouter.post("/refresh", requireTrustedOrigin, adminRefreshLimiter, requireDatabaseReady, asyncHandler(adminRefresh));
+adminAuthRouter.post("/logout", requireTrustedOrigin, requireDatabaseReady, asyncHandler(adminLogout));
 adminAuthRouter.get("/me", requireAdminAuth, asyncHandler(adminMe));
 adminAuthRouter.post(
   "/change-password",

@@ -52,6 +52,10 @@ const taskSchema = new Schema(
       maxlength: 4000,
       default: "",
     },
+    reviewStatus: { type: String, enum: ["NONE", "PENDING", "APPROVED", "CHANGES_REQUESTED"], default: "NONE" },
+    reviewFeedback: { type: String, maxlength: 2000, default: "" },
+    reviewedAt: { type: Date, default: null },
+    reviewedByAdminId: { type: Schema.Types.ObjectId, ref: "Admin", default: null },
     dueAt: {
       type: Date,
       default: null,

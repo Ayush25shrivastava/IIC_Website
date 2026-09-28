@@ -1,3 +1,4 @@
+import { requireDatabaseReady } from "../middleware/database-ready.js";
 import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
 import {
@@ -48,18 +49,18 @@ ambassadorAuthRouter.post(
   requireTrustedOrigin,
   loginLimiter,
   validateBody(ambassadorLoginSchema),
-  asyncHandler(loginAmbassador),
+  requireDatabaseReady, asyncHandler(loginAmbassador),
 );
 ambassadorAuthRouter.post(
   "/refresh",
   requireTrustedOrigin,
   refreshLimiter,
-  asyncHandler(refreshAmbassadorSession),
+  requireDatabaseReady, asyncHandler(refreshAmbassadorSession),
 );
 ambassadorAuthRouter.post(
   "/logout",
   requireTrustedOrigin,
-  asyncHandler(logoutAmbassador),
+  requireDatabaseReady, asyncHandler(logoutAmbassador),
 );
 ambassadorAuthRouter.get("/me", requireAmbassadorAuth, asyncHandler(getCurrentAmbassador));
 ambassadorAuthRouter.post(

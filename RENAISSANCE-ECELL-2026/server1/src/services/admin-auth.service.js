@@ -24,7 +24,8 @@ export function publicAdmin(admin) {
     email: admin.email,
     role: admin.role,
     status: admin.status,
-    mustChangePassword: admin.mustChangePassword,
+    // Retained for older clients; a password change is optional.
+    mustChangePassword: false,
     lastLoginAt: admin.lastLoginAt,
     passwordChangedAt: admin.passwordChangedAt,
   };
@@ -32,7 +33,7 @@ export function publicAdmin(admin) {
 
 export async function createAdminAuthSession({ admin, req, res }) {
   const sessionId = crypto.randomUUID();
-  const accessToken = signAdminAccessToken(admin);
+  const accessToken = signAdminAccessToken(admin, sessionId);
   const refreshToken = signAdminRefreshToken(admin, sessionId);
 
   await AdminAuthSession.create({
@@ -56,7 +57,7 @@ export async function rotateAdminAuthSession({ session, admin, token, req, res }
     return false;
   }
 
-  const accessToken = signAdminAccessToken(admin);
+  const accessToken = signAdminAccessToken(admin, session.sessionId);
   const refreshToken = signAdminRefreshToken(admin, session.sessionId);
   const rotated = await AdminAuthSession.findOneAndUpdate(
     { _id: session._id, revokedAt: null, tokenHash: presentedHash },

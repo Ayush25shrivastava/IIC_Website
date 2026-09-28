@@ -102,6 +102,9 @@ export function publicTask(task) {
     description: task.description,
     dueAt: task.dueAt ?? null,
     status: task.status,
+    reviewStatus: task.reviewStatus || (task.status === "COMPLETED" ? "PENDING" : "NONE"),
+    reviewFeedback: task.reviewFeedback || "",
+    reviewedAt: task.reviewedAt ?? null,
     remarks: task.remarks,
     completionDetails: task.completionDetails,
     assignedAt: task.assignedAt,
@@ -209,7 +212,15 @@ export function assertTaskStatusTransition(currentStatus, nextStatus) {
 export async function updateAmbassadorTask({ ambassadorId, taskId, status, remarks, completionDetails }) {
   const task = await Task.findOne({ ambassadorId, taskId }).lean();
   if (!task) throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
+  if (task.status === TASK_STATUS.COMPLETED && (remarks !== undefined || completionDetails !== undefined)) {
+    throw new ApiError(409, "Submitted tasks are locked until an admin requests changes", "TASK_SUBMITTED");
+  }
   const update = {};
+  if (status === TASK_STATUS.COMPLETED && task.status !== TASK_STATUS.COMPLETED) {
+    update.reviewStatus = "PENDING";
+    update.reviewedAt = null;
+    update.reviewedByAdminId = null;
+  }
   if (status !== undefined) {
     assertTaskStatusTransition(task.status, status);
     update.status = status;

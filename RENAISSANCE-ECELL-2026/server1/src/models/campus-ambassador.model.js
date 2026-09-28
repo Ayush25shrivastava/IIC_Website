@@ -48,7 +48,7 @@ const campusAmbassadorSchema = new Schema(
     },
     password: {
       type: String,
-      required() { return !this.passwordHash; },
+      required() { return this.isNew && !this.passwordHash; },
       minlength: 1,
       maxlength: 512,
       select: false,

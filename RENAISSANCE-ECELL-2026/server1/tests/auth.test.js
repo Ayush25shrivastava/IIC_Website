@@ -31,7 +31,7 @@ test("Argon2id password hashing verifies correct passwords only", async () => {
   assert.equal(await verifyPassword(hash, "WrongPassword123"), false);
 });
 
-test("ambassador password matching uses readable credentials with legacy fallback", async () => {
+test("ambassador password matching prefers the readable field and supports legacy hashes", async () => {
   const password = "TestCaptain2026!";
   const passwordHash = await hashPassword("OldCaptain2026!");
   assert.equal(await verifyAmbassadorPassword({ password }, password), true);
@@ -39,6 +39,7 @@ test("ambassador password matching uses readable credentials with legacy fallbac
   assert.equal(await verifyAmbassadorPassword({ password }, `${password} `), false);
   assert.equal(await verifyAmbassadorPassword({ passwordHash }, "OldCaptain2026!"), true);
   assert.equal(await verifyAmbassadorPassword({ password, passwordHash }, "OldCaptain2026!"), false);
+  assert.equal(await verifyAmbassadorPassword({ password, passwordHash }, password), true);
   assert.equal(await verifyAmbassadorPassword({}, password), false);
 });
 
