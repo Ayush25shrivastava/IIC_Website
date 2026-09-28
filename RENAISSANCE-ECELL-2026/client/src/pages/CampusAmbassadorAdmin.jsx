@@ -172,7 +172,7 @@ export default function CampusAmbassadorAdmin() {
   const [ambassadorForm, setAmbassadorForm] = useState({ name: "", email: "", phone: "", college: "" });
   const [editingAmbassador, setEditingAmbassador] = useState(null);
   const [promoForm, setPromoForm] = useState({ code: "", ambassadorId: "", discountType: "NONE", discountValue: 0, maxUses: "" });
-  const [taskForm, setTaskForm] = useState({ title: "", description: "", ambassadorId: "" });
+  const [taskForm, setTaskForm] = useState({ title: "", description: "", ambassadorId: "", dueAt: "" });
 
   async function loadAdminData() {
     const [dashboardData, ambassadorData, promoData, taskData, referralData] = await Promise.all([
@@ -318,8 +318,8 @@ export default function CampusAmbassadorAdmin() {
   async function createTask(event) {
     event.preventDefault(); setBusy(true); setError("");
     try {
-      await adminApi.createTask(taskForm);
-      setTaskForm({ title: "", description: "", ambassadorId: "" });
+      await adminApi.createTask({ ...taskForm, dueAt: taskForm.dueAt ? new Date(taskForm.dueAt).toISOString() : null });
+      setTaskForm({ title: "", description: "", ambassadorId: "", dueAt: "" });
       await loadAdminData();
     } catch (requestError) { setError(message(requestError, "Could not create task.")); }
     finally { setBusy(false); }
@@ -498,6 +498,9 @@ export default function CampusAmbassadorAdmin() {
                 <form onSubmit={createTask} className="mt-4 space-y-3">
                   <input className={fieldClass} placeholder="Task title" value={taskForm.title} onChange={(e) => setTaskForm((v) => ({ ...v, title: e.target.value }))} required />
                   <textarea rows="5" className={textareaClass} placeholder="Task description" value={taskForm.description} onChange={(e) => setTaskForm((v) => ({ ...v, description: e.target.value }))} required />
+                  <label className="block text-xs">Due date (optional)
+                    <input type="datetime-local" className={fieldClass} value={taskForm.dueAt} onChange={(e) => setTaskForm((v) => ({ ...v, dueAt: e.target.value }))} />
+                  </label>
                   <select className={fieldClass} value={taskForm.ambassadorId} onChange={(e) => setTaskForm((v) => ({ ...v, ambassadorId: e.target.value }))} required><option value="">Assign ambassador</option>{activeAmbassadors.map((item) => <option key={item.id} value={item.id}>{item.name} · {item.ambassadorId}</option>)}</select>
                   <button disabled={busy} className={`${primaryButton} w-full`}><Plus className="h-4 w-4" /> Create task</button>
                 </form>
@@ -511,8 +514,9 @@ export default function CampusAmbassadorAdmin() {
                       <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
                         <select className={fieldClass} value={task.status} disabled={busy} onChange={(e) => updateTaskStatus(task.taskId, e.target.value)}><option value="ASSIGNED">Assigned</option><option value="IN_PROGRESS">In Progress</option><option value="COMPLETED">Completed</option></select>
                         <select className={fieldClass} value={task.ambassadorId} disabled={busy || task.status === "COMPLETED"} onChange={(e) => reassignTask(task.taskId, e.target.value)}>{activeAmbassadors.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>
-                        <button type="button" onClick={() => deleteTask(task.taskId)} disabled={busy || task.status !== "ASSIGNED"} className={`${secondaryButton} text-red-700`}><Trash2 className="h-3.5 w-3.5" /> Delete</button>
+                        <button type="button" onClick={() => deleteTask(task.taskId)} disabled={busy || task.status !== "ASSIGNED" || Boolean(task.startedAt || task.completedAt || task.remarks || task.completionDetails)} className={`${secondaryButton} text-red-700`}><Trash2 className="h-3.5 w-3.5" /> Delete</button>
                       </div>
+                      {task.dueAt && <p className="mt-3 text-xs text-[#587B87]"><strong>Due:</strong> {new Date(task.dueAt).toLocaleString()}</p>}
                       {(task.remarks || task.completionDetails) && <div className="mt-3 rounded-xl bg-white/55 p-3 text-xs text-[#587B87]"><strong>Remarks:</strong> {task.remarks || "—"}<br /><strong>Completion:</strong> {task.completionDetails || "—"}</div>}
                     </article>
                   ))}

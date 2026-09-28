@@ -46,10 +46,23 @@ const campusAmbassadorSchema = new Schema(
       minlength: 2,
       maxlength: 180,
     },
+    password: {
+      type: String,
+      required() { return !this.passwordHash; },
+      minlength: 1,
+      maxlength: 512,
+      select: false,
+    },
+    // Read existing accounts until their next successful sign-in converts them.
     passwordHash: {
       type: String,
-      required: true,
       select: false,
+    },
+    role: {
+      type: String,
+      enum: ["CAMPUS_AMBASSADOR"],
+      default: "CAMPUS_AMBASSADOR",
+      required: true,
     },
     status: {
       type: String,
@@ -59,7 +72,7 @@ const campusAmbassadorSchema = new Schema(
     },
     mustChangePassword: {
       type: Boolean,
-      default: true,
+      default: false,
       required: true,
     },
     authVersion: {
@@ -112,6 +125,7 @@ campusAmbassadorSchema.index(
 
 campusAmbassadorSchema.set("toJSON", {
   transform(_doc, ret) {
+    delete ret.password;
     delete ret.passwordHash;
     delete ret.authVersion;
     return ret;

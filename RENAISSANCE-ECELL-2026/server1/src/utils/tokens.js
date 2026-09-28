@@ -11,10 +11,12 @@ function commonSignOptions(expiresIn) {
   };
 }
 
-export function signAccessToken(ambassador) {
+export function signAccessToken(ambassador, sessionId) {
   return jwt.sign(
     {
       typ: "access",
+      sid: sessionId,
+      role: ambassador.role,
       aid: ambassador.ambassadorId,
       ver: ambassador.authVersion ?? 0,
     },

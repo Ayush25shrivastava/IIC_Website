@@ -52,6 +52,10 @@ const taskSchema = new Schema(
       maxlength: 4000,
       default: "",
     },
+    dueAt: {
+      type: Date,
+      default: null,
+    },
     assignedAt: {
       type: Date,
       default: Date.now,

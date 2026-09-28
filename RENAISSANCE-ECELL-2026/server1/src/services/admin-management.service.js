@@ -5,7 +5,6 @@ import { CampusAmbassador, PromoCode, Registration, Task } from "../models/index
 import { revokeAmbassadorSessions } from "./ambassador-auth.service.js";
 import { publicPromoCode, publicTask } from "./ambassador-dashboard.service.js";
 import { ApiError } from "../utils/api-error.js";
-import { hashPassword } from "../utils/password.js";
 
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -76,8 +75,8 @@ export async function createAmbassadorByAdmin(input) {
   const ambassador = await CampusAmbassador.create({
     ...input,
     ambassadorId: input.ambassadorId || randomId("CA-RNX"),
-    passwordHash: await hashPassword(password),
-    mustChangePassword: true,
+    password,
+    mustChangePassword: false,
   });
 
   return { ambassador: adminAmbassadorView(ambassador), temporaryPassword: password };
@@ -207,6 +206,7 @@ export async function createTaskByAdmin(input, adminId) {
     taskId: randomId("TASK-RNX"),
     title: input.title,
     description: input.description,
+    dueAt: input.dueAt ?? null,
     ambassadorId: ambassador._id,
     createdByAdminId: adminId,
   });
@@ -236,27 +236,48 @@ export async function getTaskForAdmin(taskId) {
 }
 
 export async function updateTaskByAdmin(taskId, input) {
+  const task = await Task.findOne({ taskId }).lean();
+  if (!task) throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
   const update = { ...input };
   const now = new Date();
-  if (input.status === TASK_STATUS.IN_PROGRESS) update.startedAt = now;
-  if (input.status === TASK_STATUS.COMPLETED) { update.startedAt = now; update.completedAt = now; }
+  if (input.status === TASK_STATUS.IN_PROGRESS) {
+    update.startedAt = task.startedAt ?? now;
+    update.completedAt = null;
+  }
+  if (input.status === TASK_STATUS.COMPLETED) {
+    update.startedAt = task.startedAt ?? now;
+    update.completedAt = task.completedAt ?? now;
+  }
   if (input.status === TASK_STATUS.ASSIGNED) { update.startedAt = null; update.completedAt = null; }
-  const task = await Task.findOneAndUpdate({ taskId }, { $set: update }, { new: true, runValidators: true });
-  if (!task) throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
-  return adminTaskView(task);
+  const saved = await Task.findOneAndUpdate(
+    { _id: task._id, ambassadorId: task.ambassadorId, status: task.status, updatedAt: task.updatedAt },
+    { $set: update }, { new: true, runValidators: true },
+  );
+  if (!saved) throw new ApiError(409, "Task changed. Refresh and try again.", "TASK_CHANGED");
+  return adminTaskView(saved);
 }
 
 export async function assignTaskByAdmin(taskId, ambassadorId) {
   const [task, ambassador] = await Promise.all([Task.findOne({ taskId }), CampusAmbassador.findById(ambassadorId)]);
   if (!task) throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
   if (!ambassador || ambassador.status === AMBASSADOR_STATUS.ARCHIVED) throw new ApiError(404, "Campus ambassador was not found", "AMBASSADOR_NOT_FOUND");
+  if (task.ambassadorId.equals(ambassador._id)) return adminTaskView(task);
   if (task.status === TASK_STATUS.COMPLETED) throw new ApiError(409, "Completed tasks cannot be reassigned", "TASK_ALREADY_COMPLETED");
-  task.ambassadorId = ambassador._id;
-  task.status = TASK_STATUS.ASSIGNED;
-  task.startedAt = null;
-  task.completedAt = null;
-  await task.save();
-  return adminTaskView(task);
+  const saved = await Task.findOneAndUpdate(
+    { _id: task._id, ambassadorId: task.ambassadorId, status: task.status, updatedAt: task.updatedAt },
+    { $set: {
+      ambassadorId: ambassador._id,
+      status: TASK_STATUS.ASSIGNED,
+      assignedAt: new Date(),
+      startedAt: null,
+      completedAt: null,
+      remarks: "",
+      completionDetails: "",
+    } },
+    { new: true, runValidators: true },
+  );
+  if (!saved) throw new ApiError(409, "Task changed. Refresh and try again.", "TASK_CHANGED");
+  return adminTaskView(saved);
 }
 
 export async function deleteTaskByAdmin(taskId) {
@@ -271,7 +292,12 @@ export async function deleteTaskByAdmin(taskId) {
   ) {
     throw new ApiError(409, "Only untouched assigned tasks can be deleted", "TASK_HAS_PROGRESS");
   }
-  await task.deleteOne();
+  const deleted = await Task.deleteOne({
+    _id: task._id, ambassadorId: task.ambassadorId, updatedAt: task.updatedAt,
+    status: TASK_STATUS.ASSIGNED, startedAt: null, completedAt: null,
+    remarks: { $in: ["", null] }, completionDetails: { $in: ["", null] },
+  });
+  if (!deleted.deletedCount) throw new ApiError(409, "Task changed. Refresh and try again.", "TASK_CHANGED");
 }
 
 export async function listReferralsByAdmin({ page, limit, ambassadorId, promoCode, status, search }) {
