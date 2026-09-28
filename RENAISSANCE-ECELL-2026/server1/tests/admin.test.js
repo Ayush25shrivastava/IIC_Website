@@ -13,7 +13,7 @@ const [
   { app },
   { Admin, AdminAuthSession },
   { signAdminAccessToken, signAdminRefreshToken, verifyAdminAccessToken, verifyAdminRefreshToken },
-  { createAmbassadorSchema, createPromoSchema, taskListAdminQuerySchema },
+  { createAmbassadorSchema, createPromoSchema, createTaskSchema, updateTaskAdminSchema, taskListAdminQuerySchema },
 ] = await Promise.all([
   import("supertest"),
   import("../src/app.js"),
@@ -73,6 +73,19 @@ test("promo validation rejects malformed codes", () => {
 test("admin task list pagination is bounded", () => {
   assert.deepEqual(taskListAdminQuerySchema.parse({}), { page: 1, limit: 20 });
   assert.throws(() => taskListAdminQuerySchema.parse({ limit: "101" }));
+});
+
+test("admin task deadlines accept an ISO date or null and reject invalid input", () => {
+  const input = {
+    title: "Share event posters", description: "Share with your college club.",
+    ambassadorId: "507f1f77bcf86cd799439011", dueAt: "2026-10-01T12:00:00.000Z",
+  };
+  assert.equal(createTaskSchema.parse(input).dueAt, input.dueAt);
+  assert.equal(createTaskSchema.parse({ ...input, dueAt: null }).dueAt, null);
+  assert.deepEqual(updateTaskAdminSchema.parse({ dueAt: null }), { dueAt: null });
+  assert.throws(() => createTaskSchema.parse({ ...input, dueAt: "tomorrow" }));
+  assert.throws(() => updateTaskAdminSchema.parse({ dueAt: "2026-02-30T12:00:00Z" }));
+  assert.throws(() => updateTaskAdminSchema.parse({}));
 });
 
 

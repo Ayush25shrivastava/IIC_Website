@@ -11,7 +11,6 @@ import {
 // Components
 import RenaissanceIntro from "./components/RenaissanceIntro";
 import Navbar from "./components/Navbar";
-import PirateCursor from "./components/PirateCursor";
 import AdisyonShader from "./components/ui/adisyon-shader";
 import SmoothScroll from "./components/SmoothScroll";
 import PageTransitionShimmer from "./components/PageTransitionShimmer";
@@ -29,7 +28,9 @@ const Sponsors = lazy(() => import("./pages/Sponsors"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const LoginSuccess = lazy(() => import("./pages/LoginSuccess"));
 const Login = lazy(() => import("./pages/Login"));
-const CampusAmbassadorPortal = lazy(() => import("./pages/CampusAmbassadorPortal"));
+const CampusAmbassador = lazy(() => import("./pages/CampusAmbassadorPortal"));
+const CampusAmbassadorLayout = lazy(() => import("./pages/CampusAmbassadorLayout"));
+const CampusAmbassadorDashboard = lazy(() => import("./pages/CampusAmbassadorDashboard"));
 const CampusAmbassadorAdmin = lazy(() => import("./pages/CampusAmbassadorAdmin"));
 const TicketsAccommodation = lazy(() => import("./pages/TicketsAccommodation"));
 const TicketsAdmin = lazy(() => import("./pages/TicketsAdmin"));
@@ -75,9 +76,6 @@ export default function App() {
 
         {/* Route transition shimmer */}
         <PageTransitionShimmer />
-
-        {/* Interactive Custom Pirate Hook Cursor */}
-        <PirateCursor />
 
         {/* Full-screen fixed WebGL ocean background */}
         <AdisyonShader className="fixed inset-0 z-0 opacity-90 mix-blend-screen pointer-events-none" />
@@ -183,10 +181,10 @@ export default function App() {
               {/* Auth callback */}
               <Route path="/login" element={<Login />} />
 
-              <Route
-                path="/campus-ambassador"
-                element={<CampusAmbassadorPortal />}
-              />
+              <Route path="/campus-ambassador" element={<CampusAmbassadorLayout />}>
+                <Route index element={<CampusAmbassador />} />
+                <Route path="dashboard" element={<CampusAmbassadorDashboard />} />
+              </Route>
 
               <Route
                 path="/campus-ambassador/admin"

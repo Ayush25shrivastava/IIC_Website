@@ -83,12 +83,14 @@ export const taskListAdminQuerySchema = z.object({
 export const createTaskSchema = z.object({
   title: z.string().trim().min(3).max(180),
   description: z.string().trim().min(3).max(2000),
+  dueAt: z.iso.datetime().nullable().optional(),
   ambassadorId: objectId,
 }).strict();
 
 export const updateTaskAdminSchema = z.object({
   title: z.string().trim().min(3).max(180).optional(),
   description: z.string().trim().min(3).max(2000).optional(),
+  dueAt: z.iso.datetime().nullable().optional(),
   status: z.enum(Object.values(TASK_STATUS)).optional(),
 }).strict().refine((value) => Object.keys(value).length > 0, { message: "At least one field is required" });
 
