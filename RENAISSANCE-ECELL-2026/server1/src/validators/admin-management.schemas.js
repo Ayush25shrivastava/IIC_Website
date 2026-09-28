@@ -20,11 +20,13 @@ export const ambassadorListQuerySchema = z.object({
 }).strict();
 
 export const createAmbassadorSchema = z.object({
+  password: z.string().min(8).max(128).refine((value) => value.trim().length > 0, { message: "Password cannot be blank" }).optional(),
   ambassadorId: z.string().trim().toUpperCase().regex(/^CA-[A-Z0-9][A-Z0-9-]{2,31}$/).optional(),
   name: z.string().trim().min(2).max(120),
   email: z.string().trim().toLowerCase().email().max(254),
   phone: z.string().trim().min(8).max(24).optional(),
   college: z.string().trim().min(2).max(180),
+  promoCode: z.string().trim().toUpperCase().regex(/^[A-Z0-9][A-Z0-9-]{2,31}$/).optional(),
 }).strict();
 
 export const updateAmbassadorSchema = z.object({
@@ -32,6 +34,7 @@ export const updateAmbassadorSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(254).optional(),
   phone: z.union([z.string().trim().min(8).max(24), z.null()]).optional(),
   college: z.string().trim().min(2).max(180).optional(),
+  promoCode: z.string().trim().toUpperCase().regex(/^[A-Z0-9][A-Z0-9-]{2,31}$/).optional(),
 }).strict().refine((value) => Object.keys(value).length > 0, { message: "At least one field is required" });
 
 export const ambassadorStatusSchema = z.object({
@@ -62,6 +65,7 @@ export const createPromoSchema = z.object({
 }).strict();
 
 export const updatePromoSchema = z.object({
+  code: z.string().trim().toUpperCase().regex(/^[A-Z0-9][A-Z0-9-]{2,31}$/).optional(),
   discountType: z.enum(Object.values(DISCOUNT_TYPE)).optional(),
   discountValue: z.coerce.number().min(0).optional(),
   maxUses: z.union([z.coerce.number().int().min(1), z.null()]).optional(),
@@ -84,7 +88,7 @@ export const createTaskSchema = z.object({
   title: z.string().trim().min(3).max(180),
   description: z.string().trim().min(3).max(2000),
   dueAt: z.iso.datetime().nullable().optional(),
-  ambassadorId: objectId,
+  ambassadorId: z.union([objectId, z.literal("ALL")]),
 }).strict();
 
 export const updateTaskAdminSchema = z.object({
@@ -103,3 +107,9 @@ export const adminReferralListQuerySchema = z.object({
   status: z.enum(Object.values(REGISTRATION_STATUS)).optional(),
   search: optionalText(80),
 }).strict();
+
+export const reviewTaskSchema = z.object({
+  decision: z.enum(["APPROVED", "CHANGES_REQUESTED"]),
+  feedback: z.string().trim().max(2000).default(""),
+}).strict().refine((input) => input.decision !== "CHANGES_REQUESTED" || input.feedback.length > 0,
+  { message: "Feedback is required when requesting changes", path: ["feedback"] });

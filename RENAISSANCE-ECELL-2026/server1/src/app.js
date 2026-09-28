@@ -1,10 +1,11 @@
 import compression from "compression";
+import { fileURLToPath } from "node:url";
+import { adminPagesRouter } from "./routes/admin-pages.routes.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import express from "express";
 import helmet from "helmet";
 import { env } from "./config/env.js";
-import { requireDatabaseReady } from "./middleware/database-ready.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { notFoundHandler } from "./middleware/not-found.js";
 import { requestLogger } from "./middleware/request-context.js";
@@ -62,10 +63,17 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1", healthRouter);
-app.use("/api/v1/ambassador/auth", requireDatabaseReady, ambassadorAuthRouter);
-app.use("/api/v1/ambassador", requireDatabaseReady, ambassadorDashboardRouter);
-app.use("/api/v1/admin/auth", requireDatabaseReady, adminAuthRouter);
-app.use("/api/v1/admin", requireDatabaseReady, adminManagementRouter);
+app.use("/api/v1/ambassador/auth", ambassadorAuthRouter);
+app.use("/api/v1/ambassador", ambassadorDashboardRouter);
+app.use("/api/v1/admin", (_req, res, next) => {
+  res.set({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow, noarchive" });
+  next();
+});
+app.use("/api/v1/admin/auth", adminAuthRouter);
+app.use("/api/v1/admin", adminManagementRouter);
 
+// Optional same-origin production serving. Existing homepage/API routes remain unchanged.
+app.use(["/renaissance/admin", "/admin"], adminPagesRouter);
+app.use("/assets", express.static(fileURLToPath(new URL("../../client/dist/assets", import.meta.url))));
 app.use(notFoundHandler);
 app.use(errorHandler);

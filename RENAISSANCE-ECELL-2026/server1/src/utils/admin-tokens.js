@@ -11,10 +11,11 @@ function commonSignOptions(expiresIn) {
   };
 }
 
-export function signAdminAccessToken(admin) {
+export function signAdminAccessToken(admin, sessionId) {
   return jwt.sign(
     {
       typ: "admin_access",
+      sid: sessionId,
       role: admin.role,
       ver: admin.authVersion ?? 0,
     },

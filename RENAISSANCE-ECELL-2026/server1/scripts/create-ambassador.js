@@ -37,7 +37,7 @@ if (missing.length) {
     console.log(`Ambassador ID: ${ambassador.ambassadorId}`);
     console.log(`Email: ${ambassador.email}`);
     console.log(`Temporary password: ${temporaryPassword}`);
-    console.log("The password is also stored in the ambassador's MongoDB password field.");
+    console.log("Deliver this credential securely; it is stored in the readable password field.");
   } catch (error) {
     console.error(error?.message || error);
     process.exitCode = 1;

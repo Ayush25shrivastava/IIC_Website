@@ -1,17 +1,23 @@
 import { getDatabaseState } from "../config/db.js";
 import { ApiError } from "../utils/api-error.js";
 
-export function requireDatabaseReady(_req, _res, next) {
+export function assertDatabaseReady() {
   const database = getDatabaseState();
 
   if (!database.ready) {
-    next(new ApiError(
+    throw new ApiError(
       503,
       "Database is temporarily unavailable. The API is online and will reconnect automatically.",
       "DATABASE_UNAVAILABLE",
-    ));
-    return;
+    );
   }
+}
 
-  next();
+export function requireDatabaseReady(_req, _res, next) {
+  try {
+    assertDatabaseReady();
+    next();
+  } catch (error) {
+    next(error);
+  }
 }

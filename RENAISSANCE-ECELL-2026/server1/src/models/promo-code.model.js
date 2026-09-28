@@ -12,7 +12,6 @@ const promoCodeSchema = new Schema(
       required: true,
       trim: true,
       uppercase: true,
-      immutable: true,
       minlength: 3,
       maxlength: 32,
       match: PROMO_CODE_PATTERN,

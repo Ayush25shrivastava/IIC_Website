@@ -1,15 +1,17 @@
 import { Router } from "express";
 import {
+  adminResetCredential, adminReviewTask,
   adminArchiveAmbassador, adminArchivePromo, adminAssignTask, adminCreateAmbassador, adminCreatePromo, adminCreateTask,
   adminDashboard, adminDeleteTask, adminGetAmbassador, adminGetTask, adminHardDeleteAmbassador,
   adminHardDeletePromo, adminListAmbassadors, adminListPromos, adminListReferrals, adminListTasks,
   adminSetAmbassadorStatus, adminSetPromoStatus, adminUpdateAmbassador, adminUpdatePromo, adminUpdateTask,
 } from "../controllers/admin-management.controller.js";
-import { requireAdminAuth, requireAdminPasswordChanged } from "../middleware/admin-auth.js";
+import { requireAdminAuth } from "../middleware/admin-auth.js";
 import { asyncHandler } from "../middleware/async-handler.js";
 import { requireTrustedOrigin } from "../middleware/trusted-origin.js";
 import { validateBody, validateParams, validateQuery } from "../middleware/validate.js";
 import {
+  reviewTaskSchema,
   adminIdParamsSchema, adminReferralListQuerySchema, ambassadorListQuerySchema, ambassadorStatusSchema,
   assignTaskSchema, createAmbassadorSchema, createPromoSchema, createTaskSchema, promoIdParamsSchema,
   promoListQuerySchema, promoStatusSchema, taskAdminParamsSchema, taskListAdminQuerySchema,
@@ -17,7 +19,7 @@ import {
 } from "../validators/admin-management.schemas.js";
 
 export const adminManagementRouter = Router();
-adminManagementRouter.use(requireAdminAuth, requireAdminPasswordChanged);
+adminManagementRouter.use(requireAdminAuth);
 
 adminManagementRouter.get("/dashboard", asyncHandler(adminDashboard));
 
@@ -44,3 +46,6 @@ adminManagementRouter.post("/tasks/:taskId/assign", requireTrustedOrigin, valida
 adminManagementRouter.delete("/tasks/:taskId", requireTrustedOrigin, validateParams(taskAdminParamsSchema), asyncHandler(adminDeleteTask));
 
 adminManagementRouter.get("/referrals", validateQuery(adminReferralListQuerySchema), asyncHandler(adminListReferrals));
+
+adminManagementRouter.post("/ambassadors/:id/reset-credential", requireTrustedOrigin, validateParams(adminIdParamsSchema), asyncHandler(adminResetCredential));
+adminManagementRouter.post("/tasks/:taskId/review", requireTrustedOrigin, validateParams(taskAdminParamsSchema), validateBody(reviewTaskSchema), asyncHandler(adminReviewTask));

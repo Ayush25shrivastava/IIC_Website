@@ -50,7 +50,7 @@ const adminSchema = new Schema(
     },
     mustChangePassword: {
       type: Boolean,
-      default: true,
+      default: false,
       required: true,
     },
     authVersion: {

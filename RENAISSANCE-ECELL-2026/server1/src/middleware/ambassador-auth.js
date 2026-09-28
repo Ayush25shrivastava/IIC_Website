@@ -1,3 +1,4 @@
+import { assertDatabaseReady } from "./database-ready.js";
 import jwt from "jsonwebtoken";
 import { AMBASSADOR_STATUS } from "../constants/domain.js";
 import { AuthSession, CampusAmbassador } from "../models/index.js";
@@ -29,6 +30,7 @@ export const requireAmbassadorAuth = asyncHandler(async (req, _res, next) => {
   if (payload.role !== "CAMPUS_AMBASSADOR" || !payload.sid) {
     throw new ApiError(401, "Authentication session is no longer valid", "INVALID_SESSION");
   }
+  assertDatabaseReady();
   const session = await AuthSession.exists({
     sessionId: payload.sid, ambassadorId: payload.sub,
     revokedAt: null, expiresAt: { $gt: new Date() },

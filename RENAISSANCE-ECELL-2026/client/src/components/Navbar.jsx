@@ -63,11 +63,6 @@ export default function Navbar() {
     };
   }, [isOpen]);
 
-  // Automatically close mobile navigation after route changes
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location.pathname]);
-
   const isActive = (path) => {
     if (path === "/") {
       return (
@@ -81,6 +76,8 @@ export default function Navbar() {
       location.pathname.startsWith(`/udbhav${path}`)
     );
   };
+
+  if (/^\/admin(?:\/|$)/.test(location.pathname)) return null;
 
   return (
     <>
