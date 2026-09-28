@@ -41,7 +41,7 @@ test("CampusAmbassador normalizes identifiers and has safe defaults", async () =
     name: "Campus Captain",
     email: "CAPTAIN@EXAMPLE.COM",
     college: "MNNIT Allahabad",
-    passwordHash: "argon2id-hash-placeholder",
+    password: "TestCaptain2026!",
   });
 
   await ambassador.validate();
@@ -49,7 +49,18 @@ test("CampusAmbassador normalizes identifiers and has safe defaults", async () =
   assert.equal(ambassador.ambassadorId, "CA-RNX-0001");
   assert.equal(ambassador.email, "captain@example.com");
   assert.equal(ambassador.status, AMBASSADOR_STATUS.ACTIVE);
-  assert.equal(ambassador.mustChangePassword, true);
+  assert.equal(ambassador.mustChangePassword, false);
+  assert.equal(ambassador.password, "TestCaptain2026!");
+  assert.equal(ambassador.passwordHash, undefined);
+});
+
+test("CampusAmbassador requires a password but accepts legacy hashes during conversion", async () => {
+  const ambassador = new CampusAmbassador({
+    ambassadorId: "CA-TEST-CREDENTIAL", name: "Test Captain", email: "credential@example.test", college: "Test College",
+  });
+  await assert.rejects(ambassador.validate(), /password/);
+  ambassador.passwordHash = "legacy-hash";
+  await ambassador.validate();
 });
 
 test("PromoCode rejects invalid percentage discounts", async () => {
@@ -136,17 +147,18 @@ test("critical database identifiers have unique indexes", () => {
 });
 
 
-test("CampusAmbassador authVersion defaults to zero and remains private in JSON", async () => {
+test("CampusAmbassador credentials and authVersion remain private in JSON", async () => {
   const ambassador = new CampusAmbassador({
     ambassadorId: "CA-RNX-0002",
     name: "Second Captain",
     email: "second@example.com",
     college: "MNNIT Allahabad",
-    passwordHash: "argon2id-hash-placeholder",
+    password: "TestCaptain2026!",
   });
 
   await ambassador.validate();
   assert.equal(ambassador.authVersion, 0);
   assert.equal(Object.hasOwn(ambassador.toJSON(), "authVersion"), false);
   assert.equal(Object.hasOwn(ambassador.toJSON(), "passwordHash"), false);
+  assert.equal(Object.hasOwn(ambassador.toJSON(), "password"), false);
 });

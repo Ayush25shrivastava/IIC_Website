@@ -69,7 +69,7 @@ async function send(path, { method = "GET", body, query, signal } = {}) {
     headers,
     body: requestBody,
     credentials: "include",
-    signal,
+    signal: signal || AbortSignal.timeout(15000),
   });
 }
 
@@ -106,7 +106,6 @@ async function refreshAuth(authScope) {
   refreshRequests.set(authScope, refreshPromise);
   return refreshPromise;
 }
-
 async function request(path, options = {}, authScope = null, retry = true) {
   let response = await send(path, options);
 
@@ -118,6 +117,8 @@ async function request(path, options = {}, authScope = null, retry = true) {
     } else if (refreshResult.error) {
       throw refreshResult.error;
     }
+    await refreshRequests.get(authScope);
+    response = await send(path, options);
   }
 
   return readResponse(response);
@@ -136,6 +137,10 @@ export const ambassadorApi = {
   promoCode: () => request("/ambassador/promo-code", {}, "ambassador"),
   tasks: (query) => request("/ambassador/tasks", { query }, "ambassador"),
   task: (taskId) => request(`/ambassador/tasks/${encodeURIComponent(taskId)}`, {}, "ambassador"),
+  updateTask: (taskId, body) => request(
+    `/ambassador/tasks/${encodeURIComponent(taskId)}`,
+    { method: "PATCH", body }, "ambassador",
+  ),
   updateTaskStatus: (taskId, status) => request(
     `/ambassador/tasks/${encodeURIComponent(taskId)}/status`,
     { method: "PATCH", body: { status } },
