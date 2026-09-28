@@ -74,7 +74,6 @@ const TICKET_OPTIONS = [
 export default function TicketsAccommodation() {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [showPayment, setShowPayment] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -85,8 +84,11 @@ export default function TicketsAccommodation() {
     checkInDate: "",
     checkOutDate: "",
     accommodationPreferences: "",
+    transactionId: "",
+    amountPaid: "",
   });
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
   const prefersReducedMotion = useReducedMotion();
@@ -126,7 +128,7 @@ export default function TicketsAccommodation() {
     }
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Full Name is required";
@@ -146,8 +148,50 @@ export default function TicketsAccommodation() {
       return;
     }
 
-    setShowPayment(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!formData.transactionId.trim()) {
+      alert("Please enter the Transaction ID / UTR Number");
+      return;
+    }
+
+    if (!formData.amountPaid.trim()) {
+      alert("Please enter the Amount Paid");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+      const res = await fetch(`${API_URL}/tickets/purchase`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ...formData,
+          ticketType: selectedTicket,
+          checkInDate: formData.checkInDate || null,
+          checkOutDate: formData.checkOutDate || null,
+        })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to submit. Please try again.");
+      }
+
+      alert("Payment Details Submitted Successfully!");
+      setShowForm(false);
+      setSelectedTicket(null);
+      setFormData({
+        name: "", email: "", phone: "", college: "", city: "", checkInDate: "", checkOutDate: "", accommodationPreferences: "", transactionId: "", amountPaid: "",
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      alert(error.message || "An error occurred");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const activeTicketData = TICKET_OPTIONS.find(t => t.id === selectedTicket);
@@ -226,7 +270,7 @@ export default function TicketsAccommodation() {
       <section className="relative z-10 mx-auto w-full max-w-[1400px] px-4 pb-24 pt-[240px] sm:px-6 sm:pt-[290px] lg:px-8 lg:pt-[330px]">
         
         <AnimatePresence mode="wait">
-          {!showForm && !showPayment ? (
+          {!showForm ? (
             <motion.div
               key="selection-view"
               initial={{ opacity: 0, y: 20 }}
@@ -433,14 +477,14 @@ export default function TicketsAccommodation() {
                 </button>
               </div>
             </motion.div>
-          ) : showForm && !showPayment ? (
+          ) : (
             <motion.div
               key="form-view"
               initial={{ opacity: 0, scale: 0.98, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98, y: 10 }}
               transition={{ duration: 0.3 }}
-              className="max-w-3xl mx-auto"
+              className="max-w-5xl mx-auto"
             >
               {/* Back Button */}
               <button
@@ -478,10 +522,60 @@ export default function TicketsAccommodation() {
                     </div>
                   </div>
 
-                  <form onSubmit={handleFormSubmit} className="space-y-8">
-                    {/* Common Details Section */}
-                    <div className="space-y-5">
-                      <div className="flex items-center gap-2 mb-4 border-b border-[#0C2B3D]/15 pb-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                    {/* Left Column: QR Code & Payment Info */}
+                    <div className="lg:col-span-5 flex flex-col items-center text-center bg-white/40 p-6 rounded-2xl border border-[#C5A25F]/30 h-fit">
+                      <h4 className="font-cinzel text-xl font-black text-[#0C2B3D] mb-3">Make Payment</h4>
+                      <p className="font-montserrat text-sm text-[#1A3B4D] mb-6 font-semibold">
+                        Scan to pay <span className="text-[#9E6D1F] font-black">{activeTicketData?.price}</span> for your {activeTicketData?.name}.
+                      </p>
+                      
+                      <div className="bg-white p-3 rounded-2xl shadow-md border-2 border-[#C5A25F]/40 mb-6 w-full max-w-[220px] aspect-square flex items-center justify-center">
+                        <img 
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=dummy@upi&pn=Renaissance&am=${activeTicketData?.price.replace('₹', '').replace(',', '')}&cu=INR`} 
+                          alt="Payment QR Code"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+
+                      <div className="w-full bg-[#F4EBD9]/80 border-2 border-[#C5A25F]/40 p-4 rounded-xl text-left">
+                        <div className="mb-4">
+                          <label className="block text-[11px] font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                            Transaction ID / UTR *
+                          </label>
+                          <input
+                            type="text"
+                            name="transactionId"
+                            value={formData.transactionId}
+                            onChange={handleFormChange}
+                            placeholder="Enter 12-digit UTR"
+                            className={`w-full px-4 py-3 rounded-xl bg-white border-2 ${errors.transactionId ? 'border-[#D9534F]' : 'border-[#C5A25F]/30'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/40 focus:outline-none focus:border-[#9E6D1F] transition-colors`}
+                          />
+                          {errors.transactionId && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.transactionId}</p>}
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                            Amount Paid *
+                          </label>
+                          <input
+                            type="number"
+                            name="amountPaid"
+                            value={formData.amountPaid}
+                            onChange={handleFormChange}
+                            placeholder="e.g. 1750"
+                            className={`w-full px-4 py-3 rounded-xl bg-white border-2 ${errors.amountPaid ? 'border-[#D9534F]' : 'border-[#C5A25F]/30'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/40 focus:outline-none focus:border-[#9E6D1F] transition-colors`}
+                          />
+                          {errors.amountPaid && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.amountPaid}</p>}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Column: Participant Details Form */}
+                    <div className="lg:col-span-7">
+                      <form onSubmit={handleFormSubmit} className="space-y-8">
+                        <div className="space-y-5">
+                          <div className="flex items-center gap-2 mb-4 border-b border-[#0C2B3D]/15 pb-4">
                         <Shield className="w-5 h-5 text-[#9E6D1F]" />
                         <h4 className="font-cinzel text-lg font-black text-[#0C2B3D] uppercase tracking-wider">Participant Details</h4>
                       </div>
@@ -637,84 +731,22 @@ export default function TicketsAccommodation() {
                     <div className="pt-8 flex justify-end">
                       <button
                         type="submit"
-                        className="group relative flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#0C2B3D] text-[#F2E5D4] font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_8px_30px_rgba(12,43,61,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer border border-[#0C2B3D] w-full sm:w-auto overflow-hidden"
+                        disabled={isSubmitting}
+                        className="group relative flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#0C2B3D] text-[#F2E5D4] font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_8px_30px_rgba(12,43,61,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer border border-[#0C2B3D] w-full sm:w-auto overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed"
                       >
                         <div className="absolute inset-0 bg-[#16435E] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                        <span className="relative z-10">Confirm & Proceed</span>
+                        <span className="relative z-10">{isSubmitting ? "Submitting..." : "Verify & Complete"}</span>
                         <ChevronRight className="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </button>
                     </div>
                   </form>
                 </div>
               </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="payment-view"
-              initial={{ opacity: 0, scale: 0.98, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98, y: 10 }}
-              transition={{ duration: 0.3 }}
-              className="max-w-2xl mx-auto"
-            >
-              <button
-                type="button"
-                onClick={() => setShowPayment(false)}
-                className="flex items-center gap-2 text-[#2C5263] hover:text-[#9E6D1F] transition-colors mb-6 font-mono text-xs uppercase tracking-widest font-bold"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Details
-              </button>
-
-              <div className="rounded-[28px] border-2 border-[#C5A25F]/70 bg-gradient-to-br from-[#EEDFCA] via-[#E6D6C0] to-[#DCECEE] shadow-[0_22px_70px_rgba(20,55,70,0.15)] overflow-hidden relative p-8 sm:p-12 text-center">
-                <h3 className="font-cinzel text-2xl font-black text-[#0C2B3D] mb-4">Complete Your Payment</h3>
-                <p className="font-montserrat text-[#1A3B4D] mb-8 font-semibold">
-                  Scan the QR code below to pay <span className="text-[#9E6D1F] font-black">{activeTicketData?.price}</span> for your {activeTicketData?.name}.
-                </p>
-                
-                <div className="bg-white p-4 rounded-2xl inline-block shadow-lg border-2 border-[#C5A25F]/40 mb-8">
-                  <img 
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=dummy@upi&pn=Renaissance&am=${activeTicketData?.price.replace('₹', '').replace(',', '')}&cu=INR`} 
-                    alt="Payment QR Code"
-                    className="w-48 h-48 sm:w-64 sm:h-64 object-contain"
-                  />
-                </div>
-                
-                <div className="space-y-4 max-w-md mx-auto">
-                  <div className="bg-[#F4EBD9]/80 border-2 border-[#C5A25F]/40 p-4 rounded-xl text-left">
-                    <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                      Transaction ID / UTR Number *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter 12-digit UTR number"
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-[#C5A25F]/30 text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/40 focus:outline-none focus:border-[#9E6D1F] transition-colors"
-                    />
-                  </div>
-                  
-                  <button
-                    type="button"
-                    onClick={() => {
-                      alert("Payment Details Submitted Successfully!");
-                      setShowPayment(false);
-                      setShowForm(false);
-                      setSelectedTicket(null);
-                      setFormData({
-                        name: "", email: "", phone: "", college: "", city: "", checkInDate: "", checkOutDate: "", accommodationPreferences: "",
-                      });
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    className="group relative flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#0C2B3D] text-[#F2E5D4] font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_8px_30px_rgba(12,43,61,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer border border-[#0C2B3D] w-full overflow-hidden"
-                  >
-                    <div className="absolute inset-0 bg-[#16435E] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                    <span className="relative z-10">Verify & Complete Registration</span>
-                    <CheckCircle2 className="relative z-10 w-4 h-4 group-hover:scale-110 transition-transform" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        </motion.div>
+        )}
+      </AnimatePresence>
 
       </section>
 
