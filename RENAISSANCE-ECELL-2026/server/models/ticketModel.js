@@ -24,6 +24,11 @@ const ticketSchema = new Schema({
     unique: true
   },
   
+  ticketId: {
+    type: String,
+    unique: true
+  },
+  
   amount: { type: Number, required: true },
   amountPaid: { type: Number, required: true },
 
