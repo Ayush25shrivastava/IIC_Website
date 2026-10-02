@@ -89,6 +89,12 @@ export default function TicketsAccommodation() {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedTicketId, setSubmittedTicketId] = useState("");
+
+  const [searchTicketId, setSearchTicketId] = useState("");
+  const [searchedTicket, setSearchedTicket] = useState(null);
+  const [searchError, setSearchError] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   const navigate = useNavigate();
   const prefersReducedMotion = useReducedMotion();
@@ -180,7 +186,8 @@ export default function TicketsAccommodation() {
         throw new Error(data.message || "Failed to submit. Please try again.");
       }
 
-      alert("Payment Details Submitted Successfully!");
+      setSubmittedTicketId(data.ticket.ticketId);
+      
       setShowForm(false);
       setSelectedTicket(null);
       setFormData({
@@ -191,6 +198,30 @@ export default function TicketsAccommodation() {
       alert(error.message || "An error occurred");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSearchTicket = async (e) => {
+    e.preventDefault();
+    if (!searchTicketId.trim()) {
+      setSearchError("Please enter a Ticket ID");
+      return;
+    }
+    setSearchError("");
+    setIsSearching(true);
+    setSearchedTicket(null);
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+      const res = await fetch(`${API_URL}/tickets/status/${searchTicketId}`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Ticket not found");
+      }
+      setSearchedTicket(data.ticket);
+    } catch (error) {
+      setSearchError(error.message);
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -278,6 +309,85 @@ export default function TicketsAccommodation() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
+              {/* Success Message / Ticket ID Display */}
+              {submittedTicketId && (
+                <div className="mb-10 p-6 bg-[#E8F5E9] border-2 border-[#4CAF50] rounded-2xl flex flex-col items-center text-center shadow-lg">
+                  <CheckCircle2 className="w-12 h-12 text-[#4CAF50] mb-3" />
+                  <h3 className="font-cinzel text-2xl font-black text-[#2E7D32] mb-2">Registration Successful!</h3>
+                  <p className="font-montserrat text-[#1B5E20] font-bold mb-4">
+                    Please save this Ticket ID for future reference and to check your verification status.
+                  </p>
+                  <div className="px-6 py-3 bg-white border-2 border-[#4CAF50]/40 rounded-xl font-mono text-xl font-black text-[#2E7D32] tracking-widest shadow-inner">
+                    {submittedTicketId}
+                  </div>
+                  <button 
+                    onClick={() => setSubmittedTicketId("")}
+                    className="mt-6 text-sm text-[#4CAF50] font-bold underline hover:text-[#2E7D32]"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              )}
+
+              {/* Ticket Status Search Section */}
+              <div className="mb-16 sm:mb-20">
+                <div className="bg-gradient-to-br from-[#E8D4B4]/40 to-[#DCECEE]/40 border-2 border-[#C5A25F]/30 p-6 sm:p-8 rounded-[28px] max-w-4xl mx-auto shadow-sm">
+                  <h3 className="font-cinzel text-2xl font-black text-[#0C2B3D] text-center mb-6">
+                    Check Ticket Status
+                  </h3>
+                  <form onSubmit={handleSearchTicket} className="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-2xl mx-auto">
+                    <div className="relative w-full">
+                      <Ticket className="absolute left-4 top-3.5 w-5 h-5 text-[#8A5F1C]" />
+                      <input
+                        type="text"
+                        placeholder="Enter Ticket ID (e.g. REN-XXXXXX)"
+                        value={searchTicketId}
+                        onChange={(e) => setSearchTicketId(e.target.value)}
+                        className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/70 border-2 border-[#C5A25F]/40 text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-white transition-colors"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isSearching}
+                      className="whitespace-nowrap px-8 py-3 rounded-xl bg-[#0C2B3D] text-[#F2E5D4] font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_4px_15px_rgba(12,43,61,0.2)] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
+                      {isSearching ? "Searching..." : "Search"}
+                    </button>
+                  </form>
+                  {searchError && (
+                    <p className="text-center text-[#D9534F] font-mono text-sm font-bold mt-4">{searchError}</p>
+                  )}
+                  {searchedTicket && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-8 p-6 bg-white/80 rounded-2xl border border-[#C5A25F]/30 max-w-xl mx-auto shadow-sm"
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <p className="text-[10px] font-mono text-[#8A5F1C] uppercase font-bold tracking-widest mb-1">Participant Name</p>
+                          <p className="font-cinzel text-xl font-black text-[#0C2B3D]">{searchedTicket.name}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] font-mono text-[#8A5F1C] uppercase font-bold tracking-widest mb-1">Amount Paid</p>
+                          <p className="font-montserrat text-xl font-black text-[#9E6D1F]">₹{searchedTicket.amountPaid}</p>
+                        </div>
+                      </div>
+                      <div className="pt-4 border-t border-[#0C2B3D]/10 flex items-center justify-between">
+                        <p className="text-[11px] font-mono text-[#2C5263] uppercase font-bold tracking-widest">Status</p>
+                        <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${
+                          searchedTicket.status === 'Verified' ? 'bg-[#E8F5E9] text-[#2E7D32] border border-[#4CAF50]/30' :
+                          searchedTicket.status === 'Rejected' ? 'bg-[#FFEBEE] text-[#C62828] border border-[#E53935]/30' :
+                          'bg-[#FFF8E1] text-[#F57F17] border border-[#FBC02D]/30'
+                        }`}>
+                          {searchedTicket.status}
+                        </span>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+
               {/* Event & Accommodation Details Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-16 sm:mb-20">
                 
@@ -532,7 +642,7 @@ export default function TicketsAccommodation() {
                       
                       <div className="bg-white p-3 rounded-2xl shadow-md border-2 border-[#C5A25F]/40 mb-6 w-full max-w-[220px] aspect-square flex items-center justify-center">
                         <img 
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=dummy@upi&pn=Renaissance&am=${activeTicketData?.price.replace('₹', '').replace(',', '')}&cu=INR`} 
+                          src={`/cropped-qr.jpg`} 
                           alt="Payment QR Code"
                           className="w-full h-full object-contain"
                         />
