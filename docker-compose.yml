@@ -13,7 +13,7 @@ services:
       - "443:443"
 
     volumes:
-      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
 
     depends_on:
@@ -88,7 +88,7 @@ services:
         HTTPS_PROXY: ${HTTPS_PROXY}
         NO_PROXY: ${NO_PROXY}
 
-    image: ${CLIENT_IMAGE:-krnaman/iic-web-client:latest}
+    image: ${CLIENT_IMAGE:-krnaman/renaissance-client:latest}
 
     depends_on:
       server1:
