@@ -103,6 +103,41 @@ services:
       - renaissance-network
 
 
+  # =========================================================
+  # OLD BACKEND
+  # =========================================================
+  old-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: ${OLD_BACKEND_IMAGE:-krnaman/old-backend:latest}
+    ports:
+      - "7000:7000"
+    environment:
+      NODE_ENV: production
+      PORT: "7000"
+    restart: unless-stopped
+    networks:
+      - renaissance-network
+
+
+  # =========================================================
+  # OLD FRONTEND
+  # =========================================================
+  old-frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: ${OLD_FRONTEND_IMAGE:-krnaman/old-frontend:latest}
+    ports:
+      - "8080:80"
+    depends_on:
+      - old-backend
+    restart: unless-stopped
+    networks:
+      - renaissance-network
+
+
 # =========================================================
 # NETWORK
 # =========================================================
