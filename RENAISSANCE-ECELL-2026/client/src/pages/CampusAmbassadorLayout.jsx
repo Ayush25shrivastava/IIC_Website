@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Anchor, LoaderCircle } from "lucide-react";
 import { ambassadorApi } from "../lib/server1-api";
 import "./campus-ambassador.css";
 
 export default function CampusAmbassadorLayout() {
   const [ambassador, setAmbassador] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [sessionNotice, setSessionNotice] = useState("");
   const [attempt, setAttempt] = useState(0);
@@ -40,11 +38,10 @@ export default function CampusAmbassadorLayout() {
 
     // Never restore a previous visit from cookies, even if the browser was
     // force-closed and could not deliver its pagehide logout request.
-    ambassadorApi.logout().catch(() => {
-      if (visit.active) {
-        setError("We couldn't prepare a new sign-in session. Check your connection and try again.");
-      }
-    }).finally(() => { if (visit.active) setLoading(false); });
+    // Show the login form immediately; network/database availability must not
+    // prevent signed-out visitors from reaching it. Retry cleanup on submit.
+    visit.reset = ambassadorApi.logout();
+    void visit.reset.catch(() => {});
 
     const endVisit = () => {
       if (!visit.active) return;
@@ -58,13 +55,11 @@ export default function CampusAmbassadorLayout() {
     const onPageHide = () => {
       endVisit();
       setAmbassador(null);
-      setLoading(true);
     };
     const onPageShow = (event) => {
       if (!event.persisted) return;
       setAmbassador(null);
       setError("");
-      setLoading(true);
       setAttempt((value) => value + 1);
     };
     window.addEventListener("pagehide", onPageHide);
@@ -81,6 +76,10 @@ export default function CampusAmbassadorLayout() {
     if (!visit?.active) return false;
     visit.pendingLogin = true;
     try {
+      await visit.reset.catch(() => {
+        if (visit.active) return ambassadorApi.logout();
+      });
+      if (!visit.active || visitRef.current !== visit) return false;
       const data = await ambassadorApi.login(credentials);
       // A login response arriving after navigation must not reopen the portal.
       // endVisit queues server revocation behind that in-flight login.
@@ -124,9 +123,7 @@ export default function CampusAmbassadorLayout() {
   }
 
   let content;
-  if (loading) content = <div className="ca-gate" role="status"><LoaderCircle className="animate-spin" /> Preparing secure sign-in…</div>;
-  else if (error && !ambassador) content = <div className="ca-gate"><Anchor /><p role="alert">{error}</p><button className="ca-btn-primary" onClick={() => { setLoading(true); setError(""); setAttempt((n) => n + 1); }}>Try again</button></div>;
-  else if (isDashboard && !ambassador) content = <Navigate to="/campus-ambassador" replace />;
+  if (isDashboard && !ambassador) content = <Navigate to="/campus-ambassador" replace />;
   else if (!isDashboard && ambassador) content = <Navigate to="/campus-ambassador/dashboard" replace />;
   else content = <Outlet context={{ ambassador, login, sessionNotice, logout, loggingOut, handleAuthError }} />;
 

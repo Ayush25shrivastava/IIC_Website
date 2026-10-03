@@ -119,7 +119,7 @@ function LoginPanel({ credentials, setCredentials, onSubmit, pending, error, sho
             <button
               type="submit"
               disabled={pending}
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0D7892,#3AB7C8)] font-mono text-[11px] font-black uppercase tracking-[0.14em] text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0D7892,#3AB7C8)] font-mono text-[11px] font-black uppercase tracking-[0.14em] text-white shadow-lg transition-[translate,scale,box-shadow,filter] duration-200 ease-out motion-safe:enabled:hover:-translate-y-0.5 enabled:hover:brightness-110 enabled:hover:shadow-[0_10px_28px_rgba(13,120,146,0.35)] enabled:active:translate-y-0 motion-safe:enabled:active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0D7892] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
             >
               {pending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Compass className="h-4 w-4" />}
               Board the flagship
@@ -152,7 +152,9 @@ export default function CampusAmbassadorPortal() {
       setCredentials({ email: "", password: "" });
       navigate("/campus-ambassador/dashboard", { replace: true });
     } catch (requestError) {
-      setError(requestError.status >= 500 || !requestError.status
+      setError(requestError.code === "DATABASE_UNAVAILABLE"
+        ? "Sign-in is temporarily unavailable because the server cannot connect to its database. Please try again shortly."
+        : requestError.status >= 500 || !requestError.status
         ? "The sign-in service is unavailable. Please try again."
         : requestError.message);
     } finally { setPending(false); }
