@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
   AnimatePresence,
   motion,
-  useMotionValue,
   useReducedMotion,
   useScroll,
   useSpring,
@@ -13,7 +13,6 @@ import {
   ExternalLink,
   X,
   Trophy,
-  Users,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import ContactFooter from "../components/ContactFooter";
@@ -37,27 +36,13 @@ export default function Events({ embedded = false }) {
     { stiffness: 40, damping: 30, mass: 0.8 },
   );
   const heroScale = useTransform(heroScrollProgress, [0, 1], [1.02, 1.06]);
-  const heroCueOpacity = useTransform(heroScrollProgress, [0, 0.42], [1, 0]);
-  // Pointer parallax disabled — was causing jank on scroll
-  const heroPointerX = useMotionValue(0);
-  const heroPointerY = useMotionValue(0);
   const heroCombinedX = heroParallaxX;
   const heroCombinedY = heroParallaxY;
-
-  const handleHeroPointerMove = (_event) => {
-    // Intentionally no-op — pointer parallax removed for performance
-  };
-
-  const resetHeroPointer = () => {
-    heroPointerX.set(0);
-    heroPointerY.set(0);
-  };
 
   const openStandaloneEvent = (event) => {
     setSelectedEventModal(event);
   };
 
-  const [eventSearch, setEventSearch] = useState("");
   const [eventFilter, setEventFilter] = useState("All Events");
 
   // Standalone /events catalogue. The embedded homepage timeline below stays untouched.
@@ -201,80 +186,18 @@ export default function Events({ embedded = false }) {
         "Evaluate player statistics, navigate budget constraints, and formulate data-driven acquisition tactics under intense live bidding. Balance your roster across all-rounders, pace bowlers, and match-winning batsmen to assemble the most formidable playing XI within strict salary cap rules.",
       ],
     },
-    {
-      id: "biz-tech-quiz",
-      title: "Biz-Tech Quiz",
-      category: "Quizzes & Treasure Hunt",
-      categories: ["Quizzes & Treasure Hunt", "Strategy & Planning"],
-      label: "Quizzes & Treasure Hunt",
-      time: "TBD",
-      location: "MNNIT",
-      description: "Put your business acumen and tech knowledge to the test! Biz-Tech Quiz, conducted by the Gnosis Quiz Club, brings together intriguing questions at the intersection of business, technology, startups, and innovation.",
-      eyebrow: "Quiz Challenge",
-      compactModal: true,
-      detailDescription: [
-        "Put your business acumen and tech knowledge to the test!",
-        "Biz-Tech Quiz, conducted by the Gnosis Quiz Club, brings together intriguing questions at the intersection of business, technology, startups, and innovation."
-      ],
-      visualPosition: "30% 40%",
-    },
-    {
-      id: "treasure-hunt",
-      title: "Treasure Hunt",
-      category: "Quizzes & Treasure Hunt",
-      categories: ["Quizzes & Treasure Hunt"],
-      label: "Quizzes & Treasure Hunt",
-      time: "TBD",
-      location: "MNNIT",
-      description: "Get ready for an exciting adventure across the MNNIT campus! Treasure Hunt challenges participants to crack clues, explore hidden corners, and race against time to uncover the treasure, with exciting prizes and goodies waiting at the finish line.",
-      eyebrow: "Campus Adventure",
-      compactModal: true,
-      detailDescription: [
-        "Get ready for an exciting adventure across the MNNIT campus!",
-        "Treasure Hunt challenges participants to crack clues, explore hidden corners, and race against time to uncover the treasure, with exciting prizes and goodies waiting at the finish line."
-      ],
-      visualPosition: "50% 50%",
-    },
-    {
-      id: "mock-ipl-auction",
-      title: "Mock IPL Auction",
-      category: "Finance",
-      categories: ["Finance", "Strategy & Planning"],
-      label: "Finance",
-      time: "TBD",
-      location: "MNNIT",
-      description: "Step into the shoes of an IPL franchise owner! In this Mock IPL Auction, participants receive a limited pool of tokens and compete to build their dream teams by strategically bidding on players, balancing budgets, and making every bid count.",
-      eyebrow: "Auction Simulation",
-      compactModal: true,
-      detailDescription: [
-        "Step into the shoes of an IPL franchise owner!",
-        "In this Mock IPL Auction, participants receive a limited pool of tokens and compete to build their dream teams by strategically bidding on players, balancing budgets, and making every bid count."
-      ],
-      visualPosition: "70% 60%",
-    },
   ];
 
   if (!embedded) {
-    const normalizedSearch = eventSearch.trim().toLowerCase();
-    const visibleEvents = standaloneEvents.filter((event) => {
-      const matchesFilter =
+    const visibleEvents = standaloneEvents.filter((event) =>
         eventFilter === "All Events" ||
-        (event.categories ?? [event.category]).includes(eventFilter);
-      const matchesSearch =
-        !normalizedSearch ||
-        `${event.title} ${(event.categories ?? [event.category]).join(" ")} ${event.location} ${event.description}`
-          .toLowerCase()
-          .includes(normalizedSearch);
-
-      return matchesFilter && matchesSearch;
-    });
+        (event.categories ?? [event.category]).includes(eventFilter)
+    );
 
     return (
       <main
         className="relative min-h-[100svh] w-full overflow-x-hidden bg-[#030911] text-[#F4EBD9]"
         aria-label="Events"
-        onPointerMove={handleHeroPointerMove}
-        onPointerLeave={resetHeroPointer}
       >
         {/* Background Subtle Nautical Chart Grid */}
         <div
@@ -498,14 +421,14 @@ export default function Events({ embedded = false }) {
         </section>
 
         {/* Large Clean Modal: 100% Responsive on Mobile, Zero AI Slop, Identically Sized Buttons */}
-        <AnimatePresence>
+        {createPortal(<AnimatePresence>
           {selectedEventModal && (
             <motion.div
               initial={prefersReducedMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-5 md:p-8 overflow-y-auto"
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0C2B3D]/75 backdrop-blur-md p-3 sm:p-5 md:p-8 overflow-y-auto"
               onClick={() => setSelectedEventModal(null)}
             >
               <motion.div
@@ -517,7 +440,7 @@ export default function Events({ embedded = false }) {
                   prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 12 }
                 }
                 transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className="relative w-full max-w-4xl overflow-hidden rounded-2xl sm:rounded-3xl border border-white/15 bg-[#10161D] text-[#CBD5E1] shadow-[0_25px_90px_rgba(0,0,0,0.95)] max-h-[92vh] flex flex-col my-auto"
+                className="relative w-full max-w-4xl overflow-hidden rounded-2xl sm:rounded-3xl border border-[#7FB6C7]/60 bg-gradient-to-br from-[#ECF6F5] via-[#E0F1F7] to-[#FBE5D6] text-[#416678] shadow-[0_25px_90px_rgba(12,43,61,0.45)] max-h-[92vh] flex flex-col my-auto"
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -527,7 +450,7 @@ export default function Events({ embedded = false }) {
                 <button
                   type="button"
                   onClick={() => setSelectedEventModal(null)}
-                  className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-30 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
+                  className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-30 w-8 h-8 rounded-full bg-[#0C2B3D] hover:bg-[#214B63] text-[#ECF6F5] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Close modal"
                 >
                   <X className="w-4 h-4" />
@@ -535,7 +458,7 @@ export default function Events({ embedded = false }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-4 sm:gap-6 items-stretch p-4 sm:p-6 md:p-7 overflow-y-auto">
                   {/* Left Column: Event Poster (Clean Poster Image, No AI Slop) */}
-                  <div className="relative rounded-xl sm:rounded-2xl border border-white/10 bg-[#070D15] overflow-hidden flex items-center justify-center h-48 sm:h-60 md:h-full min-h-[190px] md:min-h-[440px]">
+                  <div className="relative rounded-xl sm:rounded-2xl border border-[#7FB6C7]/45 bg-[#D7EBEE] overflow-hidden flex items-center justify-center h-48 sm:h-60 md:h-full min-h-[190px] md:min-h-[440px]">
                     {selectedEventModal.cardImage ? (
                       <img
                         src={selectedEventModal.cardImage}
@@ -547,9 +470,9 @@ export default function Events({ embedded = false }) {
                         }}
                       />
                     ) : (
-                      <div className="relative w-full h-full flex flex-col justify-between p-5 sm:p-6 bg-gradient-to-b from-[#0B1726] via-[#070E18] to-[#03060B] border border-[#c5a25f]/20 rounded-xl">
-                        <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                          <span className="font-mono text-[10px] font-bold text-[#c5a25f] tracking-[0.2em] uppercase">
+                      <div className="relative w-full h-full flex flex-col justify-between p-5 sm:p-6 bg-gradient-to-b from-[#163D54] via-[#0C2B3D] to-[#081F30] border border-[#7FB6C7]/35 rounded-xl">
+                        <div className="flex items-center justify-between border-b border-[#7FB6C7]/30 pb-2">
+                          <span className="font-mono text-[10px] font-bold text-[#F3C7AD] tracking-[0.2em] uppercase">
                             RENAISSANCE 10.0
                           </span>
                           <span className="font-mono text-[10px] text-white/60 tracking-wider">
@@ -558,20 +481,20 @@ export default function Events({ embedded = false }) {
                         </div>
 
                         <div className="my-auto py-4 text-center">
-                          <div className="w-14 h-14 mx-auto mb-3 rounded-full border border-[#c5a25f]/40 bg-[#c5a25f]/10 flex items-center justify-center text-[#c5a25f]">
+                          <div className="w-14 h-14 mx-auto mb-3 rounded-full border border-[#F3C7AD]/50 bg-[#F3C7AD]/15 flex items-center justify-center text-[#F3C7AD]">
                             <Trophy className="w-7 h-7" />
                           </div>
                           <h3 className="font-cinzel text-xl sm:text-2xl font-black text-white uppercase tracking-wider mb-1">
                             {selectedEventModal.title}
                           </h3>
-                          <p className="font-mono text-xs text-[#c5a25f] tracking-wide uppercase">
+                          <p className="font-mono text-xs text-[#F3C7AD] tracking-wide uppercase">
                             {selectedEventModal.tagline}
                           </p>
                         </div>
 
-                        <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-mono">
-                          <span className="text-[#8E9CA8]">{selectedEventModal.location}</span>
-                          <span className="text-[#c5a25f] font-bold">{selectedEventModal.prize}</span>
+                        <div className="pt-2 border-t border-[#7FB6C7]/30 flex items-center justify-between text-xs font-mono">
+                          <span className="text-[#B8DDEB]">{selectedEventModal.location}</span>
+                          <span className="text-[#F3C7AD] font-bold">{selectedEventModal.prize}</span>
                         </div>
                       </div>
                     )}
@@ -581,25 +504,25 @@ export default function Events({ embedded = false }) {
                   <div className="flex flex-col justify-between pt-1 md:pt-0">
                     <div>
                       {/* Event Title */}
-                      <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase tracking-wide pr-8">
+                      <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-black text-[#0C2B3D] uppercase tracking-wide pr-8">
                         {selectedEventModal.title}
                       </h2>
 
                       {/* Two Spec Cards Side-by-Side (No text cutoffs) */}
                       <div className="grid grid-cols-2 gap-2.5 sm:gap-4 mt-3 sm:mt-4">
-                        <div className="bg-[#17202B] border border-white/10 rounded-xl p-3 sm:p-3.5">
-                          <span className="block font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#8E9CA8]">
+                        <div className="bg-[#CDE8F3] border border-[#7FB6C7]/45 rounded-xl p-3 sm:p-3.5">
+                          <span className="block font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#416678]">
                             CATEGORY
                           </span>
-                          <span className="block font-mono text-xs sm:text-sm font-bold text-white uppercase mt-1 leading-snug break-words">
+                          <span className="block font-mono text-xs sm:text-sm font-bold text-[#0C2B3D] uppercase mt-1 leading-snug break-words">
                             {selectedEventModal.category}
                           </span>
                         </div>
-                        <div className="bg-[#17202B] border border-white/10 rounded-xl p-3 sm:p-3.5">
-                          <span className="block font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#8E9CA8]">
+                        <div className="bg-[#FBE5D6] border border-[#DCA989]/50 rounded-xl p-3 sm:p-3.5">
+                          <span className="block font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#416678]">
                             TEAM & PRIZE
                           </span>
-                          <span className="block font-mono text-xs sm:text-sm font-bold text-[#f8d368] uppercase mt-1 leading-snug break-words drop-shadow-[0_0_10px_rgba(212,175,55,0.7)]">
+                          <span className="block font-mono text-xs sm:text-sm font-bold text-[#0C2B3D] uppercase mt-1 leading-snug break-words">
                             {selectedEventModal.capacity} • {selectedEventModal.prize}
                           </span>
                         </div>
@@ -607,10 +530,10 @@ export default function Events({ embedded = false }) {
 
                       {/* Event Overview: Well-Proportioned, Natural Spacing, No Clipping */}
                       <div className="mt-4 sm:mt-5">
-                        <span className="block font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#c5a25f]">
+                        <span className="block font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#0C2B3D]">
                           EVENT OVERVIEW
                         </span>
-                        <div className="mt-2.5 border-l-2 border-[#c5a25f]/60 pl-3.5 space-y-2.5 font-montserrat text-xs sm:text-sm leading-relaxed text-[#CBD5E1]">
+                        <div className="mt-2.5 border-l-2 border-[#DCA989] pl-3.5 space-y-2.5 font-montserrat text-xs sm:text-sm leading-relaxed text-[#416678]">
                           {Array.isArray(selectedEventModal.detailDescription) ? (
                             selectedEventModal.detailDescription.map((p, i) => (
                               <p key={i}>{p}</p>
@@ -629,7 +552,7 @@ export default function Events({ embedded = false }) {
                           href={selectedEventModal.registrationUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="h-[50px] w-full px-4 rounded-xl bg-[#c5a25f] hover:bg-[#d8b56f] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-lg hover:shadow-[0_8px_25px_rgba(197,162,95,0.4)] flex items-center justify-center gap-2 cursor-pointer"
+                          className="h-[50px] w-full px-4 rounded-xl bg-[#F3C7AD] hover:bg-[#EDB696] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.1)] hover:shadow-[0_8px_25px_rgba(220,169,137,0.3)] flex items-center justify-center gap-2 cursor-pointer"
                         >
                           <span>Register on Unstop</span>
                           <ExternalLink className="w-4 h-4 shrink-0" />
@@ -641,7 +564,7 @@ export default function Events({ embedded = false }) {
                             setSelectedEventModal(null);
                             navigate(`/events/${selectedEventModal.id}/register`);
                           }}
-                          className="h-[50px] w-full px-4 rounded-xl bg-[#c5a25f] hover:bg-[#d8b56f] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-lg hover:shadow-[0_8px_25px_rgba(197,162,95,0.4)] flex items-center justify-center gap-2 cursor-pointer"
+                          className="h-[50px] w-full px-4 rounded-xl bg-[#F3C7AD] hover:bg-[#EDB696] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.1)] hover:shadow-[0_8px_25px_rgba(220,169,137,0.3)] flex items-center justify-center gap-2 cursor-pointer"
                         >
                           <span>Register Now</span>
                         </button>
@@ -652,9 +575,9 @@ export default function Events({ embedded = false }) {
                         href="https://whatsapp.com/channel/0029VbDqDCA8V0tjtrkBsT46"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="h-[50px] w-full px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-montserrat font-bold text-xs sm:text-sm tracking-wider uppercase text-center transition-all shadow-lg hover:shadow-[0_8px_25px_rgba(37,211,102,0.4)] flex items-center justify-center gap-2 cursor-pointer"
+                        className="h-[50px] w-full px-4 rounded-xl bg-[#0C2B3D] hover:bg-[#214B63] text-[#ECF6F5] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm tracking-wider uppercase text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.15)] hover:shadow-[0_8px_25px_rgba(12,43,61,0.25)] flex items-center justify-center gap-2 cursor-pointer"
                       >
-                        <FaWhatsapp className="w-4 h-4 text-white shrink-0" />
+                        <FaWhatsapp className="w-4 h-4 text-[#B8DDEB] shrink-0" />
                         <span>Join WhatsApp Group</span>
                       </a>
                     </div>
@@ -663,7 +586,7 @@ export default function Events({ embedded = false }) {
               </motion.div>
             </motion.div>
           )}
-        </AnimatePresence>
+        </AnimatePresence>, document.body)}
         <ContactFooter />
       </main>
     );

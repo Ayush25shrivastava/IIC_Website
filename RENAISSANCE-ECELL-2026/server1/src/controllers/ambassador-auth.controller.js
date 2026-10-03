@@ -11,6 +11,7 @@ import {
 import { ApiError } from "../utils/api-error.js";
 import { ACCESS_COOKIE_NAME, clearAuthCookies, REFRESH_COOKIE_NAME } from "../utils/auth-cookies.js";
 import { verifyAccessToken, verifyRefreshToken } from "../utils/tokens.js";
+import { assertDatabaseReady } from "../middleware/database-ready.js";
 
 export async function loginAmbassador(req, res) {
   const { email, password } = req.validatedBody;
@@ -111,6 +112,7 @@ export async function logoutAmbassador(req, res) {
     }
   }
   if (sessions.length) {
+    assertDatabaseReady();
     await AuthSession.updateMany(
       { $or: sessions, revokedAt: null },
       { $set: { revokedAt: new Date(), revokeReason: "LOGOUT" } },
