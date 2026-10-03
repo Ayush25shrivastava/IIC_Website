@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { Anchor, ClipboardList, Compass, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, Tag, Users, LoaderCircle } from "lucide-react";
-import { ambassadorApi } from "../lib/server1-api";
 function PortalCard({ children, className = "" }) {
   return (
     <div className={`rounded-3xl border border-[#208AA0]/24 bg-[linear-gradient(145deg,rgba(239,252,252,0.94),rgba(194,233,238,0.91))] shadow-[0_20px_55px_rgba(7,61,80,0.18)] backdrop-blur-xl ${className}`}>
@@ -136,7 +135,7 @@ function LoginPanel({ credentials, setCredentials, onSubmit, pending, error, sho
 }
 
 export default function CampusAmbassadorPortal() {
-  const { setAmbassador, sessionNotice } = useOutletContext();
+  const { login: signIn, sessionNotice } = useOutletContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -148,9 +147,9 @@ export default function CampusAmbassadorPortal() {
     setPending(true);
     setError("");
     try {
-      const data = await ambassadorApi.login(credentials);
+      const signedIn = await signIn(credentials);
+      if (!signedIn) return;
       setCredentials({ email: "", password: "" });
-      setAmbassador(data.ambassador);
       navigate("/campus-ambassador/dashboard", { replace: true });
     } catch (requestError) {
       setError(requestError.status >= 500 || !requestError.status
