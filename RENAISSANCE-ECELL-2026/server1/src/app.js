@@ -16,6 +16,14 @@ import { ambassadorDashboardRouter } from "./routes/ambassador-dashboard.routes.
 import { healthRouter } from "./routes/health.routes.js";
 import { ApiError } from "./utils/api-error.js";
 
+import authRoutes from "./routes/authRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js";
+import teamRoutes from "./routes/teamRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import ticketRoutes from "./routes/ticketRoutes.js";
+import passport from "passport";
+import passportConfig from "./config/passport.js";
+
 export const app = express();
 
 app.disable("x-powered-by");
@@ -42,6 +50,9 @@ app.use(
 app.use(cookieParser());
 app.use(express.json({ limit: env.REQUEST_BODY_LIMIT }));
 app.use(express.urlencoded({ extended: false, limit: env.REQUEST_BODY_LIMIT }));
+
+app.use(passport.initialize());
+passportConfig(passport);
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -71,6 +82,12 @@ app.use("/api/v1/admin", (_req, res, next) => {
 });
 app.use("/api/v1/admin/auth", adminAuthRouter);
 app.use("/api/v1/admin", adminManagementRouter);
+
+app.use("/auth", authRoutes);
+app.use("/events", eventRoutes);
+app.use("/teams", teamRoutes);
+app.use("/users", userRoutes);
+app.use("/tickets", ticketRoutes);
 
 // Optional same-origin production serving. Existing homepage/API routes remain unchanged.
 app.use(["/renaissance/admin", "/admin"], adminPagesRouter);

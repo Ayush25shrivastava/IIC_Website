@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Event from '../models/eventModel.js';
-import Registration from '../models/registrationModel.js';
+import { Registration } from '../models/registration.model.js';
 import Team from '../models/teamModel.js';
 import User from '../models/userModel.js';
 
