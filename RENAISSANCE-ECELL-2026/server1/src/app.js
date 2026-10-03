@@ -52,7 +52,7 @@ app.use(express.json({ limit: env.REQUEST_BODY_LIMIT }));
 app.use(express.urlencoded({ extended: false, limit: env.REQUEST_BODY_LIMIT }));
 
 app.use(passport.initialize());
-passportConfig(passport);
+const googleAuthEnabled = passportConfig(passport);
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -83,7 +83,12 @@ app.use("/api/v1/admin", (_req, res, next) => {
 app.use("/api/v1/admin/auth", adminAuthRouter);
 app.use("/api/v1/admin", adminManagementRouter);
 
-app.use("/auth", authRoutes);
+app.use("/auth", (_req, _res, next) => {
+  if (!googleAuthEnabled) {
+    return next(new ApiError(503, "Google sign-in is not configured", "GOOGLE_AUTH_NOT_CONFIGURED"));
+  }
+  next();
+}, authRoutes);
 app.use("/events", eventRoutes);
 app.use("/teams", teamRoutes);
 app.use("/users", userRoutes);

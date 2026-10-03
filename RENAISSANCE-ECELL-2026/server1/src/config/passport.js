@@ -2,12 +2,17 @@
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/userModel.js'; 
 
-export default function(passport) {
+export default function(passport, config = process.env) {
+  // Google sign-in is optional; CA/admin authentication does not use it.
+  const clientID = config.GOOGLE_CLIENT_ID?.trim();
+  const clientSecret = config.GOOGLE_CLIENT_SECRET?.trim();
+  if (!clientID || !clientSecret) return false;
+
   passport.use(
     new GoogleStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        clientID,
+        clientSecret,
         callbackURL: 'https://iic.mnnit.ac.in/api/v1/auth/google/callback' 
         //server callback URL
       },
@@ -45,4 +50,5 @@ export default function(passport) {
   passport.deserializeUser((id, done) => {
     User.findById(id).then(user => done(null, user));
   });
+  return true;
 }
