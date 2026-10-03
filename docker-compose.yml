@@ -88,7 +88,7 @@ services:
         HTTPS_PROXY: ${HTTPS_PROXY}
         NO_PROXY: ${NO_PROXY}
 
-    image: ${CLIENT_IMAGE:-krnaman/iic-web-client:latest}
+    image: ${CLIENT_IMAGE:-krnaman/renaissance-client:latest}
 
     depends_on:
       server1:
