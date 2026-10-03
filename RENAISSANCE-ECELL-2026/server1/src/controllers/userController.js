@@ -1,7 +1,7 @@
 import User from '../models/userModel.js';
 import Event from '../models/eventModel.js';
 import Team from '../models/teamModel.js';
-import Registration from '../models/registrationModel.js';
+import { Registration } from '../models/registration.model.js';
 
 export const getUserProfile = async (req, res) => {
     try {

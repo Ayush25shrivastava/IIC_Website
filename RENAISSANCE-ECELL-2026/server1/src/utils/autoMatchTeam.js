@@ -1,6 +1,6 @@
 import Team from '../models/teamModel.js';
 import User from '../models/userModel.js';
-import Registration from '../models/registrationModel.js';
+import { Registration } from '../models/registration.model.js';
 
 export const autoMatchPendingTeamMembers = async (user) => {
     try {
