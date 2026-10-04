@@ -467,11 +467,16 @@ function SponsorCard({ sponsor, size = "medium" }) {
       >
         {/* Central Content Area */}
         <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-[1.05] z-10">
+          {/* Subtle glow to highlight the logo from the background */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[180px] h-[180px] bg-white/50 rounded-full blur-[50px]" />
+          </div>
+          
           <img
             src={sponsor.image}
             alt={sponsor.name}
             loading="lazy"
-            className="max-h-[160px] max-w-[90%] object-contain mix-blend-multiply drop-shadow-[0_4px_10px_rgba(20,55,70,0.15)]"
+            className="relative z-10 max-h-[160px] max-w-[90%] object-contain drop-shadow-[0_15px_35px_rgba(12,43,61,0.25)]"
           />
         </div>
       </article>
