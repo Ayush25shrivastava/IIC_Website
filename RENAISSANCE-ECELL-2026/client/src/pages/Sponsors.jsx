@@ -20,12 +20,7 @@ import { SPONSOR_TIERS } from "../data/sponsorsData";
 ================================================================ */
 
 export default function Sponsors({ embedded = false }) {
-  const presentingSponsor = {
-    name: "To Be Revealed Soon",
-    category: "Our Journey Partners",
-    image: "/sponsors/to-be-revealed.png",
-    description: "The sponsors of our expedition will be revealed soon. Stay tuned for the grand announcement as we chart new territories together.",
-  };
+
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -233,197 +228,18 @@ export default function Sponsors({ embedded = false }) {
 
 
       {/* ============================================================
-          PRESENTING PARTNER (Sandy-Oceanic Sovereign Vault)
+          SPONSORS TIERS
       ============================================================ */}
-      {presentingSponsor && (
-        <section
-          id="presenting-partner"
-          className="relative z-10 mx-auto max-w-[1280px] px-5 pb-20 pt-24 sm:px-8 lg:pt-28"
-          style={{ contentVisibility: "auto", containIntrinsicSize: "500px" }}
-        >
-          <SectionHeading
-            icon={<Star className="h-5 w-5" />}
-            eyebrow="The Flagship"
-            title="Presenting Partner"
-            subtitle="The principal ally helping lead the expedition across uncharted horizons."
-          />
-
-          <div
-            className="
-              sponsor-feature-card
-              group
-              relative
-              mx-auto
-              mt-12
-              max-w-5xl
-              overflow-hidden
-              rounded-[28px]
-              border-2
-              border-[#C5A25F]/70
-              bg-gradient-to-br
-              from-[#EEDFCA]
-              via-[#E6D6C0]
-              to-[#DCECEE]
-              shadow-[0_22px_70px_rgba(20,55,70,0.15)]
-              transition-all
-              duration-500
-              hover:border-[#B58B3E]
-            "
-          >
-            {/* Gold edge */}
-            <div
-              className="
-                absolute
-                inset-x-0
-                top-0
-                z-20
-                h-[3px]
-                bg-gradient-to-r
-                from-transparent
-                via-[#C7A052]
-                to-transparent
-              "
-            />
-
-            {/* Nautical chart background */}
-            <div className="pointer-events-none absolute inset-0 opacity-[0.07]">
-              <NauticalChart />
-            </div>
-
-            {/* Decorative compass watermark */}
-            <div className="pointer-events-none absolute -right-24 -top-24 opacity-[0.06]">
-              <Compass
-                className="h-80 w-80 text-[#0F4356]"
-                strokeWidth={0.6}
-              />
-            </div>
-
-            {/* Vintage Stamp Accent on the Presenting Sponsor Card */}
-            <img src="/card-decor-stamp.png" alt="" className="absolute -top-6 -left-6 w-24 sm:w-32 opacity-80 mix-blend-multiply drop-shadow-lg z-30 pointer-events-none -rotate-12" />
-
-            <div className="relative grid items-center gap-10 p-6 sm:p-10 md:grid-cols-[1fr_1.05fr] md:p-14">
-              {/* Logo plaque in sandy parchment tone */}
-              <div
-                className="
-                  relative
-                  flex
-                  min-h-[235px]
-                  items-center
-                  justify-center
-                  overflow-hidden
-                  rounded-2xl
-                  border
-                  border-[#BFA275]/60
-                  bg-[#F2E5D4]
-                  p-8
-                  shadow-inner
-                  sm:min-h-[285px]
-                "
-              >
-                {/* Inner navigation frame */}
-                <div
-                  className="
-                    pointer-events-none
-                    absolute
-                    inset-4
-                    rounded-xl
-                    border
-                    border-[#A87E35]/35
-                  "
-                />
-
-                <div className="pointer-events-none absolute left-4 top-4 h-6 w-6 border-l border-t border-[#9E6D1F]/55" />
-                <div className="pointer-events-none absolute bottom-4 right-4 h-6 w-6 border-b border-r border-[#9E6D1F]/55" />
-
-                <img
-                  src={presentingSponsor.image}
-                  alt={presentingSponsor.name}
-                  className="
-                    relative
-                    z-10
-                    max-h-44
-                    max-w-[82%]
-                    scale-[1.35]
-                    object-contain
-                    mix-blend-multiply
-                    drop-shadow-[0_4px_10px_rgba(20,55,70,0.15)]
-                    transition-transform
-                    duration-500
-                    group-hover:scale-[1.45]
-                  "
-                />
-                
-                {/* Vintage Globe Sticker Accent */}
-                <img src="/card-decor-globe.png" alt="" className="absolute -bottom-8 -right-6 w-28 sm:w-36 opacity-[0.75] mix-blend-multiply drop-shadow-xl z-20 pointer-events-none group-hover:rotate-6 transition-transform duration-500" />
-              </div>
-
-              {/* Information - Centre aligned */}
-              <div className="flex flex-col items-center justify-center text-center">
-                <div className="mb-4 flex items-center justify-center gap-3">
-                  <span className="h-px w-8 bg-[#B58B3E]" />
-                  <span
-                    className="
-                      font-mono
-                      text-[9px]
-                      font-bold
-                      uppercase
-                      tracking-[0.3em]
-                      text-[#8A5F1C]
-                    "
-                  >
-                    Presenting Partner
-                  </span>
-                  <span className="h-px w-8 bg-[#B58B3E]" />
-                </div>
-
-                <h3
-                  className="
-                    font-cinzel
-                    text-3xl
-                    font-bold
-                    uppercase
-                    tracking-wide
-                    text-[#0C2B3D]
-                    sm:text-4xl
-                  "
-                >
-                  {presentingSponsor.name}
-                </h3>
-
-                <span className="mt-2 inline-block rounded-full border border-[#C5A25F]/50 bg-[#E8D7C2] px-4 py-1 font-mono text-[10px] font-bold text-[#14556C]">
-                  {presentingSponsor.category}
-                </span>
-
-                <p
-                  className="
-                    mt-5
-                    max-w-xl
-                    font-montserrat
-                    text-sm
-                    leading-7
-                    text-[#2C5263]
-                    font-medium
-                    mx-auto
-                  "
-                >
-                  {presentingSponsor.description ||
-                    "Our flagship partner in this journey of ideas, collaboration, innovation and maritime discovery. Archiving uncharted archipelagos and powering Renaissance 2026."}
-                </p>
-
-                <div className="mt-7 flex flex-wrap items-center justify-center gap-4">
-                  <div className="flex items-center gap-2 rounded-full border border-[#C5A25F]/60 bg-[#E8D7C2]/70 px-5 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-[#7A5418] shadow-sm">
-                    <Ship
-                      className="h-4 w-4 text-[#9E6D1F]"
-                      strokeWidth={1.3}
-                    />
-                    <span>Flagship Ally · Sailing With Renaissance</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+      {SPONSOR_TIERS.map((tier, idx) => (
+        <SponsorSection
+          key={tier.id}
+          id={tier.id}
+          eyebrow={`Tier 0${idx + 1}`}
+          title={tier.title}
+          sponsors={tier.sponsors}
+          size="medium"
+        />
+      ))}
 
 
       {/* ============================================================
