@@ -453,63 +453,31 @@ function SponsorCard({ sponsor, size = "medium" }) {
     <div className="flex flex-col items-center group w-full">
       <article
         className="
-          sponsor-card
           relative
           flex
           w-full
-          min-h-[200px]
-          sm:min-h-[250px]
+          min-h-[160px]
+          sm:min-h-[200px]
           items-center
           justify-center
-          overflow-hidden
-          rounded-[18px]
-          border
-          border-[#BFA275]/60
-          bg-[#F2E5D4]
-          p-8
-          shadow-[0_14px_38px_rgba(12,38,50,0.10)]
           transition-all
           duration-400
           hover:-translate-y-1.5
-          hover:shadow-[0_22px_55px_rgba(12,38,50,0.18)]
-          hover:border-[#B58B3E]/80
         "
       >
-        {/* Inner navigation frame */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-3
-            sm:inset-4
-            rounded-xl
-            border
-            border-[#A87E35]/35
-            transition-colors
-            duration-400
-            group-hover:border-[#9E6D1F]/50
-          "
-        />
-
-        <div className="pointer-events-none absolute left-3 sm:left-4 top-3 sm:top-4 h-5 w-5 sm:h-6 sm:w-6 border-l border-t border-[#9E6D1F]/55" />
-        <div className="pointer-events-none absolute bottom-3 sm:bottom-4 right-3 sm:right-4 h-5 w-5 sm:h-6 sm:w-6 border-b border-r border-[#9E6D1F]/55" />
-
         {/* Central Content Area */}
         <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-[1.05] z-10">
           <img
             src={sponsor.image}
             alt={sponsor.name}
             loading="lazy"
-            className="max-h-full max-w-[85%] scale-[1.35] object-contain mix-blend-multiply drop-shadow-[0_4px_10px_rgba(20,55,70,0.15)]"
+            className="max-h-[160px] max-w-[90%] object-contain mix-blend-multiply drop-shadow-[0_4px_10px_rgba(20,55,70,0.15)]"
           />
-
-          {/* Vintage Watch Accent for Sponsor Cards */}
-          <img src="/card-decor-watch.png" alt="" className="absolute -bottom-5 -right-5 w-20 sm:w-28 opacity-[0.65] mix-blend-multiply drop-shadow-lg z-20 pointer-events-none group-hover:-rotate-12 transition-transform duration-500" />
         </div>
       </article>
 
       {/* Sponsor Name Below Card */}
-      <h3 className="mt-6 font-cinzel text-xl sm:text-2xl font-bold text-[#0C2B3D] tracking-wider text-center transition-colors duration-300 group-hover:text-[#9E6D1F]">
+      <h3 className="mt-4 font-cinzel text-xl sm:text-2xl font-bold text-[#0C2B3D] tracking-wider text-center transition-colors duration-300 group-hover:text-[#9E6D1F]">
         {sponsor.name}
       </h3>
     </div>
