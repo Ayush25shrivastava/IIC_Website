@@ -11,7 +11,6 @@ import {
 // Components
 import RenaissanceIntro from "./components/RenaissanceIntro";
 import Navbar from "./components/Navbar";
-import PirateCursor from "./components/PirateCursor";
 import AdisyonShader from "./components/ui/adisyon-shader";
 import SmoothScroll from "./components/SmoothScroll";
 import PageTransitionShimmer from "./components/PageTransitionShimmer";
@@ -30,7 +29,13 @@ const Gallery = lazy(() => import("./pages/Gallery"));
 const LoginSuccess = lazy(() => import("./pages/LoginSuccess"));
 const Login = lazy(() => import("./pages/Login"));
 const CampusAmbassador = lazy(() => import("./pages/CampusAmbassadorPortal"));
+const CampusAmbassadorLayout = lazy(() => import("./pages/CampusAmbassadorLayout"));
+const CampusAmbassadorDashboard = lazy(() => import("./pages/CampusAmbassadorDashboard"));
+const AdminSession = lazy(() => import("./pages/AdminSession"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const CampusAmbassadorAdmin = lazy(() => import("./pages/CampusAmbassadorAdmin"));
+const TicketsAccommodation = lazy(() => import("./pages/TicketsAccommodation"));
+const TicketsAdmin = lazy(() => import("./pages/TicketsAdmin"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -46,8 +51,19 @@ function ScrollToTop() {
   return null;
 }
 
+function PublicChrome({ showIntro, onIntroComplete }) {
+  const { pathname } = useLocation();
+  if (/^\/admin(?:\/|$)/.test(pathname)) return null;
+  return <>
+    <PageTransitionShimmer />
+    <AdisyonShader className="fixed inset-0 z-0 opacity-90 mix-blend-screen pointer-events-none" />
+    {showIntro && <RenaissanceIntro onComplete={onIntroComplete} onSkip={onIntroComplete} />}
+    <Navbar key={pathname} />
+  </>;
+}
+
 export default function App() {
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(() => !/\/admin(?:\/|$)/.test(window.location.pathname));
 
   const handleIntroComplete = () => {
     setShowIntro(false);
@@ -71,25 +87,7 @@ export default function App() {
         {/* Reset smooth scroll position whenever route changes */}
         <ScrollToTop />
 
-        {/* Route transition shimmer */}
-        <PageTransitionShimmer />
-
-        {/* Interactive Custom Pirate Hook Cursor */}
-        <PirateCursor />
-
-        {/* Full-screen fixed WebGL ocean background */}
-        <AdisyonShader className="fixed inset-0 z-0 opacity-90 mix-blend-screen pointer-events-none" />
-
-        {/* Cinematic splash screen */}
-        {showIntro && (
-          <RenaissanceIntro
-            onComplete={handleIntroComplete}
-            onSkip={handleIntroComplete}
-          />
-        )}
-
-        {/* Global navigation */}
-        <Navbar />
+        <PublicChrome showIntro={showIntro} onIntroComplete={handleIntroComplete} />
 
         {/* Main route views */}
         <div className="renaissance-page-shell relative z-10 min-h-screen w-full overflow-x-clip bg-transparent text-[#F4EBD9]">
@@ -137,6 +135,20 @@ export default function App() {
                 element={<Events />}
               />
 
+              {/* Tickets & Accommodation */}
+              <Route
+                path="/tickets-accommodation"
+                element={<TicketsAccommodation />}
+              />
+              <Route
+                path="/udbhav/tickets-accommodation"
+                element={<TicketsAccommodation />}
+              />
+              <Route
+                path="/admin/tickets"
+                element={<TicketsAdmin />}
+              />
+
               {/* Dashboard */}
               <Route
                 path="/dashboard"
@@ -167,15 +179,17 @@ export default function App() {
               {/* Auth callback */}
               <Route path="/login" element={<Login />} />
 
-              <Route
-                path="/campus-ambassador"
-                element={<CampusAmbassador />}
-              />
+              <Route path="/campus-ambassador" element={<CampusAmbassadorLayout />}>
+                <Route index element={<CampusAmbassador />} />
+                <Route path="dashboard" element={<CampusAmbassadorDashboard />} />
+              </Route>
 
-              <Route
-                path="/campus-ambassador/admin"
-                element={<CampusAmbassadorAdmin />}
-              />
+              <Route path="/admin" element={<AdminSession />}>
+                <Route index element={<Navigate to="campus-ambassadors" replace />} />
+                <Route path="login" element={<AdminLogin />} />
+                <Route path="campus-ambassadors" element={<CampusAmbassadorAdmin />} />
+              </Route>
+              <Route path="/campus-ambassador/admin" element={<Navigate to="/admin" replace />} />
 
               <Route
                 path="/login/success"

@@ -1,4 +1,4 @@
-const API_BASE_URL = (import.meta.env.VITE_SERVER1_API_URL || "http://localhost:5001/api/v1").replace(/\/+$/, "");
+const API_BASE_URL = (import.meta.env?.VITE_SERVER1_API_URL || "http://localhost:5001/api/v1").replace(/\/+$/, "");
 
 export class ApiClientError extends Error {
   constructor(message, { status = 0, code = "REQUEST_FAILED", details = null, requestId = null } = {}) {
@@ -69,7 +69,7 @@ async function send(path, { method = "GET", body, query, signal } = {}) {
     headers,
     body: requestBody,
     credentials: "include",
-    signal,
+    signal: signal || AbortSignal.timeout(15000),
   });
 }
 
@@ -106,7 +106,6 @@ async function refreshAuth(authScope) {
   refreshRequests.set(authScope, refreshPromise);
   return refreshPromise;
 }
-
 async function request(path, options = {}, authScope = null, retry = true) {
   let response = await send(path, options);
 
@@ -136,6 +135,10 @@ export const ambassadorApi = {
   promoCode: () => request("/ambassador/promo-code", {}, "ambassador"),
   tasks: (query) => request("/ambassador/tasks", { query }, "ambassador"),
   task: (taskId) => request(`/ambassador/tasks/${encodeURIComponent(taskId)}`, {}, "ambassador"),
+  updateTask: (taskId, body) => request(
+    `/ambassador/tasks/${encodeURIComponent(taskId)}`,
+    { method: "PATCH", body }, "ambassador",
+  ),
   updateTaskStatus: (taskId, status) => request(
     `/ambassador/tasks/${encodeURIComponent(taskId)}/status`,
     { method: "PATCH", body: { status } },
@@ -159,6 +162,8 @@ export const adminApi = {
     "admin",
   ),
   dashboard: () => request("/admin/dashboard", {}, "admin"),
+  resetCredential: (id) => request(`/admin/ambassadors/${encodeURIComponent(id)}/reset-credential`, { method: "POST", body: {} }, "admin"),
+  reviewTask: (id, body) => request(`/admin/tasks/${encodeURIComponent(id)}/review`, { method: "POST", body }, "admin"),
   ambassadors: (query) => request("/admin/ambassadors", { query }, "admin"),
   ambassador: (id) => request(`/admin/ambassadors/${encodeURIComponent(id)}`, {}, "admin"),
   createAmbassador: (body) => request(

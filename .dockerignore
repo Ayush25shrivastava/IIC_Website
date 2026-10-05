@@ -1,6 +1,30 @@
 .git
+.gitignore
 **/node_modules
 **/dist
 **/.vite
+**/coverage
+**/logs
+**/*.log
+**/.env
+**/.env.*
+!**/.env.example
 *.patch
 *.zip
+.DS_Store
+**/.DS_Store
+
+# Legacy/unrelated applications are not part of the current Docker deployment.
+backend/
+frontend/
+nginx.conf
+RENAISSANCE-ECELL-2026/server/
+RENAISSANCE-ECELL-2026/*.py
+RENAISSANCE-ECELL-2026/*.js
+
+# Keep only source/runtime files needed to build the active client + server1.
+RENAISSANCE-ECELL-2026/server1/tests/
+RENAISSANCE-ECELL-2026/server1/README.md
+RENAISSANCE-ECELL-2026/server1/.gitignore
+RENAISSANCE-ECELL-2026/client/README.md
+RENAISSANCE-ECELL-2026/client/.gitignore

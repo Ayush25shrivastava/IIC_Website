@@ -150,7 +150,7 @@ const Sponsors = () => {
               <div className={`grid gap-x-16 gap-y-14 justify-center ${
                 (tier.id === 'FOOD_PARTNER' || tier.id === 'PLATFORM_PARTNER')
                   ? 'grid-cols-1 sm:grid-cols-2 max-w-4xl mx-auto'
-                  : (tier.id === 'TITLE' || tier.id === 'ASSOCIATE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER' || tier.id === 'DESSERT_PARTNER' || tier.id === 'BEVERAGE_PARTNER' || tier.id === 'DINING_PARTNER' || tier.id === 'SPORTING_PARTNER')
+                  : (tier.id === 'TITLE' || tier.id === 'ASSOCIATE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER' || tier.id === 'DESSERT_PARTNER' || tier.id === 'BEVERAGE_PARTNER' || tier.id === 'DINING_PARTNER' || tier.id === 'SPORTING_PARTNER' || tier.id === 'REFRESHMENT_PARTNER')
                   ? 'grid-cols-1 max-w-sm mx-auto'
                   : tier.id === 'SYNDICATE'
                   ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'

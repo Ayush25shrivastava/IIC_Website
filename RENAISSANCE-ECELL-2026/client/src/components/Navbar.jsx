@@ -9,6 +9,7 @@ import {
   Image,
   GraduationCap,
   LogIn,
+  Ticket,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -42,6 +43,11 @@ export default function Navbar() {
       path: "/gallery",
       icon: Image,
     },
+    {
+      name: "Tickets",
+      path: "/tickets-accommodation",
+      icon: Ticket,
+    },
   ];
 
   // Lock page scrolling while the mobile navigation is open
@@ -57,11 +63,6 @@ export default function Navbar() {
     };
   }, [isOpen]);
 
-  // Automatically close mobile navigation after route changes
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location.pathname]);
-
   const isActive = (path) => {
     if (path === "/") {
       return (
@@ -75,6 +76,8 @@ export default function Navbar() {
       location.pathname.startsWith(`/udbhav${path}`)
     );
   };
+
+  if (/^\/admin(?:\/|$)/.test(location.pathname)) return null;
 
   return (
     <>

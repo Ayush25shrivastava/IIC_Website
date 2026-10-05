@@ -1,6 +1,7 @@
+import { assertDatabaseReady } from "./database-ready.js";
 import jwt from "jsonwebtoken";
 import { AMBASSADOR_STATUS } from "../constants/domain.js";
-import { CampusAmbassador } from "../models/index.js";
+import { AuthSession, CampusAmbassador } from "../models/index.js";
 import { ApiError } from "../utils/api-error.js";
 import { ACCESS_COOKIE_NAME } from "../utils/auth-cookies.js";
 import { verifyAccessToken } from "../utils/tokens.js";
@@ -26,12 +27,24 @@ export const requireAmbassadorAuth = asyncHandler(async (req, _res, next) => {
     throw new ApiError(401, "Authentication token is invalid or expired", code);
   }
 
+  if (payload.role !== "CAMPUS_AMBASSADOR" || !payload.sid) {
+    throw new ApiError(401, "Authentication session is no longer valid", "INVALID_SESSION");
+  }
+  assertDatabaseReady();
+  const session = await AuthSession.exists({
+    sessionId: payload.sid, ambassadorId: payload.sub,
+    revokedAt: null, expiresAt: { $gt: new Date() },
+  });
+  if (!session) {
+    throw new ApiError(401, "Authentication session is no longer valid", "INVALID_SESSION");
+  }
+
   const ambassador = await CampusAmbassador.findById(payload.sub).select("+authVersion");
   if (!ambassador) {
     throw new ApiError(401, "Authentication session is no longer valid", "ACCOUNT_NOT_FOUND");
   }
 
-  if (ambassador.status !== AMBASSADOR_STATUS.ACTIVE) {
+  if (ambassador.status !== AMBASSADOR_STATUS.ACTIVE || ambassador.role !== "CAMPUS_AMBASSADOR") {
     throw new ApiError(403, "Campus ambassador account is not active", "ACCOUNT_DISABLED");
   }
 
@@ -43,11 +56,3 @@ export const requireAmbassadorAuth = asyncHandler(async (req, _res, next) => {
   req.auth = payload;
   next();
 });
-
-export function requirePasswordChanged(req, _res, next) {
-  if (req.ambassador?.mustChangePassword) {
-    next(new ApiError(403, "Password change is required before continuing", "PASSWORD_CHANGE_REQUIRED"));
-    return;
-  }
-  next();
-}

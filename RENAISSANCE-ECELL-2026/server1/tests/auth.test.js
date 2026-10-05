@@ -13,12 +13,14 @@ const [
   { app },
   { CampusAmbassador },
   { hashPassword, verifyPassword },
+  { verifyAmbassadorPassword },
   { signAccessToken, verifyAccessToken, signRefreshToken, verifyRefreshToken },
 ] = await Promise.all([
   import("supertest"),
   import("../src/app.js"),
   import("../src/models/index.js"),
   import("../src/utils/password.js"),
+  import("../src/services/ambassador-auth.service.js"),
   import("../src/utils/tokens.js"),
 ]);
 
@@ -29,6 +31,18 @@ test("Argon2id password hashing verifies correct passwords only", async () => {
   assert.equal(await verifyPassword(hash, "WrongPassword123"), false);
 });
 
+test("ambassador password matching prefers the readable field and supports legacy hashes", async () => {
+  const password = "TestCaptain2026!";
+  const passwordHash = await hashPassword("OldCaptain2026!");
+  assert.equal(await verifyAmbassadorPassword({ password }, password), true);
+  assert.equal(await verifyAmbassadorPassword({ password }, "testCaptain2026!"), false);
+  assert.equal(await verifyAmbassadorPassword({ password }, `${password} `), false);
+  assert.equal(await verifyAmbassadorPassword({ passwordHash }, "OldCaptain2026!"), true);
+  assert.equal(await verifyAmbassadorPassword({ password, passwordHash }, "OldCaptain2026!"), false);
+  assert.equal(await verifyAmbassadorPassword({ password, passwordHash }, password), true);
+  assert.equal(await verifyAmbassadorPassword({}, password), false);
+});
+
 test("access and refresh JWTs keep their token types separate", () => {
   const ambassador = new CampusAmbassador({
     _id: "507f1f77bcf86cd799439011",
@@ -36,7 +50,7 @@ test("access and refresh JWTs keep their token types separate", () => {
     name: "Campus Captain",
     email: "captain@example.com",
     college: "MNNIT Allahabad",
-    passwordHash: "placeholder",
+    password: "TestCaptain2026!",
     authVersion: 3,
   });
 

@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import rateLimit from "express-rate-limit";
-import { ADMIN_STATUS } from "../constants/domain.js";
+import { ADMIN_ROLE, ADMIN_STATUS } from "../constants/domain.js";
 import { Admin, AdminAuthSession } from "../models/index.js";
 import {
   createAdminAuthSession,
@@ -8,8 +8,8 @@ import {
   revokeAdminSessions,
   rotateAdminAuthSession,
 } from "../services/admin-auth.service.js";
-import { clearAdminAuthCookies, ADMIN_REFRESH_COOKIE_NAME } from "../utils/admin-auth-cookies.js";
-import { verifyAdminRefreshToken } from "../utils/admin-tokens.js";
+import { clearAdminAuthCookies, ADMIN_ACCESS_COOKIE_NAME, ADMIN_REFRESH_COOKIE_NAME } from "../utils/admin-auth-cookies.js";
+import { verifyAdminAccessToken, verifyAdminRefreshToken } from "../utils/admin-tokens.js";
 import { ApiError } from "../utils/api-error.js";
 import { hashPassword, verifyPassword } from "../utils/password.js";
 
@@ -30,13 +30,14 @@ export const adminRefreshLimiter = rateLimit({
 
 export async function adminLogin(req, res) {
   const admin = await Admin.findOne({ email: req.validatedBody.email }).select("+passwordHash +authVersion");
-  if (!admin || !(await verifyPassword(admin.passwordHash, req.validatedBody.password))) {
+  if (!admin || !(await verifyPassword(admin.passwordHash, req.validatedBody.password)) || admin.status !== ADMIN_STATUS.ACTIVE || !Object.values(ADMIN_ROLE).includes(admin.role)) {
     throw new ApiError(401, "Invalid email or password", "INVALID_ADMIN_CREDENTIALS");
   }
   if (admin.status !== ADMIN_STATUS.ACTIVE) {
     throw new ApiError(403, "Admin account is disabled", "ADMIN_ACCOUNT_DISABLED");
   }
 
+  admin.mustChangePassword = false;
   admin.lastLoginAt = new Date();
   await admin.save();
   await createAdminAuthSession({ admin, req, res });
@@ -67,11 +68,11 @@ export async function adminRefresh(req, res) {
   const session = await AdminAuthSession.findOne({ sessionId: payload.sid }).select("+tokenHash");
   const admin = await Admin.findById(payload.sub).select("+authVersion");
 
-  if (!session || session.revokedAt || session.expiresAt <= new Date() || !admin) {
+  if (!session || session.adminId.toString() !== payload.sub || session.revokedAt || session.expiresAt <= new Date() || !admin) {
     clearAdminAuthCookies(res);
     throw new ApiError(401, "Admin refresh session is no longer valid", "ADMIN_REFRESH_SESSION_INVALID");
   }
-  if (admin.status !== ADMIN_STATUS.ACTIVE || (admin.authVersion ?? 0) !== payload.ver) {
+  if (admin.status !== ADMIN_STATUS.ACTIVE || !Object.values(ADMIN_ROLE).includes(admin.role) || (admin.authVersion ?? 0) !== payload.ver) {
     clearAdminAuthCookies(res);
     throw new ApiError(401, "Admin refresh session is no longer valid", "ADMIN_REFRESH_SESSION_INVALID");
   }
@@ -86,20 +87,25 @@ export async function adminRefresh(req, res) {
 }
 
 export async function adminLogout(req, res) {
-  const token = req.cookies?.[ADMIN_REFRESH_COOKIE_NAME];
-  if (token) {
+  const sessions = [];
+  for (const [token, verify] of [
+    [req.cookies?.[ADMIN_REFRESH_COOKIE_NAME], verifyAdminRefreshToken],
+    [req.cookies?.[ADMIN_ACCESS_COOKIE_NAME], verifyAdminAccessToken],
+  ]) {
+    if (!token) continue;
     try {
-      const payload = verifyAdminRefreshToken(token);
-      await AdminAuthSession.updateOne(
-        { sessionId: payload.sid, revokedAt: null },
-        { $set: { revokedAt: new Date(), revokeReason: "LOGOUT" } },
-      );
-    } catch {
-      // Always clear cookies even when the presented refresh token is invalid.
+      const payload = verify(token);
+      if (payload.sid) sessions.push({ sessionId: payload.sid, adminId: payload.sub });
+    } catch (error) {
+      if (!(error instanceof jwt.JsonWebTokenError)) throw error;
     }
   }
+  if (sessions.length) await AdminAuthSession.updateMany(
+    { $or: sessions, revokedAt: null },
+    { $set: { revokedAt: new Date(), revokeReason: "LOGOUT" } },
+  );
   clearAdminAuthCookies(res);
-  res.status(200).json({ success: true });
+  res.set("Cache-Control", "no-store").status(200).json({ success: true });
 }
 
 export async function adminChangePassword(req, res) {
