@@ -188,20 +188,21 @@ const SponsorCard = ({ logo, sponsorType, isRevealed }) => {
       </div>
 
       {/* CARD */}
-      <div className={`bg-[#f1e6d6] border border-[#cbbfae] p-6 pb-10 shadow-[20px_25px_60px_rgba(0,0,0,0.85)] transition-all duration-300 group-hover:-translate-y-3 group-hover:scale-105 group-hover:shadow-[25px_35px_80px_rgba(0,0,0,0.95)] relative select-none ${
+      <div className={`bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] p-6 pb-10 shadow-[20px_25px_60px_rgba(0,0,0,0.85)] transition-all duration-300 group-hover:-translate-y-3 group-hover:scale-105 group-hover:shadow-[25px_35px_80px_rgba(0,0,0,0.95)] relative select-none rounded-2xl overflow-hidden ${
   isRevealed ? '' : 'blur-[4px]'
 }`}>
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-25 pointer-events-none"></div>
+        {/* Oceanic subtle overlay instead of paper fibers */}
+        <div className="absolute inset-0 bg-[#0C2B3D]/5 mix-blend-overlay pointer-events-none"></div>
 
-        <div className="bg-white p-6 rounded shadow-inner flex items-center justify-center h-44">
+        <div className="relative z-10 bg-white/40 p-6 rounded-xl shadow-inner flex items-center justify-center h-44 backdrop-blur-sm">
           <img
             src={isRevealed ? getImageUrl(logo.fileName, logo.folder || "past sponsors") : topSecretImg}
             alt={logo.name}
-            className="max-h-full max-w-full object-contain"
+            className="max-h-full max-w-full object-contain mix-blend-multiply"
           />
         </div>
 
-        <div className="mt-6 text-black text-center">
+        <div className="mt-6 text-[#0C2B3D] text-center relative z-10">
           <h3 className="font-playfair text-xl font-bold tracking-wide">
             {logo.name}
           </h3>
