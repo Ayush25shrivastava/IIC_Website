@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { ShieldCheck, Eye, EyeOff, LoaderCircle } from "lucide-react";
-import { adminApi } from "../lib/server1-api";
 import logo from "../assets/renaissance-logo.png";
 
 export default function AdminLogin() {
-  const { setAdmin } = useOutletContext();
+  const { login } = useOutletContext();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [show, setShow] = useState(false);
@@ -16,8 +15,7 @@ export default function AdminLogin() {
     event.preventDefault();
     setError(""); setBusy(true);
     try {
-      const data = await adminApi.login({ email: form.email, password: form.password });
-      setAdmin(data.admin);
+      if (!await login({ email: form.email, password: form.password })) return;
       setForm({ email: "", password: "" });
       // Fixed internal destination: query-string return URLs are intentionally ignored.
       navigate("/admin/campus-ambassadors", { replace: true });

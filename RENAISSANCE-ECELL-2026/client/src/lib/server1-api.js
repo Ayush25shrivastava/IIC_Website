@@ -75,16 +75,17 @@ async function send(path, { method = "GET", body, query, signal, keepalive = fal
 }
 
 const refreshRequests = new Map();
-let ambassadorAuthMutation = null;
+const authMutations = new Map();
 
 // Finish revoking an old visit before login can issue new cookies.
-function mutateAmbassadorAuth(action) {
-  const result = ambassadorAuthMutation
-    ? ambassadorAuthMutation.catch(() => {}).then(action)
+function mutateAuth(authScope, action) {
+  const previous = authMutations.get(authScope);
+  const result = previous
+    ? previous.catch(() => {}).then(action)
     : action();
-  ambassadorAuthMutation = result;
+  authMutations.set(authScope, result);
   const clear = () => {
-    if (ambassadorAuthMutation === result) ambassadorAuthMutation = null;
+    if (authMutations.get(authScope) === result) authMutations.delete(authScope);
   };
   result.then(clear, clear);
   return result;
@@ -99,9 +100,7 @@ async function refreshAuth(authScope) {
     : "/ambassador/auth/refresh";
 
   const refreshPromise = (async () => {
-    const response = await (authScope === "ambassador"
-      ? mutateAmbassadorAuth(() => send(refreshPath, { method: "POST" }))
-      : send(refreshPath, { method: "POST" }));
+    const response = await mutateAuth(authScope, () => send(refreshPath, { method: "POST" }));
 
     if (response.ok) {
       return { ok: true, status: response.status, error: null };
@@ -140,9 +139,9 @@ async function request(path, options = {}, authScope = null, retry = true) {
 }
 
 export const ambassadorApi = {
-  login: (body) => mutateAmbassadorAuth(() => request("/ambassador/auth/login", { method: "POST", body }, null, false)),
+  login: (body) => mutateAuth("ambassador", () => request("/ambassador/auth/login", { method: "POST", body }, null, false)),
   me: () => request("/ambassador/auth/me", {}, "ambassador"),
-  logout: ({ keepalive = false } = {}) => mutateAmbassadorAuth(() => request("/ambassador/auth/logout", { method: "POST", keepalive }, null, false)),
+  logout: ({ keepalive = false } = {}) => mutateAuth("ambassador", () => request("/ambassador/auth/logout", { method: "POST", keepalive }, null, false)),
   changePassword: (body) => request(
     "/ambassador/auth/change-password",
     { method: "POST", body },
@@ -170,9 +169,9 @@ export const ambassadorApi = {
 };
 
 export const adminApi = {
-  login: (body) => request("/admin/auth/login", { method: "POST", body }, null, false),
+  login: (body) => mutateAuth("admin", () => request("/admin/auth/login", { method: "POST", body }, null, false)),
   me: () => request("/admin/auth/me", {}, "admin"),
-  logout: () => request("/admin/auth/logout", { method: "POST" }, null, false),
+  logout: ({ keepalive = false } = {}) => mutateAuth("admin", () => request("/admin/auth/logout", { method: "POST", keepalive }, null, false)),
   changePassword: (body) => request(
     "/admin/auth/change-password",
     { method: "POST", body },
