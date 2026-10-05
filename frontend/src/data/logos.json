@@ -98,6 +98,14 @@
     ]
   },  
   {
+    "id": "REFRESHMENT_PARTNER",
+    "title": "Refreshment Partner",
+    "description": "Official Refreshment Partner for Renaissance 2026.",
+    "logos": [
+      { "name": "Oatey", "fileName": "oatey.png", "folder": "current sponsors" }
+    ]
+  },
+  {
     "id": "DESSERT_PARTNER",
     "title": "Dessert Partner",
     "description": "Sweetening the mission with delicious treats.",
