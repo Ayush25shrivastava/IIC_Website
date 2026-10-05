@@ -112,5 +112,13 @@
     "logos": [
       { "name": "Gokul Ice Cream", "fileName": "gokul.png", "folder": "current sponsors" }
     ]
+  },
+  {
+    "id": "SUPPLY_CHAIN_PARTNER",
+    "title": "Supply Chain Partner",
+    "description": "Official Supply Chain Partner for Renaissance 2026.",
+    "logos": [
+      { "name": "Safe Express", "fileName": "safexpress.png", "folder": "current sponsors" }
+    ]
   }
 ]

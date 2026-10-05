@@ -463,20 +463,25 @@ function SponsorCard({ sponsor, size = "medium" }) {
           transition-all
           duration-400
           hover:-translate-y-1.5
+          bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5]
+          border border-[#98C5CD]
+          rounded-2xl
+          shadow-[0_8px_30px_rgba(12,43,61,0.12)]
+          overflow-hidden
         "
       >
+        {/* Subtle glow / oceanic depth */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-[180px] h-[180px] bg-white/40 rounded-full blur-[40px]" />
+        </div>
+        
         {/* Central Content Area */}
-        <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-[1.05] z-10">
-          {/* Subtle glow to highlight the logo from the background */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-[180px] h-[180px] bg-white/50 rounded-full blur-[50px]" />
-          </div>
-          
+        <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-[1.05] z-10 p-6">
           <img
             src={sponsor.image}
             alt={sponsor.name}
             loading="lazy"
-            className="relative z-10 max-h-[160px] max-w-[90%] object-contain drop-shadow-[0_15px_35px_rgba(12,43,61,0.25)]"
+            className="relative z-10 max-h-[120px] max-w-[90%] object-contain drop-shadow-md mix-blend-multiply"
           />
         </div>
       </article>
