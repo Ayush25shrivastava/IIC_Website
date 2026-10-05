@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { Anchor, ClipboardList, Compass, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, Tag, Users, LoaderCircle } from "lucide-react";
-import { ambassadorApi } from "../lib/server1-api";
 function PortalCard({ children, className = "" }) {
   return (
     <div className={`rounded-3xl border border-[#208AA0]/24 bg-[linear-gradient(145deg,rgba(239,252,252,0.94),rgba(194,233,238,0.91))] shadow-[0_20px_55px_rgba(7,61,80,0.18)] backdrop-blur-xl ${className}`}>
@@ -120,7 +119,7 @@ function LoginPanel({ credentials, setCredentials, onSubmit, pending, error, sho
             <button
               type="submit"
               disabled={pending}
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0D7892,#3AB7C8)] font-mono text-[11px] font-black uppercase tracking-[0.14em] text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0D7892,#3AB7C8)] font-mono text-[11px] font-black uppercase tracking-[0.14em] text-white shadow-lg transition-[translate,scale,box-shadow,filter] duration-200 ease-out motion-safe:enabled:hover:-translate-y-0.5 enabled:hover:brightness-110 enabled:hover:shadow-[0_10px_28px_rgba(13,120,146,0.35)] enabled:active:translate-y-0 motion-safe:enabled:active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0D7892] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
             >
               {pending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Compass className="h-4 w-4" />}
               Board the flagship
@@ -136,7 +135,7 @@ function LoginPanel({ credentials, setCredentials, onSubmit, pending, error, sho
 }
 
 export default function CampusAmbassadorPortal() {
-  const { setAmbassador, sessionNotice } = useOutletContext();
+  const { login: signIn, sessionNotice } = useOutletContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -148,12 +147,14 @@ export default function CampusAmbassadorPortal() {
     setPending(true);
     setError("");
     try {
-      const data = await ambassadorApi.login(credentials);
+      const signedIn = await signIn(credentials);
+      if (!signedIn) return;
       setCredentials({ email: "", password: "" });
-      setAmbassador(data.ambassador);
       navigate("/campus-ambassador/dashboard", { replace: true });
     } catch (requestError) {
-      setError(requestError.status >= 500 || !requestError.status
+      setError(requestError.code === "DATABASE_UNAVAILABLE"
+        ? "Sign-in is temporarily unavailable because the server cannot connect to its database. Please try again shortly."
+        : requestError.status >= 500 || !requestError.status
         ? "The sign-in service is unavailable. Please try again."
         : requestError.message);
     } finally { setPending(false); }

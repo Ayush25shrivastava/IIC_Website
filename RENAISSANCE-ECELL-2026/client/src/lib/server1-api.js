@@ -55,7 +55,7 @@ async function readResponse(response) {
   return payload?.data ?? payload;
 }
 
-async function send(path, { method = "GET", body, query, signal } = {}) {
+async function send(path, { method = "GET", body, query, signal, keepalive = false } = {}) {
   const headers = { Accept: "application/json" };
   let requestBody;
 
@@ -69,11 +69,26 @@ async function send(path, { method = "GET", body, query, signal } = {}) {
     headers,
     body: requestBody,
     credentials: "include",
+    keepalive,
     signal: signal || AbortSignal.timeout(15000),
   });
 }
 
 const refreshRequests = new Map();
+let ambassadorAuthMutation = null;
+
+// Finish revoking an old visit before login can issue new cookies.
+function mutateAmbassadorAuth(action) {
+  const result = ambassadorAuthMutation
+    ? ambassadorAuthMutation.catch(() => {}).then(action)
+    : action();
+  ambassadorAuthMutation = result;
+  const clear = () => {
+    if (ambassadorAuthMutation === result) ambassadorAuthMutation = null;
+  };
+  result.then(clear, clear);
+  return result;
+}
 
 async function refreshAuth(authScope) {
   const existing = refreshRequests.get(authScope);
@@ -84,7 +99,9 @@ async function refreshAuth(authScope) {
     : "/ambassador/auth/refresh";
 
   const refreshPromise = (async () => {
-    const response = await send(refreshPath, { method: "POST" });
+    const response = await (authScope === "ambassador"
+      ? mutateAmbassadorAuth(() => send(refreshPath, { method: "POST" }))
+      : send(refreshPath, { method: "POST" }));
 
     if (response.ok) {
       return { ok: true, status: response.status, error: null };
@@ -123,9 +140,9 @@ async function request(path, options = {}, authScope = null, retry = true) {
 }
 
 export const ambassadorApi = {
-  login: (body) => request("/ambassador/auth/login", { method: "POST", body }, null, false),
+  login: (body) => mutateAmbassadorAuth(() => request("/ambassador/auth/login", { method: "POST", body }, null, false)),
   me: () => request("/ambassador/auth/me", {}, "ambassador"),
-  logout: () => request("/ambassador/auth/logout", { method: "POST" }, null, false),
+  logout: ({ keepalive = false } = {}) => mutateAmbassadorAuth(() => request("/ambassador/auth/logout", { method: "POST", keepalive }, null, false)),
   changePassword: (body) => request(
     "/ambassador/auth/change-password",
     { method: "POST", body },
