@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   motion,
@@ -237,6 +237,11 @@ export default function TicketsAccommodation() {
     : 0;
 
   const handleSelectTicket = (id) => {
+    if (selectedTicket === id) {
+      setSelectedTicket(null);
+      setFormData((prev) => ({ ...prev, amountPaid: "" }));
+      return;
+    }
     setSelectedTicket(id);
     const option = TICKET_OPTIONS.find((t) => t.id === id);
     if (option) {
@@ -245,6 +250,29 @@ export default function TicketsAccommodation() {
       setFormData((prev) => ({ ...prev, amountPaid: total.toString() }));
     }
   };
+
+  // Deselect ticket when clicking outside of the selected ticket card
+  useEffect(() => {
+    if (!selectedTicket || showForm) return;
+
+    const handleClickOutside = (e) => {
+      // If clicking inside any ticket card, let the card handler take care of it
+      if (e.target.closest("[data-ticket-card]")) {
+        return;
+      }
+      // If clicking inside the CTA proceed button section, don't unselect
+      if (e.target.closest("[data-cta-section]")) {
+        return;
+      }
+      setSelectedTicket(null);
+      setFormData((prev) => ({ ...prev, amountPaid: "" }));
+    };
+
+    document.addEventListener("pointerdown", handleClickOutside);
+    return () => {
+      document.removeEventListener("pointerdown", handleClickOutside);
+    };
+  }, [selectedTicket, showForm]);
 
   const handleAccommodationDaysChange = (days) => {
     const validDays = Math.max(1, Number(days) || 1);
@@ -729,6 +757,7 @@ export default function TicketsAccommodation() {
                   return (
                     <motion.div
                       key={option.id}
+                      data-ticket-card="true"
                       initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
@@ -824,7 +853,10 @@ export default function TicketsAccommodation() {
               </div>
 
               {/* CTA Section */}
-              <div className="mt-16 flex flex-col items-center justify-center max-w-6xl mx-auto border-t border-[#0C2B3D]/10 pt-10">
+              <div
+                data-cta-section="true"
+                className="mt-16 flex flex-col items-center justify-center max-w-6xl mx-auto border-t border-[#0C2B3D]/10 pt-10"
+              >
                 {selectedTicket && (
                   <p className="mb-4 font-mono text-xs text-[#8A5F1C] font-bold uppercase tracking-wider">
                     Selected: <span className="text-[#0C2B3D] font-black">{activeTicketData?.name}</span> ({activeTicketData?.formattedPrice})
