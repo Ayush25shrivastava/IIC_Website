@@ -98,11 +98,27 @@
     ]
   },  
   {
+    "id": "REFRESHMENT_PARTNER",
+    "title": "Refreshment Partner",
+    "description": "Official Refreshment Partner for Renaissance 2026.",
+    "logos": [
+      { "name": "Oatey", "fileName": "oatey.png", "folder": "current sponsors" }
+    ]
+  },
+  {
     "id": "DESSERT_PARTNER",
     "title": "Dessert Partner",
     "description": "Sweetening the mission with delicious treats.",
     "logos": [
       { "name": "Gokul Ice Cream", "fileName": "gokul.png", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "SUPPLY_CHAIN_PARTNER",
+    "title": "Supply Chain Partner",
+    "description": "Official Supply Chain Partner for Renaissance 2026.",
+    "logos": [
+      { "name": "Safe Express", "fileName": "safexpress.png", "folder": "current sponsors" }
     ]
   }
 ]

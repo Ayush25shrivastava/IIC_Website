@@ -10,10 +10,10 @@ const ticketSchema = new Schema({
   
   ticketType: { 
     type: String, 
+    enum: ['event-only', '1-day', '2-day'],
     required: true 
   },
   
-  accommodationDays: { type: Number, default: 1 },
   checkInDate: { type: Date },
   checkOutDate: { type: Date },
   accommodationPreferences: { type: String },

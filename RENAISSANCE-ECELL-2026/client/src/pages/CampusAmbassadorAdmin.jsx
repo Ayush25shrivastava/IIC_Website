@@ -1,926 +1,176 @@
-import { useEffect, useState } from "react";
-import {
-  Anchor,
-  Archive,
-  ArrowRight,
-  Building2,
-  CheckCircle2,
-  ChevronRight,
-  ClipboardList,
-  Compass,
-  Eye,
-  EyeOff,
-  Hash,
-  KeyRound,
-  LoaderCircle,
-  LockKeyhole,
-  LogOut,
-  Mail,
-  Pencil,
-  Phone,
-  Plus,
-  RefreshCw,
-  Save,
-  Search,
-  ShieldCheck,
-  Tag,
-  Trash2,
-  UserCog,
-  UserPlus,
-  Users,
-} from "lucide-react";
-import ContactFooter from "../components/ContactFooter";
-import { adminApi, ApiClientError } from "../lib/server1-api";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useOutletContext } from "react-router-dom";
+import { ArrowRight, BadgeCheck, CheckCheck, ClipboardList, Compass, Download, Eye, EyeOff, LayoutGrid, LoaderCircle, LogOut, Menu, Plus, RefreshCw, Search, ShieldCheck, Ticket, Users, X } from "lucide-react";
+import { adminApi } from "../lib/server1-api";
+import { downloadCsv } from "../lib/admin-csv";
+import logo from "../assets/renaissance-logo.png";
 
-const tabs = [
-  ["ambassadors", "Ambassadors", Users],
-  ["promos", "Promo Codes", Tag],
-  ["tasks", "Tasks", ClipboardList],
-  ["referrals", "Referrals", CheckCircle2],
+const sections = [
+  ["overview", "Overview", LayoutGrid], ["ambassadors", "Ambassadors", Users],
+  ["tasks", "Tasks & assignments", ClipboardList], ["reviews", "Submission reviews", BadgeCheck],
+  ["promos", "Promo & registrations", Ticket],
 ];
-
-function nice(value) {
-  return String(value || "").replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+const nice = (value) => String(value || "").toLowerCase().replaceAll("_", " ");
+const initials = (name) => name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("");
+const date = (value) => value ? new Date(value).toLocaleString() : "No deadline";
+const localDate = (value) => { if (!value) return ""; const d = new Date(value); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); };
+async function allPages(method, key, query = {}) {
+  let page = 1, result = [], data;
+  do { data = await method({ ...query, page, limit: 100 }); result = result.concat(data[key]); page += 1; } while (data.pagination.hasNextPage);
+  return result;
 }
-
-function message(error, fallback) {
-  return error instanceof ApiClientError ? error.message : fallback;
+function Modal({ title, onClose, children }) {
+  const ref = useRef(null);
+  useEffect(() => { const dialog = ref.current; dialog.showModal(); return () => dialog.close(); }, []);
+  return <dialog ref={ref} className="admin-dialog" onCancel={(e) => { e.preventDefault(); onClose(); }} aria-labelledby="admin-dialog-title" data-lenis-prevent>
+    <header><h2 id="admin-dialog-title">{title}</h2><button type="button" aria-label="Close dialog" onClick={onClose}><X size={20} /></button></header>{children}
+  </dialog>;
 }
-
-function ShellCard({ children, className = "" }) {
-  return (
-    <div
-      className={`relative overflow-hidden rounded-[24px] border border-white/65 bg-[linear-gradient(135deg,rgba(247,253,254,0.94),rgba(224,246,249,0.88))] shadow-[0_16px_42px_rgba(5,63,83,0.14),inset_0_1px_0_rgba(255,255,255,0.92)] ring-1 ring-[#2A91A6]/10 backdrop-blur-xl ${className}`}
-    >
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent" />
-      {children}
-    </div>
-  );
-}
-
-const fieldClass = "h-11 w-full rounded-xl border border-[#258EA4]/25 bg-white/72 px-3 text-xs font-medium text-[#173F52] outline-none transition placeholder:text-[#7294A0] hover:border-[#258EA4]/40 focus:border-[#0D7892] focus:bg-white/88 focus:ring-4 focus:ring-[#0D7892]/10";
-const textareaClass = "w-full rounded-xl border border-[#258EA4]/25 bg-white/72 p-3 text-xs font-medium text-[#173F52] outline-none transition placeholder:text-[#7294A0] hover:border-[#258EA4]/40 focus:border-[#0D7892] focus:bg-white/88 focus:ring-4 focus:ring-[#0D7892]/10";
-const primaryButton = "inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[#075F75]/20 bg-[#08758D] px-4 text-xs font-black text-white shadow-[0_10px_22px_rgba(8,117,141,0.22)] transition hover:-translate-y-0.5 hover:bg-[#066A80] disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50";
-const secondaryButton = "inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-[#258EA4]/24 bg-white/62 px-3 text-xs font-bold text-[#276578] shadow-sm transition hover:border-[#258EA4]/40 hover:bg-white/82 disabled:cursor-not-allowed disabled:opacity-50";
-
-function statusTone(status) {
-  if (status === "ACTIVE" || status === "VERIFIED" || status === "COMPLETED") {
-    return "border-emerald-300/70 bg-emerald-100/80 text-emerald-700";
-  }
-  if (status === "DISABLED" || status === "REJECTED") {
-    return "border-rose-300/70 bg-rose-100/80 text-rose-700";
-  }
-  if (status === "ARCHIVED") {
-    return "border-slate-300/70 bg-slate-100/80 text-slate-600";
-  }
-  if (status === "IN_PROGRESS" || status === "PENDING_VERIFICATION") {
-    return "border-amber-300/70 bg-amber-100/80 text-amber-700";
-  }
-  return "border-sky-300/70 bg-sky-100/80 text-sky-700";
-}
-
-function StatusPill({ status }) {
-  return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] ${statusTone(status)}`}>
-      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-75" />
-      {nice(status)}
-    </span>
-  );
-}
-
-function StatCard({ icon: Icon, label, value, detail, decorSrc, gold = false }) {
-  return (
-    <ShellCard className="group min-h-[118px] p-4 sm:p-4.5">
-      {decorSrc && (
-        <img
-          src={decorSrc}
-          alt=""
-          aria-hidden="true"
-          className="pointer-events-none absolute -bottom-8 right-5 w-28 select-none opacity-[0.075] grayscale mix-blend-multiply"
-        />
-      )}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-[linear-gradient(180deg,transparent,rgba(57,171,193,0.08))]" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-10 -right-7 h-24 w-24 rounded-full border border-[#2393A9]/14" />
-      <div className="relative z-10 flex h-full items-start gap-3">
-        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_6px_18px_rgba(12,118,143,0.08)] ${gold ? "border-[#D6B267]/30 bg-[#F8ECCF]/90 text-[#A87527]" : "border-[#38A7BA]/22 bg-[#D8F5F7]/90 text-[#0782A0]"}`}>
-          <Icon className="h-5 w-5" strokeWidth={1.9} />
+function AmbassadorForm({ ambassador, busy, onSave }) {
+  const [form, setForm] = useState({ name: ambassador?.name || "", email: ambassador?.email || "", college: ambassador?.college || "", promoCode: ambassador?.promoCode || "" });
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  return <form onSubmit={(e) => { e.preventDefault(); onSave(ambassador ? form : { ...form, password }); }} className="admin-form">
+    {[["name", "Full name", "text"], ["college", "College / institution", "text"], ["email", "Email", "email"], ["promoCode", "Unique promo code", "text"]].map(([key, label, type]) => <label key={key}>{label}<input type={type} required maxLength={key === "promoCode" ? 32 : key === "email" ? 254 : key === "college" ? 180 : 120} minLength={key === "promoCode" ? 3 : 2} pattern={key === "promoCode" ? "[A-Za-z0-9][A-Za-z0-9-]{2,31}" : undefined} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} /></label>)}
+    {!ambassador && <>
+      <label htmlFor="ambassador-password">Password
+        <span className="admin-password">
+          <input id="ambassador-password" type={showPassword ? "text" : "password"} required minLength={8} maxLength={128} autoComplete="new-password" aria-describedby="ambassador-password-help" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <button type="button" aria-label={showPassword ? "Hide ambassador password" : "Show ambassador password"} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button>
         </span>
-        <div className="min-w-0 flex-1 pt-0.5">
-          <p className="text-[9px] font-black uppercase tracking-[0.1em] text-[#245B6D] sm:text-[10px]">{label}</p>
-          <p className="mt-1 text-[30px] font-black leading-none text-[#153D50] sm:text-[34px]">{value}</p>
-          <p className="mt-2 text-[10px] leading-4 text-[#64838E]">{detail}</p>
-        </div>
-        <span className="mt-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/60 bg-[#0C7894] text-white shadow-[0_6px_16px_rgba(5,86,109,0.18)] transition group-hover:translate-x-0.5 group-hover:bg-[#075F75]">
-          <ArrowRight className="h-3.5 w-3.5" />
-        </span>
-      </div>
-    </ShellCard>
-  );
+      </label>
+      <small id="ambassador-password-help">Use 8–128 characters. Share this email and password with the ambassador so they can sign in directly.</small>
+    </>}
+    <button className="admin-gold" disabled={busy}>{busy ? "Saving…" : ambassador ? "Save ambassador" : "Create ambassador"}</button>
+  </form>;
 }
-
-function EmptyState({ icon: Icon, title, detail }) {
-  return (
-    <div className="flex min-h-32 flex-col items-center justify-center rounded-2xl border border-dashed border-[#258EA4]/30 bg-white/36 px-5 py-7 text-center">
-      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D9F3F6] text-[#0D7892]">
-        <Icon className="h-5 w-5" />
-      </span>
-      <p className="mt-3 text-xs font-black text-[#214F60]">{title}</p>
-      <p className="mt-1 max-w-sm text-[10px] leading-4 text-[#6B8892]">{detail}</p>
-    </div>
-  );
-}
-
-function VoyageDecor() {
-  return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-      <img src="/sticker-compass.png" alt="" className="absolute -left-14 top-[16%] w-56 -rotate-12 opacity-[0.10] grayscale mix-blend-multiply sm:w-72" />
-      <img src="/sticker-anchor.png" alt="" className="absolute -right-14 top-[32%] w-52 rotate-12 opacity-[0.08] grayscale mix-blend-multiply sm:w-64" />
-      <img src="/sticker-wheel.png" alt="" className="absolute left-[3%] top-[60%] w-44 -rotate-12 opacity-[0.07] grayscale mix-blend-multiply sm:w-56" />
-      <img src="/card-decor-stamp.png" alt="" className="absolute right-[5%] top-[72%] w-36 rotate-12 opacity-[0.09] grayscale mix-blend-multiply sm:w-48" />
-      <img src="/sticker-ship.png" alt="" className="absolute -left-10 top-[82%] w-56 opacity-[0.075] grayscale mix-blend-multiply sm:w-72" />
-    </div>
-  );
-}
-
-function AdminLogin({ onAuthenticated }) {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
-  const [show, setShow] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  async function submit(event) {
-    event.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const data = await adminApi.login(credentials);
-      onAuthenticated(data.admin, Boolean(data.mustChangePassword ?? data.admin?.mustChangePassword), credentials.password);
-    } catch (requestError) {
-      setError(message(requestError, "Could not sign in to the admin portal."));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <main className="relative min-h-screen overflow-hidden px-3 pb-7 pt-[94px] text-[#173F52] sm:px-5 lg:px-7">
-      <section className="relative z-10 mx-auto grid w-full max-w-[1040px] gap-3.5 lg:grid-cols-[1.03fr_0.97fr]">
-        <ShellCard className="relative hidden min-h-[476px] p-6 lg:flex lg:flex-col lg:justify-between lg:p-7">
-          <img
-            src="/sticker-compass.png"
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-16 -top-14 w-72 rotate-12 select-none opacity-[0.10] grayscale mix-blend-multiply"
-          />
-          <img
-            src="/pirate-wheel-half.png"
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute -bottom-20 -left-20 w-64 -rotate-12 select-none opacity-[0.09] grayscale mix-blend-multiply"
-          />
-          <img
-            src="/sticker-ship.png"
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute -bottom-8 right-5 w-52 select-none opacity-[0.10] grayscale mix-blend-multiply"
-          />
-
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 opacity-60 [background-image:radial-gradient(circle_at_18%_16%,rgba(255,255,255,0.68),transparent_32%),linear-gradient(rgba(23,116,139,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(23,116,139,0.035)_1px,transparent_1px)] [background-size:auto,28px_28px,28px_28px]"
-          />
-
-          <div className="relative z-10">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#1689A0]/25 bg-white/58 px-3 py-1.5 font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#176C82] shadow-sm">
-              <Compass className="h-3.5 w-3.5" />
-              Renaissance X · Command bridge
-            </span>
-
-            <p className="mt-5 font-mono text-[8px] font-black uppercase tracking-[0.28em] text-[#4B7B8A]">
-              Fleet administration
-            </p>
-            <h1 className="mt-2 max-w-[500px] font-cinzel text-[32px] font-black uppercase leading-[1.04] tracking-[-0.025em] text-[#153E51]">
-              Navigate the
-              <span className="block text-[#B17E2E]">ambassador fleet</span>
-            </h1>
-            <p className="mt-3.5 max-w-[480px] text-[11px] leading-5 text-[#466D7A]">
-              A secure command deck for managing campus captains, promo codes,
-              missions and referral activity across Renaissance.
-            </p>
-
-            <div className="my-4 flex items-center gap-3 text-[#1F8CA2]" aria-hidden="true">
-              <span className="h-px w-20 bg-gradient-to-r from-transparent to-[#1F8CA2]/55" />
-              <Anchor className="h-4 w-4 text-[#B17E2E]" />
-              <span className="h-px w-20 bg-gradient-to-l from-transparent to-[#1F8CA2]/55" />
-            </div>
-
-            <div className="grid grid-cols-3 gap-2.5">
-              {[
-                [Users, "Crew roster", "Ambassadors"],
-                [Tag, "Signal flags", "Promo codes"],
-                [ClipboardList, "Mission log", "Tasks"],
-              ].map(([Icon, title, detail]) => (
-                <div key={title} className="rounded-2xl border border-[#248EA4]/20 bg-white/48 p-3 backdrop-blur-sm">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#2A98AC]/18 bg-[#D8F3F6]/80 text-[#0A819C]">
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  <p className="mt-2 text-[9px] font-black uppercase tracking-[0.08em] text-[#234F60]">{title}</p>
-                  <p className="mt-1 text-[9px] text-[#6A8791]">{detail}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="relative z-10 flex items-center justify-between gap-4 rounded-2xl border border-[#B98B3C]/20 bg-[#F8F2E5]/55 px-4 py-2.5">
-            <span className="flex items-center gap-2 text-[10px] font-semibold text-[#6A552C]">
-              <ShieldCheck className="h-4 w-4 text-[#A87527]" />
-              Restricted command access
-            </span>
-            <span className="font-mono text-[8px] font-black uppercase tracking-[0.16em] text-[#7C6A46]">
-              Authorized officers only
-            </span>
-          </div>
-        </ShellCard>
-
-        <ShellCard className="relative flex min-h-[476px] flex-col justify-center p-5 sm:p-6 lg:p-7">
-          <img
-            src="/sticker-compass.png"
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-16 -top-16 w-52 select-none opacity-[0.07] grayscale mix-blend-multiply lg:hidden"
-          />
-
-          <div className="relative z-10 mx-auto w-full max-w-[430px]">
-            <div className="text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-[#208AA0]/30 bg-[radial-gradient(circle_at_42%_34%,rgba(255,255,255,0.96),rgba(207,241,245,0.92)_72%)] text-[#B17E2E] shadow-[0_10px_26px_rgba(8,96,119,0.14)]">
-                <KeyRound className="h-6 w-6" />
-              </div>
-              <p className="mt-3 font-mono text-[8px] font-black uppercase tracking-[0.22em] text-[#39788A]">
-                Renaissance command authority
-              </p>
-              <h2 className="mt-1.5 font-cinzel text-[25px] font-black uppercase leading-tight text-[#163E51]">
-                Admin command deck
-              </h2>
-              <p className="mx-auto mt-2 max-w-sm text-[11px] leading-5 text-[#587B87]">
-                Authenticate to manage the Campus Ambassador programme.
-              </p>
-            </div>
-
-            <div className="my-4 flex items-center gap-3 text-[#238FA5]/70" aria-hidden="true">
-              <span className="h-px flex-1 bg-gradient-to-r from-transparent to-current" />
-              <span className="h-1.5 w-1.5 rotate-45 border border-[#B17E2E]/70" />
-              <span className="h-px flex-1 bg-gradient-to-l from-transparent to-current" />
-            </div>
-
-            <form onSubmit={submit} className="space-y-4">
-              <label className="block">
-                <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.12em] text-[#315B6B]">Admin email</span>
-                <span className="relative block">
-                  <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0D7892]" />
-                  <input
-                    type="email"
-                    value={credentials.email}
-                    onChange={(e) => setCredentials((v) => ({ ...v, email: e.target.value }))}
-                    autoComplete="email"
-                    placeholder="admin@renaissance.com"
-                    className={`${fieldClass} h-11 pl-10`}
-                    required
-                  />
-                </span>
-              </label>
-
-              <label className="block">
-                <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.12em] text-[#315B6B]">Password</span>
-                <span className="relative block">
-                  <LockKeyhole className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0D7892]" />
-                  <input
-                    type={show ? "text" : "password"}
-                    value={credentials.password}
-                    onChange={(e) => setCredentials((v) => ({ ...v, password: e.target.value }))}
-                    autoComplete="current-password"
-                    placeholder="Enter secure password"
-                    className={`${fieldClass} h-11 pl-10 pr-11`}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShow((v) => !v)}
-                    className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-[#587B87] transition hover:bg-[#0D7892]/10 hover:text-[#0D7892]"
-                    aria-label={show ? "Hide password" : "Show password"}
-                  >
-                    {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </span>
-              </label>
-
-              {error && (
-                <div className="rounded-xl border border-red-300/80 bg-red-50/90 px-3.5 py-3 text-[11px] leading-5 text-red-700 shadow-sm">
-                  <span className="font-black">Command link unavailable. </span>
-                  {error}
-                </div>
-              )}
-
-              <button type="submit" disabled={loading} className={`${primaryButton} h-11 w-full text-[11px]`}>
-                {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserCog className="h-4 w-4" />}
-                {loading ? "Establishing secure link..." : "Enter admin portal"}
-              </button>
-            </form>
-
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <div className="rounded-xl border border-[#258EA4]/18 bg-white/42 px-3 py-2.5 text-[9px] font-semibold text-[#557986]">
-                <ShieldCheck className="mb-1 h-3.5 w-3.5 text-[#0D7892]" />
-                Protected admin session
-              </div>
-              <div className="rounded-xl border border-[#B98B3C]/18 bg-[#FBF5E8]/45 px-3 py-2.5 text-[9px] font-semibold text-[#6F6247]">
-                <Anchor className="mb-1 h-3.5 w-3.5 text-[#A87527]" />
-                Server-backed authority
-              </div>
-            </div>
-          </div>
-        </ShellCard>
-      </section>
-    </main>
-  );
-}
-
-function AdminPasswordChange({ currentPassword, onChanged, onLogout }) {
-  const [form, setForm] = useState({ currentPassword, newPassword: "", confirmPassword: "" });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  async function submit(event) {
-    event.preventDefault();
-    if (form.newPassword !== form.confirmPassword) {
-      setError("New passwords do not match.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const data = await adminApi.changePassword({ currentPassword: form.currentPassword, newPassword: form.newPassword });
-      onChanged(data.admin);
-    } catch (requestError) {
-      setError(message(requestError, "Could not change the admin password."));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <main className="min-h-screen px-4 pb-12 pt-[112px] text-[#173F52] sm:px-6">
-      <ShellCard className="mx-auto max-w-xl p-6 sm:p-8">
-        <KeyRound className="mx-auto h-8 w-8 text-[#B17E2E]" />
-        <h1 className="mt-3 text-center font-cinzel text-2xl font-black uppercase text-[#163E51]">Set permanent admin password</h1>
-        <form onSubmit={submit} className="mt-6 space-y-3">
-          <input type="password" placeholder="Current password" value={form.currentPassword} onChange={(e) => setForm((v) => ({ ...v, currentPassword: e.target.value }))} className={fieldClass} required />
-          <input type="password" placeholder="New password" value={form.newPassword} onChange={(e) => setForm((v) => ({ ...v, newPassword: e.target.value }))} className={fieldClass} required />
-          <input type="password" placeholder="Confirm new password" value={form.confirmPassword} onChange={(e) => setForm((v) => ({ ...v, confirmPassword: e.target.value }))} className={fieldClass} required />
-          {error && <p className="rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>}
-          <button className={`${primaryButton} w-full`} disabled={loading}>{loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save password</button>
-        </form>
-        <button type="button" onClick={onLogout} className="mx-auto mt-5 block text-xs font-semibold text-[#587B87]">Sign out instead</button>
-      </ShellCard>
-    </main>
-  );
+function TaskForm({ task, ambassadors, busy, onSave }) {
+  const [form, setForm] = useState({ title: task?.title || "", description: task?.description || "", dueAt: localDate(task?.dueAt), ambassadorId: task?.ambassadorId || "" });
+  const props = (key) => ({ value: form[key], onChange: (e) => setForm({ ...form, [key]: e.target.value }) });
+  return <form className="admin-form" onSubmit={(e) => { e.preventDefault(); onSave({ ...form, dueAt: form.dueAt ? new Date(form.dueAt).toISOString() : null }); }}>
+    <label>Task title<input required minLength={3} maxLength={180} {...props("title")} /></label>
+    <label>Description<textarea required minLength={3} maxLength={2000} rows={4} {...props("description")} /></label>
+    <label>Due date<input type="datetime-local" {...props("dueAt")} /></label>
+    {!task && <label>Assign to<select required {...props("ambassadorId")}><option value="">Choose ambassador</option><option value="ALL">All currently active ambassadors</option>{ambassadors.filter((a) => a.status === "ACTIVE").map((a) => <option key={a.id} value={a.id}>{a.name} · {a.college}</option>)}</select></label>}
+    <button className="admin-gold" disabled={busy}>{busy ? "Saving…" : task ? "Save task" : "Assign task"}</button>
+  </form>;
 }
 
 export default function CampusAmbassadorAdmin() {
-  const [sessionLoading, setSessionLoading] = useState(true);
-  const [admin, setAdmin] = useState(null);
-  const [mustChangePassword, setMustChangePassword] = useState(false);
-  const [temporaryCurrentPassword, setTemporaryCurrentPassword] = useState("");
-  const [tab, setTab] = useState("ambassadors");
-  const [dashboard, setDashboard] = useState(null);
-  const [ambassadors, setAmbassadors] = useState([]);
-  const [promoCodes, setPromoCodes] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [referrals, setReferrals] = useState([]);
+  const { admin, logout, handleError } = useOutletContext();
+  const [tab, setTab] = useState("overview");
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [ambassadorSearch, setAmbassadorSearch] = useState("");
-  const [referralSearch, setReferralSearch] = useState("");
-  const [referralStatus, setReferralStatus] = useState("");
-  const [referralAmbassadorId, setReferralAmbassadorId] = useState("");
-  const [createdCredential, setCreatedCredential] = useState(null);
-  const [ambassadorForm, setAmbassadorForm] = useState({ name: "", email: "", phone: "", college: "" });
-  const [editingAmbassador, setEditingAmbassador] = useState(null);
-  const [promoForm, setPromoForm] = useState({ code: "", ambassadorId: "", discountType: "NONE", discountValue: 0, maxUses: "" });
-  const [taskForm, setTaskForm] = useState({ title: "", description: "", ambassadorId: "" });
-
-  async function loadAdminData() {
-    const [dashboardData, ambassadorData, promoData, taskData, referralData] = await Promise.all([
-      adminApi.dashboard(),
-      adminApi.ambassadors({ page: 1, limit: 100 }),
-      adminApi.promoCodes({ page: 1, limit: 100 }),
-      adminApi.tasks({ page: 1, limit: 100 }),
-      adminApi.referrals({ page: 1, limit: 100 }),
+  const [search, setSearch] = useState("");
+  const [accountFilter, setAccountFilter] = useState("");
+  const [taskFilter, setTaskFilter] = useState("");
+  const [registrationFilter, setRegistrationFilter] = useState("");
+  const [registrationOwner, setRegistrationOwner] = useState("");
+  const [modal, setModal] = useState(null);
+  const [credential, setCredential] = useState(null);
+  const [feedback, setFeedback] = useState("");
+  const [assignee, setAssignee] = useState("");
+  const requestSequence = useRef(0);
+  const load = useCallback(async () => {
+    const seq = ++requestSequence.current;
+    const [summary, ambassadors, tasks, promos, registrations] = await Promise.all([
+      adminApi.dashboard(), allPages(adminApi.ambassadors, "ambassadors"), allPages(adminApi.tasks, "tasks"),
+      allPages(adminApi.promoCodes, "promoCodes"), allPages(adminApi.referrals, "registrations"),
     ]);
-    setDashboard(dashboardData);
-    setAmbassadors(ambassadorData.ambassadors || []);
-    setPromoCodes(promoData.promoCodes || []);
-    setTasks(taskData.tasks || []);
-    setReferrals(referralData.registrations || []);
-  }
-
+    if (seq === requestSequence.current) setData({ summary, ambassadors, tasks, promos, registrations });
+  }, []);
+  const report = useCallback((err) => { if (!handleError(err)) setError(err.status ? err.message : "The admin service could not be reached. Please try again."); }, [handleError]);
   useEffect(() => {
     let active = true;
-    async function bootstrap() {
-      try {
-        const data = await adminApi.me();
-        if (!active) return;
-        setAdmin(data.admin);
-        const needsChange = Boolean(data.admin?.mustChangePassword);
-        setMustChangePassword(needsChange);
-        if (!needsChange) await loadAdminData();
-      } catch (requestError) {
-        if (active && requestError instanceof ApiClientError && requestError.status !== 401) setError(requestError.message);
-      } finally {
-        if (active) setSessionLoading(false);
-      }
-    }
-    bootstrap();
-    return () => { active = false; };
-  }, []);
+    load().catch((err) => { if (active) report(err); }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; requestSequence.current += 1; };
+  }, [load, report]);
+  useEffect(() => {
+    const refresh = () => { if (document.visibilityState === "visible") load().catch(report); };
+    const timer = setInterval(refresh, 30000);
+    window.addEventListener("focus", refresh);
+    return () => { clearInterval(timer); window.removeEventListener("focus", refresh); };
+  }, [load, report]);
 
-  function authenticated(nextAdmin, changeRequired, password) {
-    setAdmin(nextAdmin);
-    setMustChangePassword(changeRequired);
-    setTemporaryCurrentPassword(password || "");
-    setError("");
-    if (!changeRequired) loadAdminData().catch((requestError) => setError(message(requestError, "Could not load admin data.")));
-  }
-
-  async function logout() {
-    try { await adminApi.logout(); } catch { /* local state is still cleared */ }
-    setAdmin(null);
-    setMustChangePassword(false);
-    setDashboard(null);
-    setAmbassadors([]);
-    setPromoCodes([]);
-    setTasks([]);
-    setReferrals([]);
-    setCreatedCredential(null);
-  }
-
-  async function refreshAll() {
-    setBusy(true);
-    setError("");
-    try { await loadAdminData(); } catch (requestError) { setError(message(requestError, "Could not refresh admin data.")); }
-    finally { setBusy(false); }
-  }
-
-  async function createAmbassador(event) {
-    event.preventDefault();
+  async function mutate(action, success) {
     setBusy(true); setError(""); setNotice("");
-    try {
-      const data = await adminApi.createAmbassador({
-        ...ambassadorForm,
-        phone: ambassadorForm.phone || undefined,
-      });
-      setCreatedCredential({
-        name: data.ambassador.name,
-        email: data.ambassador.email,
-        ambassadorId: data.ambassador.ambassadorId,
-        temporaryPassword: data.temporaryPassword,
-      });
-      setAmbassadorForm({ name: "", email: "", phone: "", college: "" });
-      await loadAdminData();
-    } catch (requestError) { setError(message(requestError, "Could not create ambassador.")); }
+    try { await action(); setModal(null); setNotice(success); await load(); }
+    catch (err) { report(err); }
     finally { setBusy(false); }
   }
-
-  async function saveAmbassador(event) {
-    event.preventDefault();
-    if (!editingAmbassador) return;
-    setBusy(true); setError("");
-    try {
-      await adminApi.updateAmbassador(editingAmbassador.id, {
-        name: editingAmbassador.name,
-        email: editingAmbassador.email,
-        phone: editingAmbassador.phone || null,
-        college: editingAmbassador.college,
-      });
-      setEditingAmbassador(null);
-      setNotice("Ambassador profile updated.");
-      await loadAdminData();
-    } catch (requestError) { setError(message(requestError, "Could not update ambassador.")); }
-    finally { setBusy(false); }
+  function navigateSection(next) { setTab(next); setSearch(""); setMobileOpen(false); }
+  async function saveAmbassador(form) {
+    await mutate(async () => {
+      if (modal.ambassador) await adminApi.updateAmbassador(modal.ambassador.id, form);
+      else { const result = await adminApi.createAmbassador(form); setCredential(result); }
+    }, "Ambassador saved.");
   }
-
-  async function setAmbassadorStatus(id, status) {
-    setBusy(true); setError("");
-    try { await adminApi.setAmbassadorStatus(id, status); await loadAdminData(); }
-    catch (requestError) { setError(message(requestError, "Could not change ambassador status.")); }
-    finally { setBusy(false); }
+  function saveTask(form) {
+    return mutate(async () => {
+      if (modal.task) { const { title, description, dueAt } = form; await adminApi.updateTask(modal.task.taskId, { title, description, dueAt }); }
+      else await adminApi.createTask(form);
+    }, "Task assignment saved.");
   }
+  const ambassadors = data?.ambassadors || [];
+  const tasks = data?.tasks || [];
+  const summary = data?.summary;
+  const pending = tasks.filter((t) => t.status === "COMPLETED" && t.reviewStatus !== "APPROVED");
+  const owner = (id) => ambassadors.find((a) => a.id === String(id));
+  const term = search.trim().toLowerCase();
+  const visibleAmbassadors = ambassadors.filter((a) => (!accountFilter || a.status === accountFilter) && [a.name, a.email, a.college, a.promoCode].some((s) => String(s || "").toLowerCase().includes(term)));
+  const visibleTasks = (tab === "reviews" ? pending : tasks).filter((t) => (!taskFilter || t.status === taskFilter || tab === "reviews") && [t.title, t.description, owner(t.ambassadorId)?.name].some((s) => String(s || "").toLowerCase().includes(term)));
+  const registrations = (data?.registrations || []).filter((r) => (!registrationFilter || r.status === registrationFilter) && (!registrationOwner || String(r.ambassadorId) === registrationOwner) && [r.name, r.email, r.promoCode, r.registrationId].some((s) => String(s || "").toLowerCase().includes(term)));
+  function exportAmbassadors() { downloadCsv("renaissance-ambassadors.csv", [["Ambassador ID", "Name", "Email", "College", "Promo code", "Registrations (all statuses)", "Completed tasks", "Account"], ...visibleAmbassadors.map((a) => [a.ambassadorId, a.name, a.email, a.college, a.promoCode, a.registrationCount, a.taskProgress.completed, a.status])]); }
+  function exportRegistrations() { downloadCsv("renaissance-registrations.csv", [["Registration ID", "Name", "Email", "Ambassador ID", "Original promo code", "Package", "Status", "Payment", "Created"], ...registrations.map((r) => [r.registrationId, r.name, r.email, owner(r.ambassadorId)?.ambassadorId || r.ambassadorId, r.promoCode, r.packageName, r.status, r.paymentStatus, r.createdAt])]); }
+  function roster(rows, compact = false) { return <div className="admin-table-scroll"><table><thead><tr><th>Ambassador</th><th>Promo code</th><th>Registrations</th>{!compact && <th>Task progress</th>}<th>Account</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>
+    {!rows.length && <tr><td colSpan={compact ? 5 : 6} className="admin-empty">No ambassadors match this view.</td></tr>}
+    {rows.map((a) => <tr key={a.id}><td><div className="admin-person"><span className="admin-avatar">{initials(a.name)}</span><div><strong>{a.name}</strong><small>{a.college}</small></div></div></td><td className="admin-code">{a.promoCode || "Not assigned"}</td><td><strong>{a.registrationCount}</strong></td>{!compact && <td><small>{a.taskProgress.completed} / {a.taskProgress.total} complete</small><progress aria-label={`${a.name} task completion`} max={a.taskProgress.total || 1} value={a.taskProgress.completed} /></td>}<td><span className={`admin-status ${a.status === "ACTIVE" ? "" : "muted"}`}>{nice(a.status)}</span></td><td><button className="admin-text-button" aria-label={`Manage ${a.name}`} onClick={() => setModal({ type: "ambassador-details", ambassador: a })}>Manage</button></td></tr>)}
+  </tbody></table></div>; }
 
-  async function archiveAmbassador(id) {
-    setBusy(true); setError("");
-    try { await adminApi.archiveAmbassador(id); await loadAdminData(); }
-    catch (requestError) { setError(message(requestError, "Could not archive ambassador.")); }
-    finally { setBusy(false); }
-  }
-
-  async function hardDeleteAmbassador(item) {
-    const confirmed = window.confirm(
-      `Permanently delete ${item.name}? This removes the account, sessions, tasks and unused promo codes. This cannot be undone.`,
-    );
-    if (!confirmed) return;
-
-    setBusy(true); setError(""); setNotice("");
-    try {
-      await adminApi.hardDeleteAmbassador(item.id);
-      setNotice(`${item.name} was permanently deleted.`);
-      await loadAdminData();
-    } catch (requestError) {
-      setError(message(requestError, "Could not permanently delete ambassador."));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function createPromo(event) {
-    event.preventDefault(); setBusy(true); setError("");
-    try {
-      await adminApi.createPromoCode({
-        code: promoForm.code,
-        ambassadorId: promoForm.ambassadorId,
-        discountType: promoForm.discountType,
-        discountValue: Number(promoForm.discountValue || 0),
-        maxUses: promoForm.maxUses ? Number(promoForm.maxUses) : null,
-        isActive: true,
-        isPrimary: true,
-        validFrom: null,
-        validUntil: null,
-      });
-      setPromoForm({ code: "", ambassadorId: "", discountType: "NONE", discountValue: 0, maxUses: "" });
-      await loadAdminData();
-    } catch (requestError) { setError(message(requestError, "Could not create promo code.")); }
-    finally { setBusy(false); }
-  }
-
-  async function togglePromo(promo) {
-    setBusy(true); setError("");
-    try { await adminApi.setPromoCodeStatus(promo.id, !promo.isActive); await loadAdminData(); }
-    catch (requestError) { setError(message(requestError, "Could not update promo code.")); }
-    finally { setBusy(false); }
-  }
-
-  async function archivePromo(promo) {
-    const confirmed = window.confirm(`Archive promo code ${promo.code}? It will be disabled and detached as the primary promo code.`);
-    if (!confirmed) return;
-
-    setBusy(true); setError(""); setNotice("");
-    try {
-      await adminApi.archivePromoCode(promo.id);
-      setNotice(`Promo code ${promo.code} was archived.`);
-      await loadAdminData();
-    } catch (requestError) {
-      setError(message(requestError, "Could not archive promo code."));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function hardDeletePromo(promo) {
-    const confirmed = window.confirm(`Permanently delete promo code ${promo.code}? This cannot be undone.`);
-    if (!confirmed) return;
-
-    setBusy(true); setError(""); setNotice("");
-    try {
-      await adminApi.hardDeletePromoCode(promo.id);
-      setNotice(`Promo code ${promo.code} was permanently deleted.`);
-      await loadAdminData();
-    } catch (requestError) {
-      setError(message(requestError, "Could not permanently delete promo code."));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function createTask(event) {
-    event.preventDefault(); setBusy(true); setError("");
-    try {
-      await adminApi.createTask(taskForm);
-      setTaskForm({ title: "", description: "", ambassadorId: "" });
-      await loadAdminData();
-    } catch (requestError) { setError(message(requestError, "Could not create task.")); }
-    finally { setBusy(false); }
-  }
-
-  async function updateTaskStatus(taskId, status) {
-    setBusy(true); setError("");
-    try { await adminApi.updateTask(taskId, { status }); await loadAdminData(); }
-    catch (requestError) { setError(message(requestError, "Could not update task.")); }
-    finally { setBusy(false); }
-  }
-
-  async function reassignTask(taskId, ambassadorId) {
-    setBusy(true); setError("");
-    try { await adminApi.assignTask(taskId, ambassadorId); await loadAdminData(); }
-    catch (requestError) { setError(message(requestError, "Could not reassign task.")); }
-    finally { setBusy(false); }
-  }
-
-  async function deleteTask(taskId) {
-    setBusy(true); setError("");
-    try { await adminApi.deleteTask(taskId); await loadAdminData(); }
-    catch (requestError) { setError(message(requestError, "Only untouched assigned tasks can be deleted.")); }
-    finally { setBusy(false); }
-  }
-
-  async function searchReferrals(event) {
-    event.preventDefault(); setBusy(true); setError("");
-    try {
-      const data = await adminApi.referrals({ page: 1, limit: 100, search: referralSearch, status: referralStatus, ambassadorId: referralAmbassadorId });
-      setReferrals(data.registrations || []);
-    } catch (requestError) { setError(message(requestError, "Could not search referrals.")); }
-    finally { setBusy(false); }
-  }
-
-  if (sessionLoading) {
-    return <main className="flex min-h-screen items-center justify-center pt-24"><LoaderCircle className="h-7 w-7 animate-spin text-[#0D7892]" /></main>;
-  }
-  if (!admin) return <><AdminLogin onAuthenticated={authenticated} /><ContactFooter /></>;
-  if (mustChangePassword) {
-    return <><AdminPasswordChange currentPassword={temporaryCurrentPassword} onChanged={(nextAdmin) => { setAdmin(nextAdmin); setMustChangePassword(false); setTemporaryCurrentPassword(""); loadAdminData().catch((e) => setError(message(e, "Could not load admin data."))); }} onLogout={logout} /><ContactFooter /></>;
-  }
-
-  const activeAmbassadors = ambassadors.filter((item) => item.status === "ACTIVE");
-  const visibleAmbassadors = ambassadors.filter((item) => {
-    const term = ambassadorSearch.trim().toLowerCase();
-    return !term || [item.name, item.email, item.ambassadorId, item.college].some((value) => String(value || "").toLowerCase().includes(term));
-  });
-  const ambassadorName = (id) => ambassadors.find((item) => item.id === String(id))?.name || "Unknown ambassador";
-
-  return (
-    <>
-      <main className="relative min-h-screen bg-transparent px-3 pb-16 pt-[106px] text-[#173F52] sm:px-5 lg:px-8">
-        <VoyageDecor />
-        <section className="relative z-10 mx-auto w-full max-w-[1500px] space-y-3.5">
-          <ShellCard className="min-h-[144px] border-[#C69A4A]/35 p-5 sm:p-6 lg:px-8 lg:py-6">
-            <img src="/sticker-compass.png" alt="" aria-hidden="true" className="pointer-events-none absolute right-[26%] top-1/2 hidden w-40 -translate-y-1/2 select-none opacity-[0.075] grayscale mix-blend-multiply xl:block" />
-            <img src="/card-decor-stamp.png" alt="" aria-hidden="true" className="pointer-events-none absolute -bottom-16 left-[52%] hidden w-44 -translate-x-1/2 select-none opacity-[0.04] grayscale mix-blend-multiply 2xl:block" />
-            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[#C3923D]/50 to-transparent" />
-            <div className="relative z-10 flex min-h-[92px] flex-col justify-between gap-5 lg:flex-row lg:items-center">
-              <div>
-                <p className="font-mono text-[9px] font-black uppercase tracking-[0.3em] text-[#2D7185] sm:text-[10px]">Renaissance X · Admin command</p>
-                <h1 className="mt-2 font-cinzel text-[29px] font-black uppercase leading-[1.02] tracking-[-0.025em] text-[#143E52] sm:text-[36px] lg:text-[44px]">
-                  Campus Ambassador Operations
-                </h1>
-                <p className="mt-2 text-xs font-medium text-[#64818C] sm:text-sm">Signed in as {admin.name} · {admin.role}</p>
-              </div>
-              <div className="flex flex-col items-start gap-2 lg:items-end">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <button type="button" onClick={refreshAll} disabled={busy} className={`${primaryButton} min-w-[116px]`}>
-                    <RefreshCw className={`h-4 w-4 ${busy ? "animate-spin" : ""}`} /> Refresh
-                  </button>
-                  <button type="button" onClick={logout} className={`${secondaryButton} min-w-[116px] border-[#B98B3C]/28 text-[#315B6B]`}>
-                    <LogOut className="h-4 w-4" /> Sign out
-                  </button>
-                </div>
-                <p className="hidden font-mono text-[7px] font-black uppercase tracking-[0.2em] text-[#6D8B95] lg:block">
-                  “Different shores · A brighter tomorrow”
-                </p>
-              </div>
-            </div>
-          </ShellCard>
-
-          {createdCredential && (
-            <div className="rounded-2xl border border-amber-300/80 bg-amber-50/92 px-4 py-3 text-xs text-amber-900 shadow-[0_10px_28px_rgba(126,91,24,0.10)] backdrop-blur-xl sm:text-sm">
-              <strong>New ambassador credentials, shown once:</strong> {createdCredential.ambassadorId} · {createdCredential.email} · <span className="font-mono font-black">{createdCredential.temporaryPassword}</span>
-              <button type="button" className="ml-3 text-xs font-black underline underline-offset-2" onClick={() => setCreatedCredential(null)}>Dismiss</button>
-            </div>
-          )}
-          {notice && <div className="rounded-2xl border border-emerald-300/80 bg-emerald-50/92 px-4 py-3 text-xs font-semibold text-emerald-800 shadow-sm backdrop-blur-xl sm:text-sm">{notice}</div>}
-          {error && <div className="rounded-2xl border border-red-300/80 bg-red-50/92 px-4 py-3 text-xs font-semibold text-red-700 shadow-sm backdrop-blur-xl sm:text-sm">{error}</div>}
-
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard icon={Users} label="Active ambassadors" value={dashboard?.ambassadors?.ACTIVE ?? 0} detail="Building tomorrow's leaders" decorSrc="/sticker-compass.png" />
-            <StatCard icon={ClipboardList} label="Open tasks" value={(dashboard?.tasks?.ASSIGNED ?? 0) + (dashboard?.tasks?.IN_PROGRESS ?? 0)} detail="Actions awaiting completion" decorSrc="/sticker-watch.png" gold />
-            <StatCard icon={ShieldCheck} label="Verified referrals" value={dashboard?.referrals?.VERIFIED ?? 0} detail="Trusted voices, bigger impact" decorSrc="/sticker-lighthouse.png" />
-            <StatCard icon={Tag} label="Active promo codes" value={dashboard?.activePromoCodes ?? 0} detail="Spreading the Renaissance" decorSrc="/sticker-anchor.png" />
-          </div>
-
-          <ShellCard className="rounded-[20px] p-2 sm:p-2.5">
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <div className="flex min-w-max items-center gap-1">
-                  {tabs.map(([value, label, Icon]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setTab(value)}
-                      className={`relative inline-flex h-11 items-center gap-2 rounded-xl px-4 text-xs font-black transition sm:px-5 ${tab === value ? "bg-[#08758D] text-white shadow-[0_8px_20px_rgba(8,117,141,0.22)]" : "text-[#2D6273] hover:bg-white/62"}`}
-                    >
-                      <Icon className="h-4 w-4" /> {label}
-                      {tab === value && <span aria-hidden="true" className="absolute inset-x-5 -bottom-0.5 h-[2px] rounded-full bg-[#D3A340]" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="hidden shrink-0 items-center gap-2 pr-3 xl:flex">
-                <span className="h-7 w-px bg-[#C59A4A]/45" />
-                <Compass className="h-4 w-4 text-[#B98B3C]" />
-                <span className="font-mono text-[8px] font-black uppercase tracking-[0.24em] text-[#66838D]">Chart people · Build impact · Sail together</span>
-                <Anchor className="h-5 w-5 text-[#9C7131]" />
-              </div>
-            </div>
-          </ShellCard>
-
-          {tab === "ambassadors" && (
-            <>
-              <div className="grid gap-3.5 xl:grid-cols-[0.82fr_1.18fr]">
-                <ShellCard className="p-4 sm:p-5">
-                  <img src="/sticker-anchor.png" alt="" aria-hidden="true" className="pointer-events-none absolute -right-8 -top-9 w-28 rotate-12 select-none opacity-[0.075] grayscale mix-blend-multiply" />
-                  <img src="/sticker-compass.png" alt="" aria-hidden="true" className="pointer-events-none absolute -bottom-12 right-4 w-28 select-none opacity-[0.055] grayscale mix-blend-multiply" />
-                  <div className="relative z-10 flex items-start gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#36A4B7]/18 bg-[#D7F2F5] text-[#08758D]"><Anchor className="h-5 w-5" /></span>
-                    <div>
-                      <h2 className="font-cinzel text-[19px] font-black uppercase text-[#163E51]">Add ambassador</h2>
-                      <p className="mt-0.5 text-[10px] font-medium text-[#68858F]">Bring new changemakers on board</p>
-                    </div>
-                  </div>
-                  <form onSubmit={createAmbassador} className="relative z-10 mt-4 grid gap-2.5 sm:grid-cols-2">
-                    <label className="block">
-                      <span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.12em] text-[#456E7C]">Full name</span>
-                      <span className="relative block"><UserPlus className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} placeholder="Enter full name" value={ambassadorForm.name} onChange={(e) => setAmbassadorForm((v) => ({ ...v, name: e.target.value }))} required /></span>
-                    </label>
-                    <label className="block">
-                      <span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.12em] text-[#456E7C]">Email address</span>
-                      <span className="relative block"><Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} type="email" placeholder="Enter email address" value={ambassadorForm.email} onChange={(e) => setAmbassadorForm((v) => ({ ...v, email: e.target.value }))} required /></span>
-                    </label>
-                    <label className="block">
-                      <span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.12em] text-[#456E7C]">Phone number</span>
-                      <span className="relative block"><Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} placeholder="Phone (optional)" value={ambassadorForm.phone} onChange={(e) => setAmbassadorForm((v) => ({ ...v, phone: e.target.value }))} /></span>
-                    </label>
-                    <label className="block">
-                      <span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.12em] text-[#456E7C]">College / university</span>
-                      <span className="relative block"><Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10`} placeholder="College / university" value={ambassadorForm.college} onChange={(e) => setAmbassadorForm((v) => ({ ...v, college: e.target.value }))} required /></span>
-                    </label>
-                    <button disabled={busy} className="mt-1 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#A87527]/30 bg-[linear-gradient(100deg,#C49542,#A87527)] px-4 text-xs font-black text-white shadow-[0_10px_22px_rgba(155,108,35,0.22)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50 sm:col-span-2"><Plus className="h-4 w-4" /> Add ambassador</button>
-                  </form>
-                </ShellCard>
-
-                <ShellCard className="p-4 sm:p-5">
-                  <img src="/card-decor-globe.png" alt="" aria-hidden="true" className="pointer-events-none absolute -bottom-20 -right-14 w-48 select-none opacity-[0.035] grayscale mix-blend-multiply" />
-                  <div className="relative z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-start gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#36A4B7]/18 bg-[#D7F2F5] text-[#08758D]"><Users className="h-5 w-5" /></span>
-                      <div>
-                        <h2 className="font-cinzel text-[19px] font-black uppercase text-[#163E51]">Ambassador directory</h2>
-                        <p className="mt-0.5 text-[10px] font-medium text-[#68858F]">Manage and view all campus ambassadors</p>
-                      </div>
-                    </div>
-                    <label className="relative block sm:w-64"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#587B87]" /><input className={`${fieldClass} pl-10`} placeholder="Search ambassadors..." value={ambassadorSearch} onChange={(e) => setAmbassadorSearch(e.target.value)} /></label>
-                  </div>
-
-                  {editingAmbassador && (
-                    <form onSubmit={saveAmbassador} className="relative z-10 mt-3 grid gap-2 rounded-2xl border border-[#258EA4]/20 bg-white/55 p-3 sm:grid-cols-2">
-                      <input className={fieldClass} value={editingAmbassador.name} onChange={(e) => setEditingAmbassador((v) => ({ ...v, name: e.target.value }))} />
-                      <input className={fieldClass} type="email" value={editingAmbassador.email} onChange={(e) => setEditingAmbassador((v) => ({ ...v, email: e.target.value }))} />
-                      <input className={fieldClass} value={editingAmbassador.phone || ""} onChange={(e) => setEditingAmbassador((v) => ({ ...v, phone: e.target.value }))} placeholder="Phone" />
-                      <input className={fieldClass} value={editingAmbassador.college} onChange={(e) => setEditingAmbassador((v) => ({ ...v, college: e.target.value }))} />
-                      <div className="flex gap-2 sm:col-span-2"><button className={primaryButton}><Save className="h-4 w-4" /> Save changes</button><button type="button" onClick={() => setEditingAmbassador(null)} className={secondaryButton}>Cancel</button></div>
-                    </form>
-                  )}
-
-                  <div className="relative z-10 mt-3 overflow-x-auto rounded-2xl border border-[#258EA4]/16 bg-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
-                    <table className="w-full min-w-[800px] text-left text-[11px]">
-                      <thead className="border-b border-[#258EA4]/14 bg-[#D9F2F5]/68 text-[9px] font-black uppercase tracking-[0.1em] text-[#32697A]">
-                        <tr><th className="px-3 py-2.5">#</th><th className="px-3 py-2.5">Name</th><th className="px-3 py-2.5">Email</th><th className="px-3 py-2.5">College</th><th className="px-3 py-2.5">Ambassador ID</th><th className="px-3 py-2.5">Status</th><th className="px-3 py-2.5 text-right">Actions</th></tr>
-                      </thead>
-                      <tbody>
-                        {visibleAmbassadors.length === 0 ? (
-                          <tr><td colSpan="7" className="px-4 py-8 text-center text-[#6C8993]">No ambassadors onboard yet.</td></tr>
-                        ) : visibleAmbassadors.map((item, index) => (
-                          <tr key={item.id} className="border-b border-[#258EA4]/10 last:border-0 transition hover:bg-[#EAF8FA]/65">
-                            <td className="px-3 py-2.5 font-mono text-[9px] font-black text-[#7B929A]">{index + 1}</td>
-                            <td className="px-3 py-2.5 font-black text-[#214B5B]">{item.name}</td>
-                            <td className="px-3 py-2.5 text-[#557783]">{item.email}</td>
-                            <td className="px-3 py-2.5 text-[#557783]">{item.college}</td>
-                            <td className="px-3 py-2.5 font-mono text-[9px] font-bold text-[#3A7080]">{item.ambassadorId}</td>
-                            <td className="px-3 py-2.5"><StatusPill status={item.status} /></td>
-                            <td className="px-3 py-2.5">
-                              <div className="flex items-center justify-end gap-1.5">
-                                <select value={item.status} disabled={item.status === "ARCHIVED" || busy} onChange={(e) => setAmbassadorStatus(item.id, e.target.value)} className="h-8 rounded-lg border border-[#258EA4]/20 bg-white/78 px-2 text-[10px] font-bold text-[#315B6B] outline-none">
-                                  <option value="ACTIVE">Active</option><option value="DISABLED">Disabled</option><option value="ARCHIVED">Archived</option>
-                                </select>
-                                <button type="button" onClick={() => setEditingAmbassador({ ...item })} className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#258EA4]/20 bg-white/75 text-[#237083] transition hover:bg-white" disabled={item.status === "ARCHIVED"} aria-label={`Edit ${item.name}`}><Pencil className="h-3.5 w-3.5" /></button>
-                                <button type="button" onClick={() => archiveAmbassador(item.id)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-200 bg-amber-50/85 text-amber-700 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-35" disabled={item.status === "ARCHIVED" || busy} title="Soft archive" aria-label={`Archive ${item.name}`}><Archive className="h-3.5 w-3.5" /></button>
-                                <button type="button" onClick={() => hardDeleteAmbassador(item)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-300 bg-rose-50/90 text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-35" disabled={item.status !== "ARCHIVED" || busy} title={item.status === "ARCHIVED" ? "Permanently delete" : "Archive before permanent delete"} aria-label={`Permanently delete ${item.name}`}><Trash2 className="h-3.5 w-3.5" /></button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </ShellCard>
-              </div>
-
-              <div className="grid gap-3 md:grid-cols-3">
-                {[
-                  ["promos", Tag, "Promo code management", "Create and manage promotional codes", "Manage codes", "/card-decor-stamp.png"],
-                  ["tasks", ClipboardList, "Task management", "Assign and track ambassador tasks", "View tasks", "/sticker-wheel.png"],
-                  ["referrals", CheckCircle2, "Referral tracking", "Monitor referrals and conversions", "View referrals", "/sticker-lighthouse.png"],
-                ].map(([target, Icon, title, detail, action, decorSrc]) => (
-                  <button key={target} type="button" onClick={() => setTab(target)} className="group relative flex min-h-[78px] items-center gap-3 overflow-hidden rounded-[20px] border border-white/65 bg-[linear-gradient(135deg,rgba(247,253,254,0.94),rgba(224,246,249,0.88))] p-3.5 text-left shadow-[0_12px_30px_rgba(7,61,80,0.12)] ring-1 ring-[#258EA4]/10 backdrop-blur-xl transition hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(7,61,80,0.16)]">
-                    <img src={decorSrc} alt="" aria-hidden="true" className="pointer-events-none absolute -right-5 -top-8 w-28 select-none opacity-[0.08] grayscale mix-blend-multiply" />
-                    <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#2C9BAE]/18 bg-[#D9F4F7] text-[#0782A0]"><Icon className="h-4.5 w-4.5" /></span>
-                    <span className="relative z-10 min-w-0 flex-1"><span className="block font-cinzel text-[13px] font-black uppercase text-[#173F52]">{title}</span><span className="mt-0.5 block text-[9px] text-[#68858F]">{detail}</span></span>
-                    <span className="relative z-10 hidden h-9 shrink-0 items-center gap-1 rounded-xl border border-[#258EA4]/18 bg-white/76 px-3 text-[9px] font-black uppercase tracking-[0.04em] text-[#246579] transition group-hover:bg-white sm:inline-flex">{action}<ChevronRight className="h-3.5 w-3.5" /></span>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-
-          {tab === "promos" && (
-            <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-              <ShellCard className="p-5 sm:p-6">
-                <div className="flex items-start gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D7F2F5] text-[#08758D]"><Tag className="h-5 w-5" /></span><div><h2 className="font-cinzel text-xl font-black uppercase text-[#163E51]">Create promo code</h2><p className="mt-1 text-[10px] text-[#68858F]">Assign a tracked code to an active ambassador</p></div></div>
-                <form onSubmit={createPromo} className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <label className="sm:col-span-2"><span className="mb-1.5 block text-[9px] font-black uppercase tracking-[0.1em] text-[#456E7C]">Promo code</span><span className="relative block"><Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#4F8190]" /><input className={`${fieldClass} pl-10 font-mono uppercase`} placeholder="ADITYA26" value={promoForm.code} onChange={(e) => setPromoForm((v) => ({ ...v, code: e.target.value.toUpperCase() }))} required /></span></label>
-                  <select className={`${fieldClass} sm:col-span-2`} value={promoForm.ambassadorId} onChange={(e) => setPromoForm((v) => ({ ...v, ambassadorId: e.target.value }))} required><option value="">Choose ambassador</option>{activeAmbassadors.map((item) => <option key={item.id} value={item.id}>{item.name} · {item.ambassadorId}</option>)}</select>
-                  <select className={fieldClass} value={promoForm.discountType} onChange={(e) => setPromoForm((v) => ({ ...v, discountType: e.target.value }))}><option value="NONE">No discount</option><option value="PERCENTAGE">Percentage</option><option value="FIXED">Fixed amount</option></select>
-                  <input className={fieldClass} type="number" min="0" placeholder="Discount value" value={promoForm.discountValue} onChange={(e) => setPromoForm((v) => ({ ...v, discountValue: e.target.value }))} />
-                  <input className={`${fieldClass} sm:col-span-2`} type="number" min="1" placeholder="Maximum uses (optional)" value={promoForm.maxUses} onChange={(e) => setPromoForm((v) => ({ ...v, maxUses: e.target.value }))} />
-                  <button disabled={busy} className={`${primaryButton} w-full sm:col-span-2`}><Tag className="h-4 w-4" /> Assign promo</button>
-                </form>
-              </ShellCard>
-
-              <ShellCard className="p-5 sm:p-6">
-                <div className="flex items-start gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D7F2F5] text-[#08758D]"><Tag className="h-5 w-5" /></span><div><h2 className="font-cinzel text-xl font-black uppercase text-[#163E51]">Promo code directory</h2><p className="mt-1 text-[10px] text-[#68858F]">Usage, discounts and activation controls</p></div></div>
-                <div className="mt-4 overflow-x-auto rounded-2xl border border-[#258EA4]/16 bg-white/44">
-                  <table className="w-full min-w-[720px] text-left text-[11px]">
-                    <thead className="border-b border-[#258EA4]/14 bg-[#D9F2F5]/55 text-[9px] font-black uppercase tracking-[0.1em] text-[#32697A]"><tr><th className="px-3 py-3">Code</th><th className="px-3 py-3">Ambassador</th><th className="px-3 py-3">Discount</th><th className="px-3 py-3">Usage</th><th className="px-3 py-3">Status</th><th className="px-3 py-3 text-right">Action</th></tr></thead>
-                    <tbody>{promoCodes.length === 0 ? <tr><td colSpan="6" className="px-4 py-8 text-center text-[#6C8993]">No active promo codes yet.</td></tr> : promoCodes.map((promo) => (
-                      <tr key={promo.id} className="border-b border-[#258EA4]/10 last:border-0 hover:bg-white/35"><td className="px-3 py-3 font-mono font-black text-[#A9752B]">{promo.code}</td><td className="px-3 py-3 font-semibold text-[#315B6B]">{ambassadorName(promo.ambassadorId)}</td><td className="px-3 py-3 text-[#557783]">{nice(promo.discountType)} · {promo.discountValue}</td><td className="px-3 py-3 text-[#557783]">{promo.usageCount} / {promo.maxUses ?? "∞"}</td><td className="px-3 py-3"><StatusPill status={promo.isArchived ? "ARCHIVED" : promo.isActive ? "ACTIVE" : "DISABLED"} /></td><td className="px-3 py-3"><div className="flex items-center justify-end gap-1.5"><button type="button" disabled={busy || promo.isArchived} onClick={() => togglePromo(promo)} className="h-8 rounded-lg border border-[#258EA4]/20 bg-white/70 px-2.5 text-[10px] font-black text-[#315B6B] disabled:opacity-35">{promo.isActive ? "Disable" : "Enable"}</button><button type="button" disabled={busy || promo.isArchived} onClick={() => archivePromo(promo)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-200 bg-amber-50/80 text-amber-700 disabled:opacity-35" title="Soft archive" aria-label={`Archive ${promo.code}`}><Archive className="h-3.5 w-3.5" /></button><button type="button" disabled={busy || !promo.isArchived} onClick={() => hardDeletePromo(promo)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-300 bg-rose-50/85 text-rose-700 disabled:opacity-35" title={promo.isArchived ? "Permanently delete" : "Archive before permanent delete"} aria-label={`Permanently delete ${promo.code}`}><Trash2 className="h-3.5 w-3.5" /></button></div></td></tr>
-                    ))}</tbody>
-                  </table>
-                </div>
-              </ShellCard>
-            </div>
-          )}
-
-          {tab === "tasks" && (
-            <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-              <ShellCard className="p-5 sm:p-6">
-                <div className="flex items-start gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D7F2F5] text-[#08758D]"><ClipboardList className="h-5 w-5" /></span><div><h2 className="font-cinzel text-xl font-black uppercase text-[#163E51]">Create / assign task</h2><p className="mt-1 text-[10px] text-[#68858F]">Launch a new ambassador mission</p></div></div>
-                <form onSubmit={createTask} className="mt-5 space-y-3">
-                  <input className={fieldClass} placeholder="Task title" value={taskForm.title} onChange={(e) => setTaskForm((v) => ({ ...v, title: e.target.value }))} required />
-                  <textarea rows="5" className={textareaClass} placeholder="Task description" value={taskForm.description} onChange={(e) => setTaskForm((v) => ({ ...v, description: e.target.value }))} required />
-                  <select className={fieldClass} value={taskForm.ambassadorId} onChange={(e) => setTaskForm((v) => ({ ...v, ambassadorId: e.target.value }))} required><option value="">Assign ambassador</option>{activeAmbassadors.map((item) => <option key={item.id} value={item.id}>{item.name} · {item.ambassadorId}</option>)}</select>
-                  <button disabled={busy} className={`${primaryButton} w-full`}><Plus className="h-4 w-4" /> Create task</button>
-                </form>
-              </ShellCard>
-
-              <ShellCard className="p-5 sm:p-6">
-                <div className="flex items-start gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D7F2F5] text-[#08758D]"><ClipboardList className="h-5 w-5" /></span><div><h2 className="font-cinzel text-xl font-black uppercase text-[#163E51]">Task management</h2><p className="mt-1 text-[10px] text-[#68858F]">Assign, track and review ambassador progress</p></div></div>
-                <div className="mt-4 overflow-x-auto rounded-2xl border border-[#258EA4]/16 bg-white/44">
-                  <table className="w-full min-w-[820px] text-left text-[11px]">
-                    <thead className="border-b border-[#258EA4]/14 bg-[#D9F2F5]/55 text-[9px] font-black uppercase tracking-[0.1em] text-[#32697A]"><tr><th className="px-3 py-3">Task</th><th className="px-3 py-3">Ambassador</th><th className="px-3 py-3">Status</th><th className="px-3 py-3">Assigned</th><th className="px-3 py-3 text-right">Actions</th></tr></thead>
-                    <tbody>{tasks.length === 0 ? <tr><td colSpan="5" className="px-4 py-8 text-center text-[#6C8993]">No missions assigned yet.</td></tr> : tasks.map((task) => (
-                      <tr key={task.taskId} className="border-b border-[#258EA4]/10 last:border-0 align-top hover:bg-white/35">
-                        <td className="px-3 py-3"><p className="font-black text-[#214B5B]">{task.title}</p><p className="mt-1 font-mono text-[9px] text-[#56808E]">{task.taskId}</p>{(task.remarks || task.completionDetails) && <p className="mt-1 max-w-xs text-[9px] leading-4 text-[#78919A]">{task.remarks || task.completionDetails}</p>}</td>
-                        <td className="px-3 py-3"><select className="h-8 max-w-[170px] rounded-lg border border-[#258EA4]/20 bg-white/70 px-2 text-[10px] font-semibold text-[#315B6B] outline-none" value={task.ambassadorId} disabled={busy || task.status === "COMPLETED"} onChange={(e) => reassignTask(task.taskId, e.target.value)}>{activeAmbassadors.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></td>
-                        <td className="px-3 py-3"><StatusPill status={task.status} /></td>
-                        <td className="px-3 py-3 text-[#557783]">{task.assignedAt ? new Date(task.assignedAt).toLocaleDateString() : "—"}</td>
-                        <td className="px-3 py-3"><div className="flex items-center justify-end gap-1.5"><select className="h-8 rounded-lg border border-[#258EA4]/20 bg-white/70 px-2 text-[10px] font-bold text-[#315B6B] outline-none" value={task.status} disabled={busy} onChange={(e) => updateTaskStatus(task.taskId, e.target.value)}><option value="ASSIGNED">Assigned</option><option value="IN_PROGRESS">In Progress</option><option value="COMPLETED">Completed</option></select><button type="button" onClick={() => deleteTask(task.taskId)} disabled={busy || task.status !== "ASSIGNED"} className="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-200 bg-rose-50/70 text-rose-600 disabled:opacity-40" aria-label={`Delete ${task.title}`}><Trash2 className="h-3.5 w-3.5" /></button></div></td>
-                      </tr>
-                    ))}</tbody>
-                  </table>
-                </div>
-              </ShellCard>
-            </div>
-          )}
-
-          {tab === "referrals" && (
-            <ShellCard className="p-5 sm:p-6">
-              <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-end">
-                <div className="flex items-start gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D7F2F5] text-[#08758D]"><CheckCircle2 className="h-5 w-5" /></span><div><h2 className="font-cinzel text-xl font-black uppercase text-[#163E51]">Referral tracking</h2><p className="mt-1 text-[10px] text-[#68858F]">Monitor registrations and conversions attributed to ambassador promo codes</p></div></div>
-                <form onSubmit={searchReferrals} className="grid gap-2 sm:grid-cols-2 xl:grid-cols-[220px_180px_170px_auto]">
-                  <input className={fieldClass} placeholder="Name / email / registration" value={referralSearch} onChange={(e) => setReferralSearch(e.target.value)} />
-                  <select className={fieldClass} value={referralAmbassadorId} onChange={(e) => setReferralAmbassadorId(e.target.value)}><option value="">All ambassadors</option>{ambassadors.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>
-                  <select className={fieldClass} value={referralStatus} onChange={(e) => setReferralStatus(e.target.value)}><option value="">All statuses</option><option value="PENDING_VERIFICATION">Pending</option><option value="VERIFIED">Verified</option><option value="REJECTED">Rejected</option></select>
-                  <button className={secondaryButton}><Search className="h-4 w-4" /> Search</button>
-                </form>
-              </div>
-              <div className="mt-5 overflow-x-auto rounded-2xl border border-[#258EA4]/16 bg-white/44">
-                <table className="w-full min-w-[980px] text-left text-[11px]">
-                  <thead className="border-b border-[#258EA4]/14 bg-[#D9F2F5]/55 text-[9px] font-black uppercase tracking-[0.1em] text-[#32697A]"><tr><th className="px-3 py-3">Registration ID</th><th className="px-3 py-3">Participant</th><th className="px-3 py-3">Ambassador</th><th className="px-3 py-3">Promo code</th><th className="px-3 py-3">Package</th><th className="px-3 py-3">Payment</th><th className="px-3 py-3">Status</th><th className="px-3 py-3">Date</th></tr></thead>
-                  <tbody>{referrals.length === 0 ? <tr><td colSpan="8" className="px-4 py-10 text-center text-[#6C8993]">No referrals recorded yet.</td></tr> : referrals.map((row) => (
-                    <tr key={row._id || row.registrationId} className="border-b border-[#258EA4]/10 last:border-0 hover:bg-white/35"><td className="px-3 py-3 font-mono text-[10px] font-black text-[#315B6B]">{row.registrationId}</td><td className="px-3 py-3 font-semibold text-[#315B6B]">{row.name}<span className="block text-[9px] font-normal text-[#78919A]">{row.email}</span></td><td className="px-3 py-3 text-[#557783]">{ambassadorName(row.ambassadorId)}</td><td className="px-3 py-3 font-mono font-black text-[#A9752B]">{row.promoCode || "—"}</td><td className="px-3 py-3 text-[#557783]">{row.packageName || row.packageCode}</td><td className="px-3 py-3 text-[#557783]">{nice(row.paymentStatus)}</td><td className="px-3 py-3"><StatusPill status={row.status} /></td><td className="px-3 py-3 text-[#557783]">{row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "—"}</td></tr>
-                  ))}</tbody>
-                </table>
-              </div>
-            </ShellCard>
-          )}
+  return <div className="admin-app">
+    <aside className={`admin-sidebar ${mobileOpen ? "is-open" : ""}`}>
+      <div className="admin-brand"><img src={logo} alt="Renaissance" /><span className="admin-kicker">Admin command center</span></div>
+      <p className="admin-kicker admin-nav-label">The command deck</p>
+      <nav aria-label="Admin navigation">{sections.map(([id, label, Icon]) => <button key={id} className={tab === id ? "selected" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => navigateSection(id)}><Icon size={20} /><span>{label}</span>{id === "reviews" && pending.length > 0 && <b>{pending.length}</b>}</button>)}</nav>
+      <div className="admin-sidebar-footer"><ShieldCheck /><div><strong>{admin.name}</strong><small>Program administrator</small></div><button aria-label="Sign out" disabled={busy} onClick={async () => { setBusy(true); try { await logout(); } catch (err) { report(err); setBusy(false); } }}><LogOut size={18} /></button></div>
+      <p className="admin-kicker admin-credit">E-CELL · MNNIT ALLAHABAD</p>
+    </aside>
+    <main className="admin-main">
+      <header className="admin-topbar"><div><button className="admin-mobile-menu" aria-label="Toggle admin navigation" aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}><Menu size={20} /></button><Compass size={20} /><span className="admin-kicker">Command center</span><span aria-hidden="true">›</span><strong>{sections.find(([id]) => id === tab)[1]}</strong></div><div><span className="admin-access"><ShieldCheck size={16} /> Admin access</span><span className="admin-avatar">{initials(admin.name)}</span></div></header>
+      <section className="admin-hero"><p className="admin-kicker">Renaissance X · Administration</p><div><h1>Your fleet. <em>One command.</em></h1><div className="admin-actions"><button onClick={() => setModal({ type: "task" })} disabled={loading || !data}><Plus size={19} /> Assign task</button><button className="admin-gold" onClick={() => setModal({ type: "ambassador" })} disabled={loading || !data}><Plus size={19} /> Add ambassador</button></div></div><p>Manage your ambassadors, guide their missions, and follow their impact.</p></section>
+      {error && <div className="admin-alert" role="alert">{error}<button onClick={() => mutate(load, "Dashboard refreshed.")}>Retry</button></div>}
+      {notice && <div className="admin-notice" role="status">{notice}</div>}
+      {credential && <div className="admin-credential" role="status"><strong>New credential · shown once</strong><p>{credential.ambassador.email}</p><code>{credential.temporaryPassword}</code><p>Share this email and password privately with the ambassador.</p><button onClick={() => setCredential(null)}>Dismiss credential</button></div>}
+      {loading ? <div className="admin-panel admin-empty" role="status"><LoaderCircle className="animate-spin" /> Loading your command center…</div> : !data ? <div className="admin-panel admin-empty">Dashboard data is unavailable. Use Retry above.</div> : <>
+        <section className="admin-stats" aria-label="Program totals">
+          {[[Users, "Campus ambassadors", summary.ambassadors.total, `${summary.ambassadors.ACTIVE} active in the crew`], [Ticket, "Total registrations", summary.referrals.total, "Attributed records · all statuses"], [CheckCheck, "Tasks completed", `${summary.tasks.COMPLETED}/${summary.tasks.total}`, `${summary.tasks.ASSIGNED + summary.tasks.IN_PROGRESS} missions still underway`], [BadgeCheck, "Awaiting review", summary.pendingReviews, "Submissions ready for your review"]].map(([Icon, label, value, detail], i) => <article key={label} className={`admin-panel admin-stat ${i === 3 ? "gold" : ""}`}><div><span className="admin-kicker">{label}</span><Icon size={23} /></div><strong>{value}</strong><p>{detail}</p></article>)}
         </section>
-      </main>
-      <ContactFooter />
-    </>
-  );
+        {tab === "overview" && <div className="admin-overview-grid"><section className="admin-panel"><div className="admin-panel-heading"><div><p className="admin-kicker">Your campus network</p><h2>Ambassador roster</h2></div><button className="admin-text-button" onClick={() => navigateSection("ambassadors")}>View all <ArrowRight size={17} /></button></div>{roster(ambassadors.slice(0, 6), true)}</section><section className="admin-panel admin-review-queue"><p className="admin-kicker">Requires your attention</p><h2>Ready for review <span>{pending.length}</span></h2>{!pending.length && <p className="admin-empty">All caught up. New submissions will appear here.</p>}{pending.slice(0, 5).map((task) => <button key={task.id} onClick={() => { setFeedback(""); setModal({ type: "review", task }); }}><ClipboardList size={22} /><span><strong>{task.title}</strong><small>{owner(task.ambassadorId)?.name || "Ambassador"}</small></span><ArrowRight size={16} /></button>)}</section></div>}
+        {tab === "ambassadors" && <section className="admin-panel"><div className="admin-panel-heading"><div><p className="admin-kicker">People & access</p><h2>All ambassadors <small>{visibleAmbassadors.length}</small></h2></div><button onClick={exportAmbassadors}><Download size={18} /> Export report</button></div><div className="admin-filters"><label className="admin-search"><Search size={19} /><input aria-label="Search ambassadors" placeholder="Search name, college, email or code…" value={search} onChange={(e) => setSearch(e.target.value)} /></label><select aria-label="Filter accounts" value={accountFilter} onChange={(e) => setAccountFilter(e.target.value)}><option value="">All accounts</option><option value="ACTIVE">Active</option><option value="DISABLED">Disabled</option><option value="ARCHIVED">Archived</option></select></div>{roster(visibleAmbassadors)}</section>}
+        {(tab === "tasks" || tab === "reviews") && <section className="admin-panel"><div className="admin-panel-heading"><div><p className="admin-kicker">Missions & progress</p><h2>{tab === "reviews" ? "Submission reviews" : "Tasks & assignments"}</h2></div></div><div className="admin-filters"><input aria-label="Search tasks" placeholder="Search title or ambassador…" value={search} onChange={(e) => setSearch(e.target.value)} />{tab === "tasks" && <select aria-label="Filter task status" value={taskFilter} onChange={(e) => setTaskFilter(e.target.value)}><option value="">All statuses</option><option value="ASSIGNED">Assigned</option><option value="IN_PROGRESS">In Progress</option><option value="COMPLETED">Completed</option></select>}</div><div className="admin-task-list">{!visibleTasks.length && <p className="admin-empty">No tasks match this view.</p>}{visibleTasks.map((task) => <article key={task.id}><div className="admin-task-heading"><div><span className="admin-kicker">{owner(task.ambassadorId)?.name || "Ambassador"}</span><h3>{task.title}</h3></div><span className="admin-status">{nice(task.status)}</span></div><p>{task.description}</p><small>Due: {date(task.dueAt)} · Review: {nice(task.reviewStatus)}</small>{task.remarks && <p><strong>Completion remarks:</strong> {task.remarks}</p>}{task.completionDetails && <p className="admin-evidence"><strong>Submission evidence:</strong> {task.completionDetails}</p>}{task.reviewFeedback && <p><strong>Admin feedback:</strong> {task.reviewFeedback}</p>}<div className="admin-actions"><button disabled={busy} onClick={() => setModal({ type: "task", task })}>Edit task</button>{task.status !== "COMPLETED" && <button disabled={busy} onClick={() => { setAssignee(task.ambassadorId); setModal({ type: "reassign", task }); }}>Reassign</button>}{task.status === "COMPLETED" && task.reviewStatus !== "APPROVED" && <button className="admin-gold" onClick={() => { setFeedback(""); setModal({ type: "review", task }); }}>Review submission</button>}{task.status === "ASSIGNED" && !task.startedAt && !task.remarks && !task.completionDetails && <button className="admin-danger" disabled={busy} onClick={() => setModal({ type: "delete-task", task })}>Delete</button>}</div></article>)}</div></section>}
+        {tab === "promos" && <><section className="admin-panel"><div className="admin-panel-heading"><div><p className="admin-kicker">Codes & attribution</p><h2>Ambassador promo codes</h2></div></div><div className="admin-promo-list">{!data.promos.length && <p className="admin-empty">Create an ambassador to assign a promo code.</p>}{data.promos.map((promo) => <article key={promo.id}><div><strong className="admin-code">{promo.code}</strong><small>{owner(promo.ambassadorId)?.name || "Ambassador"} · {promo.isPrimary ? "Primary" : "Additional"}</small></div><span className="admin-status">{promo.isArchived ? "Archived" : promo.isActive ? "Active" : "Disabled"}</span><button disabled={busy || promo.isArchived} onClick={() => { setFeedback(promo.code); setModal({ type: "promo", promo }); }}>Edit code</button><button disabled={busy || promo.isArchived} onClick={() => mutate(() => adminApi.setPromoCodeStatus(promo.id, !promo.isActive), "Promo status updated.")}>{promo.isActive ? "Disable" : "Enable"}</button><button className="admin-danger" disabled={busy} onClick={() => setModal({ type: "confirm", title: promo.isArchived ? "Permanently delete promo code?" : "Archive promo code?", message: promo.isArchived ? `Delete ${promo.code}? This cannot be undone. Codes linked to registrations cannot be deleted.` : `Archive ${promo.code}? It will no longer be usable. Historical registration attribution is preserved.`, action: () => promo.isArchived ? adminApi.hardDeletePromoCode(promo.id) : adminApi.archivePromoCode(promo.id), success: promo.isArchived ? "Promo code permanently deleted." : "Promo code archived." })}>{promo.isArchived ? "Delete permanently" : "Archive"}</button></article>)}</div></section><section className="admin-panel"><div className="admin-panel-heading"><div><p className="admin-kicker">Your crew's impact</p><h2>Attributed registrations <small>{registrations.length}</small></h2></div><button onClick={exportRegistrations}><Download size={18} /> Export CSV</button></div><div className="admin-filters"><input aria-label="Search registrations" placeholder="Search participant, code or registration…" value={search} onChange={(e) => setSearch(e.target.value)} /><select aria-label="Filter registrations by ambassador" value={registrationOwner} onChange={(e) => setRegistrationOwner(e.target.value)}><option value="">All ambassadors</option>{ambassadors.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</select><select aria-label="Filter registration status" value={registrationFilter} onChange={(e) => setRegistrationFilter(e.target.value)}><option value="">All statuses</option><option value="VERIFIED">Verified</option><option value="PENDING_VERIFICATION">Pending verification</option><option value="REJECTED">Rejected</option></select></div><div className="admin-table-scroll"><table><thead><tr><th>Participant</th><th>Ambassador</th><th>Original code</th><th>Package</th><th>Status</th></tr></thead><tbody>{!registrations.length && <tr><td colSpan={5} className="admin-empty">No registrations match this view.</td></tr>}{registrations.map((r) => <tr key={r._id}><td><strong>{r.name}</strong><small>{r.email}</small></td><td>{owner(r.ambassadorId)?.name || "Ambassador"}</td><td className="admin-code">{r.promoCode}</td><td>{r.packageName}</td><td>{nice(r.status)}</td></tr>)}</tbody></table></div></section></>}
+        <footer className="admin-data-footer"><span>Live program data · updates every 30 seconds</span><button disabled={busy} onClick={() => mutate(load, "Dashboard refreshed.")}><RefreshCw size={16} /> Refresh</button></footer>
+      </>}
+    </main>
+    {modal && <Modal title={({ ambassador: modal.ambassador ? "Edit ambassador" : "Add ambassador", "ambassador-details": "Ambassador account", task: modal.task ? "Edit task" : "Assign a mission", review: "Review submission", reassign: "Reassign task", "delete-task": "Delete task?", promo: "Edit promo code", confirm: modal.title })[modal.type]} onClose={() => { if (!busy) setModal(null); }}>
+      {error && <p className="admin-alert" role="alert">{error}</p>}
+      {modal.type === "confirm" && <div className="admin-form"><p>{modal.message}</p><button className="admin-danger" disabled={busy} onClick={() => mutate(modal.action, modal.success)}>Confirm</button></div>}
+      {modal.type === "ambassador" && <AmbassadorForm ambassador={modal.ambassador} busy={busy} onSave={saveAmbassador} />}
+      {modal.type === "task" && <TaskForm task={modal.task} ambassadors={ambassadors} busy={busy} onSave={saveTask} />}
+      {modal.type === "ambassador-details" && <div className="admin-form"><h3>{modal.ambassador.name}</h3><p>{modal.ambassador.email} · {modal.ambassador.college}</p><p>{modal.ambassador.registrationCount} registrations · {modal.ambassador.promoCode || "No code"}</p><button disabled={busy || modal.ambassador.status === "ARCHIVED"} onClick={() => setModal({ type: "ambassador", ambassador: modal.ambassador })}>Edit profile & code</button><button disabled={busy || modal.ambassador.status === "ARCHIVED"} onClick={() => mutate(() => adminApi.setAmbassadorStatus(modal.ambassador.id, modal.ambassador.status === "ACTIVE" ? "DISABLED" : "ACTIVE"), "Account status updated.")}>{modal.ambassador.status === "ACTIVE" ? "Disable account and revoke access" : "Enable account"}</button><details><summary>Reset sign-in credential</summary><p>This invalidates existing sessions and replaces the password. The new credential is shown once.</p><button className="admin-danger" disabled={busy || modal.ambassador.status === "ARCHIVED"} onClick={() => mutate(async () => setCredential(await adminApi.resetCredential(modal.ambassador.id)), "Credential reset. Deliver the new credential privately.")}>Confirm credential reset</button></details>
+        {modal.ambassador.status !== "ARCHIVED" ? <button className="admin-danger" disabled={busy} onClick={() => { const a = modal.ambassador; setModal({ type: "confirm", title: "Archive ambassador?", message: `Archive ${a.name}? This revokes access and permanently retires the account while preserving referral history.`, action: () => adminApi.archiveAmbassador(a.id), success: "Ambassador archived." }); }}>Archive account</button> : <>
+          <p>Archived accounts with registrations must be kept to preserve attribution.</p>
+          <button className="admin-danger" disabled={busy || modal.ambassador.registrationCount > 0} onClick={() => { const a = modal.ambassador; setModal({ type: "confirm", title: "Permanently delete ambassador?", message: `Delete ${a.name}, their tasks, promo codes and sessions? This cannot be undone.`, action: () => adminApi.hardDeleteAmbassador(a.id), success: "Ambassador permanently deleted." }); }}>Permanently delete account</button>
+        </>}
+      </div>}
+      {modal.type === "review" && <div className="admin-form"><h3>{modal.task.title}</h3><p><strong>{owner(modal.task.ambassadorId)?.name}</strong></p><p>Remarks: {modal.task.remarks || "None provided"}</p><p className="admin-evidence">Evidence: {modal.task.completionDetails || "None provided"}</p><label>Feedback (required for changes)<textarea rows={4} maxLength={2000} value={feedback} onChange={(e) => setFeedback(e.target.value)} /></label><div className="admin-actions"><button className="admin-gold" disabled={busy} onClick={() => mutate(() => adminApi.reviewTask(modal.task.taskId, { decision: "APPROVED", feedback }), "Submission approved.")}>Approve</button><button disabled={busy || !feedback.trim()} onClick={() => mutate(() => adminApi.reviewTask(modal.task.taskId, { decision: "CHANGES_REQUESTED", feedback }), "Changes requested. Feedback is now visible in the CA portal.")}>Request changes</button></div></div>}
+      {modal.type === "reassign" && <form className="admin-form" onSubmit={(e) => { e.preventDefault(); mutate(() => adminApi.assignTask(modal.task.taskId, assignee), "Task reassigned."); }}><p>Reassignment clears the previous ambassador's remarks, evidence and review. The task returns to Assigned.</p><label>New assignee<select required value={assignee} onChange={(e) => setAssignee(e.target.value)}><option value="">Choose an active ambassador</option>{ambassadors.filter((a) => a.status === "ACTIVE").map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</select></label><button className="admin-gold" disabled={busy}>Confirm reassignment</button></form>}
+      {modal.type === "delete-task" && <div className="admin-form"><p>Delete “{modal.task.title}”? Only tasks without submitted progress can be deleted.</p><button className="admin-danger" disabled={busy} onClick={() => mutate(() => adminApi.deleteTask(modal.task.taskId), "Task deleted.")}>Confirm delete</button></div>}
+      {modal.type === "promo" && <form className="admin-form" onSubmit={(e) => { e.preventDefault(); mutate(() => adminApi.updatePromoCode(modal.promo.id, { code: feedback }), "Promo code updated. Historical registration attribution is preserved."); }}><label>Promo code<input required minLength={3} maxLength={32} pattern="[A-Za-z0-9][A-Za-z0-9-]{2,31}" value={feedback} onChange={(e) => setFeedback(e.target.value)} /></label><p>Existing registrations retain their original code and ambassador attribution.</p><button disabled={busy} className="admin-gold">Save code</button></form>}
+    </Modal>}
+  </div>;
 }

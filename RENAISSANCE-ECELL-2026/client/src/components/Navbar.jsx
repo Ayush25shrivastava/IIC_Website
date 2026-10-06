@@ -10,6 +10,7 @@ import {
   GraduationCap,
   LogIn,
   Ticket,
+  HeartHandshake,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -48,6 +49,11 @@ export default function Navbar() {
       path: "/tickets-accommodation",
       icon: Ticket,
     },
+    {
+      name: "Support Us",
+      path: "/support-us",
+      icon: HeartHandshake,
+    },
   ];
 
   // Lock page scrolling while the mobile navigation is open
@@ -63,11 +69,6 @@ export default function Navbar() {
     };
   }, [isOpen]);
 
-  // Automatically close mobile navigation after route changes
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location.pathname]);
-
   const isActive = (path) => {
     if (path === "/") {
       return (
@@ -81,6 +82,8 @@ export default function Navbar() {
       location.pathname.startsWith(`/udbhav${path}`)
     );
   };
+
+  if (/^\/admin(?:\/|$)/.test(location.pathname)) return null;
 
   return (
     <>
@@ -105,7 +108,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="absolute left-1/2 -translate-x-1/2 hidden items-center gap-4 rounded-full border border-white/80 bg-[#ECF6F5]/88 px-5 py-2 font-light text-xs tracking-widest shadow-[0_4px_24px_rgba(0,0,0,0.6)] backdrop-blur-xl md:flex">
+          <div className="absolute left-1/2 -translate-x-1/2 hidden items-center md:gap-2.5 lg:gap-4 whitespace-nowrap rounded-full border border-white/80 bg-[#ECF6F5]/88 px-4 lg:px-5 py-2 font-light text-xs tracking-widest shadow-[0_4px_24px_rgba(0,0,0,0.6)] backdrop-blur-xl md:flex">
             {navLinks.map((link) => {
               const current = isActive(link.path);
               const Icon = link.icon;
@@ -114,7 +117,7 @@ export default function Navbar() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`inline-flex cursor-pointer items-center gap-1.5 transition-all duration-300 ${
+                  className={`inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap transition-all duration-300 ${
                     current
                       ? "rounded-full border border-[#C5A25F]/70 bg-[#F4EBD9]/95 px-3.5 py-1 font-extrabold text-[#0C2B3D] shadow-[0_4px_14px_rgba(197,162,95,0.24)]"
                       : "px-2 py-1 font-semibold text-[#416678] hover:text-[#0C2B3D]"

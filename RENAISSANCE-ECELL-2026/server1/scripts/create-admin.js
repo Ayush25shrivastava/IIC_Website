@@ -23,7 +23,7 @@ if (!name || !email || !Object.values(ADMIN_ROLE).includes(role)) {
       adminId: `AD-RNX-${crypto.randomBytes(5).toString("hex").toUpperCase()}`,
       name, email, role,
       passwordHash: await hashPassword(password),
-      mustChangePassword: true,
+      mustChangePassword: false,
     });
     console.log("Admin created.");
     console.log(`Admin ID: ${admin.adminId}`);

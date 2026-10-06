@@ -6,24 +6,25 @@ import {
   publicAmbassador,
   revokeAmbassadorSessions,
   rotateAuthSession,
+  verifyAmbassadorPassword,
 } from "../services/ambassador-auth.service.js";
 import { ApiError } from "../utils/api-error.js";
-import { clearAuthCookies, REFRESH_COOKIE_NAME } from "../utils/auth-cookies.js";
-import { hashPassword, verifyPassword } from "../utils/password.js";
-import { hashToken, verifyRefreshToken } from "../utils/tokens.js";
+import { ACCESS_COOKIE_NAME, clearAuthCookies, REFRESH_COOKIE_NAME } from "../utils/auth-cookies.js";
+import { verifyAccessToken, verifyRefreshToken } from "../utils/tokens.js";
+import { assertDatabaseReady } from "../middleware/database-ready.js";
 
 export async function loginAmbassador(req, res) {
   const { email, password } = req.validatedBody;
 
-  const ambassador = await CampusAmbassador.findOne({ email }).select("+passwordHash +authVersion");
-  if (!ambassador || !(await verifyPassword(ambassador.passwordHash, password))) {
+  const ambassador = await CampusAmbassador.findOne({ email }).select("+password +passwordHash +authVersion");
+  if (!ambassador || !(await verifyAmbassadorPassword(ambassador, password))
+    || ambassador.status !== AMBASSADOR_STATUS.ACTIVE || ambassador.role !== "CAMPUS_AMBASSADOR") {
     throw new ApiError(401, "Invalid email or password", "INVALID_CREDENTIALS");
   }
 
-  if (ambassador.status !== AMBASSADOR_STATUS.ACTIVE) {
-    throw new ApiError(403, "Campus ambassador account is not active", "ACCOUNT_DISABLED");
-  }
-
+  ambassador.password = password;
+  ambassador.passwordHash = undefined;
+  ambassador.mustChangePassword = false;
   ambassador.lastLoginAt = new Date();
   await ambassador.save();
   await createAuthSession({ ambassador, req, res });
@@ -32,7 +33,7 @@ export async function loginAmbassador(req, res) {
     success: true,
     data: {
       ambassador: publicAmbassador(ambassador),
-      mustChangePassword: ambassador.mustChangePassword,
+      mustChangePassword: false,
     },
   });
 }
@@ -53,13 +54,13 @@ export async function refreshAmbassadorSession(req, res) {
   }
 
   const session = await AuthSession.findOne({ sessionId: payload.sid }).select("+tokenHash");
-  if (!session || session.revokedAt || session.expiresAt <= new Date()) {
+  if (!session || session.ambassadorId.toString() !== payload.sub || session.revokedAt || session.expiresAt <= new Date()) {
     clearAuthCookies(res);
     throw new ApiError(401, "Refresh session is no longer valid", "REFRESH_SESSION_INVALID");
   }
 
   const ambassador = await CampusAmbassador.findById(payload.sub).select("+authVersion");
-  if (!ambassador || ambassador.status !== AMBASSADOR_STATUS.ACTIVE) {
+  if (!ambassador || ambassador.status !== AMBASSADOR_STATUS.ACTIVE || ambassador.role !== "CAMPUS_AMBASSADOR") {
     clearAuthCookies(res);
     throw new ApiError(401, "Refresh session is no longer valid", "REFRESH_SESSION_INVALID");
   }
@@ -90,24 +91,32 @@ export async function refreshAmbassadorSession(req, res) {
     success: true,
     data: {
       ambassador: publicAmbassador(ambassador),
-      mustChangePassword: ambassador.mustChangePassword,
+      mustChangePassword: false,
     },
   });
 }
 
 export async function logoutAmbassador(req, res) {
-  const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME];
-
-  if (refreshToken) {
+  // Validate tokens separately from database work: database failures must not report a successful logout.
+  const sessions = [];
+  for (const [token, verify] of [
+    [req.cookies?.[REFRESH_COOKIE_NAME], verifyRefreshToken],
+    [req.cookies?.[ACCESS_COOKIE_NAME], verifyAccessToken],
+  ]) {
+    if (!token) continue;
     try {
-      const payload = verifyRefreshToken(refreshToken);
-      await AuthSession.updateOne(
-        { sessionId: payload.sid, tokenHash: hashToken(refreshToken), revokedAt: null },
-        { $set: { revokedAt: new Date(), revokeReason: "LOGOUT" } },
-      );
-    } catch {
-      // Always clear browser cookies even when the submitted refresh token is stale.
+      const payload = verify(token);
+      if (payload.sid) sessions.push({ sessionId: payload.sid, ambassadorId: payload.sub });
+    } catch (error) {
+      if (!(error instanceof jwt.JsonWebTokenError)) throw error;
     }
+  }
+  if (sessions.length) {
+    assertDatabaseReady();
+    await AuthSession.updateMany(
+      { $or: sessions, revokedAt: null },
+      { $set: { revokedAt: new Date(), revokeReason: "LOGOUT" } },
+    );
   }
 
   clearAuthCookies(res);
@@ -119,7 +128,7 @@ export async function getCurrentAmbassador(req, res) {
     success: true,
     data: {
       ambassador: publicAmbassador(req.ambassador),
-      mustChangePassword: req.ambassador.mustChangePassword,
+      mustChangePassword: false,
     },
   });
 }
@@ -128,21 +137,22 @@ export async function changeAmbassadorPassword(req, res) {
   const { currentPassword, newPassword } = req.validatedBody;
 
   const ambassador = await CampusAmbassador.findById(req.ambassador._id).select(
-    "+passwordHash +authVersion",
+    "+password +passwordHash +authVersion",
   );
   if (!ambassador) {
     throw new ApiError(401, "Authentication session is no longer valid", "ACCOUNT_NOT_FOUND");
   }
 
-  if (!(await verifyPassword(ambassador.passwordHash, currentPassword))) {
+  if (!(await verifyAmbassadorPassword(ambassador, currentPassword))) {
     throw new ApiError(400, "Current password is incorrect", "CURRENT_PASSWORD_INCORRECT");
   }
 
-  if (await verifyPassword(ambassador.passwordHash, newPassword)) {
+  if (await verifyAmbassadorPassword(ambassador, newPassword)) {
     throw new ApiError(400, "New password must be different from the current password", "PASSWORD_REUSE_NOT_ALLOWED");
   }
 
-  ambassador.passwordHash = await hashPassword(newPassword);
+  ambassador.password = newPassword;
+  ambassador.passwordHash = undefined;
   ambassador.mustChangePassword = false;
   ambassador.passwordChangedAt = new Date();
   ambassador.authVersion = (ambassador.authVersion ?? 0) + 1;

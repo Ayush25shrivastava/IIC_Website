@@ -1,4 +1,5 @@
 import {
+  resetAmbassadorCredential, reviewTaskByAdmin,
   archiveAmbassadorByAdmin,
   archivePromoByAdmin,
   assignTaskByAdmin,
@@ -47,3 +48,6 @@ export async function adminUpdateTask(req, res) { ok(res, { task: await updateTa
 export async function adminAssignTask(req, res) { ok(res, { task: await assignTaskByAdmin(req.validatedParams.taskId, req.validatedBody.ambassadorId) }); }
 export async function adminDeleteTask(req, res) { await deleteTaskByAdmin(req.validatedParams.taskId); res.status(204).end(); }
 export async function adminListReferrals(req, res) { ok(res, await listReferralsByAdmin(req.validatedQuery)); }
+
+export async function adminResetCredential(req, res) { ok(res, await resetAmbassadorCredential(req.validatedParams.id)); }
+export async function adminReviewTask(req, res) { ok(res, { task: await reviewTaskByAdmin(req.validatedParams.taskId, req.validatedBody, req.admin._id) }); }
