@@ -100,11 +100,7 @@ export function publicTask(task) {
     taskId: task.taskId,
     title: task.title,
     description: task.description,
-    dueAt: task.dueAt ?? null,
     status: task.status,
-    reviewStatus: task.reviewStatus || (task.status === "COMPLETED" ? "PENDING" : "NONE"),
-    reviewFeedback: task.reviewFeedback || "",
-    reviewedAt: task.reviewedAt ?? null,
     remarks: task.remarks,
     completionDetails: task.completionDetails,
     assignedAt: task.assignedAt,
@@ -149,10 +145,7 @@ export async function getAmbassadorDashboardData(ambassador) {
 
   return {
     ambassador: publicAmbassador(ambassador),
-    promoCode: promo ? {
-      ...publicPromoCode(promo),
-      registrationCount: await Registration.countDocuments({ ambassadorId: ambassador._id, promoCodeId: promo._id }),
-    } : null,
+    promoCode: publicPromoCode(promo),
     taskStats: mapTaskStats(taskRows),
     referralStats: mapReferralStats(referralRows),
   };
@@ -209,36 +202,53 @@ export function assertTaskStatusTransition(currentStatus, nextStatus) {
   }
 }
 
-export async function updateAmbassadorTask({ ambassadorId, taskId, status, remarks, completionDetails }) {
-  const task = await Task.findOne({ ambassadorId, taskId }).lean();
-  if (!task) throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
-  if (task.status === TASK_STATUS.COMPLETED && (remarks !== undefined || completionDetails !== undefined)) {
-    throw new ApiError(409, "Submitted tasks are locked until an admin requests changes", "TASK_SUBMITTED");
+export async function updateAmbassadorTaskStatus({ ambassadorId, taskId, status }) {
+  const task = await Task.findOne({ ambassadorId, taskId });
+  if (!task) {
+    throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
   }
-  const update = {};
-  if (status === TASK_STATUS.COMPLETED && task.status !== TASK_STATUS.COMPLETED) {
-    update.reviewStatus = "PENDING";
-    update.reviewedAt = null;
-    update.reviewedByAdminId = null;
+
+  assertTaskStatusTransition(task.status, status);
+  if (task.status === status) return publicTask(task);
+
+  const now = new Date();
+  task.status = status;
+
+  if (status === TASK_STATUS.IN_PROGRESS && !task.startedAt) {
+    task.startedAt = now;
   }
-  if (status !== undefined) {
-    assertTaskStatusTransition(task.status, status);
-    update.status = status;
-    if (status !== TASK_STATUS.ASSIGNED && !task.startedAt) update.startedAt = new Date();
-    if (status === TASK_STATUS.COMPLETED && !task.completedAt) update.completedAt = new Date();
+
+  if (status === TASK_STATUS.COMPLETED) {
+    if (!task.startedAt) task.startedAt = now;
+    if (!task.completedAt) task.completedAt = now;
   }
-  if (remarks !== undefined) update.remarks = remarks;
-  if (completionDetails !== undefined) update.completionDetails = completionDetails;
-  const saved = await Task.findOneAndUpdate(
-    { ambassadorId, taskId, status: task.status, updatedAt: task.updatedAt },
-    { $set: update }, { new: true, runValidators: true },
-  );
-  if (!saved) throw new ApiError(409, "Task changed. Refresh and try again.", "TASK_CHANGED");
-  return publicTask(saved);
+
+  await task.save();
+  return publicTask(task);
 }
 
-export const updateAmbassadorTaskStatus = updateAmbassadorTask;
-export const updateAmbassadorTaskDetails = updateAmbassadorTask;
+export async function updateAmbassadorTaskDetails({
+  ambassadorId,
+  taskId,
+  remarks,
+  completionDetails,
+}) {
+  const update = {};
+  if (remarks !== undefined) update.remarks = remarks;
+  if (completionDetails !== undefined) update.completionDetails = completionDetails;
+
+  const task = await Task.findOneAndUpdate(
+    { ambassadorId, taskId },
+    { $set: update },
+    { new: true, runValidators: true },
+  );
+
+  if (!task) {
+    throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
+  }
+
+  return publicTask(task);
+}
 
 export async function listAmbassadorReferrals({ ambassadorId, page, limit, status }) {
   const filter = { ambassadorId };

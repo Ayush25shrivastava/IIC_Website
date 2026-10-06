@@ -1,4 +1,3 @@
-import { requireDatabaseReady } from "../middleware/database-ready.js";
 import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
 import {
@@ -18,23 +17,14 @@ import {
   ambassadorLoginSchema,
 } from "../validators/ambassador-auth.schemas.js";
 
-export function authRateLimiter({ limit, code, message, countOnlyFailures = false }) {
+function authRateLimiter({ limit, code, message }) {
   return rateLimit({
     windowMs: 15 * 60 * 1000,
     limit,
     standardHeaders: "draft-8",
     legacyHeaders: false,
-    // A database outage or a successful login must not use up failed-login
-    // attempts. Keep counting 4xx responses (bad credentials/invalid input).
-    skipSuccessfulRequests: countOnlyFailures,
-    requestWasSuccessful: (_req, res) => res.statusCode < 400 || res.statusCode >= 500,
-    handler(_req, res, next) {
-      const retryAfterSeconds = Number(res.getHeader("Retry-After")) || 15 * 60;
-      const minutes = Math.max(1, Math.ceil(retryAfterSeconds / 60));
-      const detail = countOnlyFailures
-        ? `${message} Try again in ${minutes} minute${minutes === 1 ? "" : "s"}.`
-        : message;
-      next(new ApiError(429, detail, code, { retryAfterSeconds }));
+    handler(_req, _res, next) {
+      next(new ApiError(429, message, code));
     },
   });
 }
@@ -42,8 +32,7 @@ export function authRateLimiter({ limit, code, message, countOnlyFailures = fals
 const loginLimiter = authRateLimiter({
   limit: 8,
   code: "LOGIN_RATE_LIMITED",
-  message: "Too many unsuccessful login attempts.",
-  countOnlyFailures: true,
+  message: "Too many login attempts. Try again later.",
 });
 
 const refreshLimiter = authRateLimiter({
@@ -59,13 +48,13 @@ ambassadorAuthRouter.post(
   requireTrustedOrigin,
   loginLimiter,
   validateBody(ambassadorLoginSchema),
-  requireDatabaseReady, asyncHandler(loginAmbassador),
+  asyncHandler(loginAmbassador),
 );
 ambassadorAuthRouter.post(
   "/refresh",
   requireTrustedOrigin,
   refreshLimiter,
-  requireDatabaseReady, asyncHandler(refreshAmbassadorSession),
+  asyncHandler(refreshAmbassadorSession),
 );
 ambassadorAuthRouter.post(
   "/logout",

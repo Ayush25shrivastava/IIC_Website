@@ -37,7 +37,7 @@ const PAST_SPEAKERS = [
   { id: 5, name: "neha agarwal", designation: "Founder of mathematically inclined", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS36KANgvdTvmh1Yn3l9QZXTDwX73HVJHrUrcF0CmTgfQ&s=10" },
   { id: 5, name: "NEELAM JAIN", designation: "FOUNDER & CEO,PERIFERRY & FORBES 30U30 2021", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfRdEsJIOlWf5obecfCFFTAqvsTl6zr9oPaJsb5_Enig&s=10" },
   { id: 5, name: "Sandeep Jain", designation: "Founder & CEO,GeeksforGeeksCSR", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmRzNak8wdLRti5FPCSyfzeI4zrMZUzDMBi6hHUBhupQ&s=10" },
-  { id: 5, name: "SHRIYA LUHIA", designation: "FIRST FEMALE F4 RACER", img: "https://img.etimg.com/photo/msid-119117114,imgsize-49392/ShriyaLohia.jpg" },
+  { id: 5, name: "SHRIYA LUHIA", designation: "FIRST FEMALE F1 RACER", img: "https://img.etimg.com/photo/msid-119117114,imgsize-49392/ShriyaLohia.jpg" },
 ];
 
 export default function Gallery() {

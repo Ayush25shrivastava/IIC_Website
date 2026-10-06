@@ -172,7 +172,7 @@ export default function TicketsAccommodation() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [accommodationDays, setAccommodationDays] = useState(1);
   const [showForm, setShowForm] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -304,7 +304,7 @@ export default function TicketsAccommodation() {
       return;
     }
 
-    if (!formData.amountPaid.trim()) {
+    if (!formData.amountPaid.toString().trim()) {
       alert("Please enter the Amount Paid");
       return;
     }
@@ -320,21 +320,23 @@ export default function TicketsAccommodation() {
         body: JSON.stringify({
           ...formData,
           ticketType: selectedTicket,
+          accommodationDays: activeTicketData?.includesAccommodation ? accommodationDays : 0,
           checkInDate: formData.checkInDate || null,
           checkOutDate: formData.checkOutDate || null,
         })
       });
-      
+
       const data = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(data.message || "Failed to submit. Please try again.");
       }
 
       setSubmittedTicketId(data.ticket.ticketId);
-      
+
       setShowForm(false);
       setSelectedTicket(null);
+      setAccommodationDays(1);
       setFormData({
         name: "", email: "", phone: "", college: "", city: "", checkInDate: "", checkOutDate: "", accommodationPreferences: "", transactionId: "", amountPaid: "",
       });
@@ -462,9 +464,9 @@ export default function TicketsAccommodation() {
               {submittedTicketId && (
                 <div className="mb-10 p-6 bg-[#E8F5E9] border-2 border-[#4CAF50] rounded-2xl flex flex-col items-center text-center shadow-lg">
                   <CheckCircle2 className="w-12 h-12 text-[#4CAF50] mb-3" />
-                  <h3 className="font-cinzel text-2xl font-black text-[#2E7D32] mb-2">Registration Successful!</h3>
+                  <h3 className="font-cinzel text-2xl font-black text-[#2E7D32] mb-2">Registration Submitted!</h3>
                   <p className="font-montserrat text-[#1B5E20] font-bold mb-4">
-                    Please save this Ticket ID for future reference and to check your verification status.
+                    Please save this Ticket ID for verification and tracking.
                   </p>
                   <div className="px-6 py-3 bg-white border-2 border-[#4CAF50]/40 rounded-xl font-mono text-xl font-black text-[#2E7D32] tracking-widest shadow-inner">
                     {submittedTicketId}
@@ -498,7 +500,7 @@ export default function TicketsAccommodation() {
                     <button
                       type="submit"
                       disabled={isSearching}
-                      className="whitespace-nowrap px-8 py-3 rounded-xl bg-[#0C2B3D] text-[#F2E5D4] font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_4px_15px_rgba(12,43,61,0.2)] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="whitespace-nowrap px-8 py-3 rounded-xl bg-[#0C2B3D] text-[#F2E5D4] font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_4px_15px_rgba(12,43,61,0.2)] transition-all disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {isSearching ? "Searching..." : "Search"}
                     </button>
@@ -964,29 +966,18 @@ export default function TicketsAccommodation() {
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
                     {/* Left Column: QR Code & Payment Info */}
                     <div className="lg:col-span-5 flex flex-col items-center text-center bg-white/40 p-6 rounded-2xl border border-[#C5A25F]/30 h-fit">
-                      <h4 className="font-cinzel text-xl font-black text-[#0C2B3D] mb-3">Make Payment</h4>
-                      <p className="font-montserrat text-sm text-[#1A3B4D] mb-6 font-semibold">
-                        Scan to pay <span className="text-[#9E6D1F] font-black">{activeTicketData?.price}</span> for your {activeTicketData?.name}.
+                      <h4 className="font-cinzel text-xl font-black text-[#0C2B3D] mb-2">Make Payment</h4>
+                      <p className="font-montserrat text-sm text-[#1A3B4D] mb-5 font-semibold">
+                        Scan to pay <span className="text-[#9E6D1F] font-black">₹{currentPayableAmount}</span> for your {activeTicketData?.name}
+                        {activeTicketData?.includesAccommodation ? ` (${accommodationDays} Day Stay)` : ""}.
                       </p>
                       
-                      <div className="bg-white p-3 rounded-2xl shadow-md border-2 border-[#C5A25F]/40 mb-4 w-full max-w-[220px] aspect-square flex items-center justify-center">
+                      <div className="bg-white p-3 rounded-2xl shadow-md border-2 border-[#C5A25F]/40 mb-6 w-full max-w-[220px] aspect-square flex items-center justify-center">
                         <img 
                           src={`/cropped-qr.jpg`} 
                           alt="Payment QR Code"
                           className="w-full h-full object-contain"
                         />
-                      </div>
-
-                      <div className="w-full bg-white/75 border border-[#C5A25F]/40 p-3.5 rounded-xl text-left mb-4 shadow-sm">
-                        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#8A5F1C] mb-2">
-                          Bank Transfer Details (NEFT / IMPS)
-                        </p>
-                        <div className="space-y-1 text-xs font-montserrat text-[#0C2B3D]">
-                          <p><span className="font-bold text-[#2C5263]">A/C Name:</span> Institution’s Innovation Council</p>
-                          <p><span className="font-bold text-[#2C5263]">Bank:</span> SBI (MLNREC, Allahabad)</p>
-                          <p className="font-mono"><span className="font-sans font-bold text-[#2C5263]">A/C No:</span> 45558684605</p>
-                          <p className="font-mono"><span className="font-sans font-bold text-[#2C5263]">IFSC:</span> SBIN0002580</p>
-                        </div>
                       </div>
 
                       <div className="w-full bg-[#F4EBD9]/80 border-2 border-[#C5A25F]/40 p-4 rounded-xl text-left">
@@ -1006,16 +997,19 @@ export default function TicketsAccommodation() {
                         </div>
 
                         <div>
-                          <label className="block text-[11px] font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                            Amount Paid *
+                          <label className="block text-[11px] font-mono text-[#8A5F1C] uppercase tracking-wider mb-1 font-bold">
+                            Amount Paid (₹) *
                           </label>
+                          <p className="text-[10px] text-[#2C5263] font-mono mb-2">
+                            Auto-calculated: ₹{currentPayableAmount}
+                          </p>
                           <input
                             type="number"
                             name="amountPaid"
                             value={formData.amountPaid}
                             onChange={handleFormChange}
-                            placeholder="e.g. 1750"
-                            className={`w-full px-4 py-3 rounded-xl bg-white border-2 ${errors.amountPaid ? 'border-[#D9534F]' : 'border-[#C5A25F]/30'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/40 focus:outline-none focus:border-[#9E6D1F] transition-colors`}
+                            placeholder={`e.g. ${currentPayableAmount}`}
+                            className={`w-full px-4 py-3 rounded-xl bg-white border-2 ${errors.amountPaid ? 'border-[#D9534F]' : 'border-[#C5A25F]/30'} text-sm text-[#0C2B3D] font-bold placeholder-[#2C5263]/40 focus:outline-none focus:border-[#9E6D1F] transition-colors`}
                           />
                           {errors.amountPaid && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.amountPaid}</p>}
                         </div>
@@ -1202,7 +1196,7 @@ export default function TicketsAccommodation() {
                         className="group relative flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#0C2B3D] text-[#F2E5D4] font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_8px_30px_rgba(12,43,61,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer border border-[#0C2B3D] w-full sm:w-auto overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed"
                       >
                         <div className="absolute inset-0 bg-[#16435E] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                        <span className="relative z-10">{isSubmitting ? "Submitting..." : "Verify & Complete"}</span>
+                        <span className="relative z-10">{isSubmitting ? "Submitting..." : "Verify & Complete Registration"}</span>
                         <ChevronRight className="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </button>
                     </div>
@@ -1212,8 +1206,8 @@ export default function TicketsAccommodation() {
             </div>
           </div>
         </motion.div>
-        )}
-      </AnimatePresence>
+      )}
+    </AnimatePresence>
 
       </section>
 

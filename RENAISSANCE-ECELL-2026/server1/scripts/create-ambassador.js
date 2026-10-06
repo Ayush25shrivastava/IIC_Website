@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { connectDatabase, disconnectDatabase } from "../src/config/db.js";
 import { CampusAmbassador } from "../src/models/index.js";
+import { hashPassword } from "../src/utils/password.js";
 
 function arg(name) {
   const prefix = `--${name}=`;
@@ -29,15 +30,15 @@ if (missing.length) {
     await connectDatabase();
     const ambassador = await CampusAmbassador.create({
       ...input,
-      password: temporaryPassword,
-      mustChangePassword: false,
+      passwordHash: await hashPassword(temporaryPassword),
+      mustChangePassword: true,
     });
 
     console.log("Campus ambassador created.");
     console.log(`Ambassador ID: ${ambassador.ambassadorId}`);
     console.log(`Email: ${ambassador.email}`);
     console.log(`Temporary password: ${temporaryPassword}`);
-    console.log("Deliver this credential securely; it is stored in the readable password field.");
+    console.log("Store the temporary password securely; it will not be shown again.");
   } catch (error) {
     console.error(error?.message || error);
     process.exitCode = 1;

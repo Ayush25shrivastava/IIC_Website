@@ -1,5 +1,4 @@
 import {
-  updateAmbassadorTask,
   getAmbassadorDashboardData,
   getAmbassadorPrimaryPromoCode,
   getAmbassadorTask,
@@ -66,13 +65,4 @@ export async function getAmbassadorReferrals(req, res) {
     ...req.validatedQuery,
   });
   sendNoStore(res, data);
-}
-
-export async function patchAmbassadorTask(req, res) {
-  const task = await updateAmbassadorTask({
-    ambassadorId: req.ambassador._id,
-    taskId: req.validatedParams.taskId,
-    ...req.validatedBody,
-  });
-  sendNoStore(res, { task });
 }

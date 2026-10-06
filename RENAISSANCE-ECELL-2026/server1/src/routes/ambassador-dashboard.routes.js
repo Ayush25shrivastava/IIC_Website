@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  patchAmbassadorTask,
   getAmbassadorDashboard,
   getAmbassadorPromoCode,
   getAmbassadorReferrals,
@@ -9,7 +8,10 @@ import {
   patchAmbassadorTaskDetails,
   patchAmbassadorTaskStatus,
 } from "../controllers/ambassador-dashboard.controller.js";
-import { requireAmbassadorAuth } from "../middleware/ambassador-auth.js";
+import {
+  requireAmbassadorAuth,
+  requirePasswordChanged,
+} from "../middleware/ambassador-auth.js";
 import { asyncHandler } from "../middleware/async-handler.js";
 import { requireTrustedOrigin } from "../middleware/trusted-origin.js";
 import {
@@ -18,7 +20,6 @@ import {
   validateQuery,
 } from "../middleware/validate.js";
 import {
-  ambassadorTaskUpdateSchema,
   ambassadorReferralListQuerySchema,
   ambassadorTaskDetailsSchema,
   ambassadorTaskListQuerySchema,
@@ -28,7 +29,7 @@ import {
 
 export const ambassadorDashboardRouter = Router();
 
-ambassadorDashboardRouter.use(requireAmbassadorAuth);
+ambassadorDashboardRouter.use(requireAmbassadorAuth, requirePasswordChanged);
 
 ambassadorDashboardRouter.get("/dashboard", asyncHandler(getAmbassadorDashboard));
 ambassadorDashboardRouter.get("/promo-code", asyncHandler(getAmbassadorPromoCode));
@@ -60,10 +61,4 @@ ambassadorDashboardRouter.get(
   "/referrals",
   validateQuery(ambassadorReferralListQuerySchema),
   asyncHandler(getAmbassadorReferrals),
-);
-
-ambassadorDashboardRouter.patch(
-  "/tasks/:taskId", requireTrustedOrigin,
-  validateParams(taskIdParamsSchema), validateBody(ambassadorTaskUpdateSchema),
-  asyncHandler(patchAmbassadorTask),
 );

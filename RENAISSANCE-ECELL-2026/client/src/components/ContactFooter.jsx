@@ -118,10 +118,6 @@ export default function ContactFooter() {
             <Link to="/gallery" className={footerLinkClass}>
               Gallery
             </Link>
-
-            <Link to="/support-us" className={footerLinkClass}>
-              Support Us
-            </Link>
           </div>
         </div>
 

@@ -1,7 +1,6 @@
-import { assertDatabaseReady } from "./database-ready.js";
 import jwt from "jsonwebtoken";
-import { ADMIN_ROLE, ADMIN_STATUS } from "../constants/domain.js";
-import { Admin, AdminAuthSession } from "../models/index.js";
+import { ADMIN_STATUS } from "../constants/domain.js";
+import { Admin } from "../models/index.js";
 import { ADMIN_ACCESS_COOKIE_NAME } from "../utils/admin-auth-cookies.js";
 import { verifyAdminAccessToken } from "../utils/admin-tokens.js";
 import { ApiError } from "../utils/api-error.js";
@@ -27,14 +26,9 @@ export const requireAdminAuth = asyncHandler(async (req, _res, next) => {
     throw new ApiError(401, "Admin authentication token is invalid or expired", code);
   }
 
-  assertDatabaseReady();
-  if (!Object.values(ADMIN_ROLE).includes(payload.role) || !payload.sid || !await AdminAuthSession.exists({
-    sessionId: payload.sid, adminId: payload.sub, revokedAt: null, expiresAt: { $gt: new Date() },
-  })) throw new ApiError(401, "Admin session is no longer valid", "INVALID_ADMIN_SESSION");
-
   const admin = await Admin.findById(payload.sub).select("+authVersion");
   if (!admin) throw new ApiError(401, "Admin session is no longer valid", "ADMIN_NOT_FOUND");
-  if (admin.status !== ADMIN_STATUS.ACTIVE || !Object.values(ADMIN_ROLE).includes(admin.role)) {
+  if (admin.status !== ADMIN_STATUS.ACTIVE) {
     throw new ApiError(403, "Admin account is disabled", "ADMIN_ACCOUNT_DISABLED");
   }
   if ((admin.authVersion ?? 0) !== payload.ver) {
@@ -45,3 +39,11 @@ export const requireAdminAuth = asyncHandler(async (req, _res, next) => {
   req.adminAuth = payload;
   next();
 });
+
+export function requireAdminPasswordChanged(req, _res, next) {
+  if (req.admin?.mustChangePassword) {
+    next(new ApiError(403, "Admin password change is required before continuing", "ADMIN_PASSWORD_CHANGE_REQUIRED"));
+    return;
+  }
+  next();
+}

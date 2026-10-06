@@ -1,4 +1,4 @@
-const API_BASE_URL = (import.meta.env?.VITE_SERVER1_API_URL || "http://localhost:5001/api/v1").replace(/\/+$/, "");
+const API_BASE_URL = (import.meta.env.VITE_SERVER1_API_URL || "http://localhost:5001/api/v1").replace(/\/+$/, "");
 
 export class ApiClientError extends Error {
   constructor(message, { status = 0, code = "REQUEST_FAILED", details = null, requestId = null } = {}) {
@@ -55,7 +55,7 @@ async function readResponse(response) {
   return payload?.data ?? payload;
 }
 
-async function send(path, { method = "GET", body, query, signal, keepalive = false } = {}) {
+async function send(path, { method = "GET", body, query, signal } = {}) {
   const headers = { Accept: "application/json" };
   let requestBody;
 
@@ -69,27 +69,11 @@ async function send(path, { method = "GET", body, query, signal, keepalive = fal
     headers,
     body: requestBody,
     credentials: "include",
-    keepalive,
-    signal: signal || AbortSignal.timeout(15000),
+    signal,
   });
 }
 
 const refreshRequests = new Map();
-const authMutations = new Map();
-
-// Finish revoking an old visit before login can issue new cookies.
-function mutateAuth(authScope, action) {
-  const previous = authMutations.get(authScope);
-  const result = previous
-    ? previous.catch(() => {}).then(action)
-    : action();
-  authMutations.set(authScope, result);
-  const clear = () => {
-    if (authMutations.get(authScope) === result) authMutations.delete(authScope);
-  };
-  result.then(clear, clear);
-  return result;
-}
 
 async function refreshAuth(authScope) {
   const existing = refreshRequests.get(authScope);
@@ -100,7 +84,7 @@ async function refreshAuth(authScope) {
     : "/ambassador/auth/refresh";
 
   const refreshPromise = (async () => {
-    const response = await mutateAuth(authScope, () => send(refreshPath, { method: "POST" }));
+    const response = await send(refreshPath, { method: "POST" });
 
     if (response.ok) {
       return { ok: true, status: response.status, error: null };
@@ -122,6 +106,7 @@ async function refreshAuth(authScope) {
   refreshRequests.set(authScope, refreshPromise);
   return refreshPromise;
 }
+
 async function request(path, options = {}, authScope = null, retry = true) {
   let response = await send(path, options);
 
@@ -139,9 +124,9 @@ async function request(path, options = {}, authScope = null, retry = true) {
 }
 
 export const ambassadorApi = {
-  login: (body) => mutateAuth("ambassador", () => request("/ambassador/auth/login", { method: "POST", body }, null, false)),
+  login: (body) => request("/ambassador/auth/login", { method: "POST", body }, null, false),
   me: () => request("/ambassador/auth/me", {}, "ambassador"),
-  logout: ({ keepalive = false } = {}) => mutateAuth("ambassador", () => request("/ambassador/auth/logout", { method: "POST", keepalive }, null, false)),
+  logout: () => request("/ambassador/auth/logout", { method: "POST" }, null, false),
   changePassword: (body) => request(
     "/ambassador/auth/change-password",
     { method: "POST", body },
@@ -151,10 +136,6 @@ export const ambassadorApi = {
   promoCode: () => request("/ambassador/promo-code", {}, "ambassador"),
   tasks: (query) => request("/ambassador/tasks", { query }, "ambassador"),
   task: (taskId) => request(`/ambassador/tasks/${encodeURIComponent(taskId)}`, {}, "ambassador"),
-  updateTask: (taskId, body) => request(
-    `/ambassador/tasks/${encodeURIComponent(taskId)}`,
-    { method: "PATCH", body }, "ambassador",
-  ),
   updateTaskStatus: (taskId, status) => request(
     `/ambassador/tasks/${encodeURIComponent(taskId)}/status`,
     { method: "PATCH", body: { status } },
@@ -169,17 +150,15 @@ export const ambassadorApi = {
 };
 
 export const adminApi = {
-  login: (body) => mutateAuth("admin", () => request("/admin/auth/login", { method: "POST", body }, null, false)),
+  login: (body) => request("/admin/auth/login", { method: "POST", body }, null, false),
   me: () => request("/admin/auth/me", {}, "admin"),
-  logout: ({ keepalive = false } = {}) => mutateAuth("admin", () => request("/admin/auth/logout", { method: "POST", keepalive }, null, false)),
+  logout: () => request("/admin/auth/logout", { method: "POST" }, null, false),
   changePassword: (body) => request(
     "/admin/auth/change-password",
     { method: "POST", body },
     "admin",
   ),
   dashboard: () => request("/admin/dashboard", {}, "admin"),
-  resetCredential: (id) => request(`/admin/ambassadors/${encodeURIComponent(id)}/reset-credential`, { method: "POST", body: {} }, "admin"),
-  reviewTask: (id, body) => request(`/admin/tasks/${encodeURIComponent(id)}/review`, { method: "POST", body }, "admin"),
   ambassadors: (query) => request("/admin/ambassadors", { query }, "admin"),
   ambassador: (id) => request(`/admin/ambassadors/${encodeURIComponent(id)}`, {}, "admin"),
   createAmbassador: (body) => request(

@@ -13,7 +13,7 @@ const [
   { app },
   { Admin, AdminAuthSession },
   { signAdminAccessToken, signAdminRefreshToken, verifyAdminAccessToken, verifyAdminRefreshToken },
-  { createAmbassadorSchema, createPromoSchema, createTaskSchema, updateTaskAdminSchema, taskListAdminQuerySchema },
+  { createAmbassadorSchema, createPromoSchema, taskListAdminQuerySchema },
 ] = await Promise.all([
   import("supertest"),
   import("../src/app.js"),
@@ -52,20 +52,6 @@ test("admin JWTs are isolated from ambassador token types", () => {
   assert.equal(refresh.sid, "admin-session");
 });
 
-test("valid admin requests fail promptly when the database is unavailable", async () => {
-  const admin = new Admin({ _id: "507f1f77bcf86cd799439011", authVersion: 0 });
-  const token = signAdminAccessToken(admin, "test-database-unavailable");
-  const response = await request(app).get("/api/v1/admin/dashboard")
-    .set("Authorization", `Bearer ${token}`).expect(503);
-  assert.equal(response.body.error.code, "DATABASE_UNAVAILABLE");
-});
-
-test("invalid admin login input is validated before database access", async () => {
-  const response = await request(app).post("/api/v1/admin/auth/login")
-    .set("Origin", "http://localhost:5173").send({ email: "invalid", password: "" }).expect(400);
-  assert.equal(response.body.error.code, "VALIDATION_ERROR");
-});
-
 test("ambassador creation validation normalizes identity fields", () => {
   const parsed = createAmbassadorSchema.parse({
     ambassadorId: "ca-rnx-0042",
@@ -75,16 +61,6 @@ test("ambassador creation validation normalizes identity fields", () => {
   });
   assert.equal(parsed.ambassadorId, "CA-RNX-0042");
   assert.equal(parsed.email, "captain@example.com");
-});
-
-test("admin-chosen ambassador passwords preserve input and reject invalid values", () => {
-  const profile = { name: "Captain", email: "captain@example.test", college: "Test College" };
-  const password = " captain2026 ";
-  assert.equal(createAmbassadorSchema.parse({ ...profile, password }).password, password);
-  for (const invalid of ["", "short", "        ", "a".repeat(129), null]) {
-    assert.throws(() => createAmbassadorSchema.parse({ ...profile, password: invalid }));
-  }
-  assert.equal(createAmbassadorSchema.parse(profile).password, undefined);
 });
 
 test("promo validation rejects malformed codes", () => {
@@ -97,19 +73,6 @@ test("promo validation rejects malformed codes", () => {
 test("admin task list pagination is bounded", () => {
   assert.deepEqual(taskListAdminQuerySchema.parse({}), { page: 1, limit: 20 });
   assert.throws(() => taskListAdminQuerySchema.parse({ limit: "101" }));
-});
-
-test("admin task deadlines accept an ISO date or null and reject invalid input", () => {
-  const input = {
-    title: "Share event posters", description: "Share with your college club.",
-    ambassadorId: "507f1f77bcf86cd799439011", dueAt: "2026-10-01T12:00:00.000Z",
-  };
-  assert.equal(createTaskSchema.parse(input).dueAt, input.dueAt);
-  assert.equal(createTaskSchema.parse({ ...input, dueAt: null }).dueAt, null);
-  assert.deepEqual(updateTaskAdminSchema.parse({ dueAt: null }), { dueAt: null });
-  assert.throws(() => createTaskSchema.parse({ ...input, dueAt: "tomorrow" }));
-  assert.throws(() => updateTaskAdminSchema.parse({ dueAt: "2026-02-30T12:00:00Z" }));
-  assert.throws(() => updateTaskAdminSchema.parse({}));
 });
 
 

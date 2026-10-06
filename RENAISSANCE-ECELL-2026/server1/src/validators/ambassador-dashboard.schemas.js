@@ -39,9 +39,3 @@ export const ambassadorReferralListQuerySchema = z.object({
   ...paginationFields,
   status: z.enum(Object.values(REGISTRATION_STATUS)).optional(),
 });
-
-export const ambassadorTaskUpdateSchema = z.object({
-  status: z.enum(Object.values(TASK_STATUS)),
-  remarks: z.string().trim().max(2000),
-  completionDetails: z.string().trim().max(4000),
-}).strict();

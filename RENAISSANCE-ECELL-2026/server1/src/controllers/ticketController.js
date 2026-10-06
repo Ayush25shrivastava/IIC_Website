@@ -4,7 +4,8 @@ export const purchaseTicket = async (req, res) => {
   try {
     const { 
       name, email, phone, college, city, ticketType, 
-      checkInDate, checkOutDate, accommodationPreferences, transactionId, amountPaid 
+      checkInDate, checkOutDate, accommodationPreferences, transactionId, amountPaid,
+      accommodationDays
     } = req.body;
 
     // Validate required fields
@@ -13,15 +14,29 @@ export const purchaseTicket = async (req, res) => {
     }
 
     const ticketPrices = {
+      // Event-Only Passes (3-Day Access)
+      'event-standard': 499,
+      'event-premium': 699,
+      'event-elite': 1099,
+      // Passes with 1-Day Accommodation
+      'accom-standard': 899,
+      'accom-premium': 1099,
+      'accom-elite': 1499,
+      // Legacy compatibility
       'event-only': 900,
       '1-day': 1750,
       '2-day': 2450
     };
     
-    const amount = ticketPrices[ticketType];
-    if (!amount) {
+    const basePrice = ticketPrices[ticketType];
+    if (basePrice === undefined) {
       return res.status(400).json({ success: false, message: 'Invalid ticket type' });
     }
+
+    const parsedAccommodationDays = Number(accommodationDays) || 1;
+    const isAccomTicket = ticketType.startsWith('accom-') || ticketType === '1-day' || ticketType === '2-day';
+    const extraDays = isAccomTicket && parsedAccommodationDays > 1 ? parsedAccommodationDays - 1 : 0;
+    const amount = basePrice + (extraDays * 500);
 
     // Check if transaction ID is already used
     const existingTicket = await Ticket.findOne({ transactionId });
@@ -40,6 +55,7 @@ export const purchaseTicket = async (req, res) => {
       college,
       city,
       ticketType,
+      accommodationDays: isAccomTicket ? parsedAccommodationDays : 0,
       checkInDate: checkInDate || null,
       checkOutDate: checkOutDate || null,
       accommodationPreferences: accommodationPreferences || '',
@@ -120,7 +136,10 @@ export const getTicketStatus = async (req, res) => {
       success: true,
       ticket: {
         name: ticket.name,
+        ticketType: ticket.ticketType,
+        amount: ticket.amount,
         amountPaid: ticket.amountPaid,
+        accommodationDays: ticket.accommodationDays,
         status: ticket.status
       }
     });

@@ -15,8 +15,8 @@
 **/.DS_Store
 
 # Legacy/unrelated applications are not part of the current Docker deployment.
-# backend/
-# frontend/
+backend/
+frontend/
 nginx.conf
 RENAISSANCE-ECELL-2026/server/
 RENAISSANCE-ECELL-2026/*.py

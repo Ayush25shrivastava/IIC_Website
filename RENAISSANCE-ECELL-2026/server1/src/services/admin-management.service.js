@@ -5,6 +5,7 @@ import { AuthSession, CampusAmbassador, PromoCode, Registration, Task } from "..
 import { revokeAmbassadorSessions } from "./ambassador-auth.service.js";
 import { publicPromoCode, publicTask } from "./ambassador-dashboard.service.js";
 import { ApiError } from "../utils/api-error.js";
+import { hashPassword } from "../utils/password.js";
 
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -73,14 +74,12 @@ export async function createAmbassadorByAdmin(input) {
   const duplicate = await CampusAmbassador.exists({ email: input.email });
   if (duplicate) throw new ApiError(409, "An ambassador with this email already exists", "AMBASSADOR_EMAIL_EXISTS");
 
-  const { promoCode, password: suppliedPassword, ...profile } = input;
-  const password = suppliedPassword ?? temporaryPassword();
-  const ambassador = await mongoose.connection.transaction(async (session) => {
-    const [created] = await CampusAmbassador.create([{
-      ...profile, ambassadorId: input.ambassadorId || randomId("CA-RNX"), password, mustChangePassword: false,
-    }], { session });
-    if (promoCode) await PromoCode.create([{ code: promoCode, ambassadorId: created._id }], { session });
-    return created;
+  const password = temporaryPassword();
+  const ambassador = await CampusAmbassador.create({
+    ...input,
+    ambassadorId: input.ambassadorId || randomId("CA-RNX"),
+    passwordHash: await hashPassword(password),
+    mustChangePassword: true,
   });
 
   return { ambassador: adminAmbassadorView(ambassador), temporaryPassword: password };
@@ -99,18 +98,7 @@ export async function listAmbassadors({ page, limit, status, search, college }) 
     CampusAmbassador.find(filter).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(limit).lean(),
     CampusAmbassador.countDocuments(filter),
   ]);
-  const ids = rows.map((row) => row._id);
-  const [promos, registrations, tasks] = await Promise.all([
-    PromoCode.find({ ambassadorId: { $in: ids }, isPrimary: true }).lean(),
-    Registration.aggregate([{ $match: { ambassadorId: { $in: ids } } }, { $group: { _id: "$ambassadorId", count: { $sum: 1 } } }]),
-    Task.aggregate([{ $match: { ambassadorId: { $in: ids } } }, { $group: { _id: "$ambassadorId", total: { $sum: 1 }, completed: { $sum: { $cond: [{ $eq: ["$status", "COMPLETED"] }, 1, 0] } } } }]),
-  ]);
-  return { ambassadors: rows.map((row) => ({
-    ...adminAmbassadorView(row),
-    promoCode: promos.find((p) => String(p.ambassadorId) === String(row._id))?.code || null,
-    registrationCount: registrations.find((v) => String(v._id) === String(row._id))?.count || 0,
-    taskProgress: tasks.find((v) => String(v._id) === String(row._id)) || { total: 0, completed: 0 },
-  })), pagination: pagination(page, limit, total, rows.length) };
+  return { ambassadors: rows.map(adminAmbassadorView), pagination: pagination(page, limit, total, rows.length) };
 }
 
 export async function getAmbassadorForAdmin(id) {
@@ -125,19 +113,18 @@ export async function getAmbassadorForAdmin(id) {
 }
 
 export async function updateAmbassadorByAdmin(id, input) {
-  const { promoCode, ...update } = input;
+  const update = { ...input };
   const mutation = { $set: update };
-  if (input.phone === null) { delete update.phone; mutation.$unset = { phone: 1 }; }
-  const ambassador = await mongoose.connection.transaction(async (session) => {
-    const saved = await CampusAmbassador.findOneAndUpdate(ambassadorLookup(id), mutation, { new: true, runValidators: true, session });
-    if (!saved) throw new ApiError(404, "Campus ambassador was not found", "AMBASSADOR_NOT_FOUND");
-    if (promoCode) {
-      await PromoCode.findOneAndUpdate({ ambassadorId: saved._id, isPrimary: true },
-        { $set: { code: promoCode }, $setOnInsert: { ambassadorId: saved._id, isPrimary: true } },
-        { upsert: true, runValidators: true, session });
-    }
-    return saved;
-  });
+  if (input.phone === null) {
+    delete update.phone;
+    mutation.$unset = { phone: 1 };
+  }
+  const ambassador = await CampusAmbassador.findOneAndUpdate(
+    ambassadorLookup(id),
+    mutation,
+    { new: true, runValidators: true },
+  );
+  if (!ambassador) throw new ApiError(404, "Campus ambassador was not found", "AMBASSADOR_NOT_FOUND");
   return adminAmbassadorView(ambassador);
 }
 
@@ -297,16 +284,18 @@ export async function hardDeletePromoByAdmin(promoId) {
 }
 
 export async function createTaskByAdmin(input, adminId) {
-  const ambassadors = input.ambassadorId === "ALL"
-    ? await CampusAmbassador.find({ status: AMBASSADOR_STATUS.ACTIVE }).select("_id").lean()
-    : await CampusAmbassador.find({ _id: input.ambassadorId, status: AMBASSADOR_STATUS.ACTIVE }).select("_id").lean();
-  if (!ambassadors.length) throw new ApiError(409, "No active ambassadors match this assignment", "NO_ACTIVE_AMBASSADORS");
-  // One atomic insert per recipient, within a transaction so bulk assignment cannot partially succeed.
-  const tasks = await mongoose.connection.transaction(async (session) => Task.create(ambassadors.map((ambassador) => ({
-    taskId: randomId("TASK-RNX"), title: input.title, description: input.description,
-    dueAt: input.dueAt ?? null, ambassadorId: ambassador._id, createdByAdminId: adminId,
-  })), { session, ordered: true }));
-  return input.ambassadorId === "ALL" ? tasks.map(adminTaskView) : adminTaskView(tasks[0]);
+  const ambassador = await CampusAmbassador.findById(input.ambassadorId);
+  if (!ambassador || ambassador.status === AMBASSADOR_STATUS.ARCHIVED) {
+    throw new ApiError(404, "Campus ambassador was not found", "AMBASSADOR_NOT_FOUND");
+  }
+  const task = await Task.create({
+    taskId: randomId("TASK-RNX"),
+    title: input.title,
+    description: input.description,
+    ambassadorId: ambassador._id,
+    createdByAdminId: adminId,
+  });
+  return adminTaskView(task);
 }
 
 export async function listTasksByAdmin({ page, limit, ambassadorId, status, search }) {
@@ -332,51 +321,27 @@ export async function getTaskForAdmin(taskId) {
 }
 
 export async function updateTaskByAdmin(taskId, input) {
-  const task = await Task.findOne({ taskId }).lean();
-  if (!task) throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
   const update = { ...input };
   const now = new Date();
-  if (input.status === TASK_STATUS.IN_PROGRESS) {
-    update.startedAt = task.startedAt ?? now;
-    update.completedAt = null;
-    update.reviewStatus = "NONE";
-  }
-  if (input.status === TASK_STATUS.COMPLETED) {
-    update.startedAt = task.startedAt ?? now;
-    update.completedAt = task.completedAt ?? now;
-    if (task.status !== TASK_STATUS.COMPLETED) update.reviewStatus = "PENDING";
-  }
-  if (input.status === TASK_STATUS.ASSIGNED) { update.startedAt = null; update.completedAt = null; update.reviewStatus = "NONE"; }
-  const saved = await Task.findOneAndUpdate(
-    { _id: task._id, ambassadorId: task.ambassadorId, status: task.status, updatedAt: task.updatedAt },
-    { $set: update }, { new: true, runValidators: true },
-  );
-  if (!saved) throw new ApiError(409, "Task changed. Refresh and try again.", "TASK_CHANGED");
-  return adminTaskView(saved);
+  if (input.status === TASK_STATUS.IN_PROGRESS) update.startedAt = now;
+  if (input.status === TASK_STATUS.COMPLETED) { update.startedAt = now; update.completedAt = now; }
+  if (input.status === TASK_STATUS.ASSIGNED) { update.startedAt = null; update.completedAt = null; }
+  const task = await Task.findOneAndUpdate({ taskId }, { $set: update }, { new: true, runValidators: true });
+  if (!task) throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
+  return adminTaskView(task);
 }
 
 export async function assignTaskByAdmin(taskId, ambassadorId) {
   const [task, ambassador] = await Promise.all([Task.findOne({ taskId }), CampusAmbassador.findById(ambassadorId)]);
   if (!task) throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
-  if (!ambassador || ambassador.status !== AMBASSADOR_STATUS.ACTIVE) throw new ApiError(409, "Choose an active ambassador", "AMBASSADOR_NOT_ACTIVE");
-  if (task.ambassadorId.equals(ambassador._id)) return adminTaskView(task);
+  if (!ambassador || ambassador.status === AMBASSADOR_STATUS.ARCHIVED) throw new ApiError(404, "Campus ambassador was not found", "AMBASSADOR_NOT_FOUND");
   if (task.status === TASK_STATUS.COMPLETED) throw new ApiError(409, "Completed tasks cannot be reassigned", "TASK_ALREADY_COMPLETED");
-  const saved = await Task.findOneAndUpdate(
-    { _id: task._id, ambassadorId: task.ambassadorId, status: task.status, updatedAt: task.updatedAt },
-    { $set: {
-      ambassadorId: ambassador._id,
-      status: TASK_STATUS.ASSIGNED,
-      assignedAt: new Date(),
-      startedAt: null,
-      completedAt: null,
-      remarks: "",
-      completionDetails: "",
-      reviewStatus: "NONE", reviewFeedback: "", reviewedAt: null, reviewedByAdminId: null,
-    } },
-    { new: true, runValidators: true },
-  );
-  if (!saved) throw new ApiError(409, "Task changed. Refresh and try again.", "TASK_CHANGED");
-  return adminTaskView(saved);
+  task.ambassadorId = ambassador._id;
+  task.status = TASK_STATUS.ASSIGNED;
+  task.startedAt = null;
+  task.completedAt = null;
+  await task.save();
+  return adminTaskView(task);
 }
 
 export async function deleteTaskByAdmin(taskId) {
@@ -391,16 +356,11 @@ export async function deleteTaskByAdmin(taskId) {
   ) {
     throw new ApiError(409, "Only untouched assigned tasks can be deleted", "TASK_HAS_PROGRESS");
   }
-  const deleted = await Task.deleteOne({
-    _id: task._id, ambassadorId: task.ambassadorId, updatedAt: task.updatedAt,
-    status: TASK_STATUS.ASSIGNED, startedAt: null, completedAt: null,
-    remarks: { $in: ["", null] }, completionDetails: { $in: ["", null] },
-  });
-  if (!deleted.deletedCount) throw new ApiError(409, "Task changed. Refresh and try again.", "TASK_CHANGED");
+  await task.deleteOne();
 }
 
 export async function listReferralsByAdmin({ page, limit, ambassadorId, promoCode, status, search }) {
-  const filter = { ambassadorId: { $ne: null } };
+  const filter = {};
   if (ambassadorId) filter.ambassadorId = ambassadorId;
   if (promoCode) filter.promoCode = promoCode.toUpperCase();
   if (status) filter.status = status;
@@ -429,50 +389,16 @@ function countMap(rows, keys) {
 }
 
 export async function getAdminDashboard() {
-  const [ambassadorRows, taskRows, referralRows, activePromos, pendingReviews] = await Promise.all([
+  const [ambassadorRows, taskRows, referralRows, activePromos] = await Promise.all([
     CampusAmbassador.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
     Task.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
-    Registration.aggregate([{ $match: { ambassadorId: { $ne: null } } }, { $group: { _id: "$status", count: { $sum: 1 } } }]),
+    Registration.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
     PromoCode.countDocuments({ isActive: true, archivedAt: null }),
-    Task.countDocuments({ status: "COMPLETED", reviewStatus: { $ne: "APPROVED" } }),
   ]);
   return {
     ambassadors: countMap(ambassadorRows, Object.values(AMBASSADOR_STATUS)),
     tasks: countMap(taskRows, Object.values(TASK_STATUS)),
     referrals: countMap(referralRows, Object.values(REGISTRATION_STATUS)),
     activePromoCodes: activePromos,
-    pendingReviews,
   };
-}
-
-export async function resetAmbassadorCredential(id) {
-  const password = temporaryPassword();
-  const ambassador = await CampusAmbassador.findOneAndUpdate(
-    { ...ambassadorLookup(id), status: { $ne: AMBASSADOR_STATUS.ARCHIVED } },
-    { $set: { password, passwordChangedAt: new Date(), mustChangePassword: false },
-      $unset: { passwordHash: 1 }, $inc: { authVersion: 1 } },
-    { new: true, runValidators: true },
-  );
-  if (!ambassador) throw new ApiError(404, "Campus ambassador was not found", "AMBASSADOR_NOT_FOUND");
-  await revokeAmbassadorSessions(ambassador._id, "ADMIN_PASSWORD_RESET");
-  return { ambassador: adminAmbassadorView(ambassador), temporaryPassword: password };
-}
-
-export async function reviewTaskByAdmin(taskId, input, adminId) {
-  const task = await Task.findOne({ taskId }).lean();
-  if (!task) throw new ApiError(404, "Task was not found", "TASK_NOT_FOUND");
-  if (task.status !== TASK_STATUS.COMPLETED || task.reviewStatus === "APPROVED") {
-    throw new ApiError(409, "Only pending completed submissions can be reviewed", "TASK_NOT_REVIEWABLE");
-  }
-  const update = { reviewStatus: input.decision, reviewFeedback: input.feedback, reviewedAt: new Date(), reviewedByAdminId: adminId };
-  if (input.decision === "CHANGES_REQUESTED") {
-    update.status = TASK_STATUS.IN_PROGRESS;
-    update.completedAt = null;
-  }
-  const saved = await Task.findOneAndUpdate(
-    { _id: task._id, ambassadorId: task.ambassadorId, status: task.status, updatedAt: task.updatedAt },
-    { $set: update }, { new: true, runValidators: true },
-  );
-  if (!saved) throw new ApiError(409, "Task changed. Refresh and try again.", "TASK_CHANGED");
-  return adminTaskView(saved);
 }

@@ -2,20 +2,10 @@ import crypto from "node:crypto";
 import { env } from "../config/env.js";
 import { AuthSession } from "../models/index.js";
 import { setAuthCookies } from "../utils/auth-cookies.js";
-import { verifyPassword } from "../utils/password.js";
 import { hashToken, signAccessToken, signRefreshToken, tokenHashesEqual } from "../utils/tokens.js";
 
 function refreshExpiryDate() {
   return new Date(Date.now() + env.JWT_REFRESH_TTL_DAYS * 24 * 60 * 60 * 1000);
-}
-
-export async function verifyAmbassadorPassword(ambassador, password) {
-  if (typeof ambassador.password === "string") {
-    const hash = (value) => crypto.createHash("sha256").update(value).digest();
-    return crypto.timingSafeEqual(hash(ambassador.password), hash(password));
-  }
-  if (typeof ambassador.passwordHash === "string") return verifyPassword(ambassador.passwordHash, password);
-  return false;
 }
 
 function requestMetadata(req) {
@@ -34,8 +24,7 @@ export function publicAmbassador(ambassador) {
     phone: ambassador.phone ?? null,
     college: ambassador.college,
     status: ambassador.status,
-    // Retain the response field for older clients; password changes are optional.
-    mustChangePassword: false,
+    mustChangePassword: ambassador.mustChangePassword,
     lastLoginAt: ambassador.lastLoginAt,
     passwordChangedAt: ambassador.passwordChangedAt,
   };
@@ -43,7 +32,7 @@ export function publicAmbassador(ambassador) {
 
 export async function createAuthSession({ ambassador, req, res }) {
   const sessionId = crypto.randomUUID();
-  const accessToken = signAccessToken(ambassador, sessionId);
+  const accessToken = signAccessToken(ambassador);
   const refreshToken = signRefreshToken(ambassador, sessionId);
 
   await AuthSession.create({
@@ -70,7 +59,7 @@ export async function rotateAuthSession({ session, ambassador, presentedRefreshT
     return false;
   }
 
-  const accessToken = signAccessToken(ambassador, session.sessionId);
+  const accessToken = signAccessToken(ambassador);
   const refreshToken = signRefreshToken(ambassador, session.sessionId);
   const newHash = hashToken(refreshToken);
   const now = new Date();
