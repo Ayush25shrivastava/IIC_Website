@@ -640,12 +640,24 @@ export default function TicketsAccommodation() {
                         Scan to pay <span className="text-[#9E6D1F] font-black">{activeTicketData?.price}</span> for your {activeTicketData?.name}.
                       </p>
                       
-                      <div className="bg-white p-3 rounded-2xl shadow-md border-2 border-[#C5A25F]/40 mb-6 w-full max-w-[220px] aspect-square flex items-center justify-center">
+                      <div className="bg-white p-3 rounded-2xl shadow-md border-2 border-[#C5A25F]/40 mb-4 w-full max-w-[220px] aspect-square flex items-center justify-center">
                         <img 
                           src={`/cropped-qr.jpg`} 
                           alt="Payment QR Code"
                           className="w-full h-full object-contain"
                         />
+                      </div>
+
+                      <div className="w-full bg-white/75 border border-[#C5A25F]/40 p-3.5 rounded-xl text-left mb-4 shadow-sm">
+                        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#8A5F1C] mb-2">
+                          Bank Transfer Details (NEFT / IMPS)
+                        </p>
+                        <div className="space-y-1 text-xs font-montserrat text-[#0C2B3D]">
+                          <p><span className="font-bold text-[#2C5263]">A/C Name:</span> Institution’s Innovation Council</p>
+                          <p><span className="font-bold text-[#2C5263]">Bank:</span> SBI (MLNREC, Allahabad)</p>
+                          <p className="font-mono"><span className="font-sans font-bold text-[#2C5263]">A/C No:</span> 45558684605</p>
+                          <p className="font-mono"><span className="font-sans font-bold text-[#2C5263]">IFSC:</span> SBIN0002580</p>
+                        </div>
                       </div>
 
                       <div className="w-full bg-[#F4EBD9]/80 border-2 border-[#C5A25F]/40 p-4 rounded-xl text-left">
