@@ -150,7 +150,7 @@ const Sponsors = () => {
               <div className={`grid gap-x-16 gap-y-14 justify-center ${
                 (tier.id === 'FOOD_PARTNER' || tier.id === 'PLATFORM_PARTNER')
                   ? 'grid-cols-1 sm:grid-cols-2 max-w-4xl mx-auto'
-                  : (tier.id === 'TITLE' || tier.id === 'ASSOCIATE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER' || tier.id === 'DESSERT_PARTNER' || tier.id === 'BEVERAGE_PARTNER' || tier.id === 'DINING_PARTNER' || tier.id === 'SPORTING_PARTNER')
+                  : (tier.id === 'TITLE' || tier.id === 'ASSOCIATE' || tier.id === 'ACCESSORIES_PARTNER' || tier.id === 'MEDIA_PARTNER' || tier.id === 'TRAVEL_PARTNER' || tier.id === 'MERCHANDISE_PARTNER' || tier.id === 'ENERGY_DRINK_PARTNER' || tier.id === 'DESSERT_PARTNER' || tier.id === 'BEVERAGE_PARTNER' || tier.id === 'DINING_PARTNER' || tier.id === 'SPORTING_PARTNER' || tier.id === 'REFRESHMENT_PARTNER' || tier.id === 'SUPPLY_CHAIN_PARTNER')
                   ? 'grid-cols-1 max-w-sm mx-auto'
                   : tier.id === 'SYNDICATE'
                   ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
@@ -193,15 +193,20 @@ const SponsorCard = ({ logo, sponsorType, isRevealed }) => {
 }`}>
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-25 pointer-events-none"></div>
 
-        <div className="bg-white p-6 rounded shadow-inner flex items-center justify-center h-44">
+        <div className="bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] p-6 rounded-xl shadow-[inset_0_4px_10px_rgba(12,43,61,0.1)] flex items-center justify-center h-44 relative overflow-hidden">
+          {/* Subtle glow / oceanic depth */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[120px] h-[120px] bg-white/50 rounded-full blur-[25px]" />
+          </div>
+          
           <img
             src={isRevealed ? getImageUrl(logo.fileName, logo.folder || "past sponsors") : topSecretImg}
             alt={logo.name}
-            className="max-h-full max-w-full object-contain"
+            className="relative z-10 max-h-full max-w-full object-contain mix-blend-multiply drop-shadow-sm"
           />
         </div>
 
-        <div className="mt-6 text-black text-center">
+        <div className="mt-6 text-black text-center relative z-10">
           <h3 className="font-playfair text-xl font-bold tracking-wide">
             {logo.name}
           </h3>
