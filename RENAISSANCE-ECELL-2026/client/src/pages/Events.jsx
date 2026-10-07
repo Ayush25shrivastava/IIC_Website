@@ -50,6 +50,7 @@ export default function Events({ embedded = false }) {
     "All Events",
     "Strategy & Planning",
     "Quizzes & Treasure Hunt",
+    "Creative & Media",
     "Finance",
     "Business Development",
   ];
@@ -57,7 +58,7 @@ export default function Events({ embedded = false }) {
   const standaloneEvents = [
     {
       id: "b-plan",
-      title: "B-Plan",
+      title: "B-Plan (Fish Tank)",
       eventNo: "01",
       category: "Flagship Business Plan",
       categories: [
@@ -66,10 +67,10 @@ export default function Events({ embedded = false }) {
         "Business Development",
         "Finance",
       ],
-      tagline: "Got a million-dollar idea? Prove it.",
-      prize: "₹25,000",
+      tagline: "Pitch ideas. Solve real-world problems.",
+      prize: "₹1,00,000 Worth Prizes",
       capacity: "1-4 Members",
-      time: "TBD",
+      time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: "/b-plan-card.jpeg",
       cardImagePosition: "center",
@@ -84,14 +85,14 @@ export default function Events({ embedded = false }) {
     },
     {
       id: "strategy-wiz",
-      title: "Strategy-Wiz",
+      title: "Strategy Wiz",
       eventNo: "02",
       category: "Strategy & Marketing",
-      categories: ["All Events", "Strategy & Planning"],
-      tagline: "From Product to Phenomenon: Architecting Iconic Launches",
-      prize: "₹15,000",
+      categories: ["All Events", "Strategy & Planning", "Business Development"],
+      tagline: "Think strategic. Build market winners.",
+      prize: "₹50,000 Worth Prizes",
       capacity: "1-3 Members",
-      time: "TBD",
+      time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: "/strategy-wiz-card.jpeg",
       cardImagePosition: "center",
@@ -109,11 +110,11 @@ export default function Events({ embedded = false }) {
       title: "Business Wars",
       eventNo: "03",
       category: "Market Strategy",
-      categories: ["All Events", "Strategy & Planning"],
-      tagline: "Think Fast. Strategize Better. Win the Market",
-      prize: "₹15,000",
+      categories: ["All Events", "Strategy & Planning", "Business Development"],
+      tagline: "Compete. Analyse. Make real decisions.",
+      prize: "₹30,000 Worth Prizes",
       capacity: "2-4 Members",
-      time: "TBD",
+      time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: "/biz-war-card.jpeg",
       cardImagePosition: "right center",
@@ -127,16 +128,36 @@ export default function Events({ embedded = false }) {
       ],
     },
     {
+      id: "creative-quest",
+      title: "Creative Quest",
+      eventNo: "04",
+      category: "Media & Storytelling",
+      categories: ["All Events", "Creative & Media"],
+      tagline: "Capture. Create. Tell the story.",
+      prize: "₹10,000 Worth Prizes",
+      capacity: "1-3 Members",
+      time: "25 - 27 Oct 2026",
+      location: "MNNIT Allahabad",
+      cardImage: null,
+      registrationUrl: null,
+      description:
+        "Capture narratives that move audiences and ignite brand engagement through visual storytelling, cinematography, and creative media.",
+      detailDescription: [
+        "Creative Quest is the premier storytelling, videography, and creative design showdown of Renaissance 10.0. In an era where visual media defines brand power, creators must capture narratives that move audiences and inspire communities.",
+        "Participants take on dynamic thematic briefs to shoot, edit, and craft compelling cinematic reels, visual stories, or brand campaigns across the campus. Bring your lens, editing skills, and storytelling vision to win prizes and recognition.",
+      ],
+    },
+    {
       id: "biz-tech-quiz",
       title: "Biz-Tech Quiz",
-      eventNo: "04",
+      eventNo: "05",
       category: "Quiz Competition",
       categories: ["All Events", "Quizzes & Treasure Hunt"],
-      tagline: "Where Technology Collides with Business Acumen",
-      prize: "Cash & Goodies",
+      tagline: "Test your business, tech and current affairs knowledge.",
+      prize: "₹10,000 Worth Prizes",
       capacity: "1-2 Members",
-      time: "TBD",
-      location: "MNNIT Campus",
+      time: "25 - 27 Oct 2026",
+      location: "MNNIT Allahabad",
       cardImage: null,
       registrationUrl: null,
       description:
@@ -147,35 +168,15 @@ export default function Events({ embedded = false }) {
       ],
     },
     {
-      id: "treasure-hunt",
-      title: "Treasure Hunt",
-      eventNo: "05",
-      category: "Campus Adventure",
-      categories: ["All Events", "Quizzes & Treasure Hunt"],
-      tagline: "Decode the Clues. Navigate the Campus. Claim the Bounty.",
-      prize: "Prizes & Goodies",
-      capacity: "3-5 Members",
-      time: "TBD",
-      location: "MNNIT Campus",
-      cardImage: null,
-      registrationUrl: null,
-      description:
-        "An adventurous campus-wide quest. Decode cryptic clues, navigate hidden waypoints across MNNIT, and race against the clock.",
-      detailDescription: [
-        "Get ready for an adrenaline-pumping campus-wide quest across MNNIT Allahabad! Treasure Hunt combines cryptographic puzzle-solving, physical exploration, and team collaboration into an exhilarating high-stakes adventure.",
-        "Work together as a cohesive unit to crack complex riddles, decode coordinate markers, and unlock successive checkpoints scattered across campus landmarks. Outpace rival crews, avoid dead ends, and race against the clock to unearth the grand bounty waiting at the final destination.",
-      ],
-    },
-    {
       id: "mock-ipl-auction",
       title: "Mock IPL Auction",
       eventNo: "06",
       category: "Strategy & Auction",
       categories: ["All Events", "Strategy & Planning", "Finance"],
-      tagline: "Step into the shoes of an IPL franchise owner!",
-      prize: "Cash Prize Pool",
+      tagline: "Bid. Negotiate. Build your dream team.",
+      prize: "Exclusive Goodies + Certificates",
       capacity: "2-4 Members",
-      time: "TBD",
+      time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
       registrationUrl: null,
@@ -186,12 +187,52 @@ export default function Events({ embedded = false }) {
         "Evaluate player statistics, navigate budget constraints, and formulate data-driven acquisition tactics under intense live bidding. Balance your roster across all-rounders, pace bowlers, and match-winning batsmen to assemble the most formidable playing XI within strict salary cap rules.",
       ],
     },
+    {
+      id: "treasure-hunt",
+      title: "Treasure Hunt",
+      eventNo: "07",
+      category: "Campus Adventure",
+      categories: ["All Events", "Quizzes & Treasure Hunt"],
+      tagline: "Solve. Explore. Discover.",
+      prize: "Exciting Rewards + Certificates",
+      capacity: "3-5 Members",
+      time: "25 - 27 Oct 2026",
+      location: "MNNIT Allahabad",
+      cardImage: null,
+      registrationUrl: null,
+      description:
+        "An adventurous campus-wide quest. Decode cryptic clues, navigate hidden waypoints across MNNIT, and race against the clock.",
+      detailDescription: [
+        "Get ready for an adrenaline-pumping campus-wide quest across MNNIT Allahabad! Treasure Hunt combines cryptographic puzzle-solving, physical exploration, and team collaboration into an exhilarating high-stakes adventure.",
+        "Work together as a cohesive unit to crack complex riddles, decode coordinate markers, and unlock successive checkpoints scattered across campus landmarks. Outpace rival crews, avoid dead ends, and race against the clock to unearth the grand bounty waiting at the final destination.",
+      ],
+    },
+    {
+      id: "glow-and-know",
+      title: "Glow & Know : Skincare Quiz Mania",
+      eventNo: "08",
+      category: "Exclusive Quiz Mania",
+      categories: ["All Events", "Quizzes & Treasure Hunt", "Creative & Media"],
+      tagline: "Girls only, quiz, play & win!",
+      prize: "Exclusive Gift Hampers",
+      capacity: "1-2 Members",
+      time: "25 - 27 Oct 2026",
+      location: "MNNIT Allahabad",
+      cardImage: null,
+      registrationUrl: null,
+      description:
+        "An exciting, interactive skincare, wellness, and self-care trivia mania designed exclusively for girls. Quiz, play, and win exclusive gift hampers!",
+      detailDescription: [
+        "Glow & Know: Skincare Quiz Mania brings a refreshing, fun-filled spin to Renaissance 10.0! Exclusively curated for girls, this high-energy quiz challenges your awareness of skincare routines, ingredients, self-care science, beauty brands, and wellness trends.",
+        "Gather your friends, test your skincare IQ through lively interactive trivia rounds, and compete to take home exclusive luxury gift hampers and goodies. It's time to glow up your knowledge and celebrate wellness in style!",
+      ],
+    },
   ];
 
   if (!embedded) {
     const visibleEvents = standaloneEvents.filter((event) =>
-        eventFilter === "All Events" ||
-        (event.categories ?? [event.category]).includes(eventFilter)
+      eventFilter === "All Events" ||
+      (event.categories ?? [event.category]).includes(eventFilter)
     );
 
     return (
@@ -220,10 +261,10 @@ export default function Events({ embedded = false }) {
               prefersReducedMotion
                 ? undefined
                 : {
-                    x: heroCombinedX,
-                    y: heroCombinedY,
-                    scale: heroScale,
-                  }
+                  x: heroCombinedX,
+                  y: heroCombinedY,
+                  scale: heroScale,
+                }
             }
           >
             <motion.img
@@ -299,11 +340,10 @@ export default function Events({ embedded = false }) {
                   key={cat}
                   type="button"
                   onClick={() => setEventFilter(cat)}
-                  className={`px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-mono font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer border ${
-                    isActive
+                  className={`px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-mono font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer border ${isActive
                       ? "bg-[#d4af37] text-[#0C2B3D] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.45)] scale-105"
                       : "bg-[#091522]/80 text-[#d4af37]/80 border-[#d4af37]/25 hover:border-[#d4af37]/60 hover:text-white hover:bg-[#0F2236]"
-                  }`}
+                    }`}
                 >
                   {cat}
                 </button>
@@ -333,7 +373,7 @@ export default function Events({ embedded = false }) {
                         {event.category}
                       </span>
                       <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-[#0C2B3D]/20 bg-[#0C2B3D]/10 text-[#0C2B3D] uppercase tracking-wider font-extrabold shrink-0">
-                        EVENT {event.eventNo} / 06
+                        EVENT {event.eventNo} / {standaloneEvents.length.toString().padStart(2, "0")}
                       </span>
                     </div>
 
@@ -817,14 +857,14 @@ export default function Events({ embedded = false }) {
               key={d}
               onClick={() => setActiveDay(d)}
               className={`px-4 sm:px-6 py-1 sm:py-1.5 rounded-xl font-cinzel text-xs font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer flex items-center gap-1.5 sm:gap-2 ${activeDay === d
-                  ? "bg-gradient-to-r from-[#38BDF8]/25 to-[#38BDF8]/10 text-[#38BDF8] border border-[#38BDF8]/60 shadow-[0_0_15px_rgba(56,189,248,0.35)] scale-105"
-                  : "text-slate-400 hover:text-slate-200 hover:border-white/20 border border-transparent"
+                ? "bg-gradient-to-r from-[#38BDF8]/25 to-[#38BDF8]/10 text-[#38BDF8] border border-[#38BDF8]/60 shadow-[0_0_15px_rgba(56,189,248,0.35)] scale-105"
+                : "text-slate-400 hover:text-slate-200 hover:border-white/20 border border-transparent"
                 }`}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${activeDay === d
-                    ? "bg-[#38BDF8] shadow-[0_0_6px_#38BDF8]"
-                    : "bg-slate-600"
+                  ? "bg-[#38BDF8] shadow-[0_0_6px_#38BDF8]"
+                  : "bg-slate-600"
                   }`}
               />
               <span>Day {d}</span>
@@ -919,8 +959,8 @@ export default function Events({ embedded = false }) {
           )}
           <div
             className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-300 backdrop-blur-md ${activeDay === 1
-                ? "bg-[#040e1f] border-[#38BDF8] shadow-[0_0_25px_rgba(56,189,248,0.7)] scale-110"
-                : "bg-[#020612]/90 border-white/30 group-hover:border-[#38BDF8] group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(56,189,248,0.3)]"
+              ? "bg-[#040e1f] border-[#38BDF8] shadow-[0_0_25px_rgba(56,189,248,0.7)] scale-110"
+              : "bg-[#020612]/90 border-white/30 group-hover:border-[#38BDF8] group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(56,189,248,0.3)]"
               }`}
           >
             <span className="font-cinzel text-xs font-black text-[#38BDF8]">
@@ -952,8 +992,8 @@ export default function Events({ embedded = false }) {
           )}
           <div
             className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-300 backdrop-blur-md ${activeDay === 2
-                ? "bg-[#040e1f] border-[#38BDF8] shadow-[0_0_25px_rgba(56,189,248,0.7)] scale-110"
-                : "bg-[#020612]/90 border-white/30 group-hover:border-[#38BDF8] group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(56,189,248,0.3)]"
+              ? "bg-[#040e1f] border-[#38BDF8] shadow-[0_0_25px_rgba(56,189,248,0.7)] scale-110"
+              : "bg-[#020612]/90 border-white/30 group-hover:border-[#38BDF8] group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(56,189,248,0.3)]"
               }`}
           >
             <span className="font-cinzel text-xs font-black text-[#38BDF8]">
