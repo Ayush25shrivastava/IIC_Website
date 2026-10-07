@@ -27,7 +27,6 @@ const Teams = lazy(() => import("./pages/Teams"));
 const Sponsors = lazy(() => import("./pages/Sponsors"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const LoginSuccess = lazy(() => import("./pages/LoginSuccess"));
-const Login = lazy(() => import("./pages/Login"));
 const CampusAmbassador = lazy(() => import("./pages/CampusAmbassadorPortal"));
 const CampusAmbassadorLayout = lazy(() => import("./pages/CampusAmbassadorLayout"));
 const CampusAmbassadorDashboard = lazy(() => import("./pages/CampusAmbassadorDashboard"));
@@ -185,8 +184,6 @@ export default function App() {
                 element={<SupportUs />}
               />
 
-              {/* Auth callback */}
-              <Route path="/login" element={<Login />} />
 
               <Route path="/campus-ambassador" element={<CampusAmbassadorLayout />}>
                 <Route index element={<CampusAmbassador />} />
@@ -199,25 +196,12 @@ export default function App() {
                 element={<Navigate to="/campus-ambassador" replace />}
               />
 
-              <Route
-                path="/admin"
-                element={<CampusAmbassadorAdmin />}
-              />
-
-              <Route
-                path="/admin/login"
-                element={<Navigate to="/admin" replace />}
-              />
-
-              <Route
-                path="/admin/campus-ambassadors"
-                element={<Navigate to="/admin" replace />}
-              />
-
-              <Route
-                path="/campus-ambassador/admin"
-                element={<Navigate to="/admin" replace />}
-              />
+              <Route path="/admin" element={<AdminSession />}>
+                <Route index element={<Navigate to="campus-ambassadors" replace />} />
+                <Route path="login" element={<AdminLogin />} />
+                <Route path="campus-ambassadors" element={<CampusAmbassadorAdmin />} />
+              </Route>
+              <Route path="/campus-ambassador/admin" element={<Navigate to="/admin" replace />} />
 
               <Route
                 path="/login/success"
