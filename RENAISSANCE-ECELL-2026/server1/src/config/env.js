@@ -19,7 +19,7 @@ const booleanFromEnv = z.preprocess((value) => {
 
 const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  PORT: z.coerce.number().int().min(1).max(65535).default(5001),
+  PORT: z.coerce.number().int().min(1).max(65535).default(5008),
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
   REQUEST_BODY_LIMIT: z.string().min(1).default("1mb"),
   CLIENT_ORIGIN: z.string().min(1, "CLIENT_ORIGIN is required"),

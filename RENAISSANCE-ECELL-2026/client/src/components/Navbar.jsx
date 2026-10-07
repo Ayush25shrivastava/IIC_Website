@@ -8,7 +8,6 @@ import {
   Users,
   Image,
   GraduationCap,
-  LogIn,
   Ticket,
   HeartHandshake,
 } from "lucide-react";
@@ -138,10 +137,6 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Desktop Sign In */}
-          <div className="hidden items-center md:flex">
-          </div>
-
           {/* Portal Menu */}
           <div className="relative">
           <button
@@ -183,14 +178,6 @@ export default function Navbar() {
                 >
                   <GraduationCap className="h-5 w-5 text-[#9E6D1F]" />
                   Campus Ambassador
-                </Link>
-                <Link
-                  to="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-[#0C2B3D] transition-colors hover:bg-[#F4EBD9]/90"
-                >
-                  <LogIn className="h-5 w-5 text-[#9E6D1F]" />
-                  Sign In
                 </Link>
               </motion.div>
             )}
@@ -286,7 +273,7 @@ export default function Navbar() {
                 })}
               </div>
 
-              {/* Mobile Sign In CTA */}
+              {/* Mobile Campus Ambassador CTA */}
               <motion.div
                 initial={{
                   opacity: 0,
@@ -310,14 +297,6 @@ export default function Navbar() {
                   >
                     <GraduationCap className="h-4 w-4 text-[#9E6D1F]" />
                     Campus Ambassador
-                  </Link>
-                  <Link
-                    to="/login"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-[#7FB6C7]/30 bg-white/45 px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#416678]"
-                  >
-                    <LogIn className="h-4 w-4" />
-                    Sign In
                   </Link>
                 </div>
               </motion.div>
