@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   Navigation,
   Wind,
-  UserCheck,
   Clock,
   Compass,
   Sparkles,
@@ -384,14 +383,12 @@ export default function Home() {
 
   // About Section Refs
   const aboutSectionRef = useRef(null);
-  const aboutAuraRef = useRef(null);
   const aboutTitleRef = useRef(null);
   const aboutDescRef = useRef(null);
   const statCard1Ref = useRef(null);
   const statCard2Ref = useRef(null);
   const statCard3Ref = useRef(null);
   const statCard4Ref = useRef(null);
-  const aboutCtaRef = useRef(null);
   const scrollIndicatorRef = useRef(null);
 
   const speakersSectionRef = useRef(null);
@@ -400,8 +397,6 @@ export default function Home() {
     const isDesktopViewport = window.matchMedia("(min-width: 768px)").matches;
 
     const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
-
       // Fade out scroll indicator as user begins scrolling
       if (scrollIndicatorRef.current && heroSectionRef.current) {
         gsap.to(scrollIndicatorRef.current, {
@@ -416,56 +411,6 @@ export default function Home() {
           },
         });
       }
-
-      // Desktop Only (min-width: 768px): Pinned Parallax Timeline
-      mm.add("(min-width: 768px)", () => {
-        if (aboutSectionRef.current) {
-          const aboutTl = gsap.timeline({
-            scrollTrigger: {
-              trigger: aboutSectionRef.current,
-              start: "top top",
-              end: "+=1000",
-              pin: true,
-              scrub: 0.4,
-            },
-          });
-          if (aboutAuraRef.current) {
-            aboutTl.fromTo(
-              aboutAuraRef.current,
-              { scale: 0.7, opacity: 0.2 },
-              { scale: 1.25, opacity: 0.75, ease: "none" },
-              0
-            );
-          }
-          if (aboutTitleRef.current) {
-            aboutTl.fromTo(
-              aboutTitleRef.current,
-              { opacity: 0, scale: 0.8 },
-              { opacity: 1, scale: 1.05, ease: "power2.out" },
-              0.1
-            );
-          }
-          if (aboutDescRef.current) {
-            aboutTl.fromTo(
-              aboutDescRef.current,
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, ease: "power2.out" },
-              0.25
-            );
-          }
-          [statCard1Ref, statCard2Ref, statCard3Ref, statCard4Ref].forEach((ref, idx) => {
-            if (ref.current) {
-              aboutTl.fromTo(
-                ref.current,
-                { opacity: 0, y: -30 },
-                { opacity: 1, y: 0, ease: "power2.out" },
-                0.4 + idx * 0.1
-              );
-            }
-          });
-          aboutTl.to({}, { duration: 0.3 });
-        }
-      });
 
       // Pinned Events Parallax Timeline (Desktop + Mobile)
       if (eventsSectionRef.current) {
@@ -569,32 +514,32 @@ export default function Home() {
         });
       }
 
-      // Mobile Only (max-width: 767px): About section unpinned flow
-      mm.add("(max-width: 767px)", () => {
-        if (aboutSectionRef.current) {
-          gsap.fromTo(
-            [
-              aboutTitleRef.current,
-              aboutDescRef.current,
-              statCard1Ref.current,
-              statCard2Ref.current,
-              statCard3Ref.current,
-              statCard4Ref.current,
-            ],
-            { opacity: 0, y: 20 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.5,
-              stagger: 0.08,
-              scrollTrigger: {
-                trigger: aboutSectionRef.current,
-                start: "top 85%",
-              },
-            }
-          );
-        }
-      });
+      // Reveal About on entry without pinning or adding scroll distance.
+      if (aboutSectionRef.current) {
+        gsap.fromTo(
+          [
+            aboutTitleRef.current,
+            aboutDescRef.current,
+            statCard1Ref.current,
+            statCard2Ref.current,
+            statCard3Ref.current,
+            statCard4Ref.current,
+          ],
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            stagger: 0.08,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: aboutSectionRef.current,
+              start: "top 90%",
+              once: true,
+            },
+          },
+        );
+      }
 
       // Keynote Speakers entrance
       if (speakersSectionRef.current) {
@@ -641,11 +586,11 @@ export default function Home() {
       <NauticalCartographyBg />
 
       {/* ============================================================ */}
-      {/* 1. HERO SECTION (100vh)                                      */}
+      {/* 1. HERO SECTION                                      */}
       {/* ============================================================ */}
       <section
         ref={heroSectionRef}
-        className="relative min-h-screen w-full flex flex-col items-center justify-center px-4 pt-20 pb-12 text-center overflow-visible mx-auto"
+        className="relative min-h-dvh w-full flex flex-col items-center justify-center px-4 pt-24 pb-24 text-center overflow-visible mx-auto"
       >
         <div className="relative flex flex-col items-center justify-center max-w-4xl mx-auto overflow-visible my-auto">
           {/* Wide soft cloud behind the Renaissance logo */}
@@ -667,16 +612,42 @@ export default function Home() {
             E-Cell MNNIT Allahabad • Annual Entrepreneurship Summit
           </p>
 
-          {/* Action CTAs: Register Now + Explore Events */}
+          {/* Action CTAs: Know Renaissance + Explore Events */}
           <div className="overflow-visible flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 w-full max-w-xs sm:max-w-none mx-auto">
-            <Link
-              to="/login"
-              aria-label="Register Now"
+            <a
+              href="#about-renaissance"
+              onClick={(event) => {
+                const section = aboutSectionRef.current;
+                if (!section) return;
+                event.preventDefault();
+
+                const target = Math.max(
+                  0,
+                  section.getBoundingClientRect().top + window.scrollY - 64,
+                );
+                const reducedMotion = window.matchMedia(
+                  "(prefers-reduced-motion: reduce)",
+                ).matches;
+
+                if (smoothScroll?.scrollTo) {
+                  smoothScroll.scrollTo(target, {
+                    duration: 1.5,
+                    // Ease in and out with zero velocity and acceleration at both ends.
+                    easing: (progress) => progress ** 3 * (progress * (6 * progress - 15) + 10),
+                    immediate: reducedMotion,
+                  });
+                } else {
+                  window.scrollTo({
+                    top: target,
+                    behavior: reducedMotion ? "auto" : "smooth",
+                  });
+                }
+              }}
               className="group relative flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-[#f3e5ab] via-[#d4af37] to-[#d4af37] text-[#0C2B3D] font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.6)] transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] overflow-visible cursor-pointer border border-[#d4af37]/60 w-full sm:w-auto"
             >
-              <UserCheck className="w-4 h-4 text-[#0C2B3D] overflow-visible" />
-              <span>Register Now</span>
-            </Link>
+              <Compass className="w-4 h-4 text-[#0C2B3D] overflow-visible" />
+              <span>Know Renaissance</span>
+            </a>
 
             <a
               href="#events"
@@ -722,11 +693,12 @@ export default function Home() {
       </section>
 
       {/* ============================================================ */}
-      {/* 2. ABOUT RENAISSANCE SECTION (PINNED PARALLAX SCROLL)       */}
+      {/* 2. ABOUT RENAISSANCE SECTION       */}
       {/* ============================================================ */}
       <section
+        id="about-renaissance"
         ref={aboutSectionRef}
-        className="relative z-10 flex min-h-0 w-full flex-col items-center justify-center bg-transparent px-4 pb-14 pt-20 text-center sm:min-h-[85vh] sm:px-6 sm:pb-12 sm:pt-32"
+        className="relative z-10 mt-24 flex w-full flex-col items-center justify-center bg-transparent px-4 pb-12 pt-10 text-center sm:mt-32 sm:px-6 sm:pb-16 sm:pt-12"
       >
         <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center justify-center px-0 text-center sm:px-4">
           <h2

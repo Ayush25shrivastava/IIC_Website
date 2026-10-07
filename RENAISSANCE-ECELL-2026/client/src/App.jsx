@@ -28,7 +28,6 @@ const Teams = lazy(() => import("./pages/Teams"));
 const Sponsors = lazy(() => import("./pages/Sponsors"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const LoginSuccess = lazy(() => import("./pages/LoginSuccess"));
-const Login = lazy(() => import("./pages/Login"));
 const CampusAmbassadorPortal = lazy(() => import("./pages/CampusAmbassadorPortal"));
 const CampusAmbassadorAdmin = lazy(() => import("./pages/CampusAmbassadorAdmin"));
 const TicketsAccommodation = lazy(() => import("./pages/TicketsAccommodation"));
@@ -183,9 +182,6 @@ export default function App() {
                 path="/udbhav/support-us"
                 element={<SupportUs />}
               />
-
-              {/* Auth callback */}
-              <Route path="/login" element={<Login />} />
 
               <Route
                 path="/campus-ambassador"

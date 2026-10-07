@@ -52,7 +52,7 @@ npm start
 Default local URL:
 
 ```text
-http://localhost:5001/api/v1/health
+http://localhost:5008/api/v1/health
 ```
 
 ## Environment variables
@@ -60,7 +60,7 @@ http://localhost:5001/api/v1/health
 | Variable | Purpose |
 | --- | --- |
 | `NODE_ENV` | `development`, `test`, or `production` |
-| `PORT` | HTTP port, defaults to `5001` |
+| `PORT` | HTTP port, defaults to `5008` |
 | `CLIENT_ORIGIN` | Allowed frontend origin(s), comma separated |
 | `MONGODB_URI` | MongoDB/Atlas connection string |
 | `JWT_ACCESS_SECRET` | Access-token signing secret reserved for auth implementation |
@@ -189,8 +189,8 @@ docker compose ps
 Check liveness and readiness:
 
 ```bash
-curl http://localhost:5001/api/v1/health
-curl http://localhost:5001/api/v1/ready
+curl http://localhost:5008/api/v1/health
+curl http://localhost:5008/api/v1/ready
 ```
 
 The image uses the HTTP health endpoint for container liveness. `/api/v1/ready` remains the database-aware readiness check.
