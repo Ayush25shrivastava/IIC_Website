@@ -193,12 +193,31 @@ export default function App() {
                 <Route path="dashboard" element={<CampusAmbassadorDashboard />} />
               </Route>
 
-              <Route path="/admin" element={<AdminSession />}>
-                <Route index element={<Navigate to="campus-ambassadors" replace />} />
-                <Route path="login" element={<AdminLogin />} />
-                <Route path="campus-ambassadors" element={<CampusAmbassadorAdmin />} />
-              </Route>
-              <Route path="/campus-ambassador/admin" element={<Navigate to="/admin" replace />} />
+              {/* Keep previously shared dashboard and login URLs working. */}
+              <Route
+                path="/campus-ambassador/dashboard"
+                element={<Navigate to="/campus-ambassador" replace />}
+              />
+
+              <Route
+                path="/admin"
+                element={<CampusAmbassadorAdmin />}
+              />
+
+              <Route
+                path="/admin/login"
+                element={<Navigate to="/admin" replace />}
+              />
+
+              <Route
+                path="/admin/campus-ambassadors"
+                element={<Navigate to="/admin" replace />}
+              />
+
+              <Route
+                path="/campus-ambassador/admin"
+                element={<Navigate to="/admin" replace />}
+              />
 
               <Route
                 path="/login/success"
