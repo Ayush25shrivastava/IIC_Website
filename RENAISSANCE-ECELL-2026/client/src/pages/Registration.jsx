@@ -17,7 +17,7 @@ export default function Registration({ embedded = false }) {
   const navigate = useNavigate();
 
   const [selectedEventId, setSelectedEventId] = useState(
-    eventId || "event-1"
+    eventId || "b-plan"
   );
   const [profile] = useState(getStoredProfile());
   const [teams, setTeams] = useState(getStoredTeams());
