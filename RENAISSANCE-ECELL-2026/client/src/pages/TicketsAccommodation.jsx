@@ -50,7 +50,7 @@ export const TICKET_OPTIONS = [
       "Official Delegate ID Card",
       "Official Certificate of Participation",
       "Full 3-Day Event Access",
-      "Eligible to Participate in all Summit Events",
+      "Event Participation Included",
     ],
     includesAccommodation: false,
     warning: "Accommodation is NOT included in this tier.",
@@ -87,7 +87,7 @@ export const TICKET_OPTIONS = [
     formattedPrice: "₹1,099",
     formattedOriginalPrice: "₹1,299",
     duration: "3-Day Summit Access",
-    badge: "VIP Delegate",
+    badge: "T-Shirt + Premium Kit",
     benefits: [
       "Official Renaissance 10.0 T-Shirt",
       "Exclusive Premium Event Kit",
@@ -116,7 +116,7 @@ export const TICKET_OPTIONS = [
     benefits: [
       "All ₹499 Standard Pass Facilities Included",
       "1-Day Campus Accommodation Included",
-      "3-Time Meals Included (Breakfast, Lunch, Dinner)",
+      "3 Meals Each Day: Breakfast, Lunch & Dinner",
       "Lodging Kit: 1 Bed, Pillow, Blanket & Linen",
       "Full 3-Day Event Access & Event Participation",
       "+₹500 per additional day of stay",
@@ -137,7 +137,7 @@ export const TICKET_OPTIONS = [
     benefits: [
       "All ₹699 Premium Pass Facilities (Premium Kit Included)",
       "1-Day Campus Accommodation Included",
-      "3-Time Meals Included (Breakfast, Lunch, Dinner)",
+      "3 Meals Each Day: Breakfast, Lunch & Dinner",
       "Lodging Kit: 1 Bed, Pillow, Blanket & Linen",
       "Full 3-Day Event Access & Event Participation",
       "+₹500 per additional day of stay",
@@ -154,11 +154,11 @@ export const TICKET_OPTIONS = [
     formattedPrice: "₹1,499",
     formattedOriginalPrice: "₹1,699",
     duration: "3-Day Access + 1-Day Stay",
-    badge: "All-Inclusive VIP",
+    badge: "T-Shirt + Kit + Stay",
     benefits: [
       "All ₹1,099 Elite Pass Facilities (Summit T-Shirt + Premium Kit)",
       "1-Day Campus Accommodation Included",
-      "3-Time Meals Included (Breakfast, Lunch, Dinner)",
+      "3 Meals Each Day: Breakfast, Lunch & Dinner",
       "Lodging Kit: 1 Bed, Pillow, Blanket & Linen",
       "Full 3-Day Event Access & Event Participation",
       "+₹500 per additional day of stay",
@@ -644,7 +644,7 @@ export default function TicketsAccommodation() {
                       <li className="flex items-start gap-3 bg-[#EEDFCA]/60 p-2.5 rounded-xl border border-[#BFA275]/35">
                         <Coffee className="w-5 h-5 text-[#9E6D1F] shrink-0 mt-0.5" />
                         <div>
-                          <strong className="text-[#0C2B3D] block font-extrabold text-xs sm:text-sm">3-Time Daily Meals</strong>
+                          <strong className="text-[#0C2B3D] block font-extrabold text-xs sm:text-sm">3 Meals Every Day</strong>
                           <span className="text-[11px] sm:text-xs text-[#2C5263] leading-snug font-medium">Wholesome Breakfast, Lunch, and Dinner provided every day of your stay.</span>
                         </div>
                       </li>
@@ -691,7 +691,7 @@ export default function TicketsAccommodation() {
                       Grab Your Early Bird Pass Now!
                     </h3>
                     <p className="text-xs text-[#2C5263] font-semibold">
-                      All prices reflect the ₹200 discount. Original prices are crossed out for transparency.
+                      Save ₹200 on every event pass and accommodation package. The early-bird price shown is what you pay — no code needed.
                     </p>
                   </div>
                 </div>
@@ -711,11 +711,11 @@ export default function TicketsAccommodation() {
                   Choose Your Option
                 </h2>
                 <p className="font-montserrat text-xs sm:text-sm text-[#2C5263] font-bold max-w-xl">
-                  Select between Summit Passes (Event Only) or Summit Passes with Campus Accommodation & 3-Time Meals.
+                  Every pass includes 3-day event access and event participation. Stay packages also include 1 day of accommodation, 3 meals, a bed, pillow and blanket.
                 </p>
 
                 {/* Category Filter Switcher */}
-                <div className="mt-8 inline-flex p-1.5 rounded-2xl bg-[#0C2B3D]/10 border border-[#C5A25F]/40 backdrop-blur-md">
+                <div className="mt-8 inline-flex flex-wrap justify-center gap-1 p-1.5 rounded-2xl bg-[#0C2B3D]/10 border border-[#C5A25F]/40 backdrop-blur-md">
                   <button
                     type="button"
                     onClick={() => setSelectedCategory("all")}
@@ -784,7 +784,7 @@ export default function TicketsAccommodation() {
                             {option.badge}
                           </span>
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-wider bg-[#9E6D1F]/20 text-[#8A5F1C] border border-[#9E6D1F]/30">
-                            ⚡ ₹200 OFF
+                            Early Bird · ₹{option.discount} OFF
                           </span>
                         </div>
 
@@ -807,11 +807,13 @@ export default function TicketsAccommodation() {
 
                       {/* Pricing Display */}
                       <div className="mb-6 relative z-10 pl-1">
-                        <div className="flex items-baseline gap-3">
+                        <p className="mb-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#2C5263]">Early-bird price per person</p>
+                        <div className="flex flex-wrap items-baseline gap-3">
                           <span className="font-montserrat text-4xl sm:text-5xl font-black text-[#9E6D1F] drop-shadow-[0_2px_4px_rgba(255,255,255,0.4)]">
                             {option.formattedPrice}
                           </span>
                           <span className="font-montserrat text-xl sm:text-2xl font-bold text-[#8A5F1C]/45 line-through decoration-2">
+                            <span className="sr-only">Regular price: </span>
                             {option.formattedOriginalPrice}
                           </span>
                         </div>
@@ -859,7 +861,7 @@ export default function TicketsAccommodation() {
               >
                 {selectedTicket && (
                   <p className="mb-4 font-mono text-xs text-[#8A5F1C] font-bold uppercase tracking-wider">
-                    Selected: <span className="text-[#0C2B3D] font-black">{activeTicketData?.name}</span> ({activeTicketData?.formattedPrice})
+                    Selected: <span className="text-[#0C2B3D] font-black">{activeTicketData?.name}</span> (₹{currentPayableAmount.toLocaleString("en-IN")}{activeTicketData?.includesAccommodation ? ` · ${accommodationDays}-day stay` : ""})
                   </p>
                 )}
                 <button
@@ -910,7 +912,7 @@ export default function TicketsAccommodation() {
                   <div className="flex flex-col gap-5 p-5 sm:p-6 rounded-2xl bg-[#E8D4B4]/60 border border-[#BFA275]/40 mb-8">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#0C2B3D]/15 pb-4">
                       <div>
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
                           <span className="text-[10px] font-mono uppercase tracking-widest text-[#8A5F1C] font-extrabold">
                             Selected Option
                           </span>
@@ -925,17 +927,21 @@ export default function TicketsAccommodation() {
                           {activeTicketData?.name}
                         </h3>
                         <p className="font-mono text-xs text-[#2C5263] mt-1 font-bold">
-                          {activeTicketData?.duration}
+                          {activeTicketData?.includesAccommodation
+                            ? `3-Day Event Access + ${accommodationDays}-Day Stay`
+                            : activeTicketData?.duration}
                         </p>
                       </div>
 
                       <div className="text-left sm:text-right">
+                        <p className="mb-1 text-[10px] font-mono font-bold uppercase tracking-wider text-[#2C5263]">Total payable · Early bird</p>
                         <div className="flex items-baseline gap-2">
                           <span className="font-montserrat text-3xl sm:text-4xl font-black text-[#9E6D1F] drop-shadow-[0_2px_4px_rgba(255,255,255,0.4)]">
-                            ₹{currentPayableAmount}
+                            ₹{currentPayableAmount.toLocaleString("en-IN")}
                           </span>
                           <span className="font-montserrat text-lg font-bold text-[#8A5F1C]/50 line-through">
-                            ₹{getOriginalTicketPrice(activeTicketData, activeTicketData?.includesAccommodation ? accommodationDays : 1)}
+                            <span className="sr-only">Regular total: </span>
+                            ₹{getOriginalTicketPrice(activeTicketData, activeTicketData?.includesAccommodation ? accommodationDays : 1).toLocaleString("en-IN")}
                           </span>
                         </div>
                         <span className="text-[11px] font-mono font-bold text-[#2E7D32]">
@@ -985,12 +991,15 @@ export default function TicketsAccommodation() {
 
                         <div className="mt-3 p-3 rounded-xl bg-white/70 border border-[#C5A25F]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs font-mono font-bold text-[#2C5263] gap-2">
                           <span>
-                            Base: ₹{activeTicketData.price} + Extra Stay: {accommodationDays > 1 ? `₹${(accommodationDays - 1) * 500} (${accommodationDays - 1} extra day)` : "₹0"}
+                            Early-bird package: ₹{activeTicketData.price.toLocaleString("en-IN")} + Extra stay: {accommodationDays > 1 ? `₹${((accommodationDays - 1) * 500).toLocaleString("en-IN")} (${accommodationDays - 1} extra day${accommodationDays > 2 ? "s" : ""})` : "₹0"}
                           </span>
                           <span className="text-[#9E6D1F] font-black text-sm">
                             Total: ₹{currentPayableAmount}
                           </span>
                         </div>
+                        <p className="mt-3 font-montserrat text-xs font-semibold text-[#2C5263]">
+                          Your first day is included. Each additional day costs ₹500 with 3 meals, a bed, pillow and blanket. The ₹200 early-bird discount applies once per package.
+                        </p>
                       </div>
                     )}
                   </div>
@@ -1004,12 +1013,24 @@ export default function TicketsAccommodation() {
                         {activeTicketData?.includesAccommodation ? ` (${accommodationDays} Day Stay)` : ""}.
                       </p>
                       
-                      <div className="bg-white p-3 rounded-2xl shadow-md border-2 border-[#C5A25F]/40 mb-6 w-full max-w-[220px] aspect-square flex items-center justify-center">
+                      <div className="bg-white p-3 rounded-2xl shadow-md border-2 border-[#C5A25F]/40 mb-4 w-full max-w-[220px] aspect-square flex items-center justify-center">
                         <img 
                           src={`/cropped-qr.jpg`} 
                           alt="Payment QR Code"
                           className="w-full h-full object-contain"
                         />
+                      </div>
+
+                      <div className="w-full bg-white/75 border border-[#C5A25F]/40 p-3.5 rounded-xl text-left mb-4 shadow-sm">
+                        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#8A5F1C] mb-2">
+                          Bank Transfer Details (NEFT / IMPS)
+                        </p>
+                        <div className="space-y-1 text-xs font-montserrat text-[#0C2B3D]">
+                          <p><span className="font-bold text-[#2C5263]">A/C Name:</span> Institution’s Innovation Council</p>
+                          <p><span className="font-bold text-[#2C5263]">Bank:</span> SBI (MLNREC, Allahabad)</p>
+                          <p className="font-mono"><span className="font-sans font-bold text-[#2C5263]">A/C No:</span> 45558684605</p>
+                          <p className="font-mono"><span className="font-sans font-bold text-[#2C5263]">IFSC:</span> SBIN0002580</p>
+                        </div>
                       </div>
 
                       <div className="w-full bg-[#F4EBD9]/80 border-2 border-[#C5A25F]/40 p-4 rounded-xl text-left">
