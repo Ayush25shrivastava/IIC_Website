@@ -65,7 +65,8 @@ const EVENTS = [
     tagline: "Test your business, tech and current affairs knowledge.",
     desc: "Biz-Tech Quiz, conducted by the Gnosis Quiz Club, brings together intriguing questions at the intersection of business, technology, startups, silicon valley milestones, and global innovations.",
     prize: "₹10,000 Worth Prizes",
-    registrationUrl: null,
+    registrationUrl:
+      "https://unstop.com/quiz/biz-tech-quiz-renaissance-100-motilal-nehru-national-institute-of-technology-1758889?lb=useYavQm&utm_medium=Share&utm_source=quizzes&utm_campaign=Divyaver74529",
   },
   {
     id: "06",
