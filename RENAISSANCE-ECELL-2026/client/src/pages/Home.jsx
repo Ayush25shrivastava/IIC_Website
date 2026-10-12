@@ -75,7 +75,8 @@ const EVENTS = [
     tagline: "Bid. Negotiate. Build your dream team.",
     desc: "In this Mock IPL Auction, participants receive a limited pool of tokens and compete to build their dream teams by strategically bidding on players, balancing budgets, and making every bid count under live auction pressure.",
     prize: "Exclusive Goodies + Certificates",
-    registrationUrl: null,
+    registrationUrl:
+      "https://unstop.com/competitions/mock-ipl-auction-renaissance-100-motilal-nehru-national-institute-of-technology-1764623?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
   },
   {
     id: "07",
