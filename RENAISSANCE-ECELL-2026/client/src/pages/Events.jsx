@@ -159,7 +159,8 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationUrl:
+        "https://unstop.com/quiz/biz-tech-quiz-renaissance-100-motilal-nehru-national-institute-of-technology-1758889?lb=useYavQm&utm_medium=Share&utm_source=quizzes&utm_campaign=Divyaver74529",
       description:
         "Conducted by Gnosis Quiz Club, test your knowledge across technology breakthroughs, startups, venture pivots, and global business titans.",
       detailDescription: [
