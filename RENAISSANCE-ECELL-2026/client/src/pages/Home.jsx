@@ -15,6 +15,7 @@ import { Draggable } from "gsap/Draggable";
 import { useSmoothScroll } from "../lib/smoothScroll";
 import ContactFooter from "../components/ContactFooter";
 import NauticalCartographyBg from "../components/NauticalCartographyBg";
+import { SPONSOR_TIERS } from "../data/sponsorsData";
 
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
@@ -96,14 +97,28 @@ const EVENTS = [
   },
 ];
 
-const CURRENT_SPONSORS = [
-  { name: "Bank of Baroda", image: "/sponsors/Bank-of-Baroda-logo.jpg" },
-  { name: "Royal Enfield", image: "/sponsors/Royal_Enfield_Logo_full.png" },
-  { name: "Campa Cola", image: "/sponsors/campacola.jpeg" },
-  { name: "D2D", image: "/sponsors/D2D LOGO (1).png" },
-  { name: "Summit Armada", image: "/sponsors/LOGO.png" },
-  { name: "Voyage Guild", image: "/sponsors/unnamed.png" },
-];
+const CURRENT_SPONSORS =
+  SPONSOR_TIERS && SPONSOR_TIERS.length > 0
+    ? SPONSOR_TIERS.flatMap((tier) =>
+        tier.sponsors.map((s) => ({
+          ...s,
+          category: s.category || tier.title,
+        }))
+      )
+    : [
+        {
+          name: "Oatey",
+          category: "Refreshment Partner",
+          image: "/sponsors/oatey.png",
+          description: "Official Refreshment Partner for Renaissance 2026.",
+        },
+        {
+          name: "Safe Express",
+          category: "Supply Chain Partner",
+          image: "/sponsors/safexpress.png",
+          description: "Official Supply Chain Partner for Renaissance 2026.",
+        },
+      ];
 
 const PAST_SPONSORS = [
   { name: "Paytm Build for India", image: "/sponsors/paytm-build-for-india.png" },
@@ -254,18 +269,55 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
 
       <div 
         ref={gridRef}
-        className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 w-full max-w-[1200px] mx-auto"
+        className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full max-w-4xl mx-auto"
       >
-        {sponsors.map((sponsor, idx) => (
-          <div
-            key={idx}
-            className="premium-sponsor-item aspect-video flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-5 opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_8px_25px_rgba(0,0,0,0.3)]"
-          >
+        {sponsors.length === 0 ? (
+          <div className="premium-sponsor-item aspect-video flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-5 opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_8px_25px_rgba(0,0,0,0.3)]">
             <span className="text-[#E6DFD3] font-mono text-[11px] sm:text-sm font-bold tracking-wider text-center uppercase opacity-85">
               To be announced soon...
             </span>
           </div>
-        ))}
+        ) : (
+          sponsors.map((sponsor, idx) => (
+            <div
+              key={idx}
+              className="premium-sponsor-item flex flex-col items-center group w-full sm:w-[calc(50%-1.25rem)] max-w-[380px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+            >
+              <div className="relative flex h-[180px] sm:h-[200px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-2xl shadow-[0_8px_30px_rgba(12,43,61,0.2)] overflow-hidden">
+                {/* Subtle glow / oceanic depth */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-[180px] h-[180px] bg-white/40 rounded-full blur-[40px]" />
+                </div>
+                
+                {/* Logo Central Area */}
+                <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105 z-10 p-6">
+                  {sponsor.image ? (
+                    <img
+                      src={sponsor.image}
+                      alt={sponsor.name}
+                      loading="lazy"
+                      className="relative z-10 max-h-[120px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
+                    />
+                  ) : (
+                    <span className="text-[#0C2B3D] font-cinzel text-xl font-bold">{sponsor.name}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Sponsor Info Below Card */}
+              <div className="mt-4 text-center">
+                {sponsor.category && (
+                  <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#C5A25F] font-bold block mb-1">
+                    {sponsor.category}
+                  </span>
+                )}
+                <h3 className="font-cinzel text-xl sm:text-2xl font-bold text-[#F4EBD9] tracking-wider transition-colors duration-300 group-hover:text-[#D4AF37]">
+                  {sponsor.name}
+                </h3>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </section>
   );
