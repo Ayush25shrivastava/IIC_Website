@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { Anchor, ClipboardList, Compass, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, Tag, Users, LoaderCircle } from "lucide-react";
+import { getAssetUrl } from "../utils/assetUrl";
 function PortalCard({ children, className = "" }) {
   return (
     <div className={`rounded-3xl border border-[#208AA0]/24 bg-[linear-gradient(145deg,rgba(239,252,252,0.94),rgba(194,233,238,0.91))] shadow-[0_20px_55px_rgba(7,61,80,0.18)] backdrop-blur-xl ${className}`}>
@@ -15,19 +16,19 @@ function LoginPanel({ credentials, setCredentials, onSubmit, pending, error, sho
       <section className="mx-auto grid w-full max-w-[1160px] gap-4 md:grid-cols-[1.12fr_0.88fr]">
         <PortalCard className="relative isolate min-h-[430px] overflow-hidden p-6 sm:p-8 lg:p-10">
           <img
-            src="/pirate-wheel-half.png"
+            src={getAssetUrl("/pirate-wheel-half.png")}
             alt=""
             aria-hidden="true"
             className="pointer-events-none absolute -left-14 top-16 w-48 -rotate-12 select-none opacity-[0.14] grayscale mix-blend-multiply"
           />
           <img
-            src="/sticker-compass.png"
+            src={getAssetUrl("/sticker-compass.png")}
             alt=""
             aria-hidden="true"
             className="pointer-events-none absolute -right-12 top-14 w-64 select-none opacity-[0.2] grayscale mix-blend-multiply"
           />
           <img
-            src="/sticker-ship.png"
+            src={getAssetUrl("/sticker-ship.png")}
             alt=""
             aria-hidden="true"
             className="pointer-events-none absolute -bottom-9 -left-7 w-52 select-none opacity-[0.18] grayscale mix-blend-multiply"

@@ -1,3 +1,5 @@
+import { getAssetUrl } from "../utils/assetUrl";
+
 export const SPONSOR_STREAM_ITEMS = [];
 
 export const SPONSOR_TIERS = [
@@ -8,7 +10,7 @@ export const SPONSOR_TIERS = [
       {
         name: "Oatey",
         category: "Refreshment Partner",
-        image: "/sponsors/oatey.png",
+        image: getAssetUrl("/sponsors/oatey.png"),
         description: "Official Refreshment Partner for Renaissance 2026.",
       }
     ],
@@ -20,7 +22,7 @@ export const SPONSOR_TIERS = [
       {
         name: "Safe Express",
         category: "Supply Chain Partner",
-        image: "/sponsors/safexpress.png",
+        image: getAssetUrl("/sponsors/safexpress.png"),
         description: "Official Supply Chain Partner for Renaissance 2026.",
       }
     ],

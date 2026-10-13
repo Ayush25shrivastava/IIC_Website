@@ -11,6 +11,7 @@ import {
 import ContactFooter from "../components/ContactFooter";
 import SocialSideRail from "../components/SocialSideRail";
 import { SPONSOR_TIERS } from "../data/sponsorsData";
+import { getAssetUrl } from "../utils/assetUrl";
 
 /* ================================================================
    SPONSORS PAGE — RENAISSANCE OCEANIC EXPEDITION
@@ -62,7 +63,7 @@ export default function Sponsors({ embedded = false }) {
           {/* Previous Ocean Background Image with animation kept */}
           <div className="absolute inset-0">
             <img
-              src="/bg_images/events.png"
+              src={getAssetUrl("/bg_images/events.png")}
               alt="Renaissance Ocean Voyage"
               aria-hidden="true"
               className="sponsor-hero-raster h-full w-full object-cover object-top select-none pointer-events-none"
@@ -478,7 +479,7 @@ function SponsorCard({ sponsor, size = "medium" }) {
         {/* Central Content Area */}
         <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-[1.05] z-10 p-6">
           <img
-            src={sponsor.image}
+            src={getAssetUrl(sponsor.image)}
             alt={sponsor.name}
             loading="lazy"
             className="relative z-10 max-h-[120px] max-w-[90%] object-contain drop-shadow-md mix-blend-multiply"
@@ -527,19 +528,19 @@ function SandyOceanAtmosphere() {
 function FloatingStickers() {
   return (
     <div className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
-      <img src="/sticker-compass.png" alt="compass" className="absolute top-[8%] left-[-2%] w-48 opacity-60 drop-shadow-xl" />
-      <img src="/sticker-anchor.png" alt="anchor" className="absolute top-[25%] right-[2%] w-56 opacity-60 drop-shadow-xl -rotate-12" />
-      <img src="/sticker-ship.png" alt="ship" className="absolute top-[70%] left-[-4%] w-72 opacity-60 drop-shadow-2xl" />
-      <img src="/sticker-wheel.png" alt="wheel" className="absolute top-[50%] right-[3%] w-44 opacity-60 drop-shadow-xl rotate-12" />
-      <img src="/sticker-watch.png" alt="watch" className="absolute top-[18%] right-[20%] w-32 opacity-40 drop-shadow-xl rotate-12" />
-      <img src="/sticker-bottle.png" alt="bottle" className="absolute top-[85%] left-[12%] w-64 opacity-60 drop-shadow-xl -rotate-6" />
-      <img src="/sticker-skull.png" alt="skull" className="absolute top-[35%] left-[45%] w-40 opacity-20 drop-shadow-lg" />
+      <img src={getAssetUrl("/sticker-compass.png")} alt="compass" className="absolute top-[8%] left-[-2%] w-48 opacity-60 drop-shadow-xl" />
+      <img src={getAssetUrl("/sticker-anchor.png")} alt="anchor" className="absolute top-[25%] right-[2%] w-56 opacity-60 drop-shadow-xl -rotate-12" />
+      <img src={getAssetUrl("/sticker-ship.png")} alt="ship" className="absolute top-[70%] left-[-4%] w-72 opacity-60 drop-shadow-2xl" />
+      <img src={getAssetUrl("/sticker-wheel.png")} alt="wheel" className="absolute top-[50%] right-[3%] w-44 opacity-60 drop-shadow-xl rotate-12" />
+      <img src={getAssetUrl("/sticker-watch.png")} alt="watch" className="absolute top-[18%] right-[20%] w-32 opacity-40 drop-shadow-xl rotate-12" />
+      <img src={getAssetUrl("/sticker-bottle.png")} alt="bottle" className="absolute top-[85%] left-[12%] w-64 opacity-60 drop-shadow-xl -rotate-6" />
+      <img src={getAssetUrl("/sticker-skull.png")} alt="skull" className="absolute top-[35%] left-[45%] w-40 opacity-20 drop-shadow-lg" />
       
       {/* New Vintage Exploration Components from inspiration */}
-      <img src="/sticker-lighthouse.png" alt="lighthouse" className="absolute top-[75%] right-[15%] w-60 opacity-[0.65] drop-shadow-2xl mix-blend-multiply" />
-      <img src="/sticker-balloon.png" alt="balloon" className="absolute top-[10%] left-[10%] w-56 opacity-60 drop-shadow-xl rotate-6 mix-blend-multiply" />
-      <img src="/sticker-camera.png" alt="camera" className="absolute top-[35%] right-[8%] w-48 opacity-[0.55] drop-shadow-xl -rotate-6 mix-blend-multiply" />
-      <img src="/sticker-book.png" alt="book" className="absolute top-[55%] left-[8%] w-52 opacity-[0.55] drop-shadow-lg rotate-12 mix-blend-multiply" />
+      <img src={getAssetUrl("/sticker-lighthouse.png")} alt="lighthouse" className="absolute top-[75%] right-[15%] w-60 opacity-[0.65] drop-shadow-2xl mix-blend-multiply" />
+      <img src={getAssetUrl("/sticker-balloon.png")} alt="balloon" className="absolute top-[10%] left-[10%] w-56 opacity-60 drop-shadow-xl rotate-6 mix-blend-multiply" />
+      <img src={getAssetUrl("/sticker-camera.png")} alt="camera" className="absolute top-[35%] right-[8%] w-48 opacity-[0.55] drop-shadow-xl -rotate-6 mix-blend-multiply" />
+      <img src={getAssetUrl("/sticker-book.png")} alt="book" className="absolute top-[55%] left-[8%] w-52 opacity-[0.55] drop-shadow-lg rotate-12 mix-blend-multiply" />
     </div>
   );
 }

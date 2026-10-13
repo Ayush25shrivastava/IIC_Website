@@ -19,6 +19,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { getAssetUrl } from "../utils/assetUrl";
 import { ambassadorApi } from "../lib/server1-api";
 import { useSmoothScroll } from "../lib/smoothScroll";
 
@@ -874,7 +875,7 @@ export default function CampusAmbassadorDashboard() {
               {/* Promo Code Card */}
               <div className="ca-card ca-card-peach ca-promo-card">
                 <img
-                  src="/pirate-wheel-half.png"
+                  src={getAssetUrl("/pirate-wheel-half.png")}
                   alt=""
                   aria-hidden="true"
                   className="ca-promo-wheel-art"

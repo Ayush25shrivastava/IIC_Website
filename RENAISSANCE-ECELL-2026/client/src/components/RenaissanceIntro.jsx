@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { getAssetUrl } from "../utils/assetUrl";
 
 export const INTRO_TIMING = {
   total: 1.8,
@@ -54,7 +55,7 @@ export default function RenaissanceIntro({ onComplete, onSkip }) {
           className="w-56 sm:w-80 md:w-[400px] mb-4 flex items-center justify-center"
         >
           <img
-            src="/renaissance-logo-clean.png"
+            src={getAssetUrl("/renaissance-logo-clean.png")}
             alt="Renaissance 10th Edition"
             className="w-full h-auto object-contain filter drop-shadow-[0_0_35px_rgba(56,189,248,0.6)]"
           />

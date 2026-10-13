@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { getAssetUrl } from "../utils/assetUrl";
 
 /**
  * Custom hook to trigger seamless page transitions imperatively
@@ -168,7 +169,7 @@ export default function PageTransitionShimmer() {
             {/* Transparent Emblem Logo - Perfectly Sized */}
             <div className="w-48 sm:w-64 md:w-[320px] mb-3 flex items-center justify-center">
               <img
-                src="/renaissance-logo-clean.png"
+                src={getAssetUrl("/renaissance-logo-clean.png")}
                 alt="Renaissance 10th Edition"
                 className="w-full h-auto object-contain filter drop-shadow-[0_0_25px_rgba(56,189,248,0.6)]"
               />

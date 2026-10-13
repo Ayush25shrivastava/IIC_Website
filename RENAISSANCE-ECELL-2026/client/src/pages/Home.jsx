@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   Navigation,
   Wind,
-  UserCheck,
   Clock,
   Compass,
   Sparkles,
@@ -16,27 +15,29 @@ import { Draggable } from "gsap/Draggable";
 import { useSmoothScroll } from "../lib/smoothScroll";
 import ContactFooter from "../components/ContactFooter";
 import NauticalCartographyBg from "../components/NauticalCartographyBg";
+import { SPONSOR_TIERS } from "../data/sponsorsData";
+import { getAssetUrl } from "../utils/assetUrl";
 
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
 const EVENTS = [
   {
     id: "01",
-    name: "B-Plan",
+    name: "B-Plan (Fish Tank)",
     category: "Flagship Business Plan",
-    tagline: "Got a million-dollar idea? Prove it.",
-    desc: "B-Plan is the flagship business-plan showdown of Renaissance - India’s premier student entrepreneurship summit. This isn’t just about dreaming big; it’s about building smart. Present a rock-solid plan, defend it before expert judges, and turn your concept into a venture that investors notice.\n\nAll you need to know about B-Plan (Fish Tank-Business Plan) : Business plan pitching competetion at Renaissance 10.0",
-    prize: "₹25,000",
+    tagline: "Pitch ideas. Solve real-world problems.",
+    desc: "B-Plan is the flagship business-plan showdown of Renaissance - India’s premier student entrepreneurship summit. Pitch your venture idea before seasoned angel investors and founders to secure mentorship and funding.\n\nAll you need to know about B-Plan (Fish Tank - Business Plan) : Flagship pitching challenge at Renaissance 10.0.",
+    prize: "₹1,00,000 Worth Prizes",
     registrationUrl:
       "http://unstop.com/o/UL8OJ4R?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
   },
   {
     id: "02",
-    name: "Strategy-Wiz",
+    name: "Strategy Wiz",
     category: "Ultimate Strategy Challenge",
-    tagline: "From Product to Phenomenon: Architecting Iconic Launches",
-    desc: "A great product can fail; a legendary launch builds an empire. The product is ready, the market is waiting. Do you have the masterplan to make it iconic?\n\nStrategy-Wiz, the ultimate strategy challenge, is designed for future business leaders and innovators. Teams will craft the blueprint for market domination: analyse markets, design innovative launch plans, and compete to showcase the most impactful marketing strategy.",
-    prize: "₹15,000",
+    tagline: "Think strategic. Build market winners.",
+    desc: "A great product can fail; a legendary launch builds an empire. The product is ready, the market is waiting. Do you have the masterplan to make it iconic?\n\nStrategy-Wiz challenges teams to craft the blueprint for market domination: analyse markets, design innovative launch plans, and compete to showcase the most impactful marketing strategy.",
+    prize: "₹50,000 Worth Prizes",
     registrationUrl:
       "https://unstop.com/competitions/strategy-wiz-renaissance-100-motilal-nehru-national-institute-of-technology-1755423?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
   },
@@ -44,49 +45,81 @@ const EVENTS = [
     id: "03",
     name: "Business Wars",
     category: "Market Strategy Competition",
-    tagline: "Think Fast. Strategize Better. Win the Market",
-    desc: "In business, having a good idea is only the beginning. The real challenge is making the right decisions when the stakes are high and your competitors are waiting for you to slip.\n\nBusiness Wars is a high-pressure business strategy competition where teams step into the shoes of competing businesses and battle through real-world market scenarios.",
-    prize: "₹15,000",
+    tagline: "Compete. Analyse. Make real decisions.",
+    desc: "In business, having a good idea is only the beginning. The real challenge is making the right decisions when the stakes are high and your competitors are waiting for you to slip.\n\nBusiness Wars is a high-pressure corporate strategy simulation where teams step into the shoes of competing enterprises and battle through real-world market scenarios.",
+    prize: "₹30,000 Worth Prizes",
     registrationUrl:
       "https://unstop.com/competitions/biz-wars-renaissance-100-motilal-nehru-national-institute-of-technology-1756444?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
   },
   {
     id: "04",
-    name: "Biz-Tech Quiz",
-    category: "Business & Technology Quiz",
-    tagline: "Put your business acumen and tech knowledge to the test!",
-    desc: "Biz-Tech Quiz, conducted by the Gnosis Quiz Club, brings together intriguing questions at the intersection of business, technology, startups, and innovation.",
-    prize: "TBD",
+    name: "Creative Quest",
+    category: "Media & Storytelling Challenge",
+    tagline: "Capture. Create. Tell the story.",
+    desc: "Unleash your creative flair through visual storytelling, cinematography, and brand content creation in Renaissance 10.0's flagship creative docket.\n\nTake on thematic briefs to shoot, edit, and craft compelling visual reels, short narratives, and media campaigns across campus.",
+    prize: "₹10,000 Worth Prizes",
     registrationUrl: null,
   },
   {
     id: "05",
-    name: "Treasure Hunt",
-    category: "Campus Adventure",
-    tagline: "Get ready for an exciting adventure across the MNNIT campus!",
-    desc: "Treasure Hunt challenges participants to crack clues, explore hidden corners, and race against time to uncover the treasure, with exciting prizes and goodies waiting at the finish line.",
-    prize: "Prizes & Goodies",
+    name: "Biz-Tech Quiz",
+    category: "Business & Technology Quiz",
+    tagline: "Test your business, tech and current affairs knowledge.",
+    desc: "Biz-Tech Quiz, conducted by the Gnosis Quiz Club, brings together intriguing questions at the intersection of business, technology, startups, silicon valley milestones, and global innovations.",
+    prize: "₹10,000 Worth Prizes",
     registrationUrl: null,
   },
   {
     id: "06",
     name: "Mock IPL Auction",
     category: "Strategy & Auction",
-    tagline: "Step into the shoes of an IPL franchise owner!",
-    desc: "In this Mock IPL Auction, participants receive a limited pool of tokens and compete to build their dream teams by strategically bidding on players, balancing budgets, and making every bid count.",
-    prize: "TBD",
+    tagline: "Bid. Negotiate. Build your dream team.",
+    desc: "In this Mock IPL Auction, participants receive a limited pool of tokens and compete to build their dream teams by strategically bidding on players, balancing budgets, and making every bid count under live auction pressure.",
+    prize: "Exclusive Goodies + Certificates",
+    registrationUrl: null,
+  },
+  {
+    id: "07",
+    name: "Treasure Hunt",
+    category: "Campus Adventure",
+    tagline: "Solve. Explore. Discover.",
+    desc: "Treasure Hunt challenges participants to crack cryptographic clues, explore hidden waypoints across the MNNIT Allahabad campus, and race against the clock to unearth the grand prize bounty.",
+    prize: "Exciting Rewards + Certificates",
+    registrationUrl: null,
+  },
+  {
+    id: "08",
+    name: "Glow & Know : Skincare Quiz Mania",
+    category: "Exclusive Quiz Mania",
+    tagline: "Girls only, quiz, play & win!",
+    desc: "An exciting, high-energy quiz mania exclusively for girls testing your knowledge of skincare, wellness, beauty science, and trends. Quiz, play, and win exclusive gift hampers and goodies!",
+    prize: "Exclusive Gift Hampers",
     registrationUrl: null,
   },
 ];
 
-const CURRENT_SPONSORS = [
-  { name: "Bank of Baroda", image: "/sponsors/Bank-of-Baroda-logo.jpg" },
-  { name: "Royal Enfield", image: "/sponsors/Royal_Enfield_Logo_full.png" },
-  { name: "Campa Cola", image: "/sponsors/campacola.jpeg" },
-  { name: "D2D", image: "/sponsors/D2D LOGO (1).png" },
-  { name: "Summit Armada", image: "/sponsors/LOGO.png" },
-  { name: "Voyage Guild", image: "/sponsors/unnamed.png" },
-];
+const CURRENT_SPONSORS =
+  SPONSOR_TIERS && SPONSOR_TIERS.length > 0
+    ? SPONSOR_TIERS.flatMap((tier) =>
+        tier.sponsors.map((s) => ({
+          ...s,
+          category: s.category || tier.title,
+        }))
+      )
+    : [
+        {
+          name: "Oatey",
+          category: "Refreshment Partner",
+          image: "/sponsors/oatey.png",
+          description: "Official Refreshment Partner for Renaissance 2026.",
+        },
+        {
+          name: "Safe Express",
+          category: "Supply Chain Partner",
+          image: "/sponsors/safexpress.png",
+          description: "Official Supply Chain Partner for Renaissance 2026.",
+        },
+      ];
 
 const PAST_SPONSORS = [
   { name: "Paytm Build for India", image: "/sponsors/paytm-build-for-india.png" },
@@ -237,18 +270,55 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
 
       <div 
         ref={gridRef}
-        className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 w-full max-w-[1200px] mx-auto"
+        className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full max-w-4xl mx-auto"
       >
-        {sponsors.map((sponsor, idx) => (
-          <div
-            key={idx}
-            className="premium-sponsor-item aspect-video flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-5 opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_8px_25px_rgba(0,0,0,0.3)]"
-          >
+        {sponsors.length === 0 ? (
+          <div className="premium-sponsor-item aspect-video flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-5 opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_8px_25px_rgba(0,0,0,0.3)]">
             <span className="text-[#E6DFD3] font-mono text-[11px] sm:text-sm font-bold tracking-wider text-center uppercase opacity-85">
               To be announced soon...
             </span>
           </div>
-        ))}
+        ) : (
+          sponsors.map((sponsor, idx) => (
+            <div
+              key={idx}
+              className="premium-sponsor-item flex flex-col items-center group w-full sm:w-[calc(50%-1.25rem)] max-w-[380px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+            >
+              <div className="relative flex h-[180px] sm:h-[200px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-2xl shadow-[0_8px_30px_rgba(12,43,61,0.2)] overflow-hidden">
+                {/* Subtle glow / oceanic depth */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-[180px] h-[180px] bg-white/40 rounded-full blur-[40px]" />
+                </div>
+                
+                {/* Logo Central Area */}
+                <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105 z-10 p-6">
+                  {sponsor.image ? (
+                    <img
+                      src={getAssetUrl(sponsor.image)}
+                      alt={sponsor.name}
+                      loading="lazy"
+                      className="relative z-10 max-h-[120px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
+                    />
+                  ) : (
+                    <span className="text-[#0C2B3D] font-cinzel text-xl font-bold">{sponsor.name}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Sponsor Info Below Card */}
+              <div className="mt-4 text-center">
+                {sponsor.category && (
+                  <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#C5A25F] font-bold block mb-1">
+                    {sponsor.category}
+                  </span>
+                )}
+                <h3 className="font-cinzel text-xl sm:text-2xl font-bold text-[#F4EBD9] tracking-wider transition-colors duration-300 group-hover:text-[#D4AF37]">
+                  {sponsor.name}
+                </h3>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </section>
   );
@@ -318,7 +388,7 @@ function StaggeredSponsorsGrid({ title, subtitle, sponsors }) {
           >
             {sponsor.image ? (
               <img
-                src={sponsor.image}
+                src={getAssetUrl(sponsor.image)}
                 alt={sponsor.name}
                 className="max-w-full max-h-full object-contain drop-shadow-md"
                 loading="lazy"
@@ -384,14 +454,12 @@ export default function Home() {
 
   // About Section Refs
   const aboutSectionRef = useRef(null);
-  const aboutAuraRef = useRef(null);
   const aboutTitleRef = useRef(null);
   const aboutDescRef = useRef(null);
   const statCard1Ref = useRef(null);
   const statCard2Ref = useRef(null);
   const statCard3Ref = useRef(null);
   const statCard4Ref = useRef(null);
-  const aboutCtaRef = useRef(null);
   const scrollIndicatorRef = useRef(null);
 
   const speakersSectionRef = useRef(null);
@@ -400,8 +468,6 @@ export default function Home() {
     const isDesktopViewport = window.matchMedia("(min-width: 768px)").matches;
 
     const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
-
       // Fade out scroll indicator as user begins scrolling
       if (scrollIndicatorRef.current && heroSectionRef.current) {
         gsap.to(scrollIndicatorRef.current, {
@@ -416,56 +482,6 @@ export default function Home() {
           },
         });
       }
-
-      // Desktop Only (min-width: 768px): Pinned Parallax Timeline
-      mm.add("(min-width: 768px)", () => {
-        if (aboutSectionRef.current) {
-          const aboutTl = gsap.timeline({
-            scrollTrigger: {
-              trigger: aboutSectionRef.current,
-              start: "top top",
-              end: "+=1000",
-              pin: true,
-              scrub: 0.4,
-            },
-          });
-          if (aboutAuraRef.current) {
-            aboutTl.fromTo(
-              aboutAuraRef.current,
-              { scale: 0.7, opacity: 0.2 },
-              { scale: 1.25, opacity: 0.75, ease: "none" },
-              0
-            );
-          }
-          if (aboutTitleRef.current) {
-            aboutTl.fromTo(
-              aboutTitleRef.current,
-              { opacity: 0, scale: 0.8 },
-              { opacity: 1, scale: 1.05, ease: "power2.out" },
-              0.1
-            );
-          }
-          if (aboutDescRef.current) {
-            aboutTl.fromTo(
-              aboutDescRef.current,
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, ease: "power2.out" },
-              0.25
-            );
-          }
-          [statCard1Ref, statCard2Ref, statCard3Ref, statCard4Ref].forEach((ref, idx) => {
-            if (ref.current) {
-              aboutTl.fromTo(
-                ref.current,
-                { opacity: 0, y: -30 },
-                { opacity: 1, y: 0, ease: "power2.out" },
-                0.4 + idx * 0.1
-              );
-            }
-          });
-          aboutTl.to({}, { duration: 0.3 });
-        }
-      });
 
       // Pinned Events Parallax Timeline (Desktop + Mobile)
       if (eventsSectionRef.current) {
@@ -569,32 +585,32 @@ export default function Home() {
         });
       }
 
-      // Mobile Only (max-width: 767px): About section unpinned flow
-      mm.add("(max-width: 767px)", () => {
-        if (aboutSectionRef.current) {
-          gsap.fromTo(
-            [
-              aboutTitleRef.current,
-              aboutDescRef.current,
-              statCard1Ref.current,
-              statCard2Ref.current,
-              statCard3Ref.current,
-              statCard4Ref.current,
-            ],
-            { opacity: 0, y: 20 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.5,
-              stagger: 0.08,
-              scrollTrigger: {
-                trigger: aboutSectionRef.current,
-                start: "top 85%",
-              },
-            }
-          );
-        }
-      });
+      // Reveal About on entry without pinning or adding scroll distance.
+      if (aboutSectionRef.current) {
+        gsap.fromTo(
+          [
+            aboutTitleRef.current,
+            aboutDescRef.current,
+            statCard1Ref.current,
+            statCard2Ref.current,
+            statCard3Ref.current,
+            statCard4Ref.current,
+          ],
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            stagger: 0.08,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: aboutSectionRef.current,
+              start: "top 90%",
+              once: true,
+            },
+          },
+        );
+      }
 
       // Keynote Speakers entrance
       if (speakersSectionRef.current) {
@@ -641,11 +657,11 @@ export default function Home() {
       <NauticalCartographyBg />
 
       {/* ============================================================ */}
-      {/* 1. HERO SECTION (100vh)                                      */}
+      {/* 1. HERO SECTION                                      */}
       {/* ============================================================ */}
       <section
         ref={heroSectionRef}
-        className="relative min-h-screen w-full flex flex-col items-center justify-center px-4 pt-20 pb-12 text-center overflow-visible mx-auto"
+        className="relative min-h-dvh w-full flex flex-col items-center justify-center px-4 pt-24 pb-24 text-center overflow-visible mx-auto"
       >
         <div className="relative flex flex-col items-center justify-center max-w-4xl mx-auto overflow-visible my-auto">
           {/* Wide soft cloud behind the Renaissance logo */}
@@ -654,10 +670,10 @@ export default function Home() {
           {/* Centered Transparent Emblem Logo */}
           <div className="relative z-10 w-full max-w-xl sm:max-w-2xl md:max-w-3xl mb-6 sm:mb-8 flex items-center justify-center overflow-visible">
             <img
-              src="/renaissance-logo-clean.png"
+              src={getAssetUrl("/renaissance-logo-clean.png")}
               alt="Renaissance 10th Edition Emblem"
               onError={(e) => {
-                e.currentTarget.src = "/renaissance-logo-transparent.png";
+                e.currentTarget.src = getAssetUrl("/renaissance-logo-transparent.png");
               }}
               className="w-full h-auto object-contain filter drop-shadow-[0_15px_35px_rgba(0,0,0,0.9)] drop-shadow-[0_0_30px_rgba(56,189,248,0.35)] select-none pointer-events-none transition-transform duration-500 hover:scale-[1.02]"
             />
@@ -667,16 +683,42 @@ export default function Home() {
             E-Cell MNNIT Allahabad • Annual Entrepreneurship Summit
           </p>
 
-          {/* Action CTAs: Register Now + Explore Events */}
+          {/* Action CTAs: Know Renaissance + Explore Events */}
           <div className="overflow-visible flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 w-full max-w-xs sm:max-w-none mx-auto">
-            <Link
-              to="/login"
-              aria-label="Register Now"
+            <a
+              href="#about-renaissance"
+              onClick={(event) => {
+                const section = aboutSectionRef.current;
+                if (!section) return;
+                event.preventDefault();
+
+                const target = Math.max(
+                  0,
+                  section.getBoundingClientRect().top + window.scrollY - 64,
+                );
+                const reducedMotion = window.matchMedia(
+                  "(prefers-reduced-motion: reduce)",
+                ).matches;
+
+                if (smoothScroll?.scrollTo) {
+                  smoothScroll.scrollTo(target, {
+                    duration: 1.5,
+                    // Ease in and out with zero velocity and acceleration at both ends.
+                    easing: (progress) => progress ** 3 * (progress * (6 * progress - 15) + 10),
+                    immediate: reducedMotion,
+                  });
+                } else {
+                  window.scrollTo({
+                    top: target,
+                    behavior: reducedMotion ? "auto" : "smooth",
+                  });
+                }
+              }}
               className="group relative flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-[#f3e5ab] via-[#d4af37] to-[#d4af37] text-[#0C2B3D] font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.6)] transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] overflow-visible cursor-pointer border border-[#d4af37]/60 w-full sm:w-auto"
             >
-              <UserCheck className="w-4 h-4 text-[#0C2B3D] overflow-visible" />
-              <span>Register Now</span>
-            </Link>
+              <Compass className="w-4 h-4 text-[#0C2B3D] overflow-visible" />
+              <span>Know Renaissance</span>
+            </a>
 
             <a
               href="#events"
@@ -722,11 +764,12 @@ export default function Home() {
       </section>
 
       {/* ============================================================ */}
-      {/* 2. ABOUT RENAISSANCE SECTION (PINNED PARALLAX SCROLL)       */}
+      {/* 2. ABOUT RENAISSANCE SECTION       */}
       {/* ============================================================ */}
       <section
+        id="about-renaissance"
         ref={aboutSectionRef}
-        className="relative z-10 flex min-h-0 w-full flex-col items-center justify-center bg-transparent px-4 pb-14 pt-20 text-center sm:min-h-[85vh] sm:px-6 sm:pb-12 sm:pt-32"
+        className="relative z-10 mt-24 flex w-full flex-col items-center justify-center bg-transparent px-4 pb-12 pt-10 text-center sm:mt-32 sm:px-6 sm:pb-16 sm:pt-12"
       >
         <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center justify-center px-0 text-center sm:px-4">
           <h2
@@ -815,7 +858,7 @@ export default function Home() {
           <div className="absolute w-[88%] h-[88%] rounded-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.22)_0%,rgba(56,189,248,0.18)_38%,rgba(4,16,33,0.55)_65%,transparent_80%)] blur-2xl pointer-events-none" />
           <img
             ref={wheelImgRef}
-            src="/pirate-wheel-transparent.png"
+            src={getAssetUrl("/pirate-wheel-transparent.png")}
             alt="Nautical Wheel"
             className="w-full h-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)] select-none pointer-events-none will-change-transform overflow-visible"
           />

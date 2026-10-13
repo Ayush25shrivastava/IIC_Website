@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import ContactFooter from "../components/ContactFooter";
 import SocialSideRail from "../components/SocialSideRail";
+import { getAssetUrl } from "../utils/assetUrl";
 
 const BANK_DETAILS = [
   {
@@ -130,7 +131,7 @@ export default function SupportUs() {
       {/* Background Ocean Wash */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[540px] overflow-hidden">
         <img
-          src="/bg_images/events.png"
+          src={getAssetUrl("/bg_images/events.png")}
           alt=""
           aria-hidden="true"
           className="h-full w-full object-cover object-top opacity-35 select-none"
@@ -172,7 +173,7 @@ export default function SupportUs() {
 
             <div className="flex aspect-square w-56 sm:w-64 items-center justify-center rounded-2xl border-2 border-[#C5A25F]/60 bg-white p-3 shadow-md">
               <img
-                src="/support-qr.jpg"
+                src={getAssetUrl("/support-qr.jpg")}
                 alt="Institution's Innovation Council Payment QR Code"
                 className="h-full w-full object-contain select-none"
               />
@@ -183,7 +184,7 @@ export default function SupportUs() {
             </p>
 
             <a
-              href="/support-qr.jpg"
+              href={getAssetUrl("/support-qr.jpg")}
               download="IIC-MNNIT-Renaissance-QR.jpg"
               className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#0C2B3D]/25 bg-white/80 px-4 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-[#0C2B3D] transition-all hover:bg-[#0C2B3D] hover:text-[#F4EBD9]"
             >
