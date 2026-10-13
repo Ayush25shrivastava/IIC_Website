@@ -180,7 +180,8 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationUrl:
+        "https://unstop.com/competitions/mock-ipl-auction-renaissance-100-motilal-nehru-national-institute-of-technology-1764623?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
       description:
         "Manage token purses, evaluate player valuations, and build a championship-winning squad under live auction pressure.",
       detailDescription: [
