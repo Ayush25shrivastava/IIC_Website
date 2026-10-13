@@ -1,5 +1,6 @@
 import React from "react";
 import WaterButton from "./WaterButton";
+import { getAssetUrl } from "../utils/assetUrl";
 
 export default function Hero() {
   return (
@@ -8,10 +9,10 @@ export default function Hero() {
         {/* Prominent 10th Edition Logo */}
         <div className="w-full max-w-[580px] sm:max-w-[720px] md:max-w-[820px] mb-8">
           <img
-            src="/renaissance-logo-clean.png"
+            src={getAssetUrl("/renaissance-logo-clean.png")}
             alt="Renaissance 10th Edition Emblem"
             onError={(e) => {
-              e.currentTarget.src = "/renaissance-logo-transparent.png";
+              e.currentTarget.src = getAssetUrl("/renaissance-logo-transparent.png");
             }}
             className="w-full h-auto object-contain filter drop-shadow-[0_12px_40px_rgba(0,0,0,0.95)] drop-shadow-[0_0_30px_rgba(56,189,248,0.28)] transition-transform duration-500 hover:scale-[1.01]"
           />

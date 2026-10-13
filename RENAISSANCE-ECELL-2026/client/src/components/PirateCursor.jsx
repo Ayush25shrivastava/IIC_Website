@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { getAssetUrl } from "../utils/assetUrl";
 
 const HOOK_HOTSPOT = {
   x: 10,
@@ -145,7 +146,7 @@ export default function PirateCursor() {
       >
         <img
           ref={iconRef}
-          src="/hook-cursor.png"
+          src={getAssetUrl("/hook-cursor.png")}
           alt=""
           draggable="false"
           className="block w-[34px] h-[34px] object-contain select-none pointer-events-none transition-transform duration-150 ease-out filter drop-shadow-[0_2px_5px_rgba(0,0,0,0.7)] drop-shadow-[0_0_3px_rgba(226,232,240,0.22)]"

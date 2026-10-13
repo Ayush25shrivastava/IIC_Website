@@ -12,6 +12,7 @@ import {
   HeartHandshake,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getAssetUrl } from "../utils/assetUrl";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -96,11 +97,11 @@ export default function Navbar() {
             aria-label="Renaissance Home"
           >
             <img
-              src="/renaissance-logo-clean.png"
+              src={getAssetUrl("/renaissance-logo-clean.png")}
               alt="Renaissance Logo"
               onError={(event) => {
                 event.currentTarget.src =
-                  "/renaissance-logo-transparent.png";
+                  getAssetUrl("/renaissance-logo-transparent.png");
               }}
               className="h-7 sm:h-8 w-auto object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
             />

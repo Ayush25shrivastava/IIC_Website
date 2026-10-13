@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import ContactFooter from "../components/ContactFooter";
 import PageTransitionShimmer from "../components/PageTransitionShimmer";
+import { getAssetUrl } from "../utils/assetUrl";
 
 export const TICKET_OPTIONS = [
   // --- Event Passes (Without Accommodation) ---
@@ -443,7 +444,7 @@ export default function TicketsAccommodation() {
           }
         >
           <motion.img
-            src="/bg_images/events.png"
+            src={getAssetUrl("/bg_images/events.png")}
             alt=""
             aria-hidden="true"
             className="h-full w-full object-cover object-top will-change-transform"
@@ -1015,7 +1016,7 @@ export default function TicketsAccommodation() {
                       
                       <div className="bg-white p-3 rounded-2xl shadow-md border-2 border-[#C5A25F]/40 mb-4 w-full max-w-[220px] aspect-square flex items-center justify-center">
                         <img 
-                          src={`/cropped-qr.jpg`} 
+                          src={getAssetUrl("/cropped-qr.jpg")} 
                           alt="Payment QR Code"
                           className="w-full h-full object-contain"
                         />

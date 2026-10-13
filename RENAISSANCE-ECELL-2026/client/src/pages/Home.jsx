@@ -16,6 +16,7 @@ import { useSmoothScroll } from "../lib/smoothScroll";
 import ContactFooter from "../components/ContactFooter";
 import NauticalCartographyBg from "../components/NauticalCartographyBg";
 import { SPONSOR_TIERS } from "../data/sponsorsData";
+import { getAssetUrl } from "../utils/assetUrl";
 
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
@@ -293,7 +294,7 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
                 <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105 z-10 p-6">
                   {sponsor.image ? (
                     <img
-                      src={sponsor.image}
+                      src={getAssetUrl(sponsor.image)}
                       alt={sponsor.name}
                       loading="lazy"
                       className="relative z-10 max-h-[120px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
@@ -387,7 +388,7 @@ function StaggeredSponsorsGrid({ title, subtitle, sponsors }) {
           >
             {sponsor.image ? (
               <img
-                src={sponsor.image}
+                src={getAssetUrl(sponsor.image)}
                 alt={sponsor.name}
                 className="max-w-full max-h-full object-contain drop-shadow-md"
                 loading="lazy"
@@ -669,10 +670,10 @@ export default function Home() {
           {/* Centered Transparent Emblem Logo */}
           <div className="relative z-10 w-full max-w-xl sm:max-w-2xl md:max-w-3xl mb-6 sm:mb-8 flex items-center justify-center overflow-visible">
             <img
-              src="/renaissance-logo-clean.png"
+              src={getAssetUrl("/renaissance-logo-clean.png")}
               alt="Renaissance 10th Edition Emblem"
               onError={(e) => {
-                e.currentTarget.src = "/renaissance-logo-transparent.png";
+                e.currentTarget.src = getAssetUrl("/renaissance-logo-transparent.png");
               }}
               className="w-full h-auto object-contain filter drop-shadow-[0_15px_35px_rgba(0,0,0,0.9)] drop-shadow-[0_0_30px_rgba(56,189,248,0.35)] select-none pointer-events-none transition-transform duration-500 hover:scale-[1.02]"
             />
@@ -857,7 +858,7 @@ export default function Home() {
           <div className="absolute w-[88%] h-[88%] rounded-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.22)_0%,rgba(56,189,248,0.18)_38%,rgba(4,16,33,0.55)_65%,transparent_80%)] blur-2xl pointer-events-none" />
           <img
             ref={wheelImgRef}
-            src="/pirate-wheel-transparent.png"
+            src={getAssetUrl("/pirate-wheel-transparent.png")}
             alt="Nautical Wheel"
             className="w-full h-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)] select-none pointer-events-none will-change-transform overflow-visible"
           />

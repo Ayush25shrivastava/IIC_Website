@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ContactFooter from "../components/ContactFooter";
+import { getAssetUrl } from "../utils/assetUrl";
 
 const MASONRY_IMAGES = [
   { id: 1, src: "/past_events/Copy of REN (1).jpg", delay: 0.1, span: "col-span-2 row-span-2 md:col-span-2 md:row-span-2 xl:col-span-2 xl:row-span-2" },
@@ -101,7 +102,7 @@ export default function Gallery() {
         {/* Ocean Image Background fading into transparent */}
         <div className="absolute inset-0 pointer-events-none -z-10 [mask-image:linear-gradient(to_bottom,black_40%,transparent_100%)]">
           <img
-            src="/bg_images/events.png"
+            src={getAssetUrl("/bg_images/events.png")}
             alt="Renaissance Ocean Voyage"
             aria-hidden="true"
             className="h-full w-full object-cover object-top opacity-60 mix-blend-multiply"
@@ -181,7 +182,7 @@ export default function Gallery() {
                   {/* Portrait */}
                   <div className="relative w-full h-full overflow-hidden bg-[#F4EBD9]">
                     <img 
-                      src={speaker.img} 
+                      src={getAssetUrl(speaker.img)} 
                       alt={speaker.name} 
                       className={`w-full h-full object-cover ${speaker.objectPosition || 'object-center'} filter lg:grayscale lg:contrast-125 lg:brightness-90 lg:group-hover:grayscale-0 lg:group-hover:contrast-100 lg:group-hover:brightness-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]`} 
                       loading="lazy"
@@ -239,7 +240,7 @@ export default function Gallery() {
               className={`relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-500 bg-[#E8D7C2]/30 group cursor-pointer w-full h-full ${img.span || ''}`}
             >
               <img
-                src={img.src}
+                src={getAssetUrl(img.src)}
                 alt={`Archive capture ${index + 1}`}
                 className="w-full h-full object-cover object-center block filter contrast-[1.05] brightness-[1.02] transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105"
                 loading="lazy"
@@ -278,7 +279,7 @@ export default function Gallery() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={selectedImage.src}
+                src={getAssetUrl(selectedImage.src)}
                 alt="Enlarged Archive Capture"
                 className="w-full h-full object-contain rounded-lg shadow-2xl filter contrast-[1.05]"
               />

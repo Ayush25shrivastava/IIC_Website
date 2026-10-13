@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import ContactFooter from "../components/ContactFooter";
+import { getAssetUrl } from "../utils/assetUrl";
 
 export default function Events({ embedded = false }) {
   const [activeDay, setActiveDay] = useState(1);
@@ -268,7 +269,7 @@ export default function Events({ embedded = false }) {
             }
           >
             <motion.img
-              src="/bg_images/events.png"
+              src={getAssetUrl("/bg_images/events.png")}
               alt=""
               aria-hidden="true"
               className="h-full w-full object-cover object-top will-change-transform"

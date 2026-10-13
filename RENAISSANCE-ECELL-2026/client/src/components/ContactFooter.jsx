@@ -7,6 +7,7 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import { Mail, MapPin, Compass } from "lucide-react";
+import { getAssetUrl } from "../utils/assetUrl";
 
 export default function ContactFooter() {
   const socialLinkClass =
@@ -32,10 +33,10 @@ export default function ContactFooter() {
             className="group flex w-fit items-center gap-3 px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-white/85 via-white/70 to-white/50 border border-white/80 backdrop-blur-lg shadow-[0_4px_25px_rgba(255,255,255,0.2)] transition-all hover:from-white/95 hover:to-white/65"
           >
             <img
-              src="/renaissance-logo-clean.png"
+              src={getAssetUrl("/renaissance-logo-clean.png")}
               alt="Renaissance 10th Edition Logo"
               onError={(e) => {
-                e.currentTarget.src = "/renaissance-logo-transparent.png";
+                e.currentTarget.src = getAssetUrl("/renaissance-logo-transparent.png");
               }}
               className="h-11 w-auto object-contain brightness-110 drop-shadow-[0_5px_14px_rgba(0,0,0,0.2)] transition-transform duration-300 group-hover:scale-105"
             />
