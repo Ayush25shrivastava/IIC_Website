@@ -1,4 +1,5 @@
 import { getAssetUrl } from "../utils/assetUrl";
+import { CLOUDINARY_SPONSORS } from "../constants/cloudinaryAssets";
 
 export const SPONSOR_STREAM_ITEMS = [];
 
@@ -10,7 +11,7 @@ export const SPONSOR_TIERS = [
       {
         name: "Oatey",
         category: "Refreshment Partner",
-        image: getAssetUrl("/sponsors/oatey.png"),
+        image: CLOUDINARY_SPONSORS.oatey || getAssetUrl("/sponsors/oatey.png"),
         description: "Official Refreshment Partner for Renaissance 2026.",
       }
     ],
@@ -22,7 +23,7 @@ export const SPONSOR_TIERS = [
       {
         name: "Safe Express",
         category: "Supply Chain Partner",
-        image: getAssetUrl("/sponsors/safexpress.png"),
+        image: CLOUDINARY_SPONSORS.safexpress || getAssetUrl("/sponsors/safexpress.png"),
         description: "Official Supply Chain Partner for Renaissance 2026.",
       }
     ],

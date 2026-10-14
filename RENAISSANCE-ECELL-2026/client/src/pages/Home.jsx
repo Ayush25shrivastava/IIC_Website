@@ -16,6 +16,7 @@ import { useSmoothScroll } from "../lib/smoothScroll";
 import ContactFooter from "../components/ContactFooter";
 import NauticalCartographyBg from "../components/NauticalCartographyBg";
 import { SPONSOR_TIERS } from "../data/sponsorsData";
+import { CLOUDINARY_SPONSORS } from "../constants/cloudinaryAssets";
 import { getAssetUrl } from "../utils/assetUrl";
 
 gsap.registerPlugin(ScrollTrigger, Draggable);
@@ -112,13 +113,13 @@ const CURRENT_SPONSORS =
         {
           name: "Oatey",
           category: "Refreshment Partner",
-          image: "/sponsors/oatey.png",
+          image: CLOUDINARY_SPONSORS.oatey || "/sponsors/oatey.png",
           description: "Official Refreshment Partner for Renaissance 2026.",
         },
         {
           name: "Safe Express",
           category: "Supply Chain Partner",
-          image: "/sponsors/safexpress.png",
+          image: CLOUDINARY_SPONSORS.safexpress || "/sponsors/safexpress.png",
           description: "Official Supply Chain Partner for Renaissance 2026.",
         },
       ];
