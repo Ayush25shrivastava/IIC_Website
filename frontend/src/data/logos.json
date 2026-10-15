@@ -120,5 +120,29 @@
     "logos": [
       { "name": "Safe Express", "fileName": "safexpress.png", "folder": "current sponsors" }
     ]
+  },
+  {
+    "id": "TECHNOLOGY_PARTNER",
+    "title": "Technology Partner",
+    "description": "Official Technology Partner for Renaissance 2026.",
+    "logos": [
+      { "name": "Formcept", "fileName": "formcept.png", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "NUTRITION_PARTNER",
+    "title": "Nutrition Partner",
+    "description": "Official Nutrition Partner for Renaissance 2026.",
+    "logos": [
+      { "name": "Max Protein", "fileName": "maxprotein.png", "folder": "current sponsors" }
+    ]
+  },
+  {
+    "id": "CONFECTIONERY_PARTNER",
+    "title": "Confectionery Partner",
+    "description": "Official Confectionery Partner for Renaissance 2026.",
+    "logos": [
+      { "name": "Lotte", "fileName": "lotte.png", "folder": "current sponsors" }
+    ]
   }
 ]

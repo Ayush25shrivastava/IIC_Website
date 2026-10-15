@@ -111,16 +111,39 @@ const CURRENT_SPONSORS =
       )
     : [
         {
+          name: "Formcept",
+          category: "Technology Partner",
+          image: CLOUDINARY_SPONSORS.formcept || "/sponsors/formcept.png",
+          fallbackImage: "/sponsors/formcept.png",
+          description: "Official Technology Partner for Renaissance 2026.",
+        },
+        {
+          name: "Max Protein",
+          category: "Nutrition Partner",
+          image: CLOUDINARY_SPONSORS.maxProtein || "/sponsors/maxprotein.png",
+          fallbackImage: "/sponsors/maxprotein.png",
+          description: "Official Nutrition Partner for Renaissance 2026.",
+        },
+        {
           name: "Oatey",
           category: "Refreshment Partner",
           image: CLOUDINARY_SPONSORS.oatey || "/sponsors/oatey.png",
+          fallbackImage: "/sponsors/oatey.png",
           description: "Official Refreshment Partner for Renaissance 2026.",
         },
         {
           name: "Safe Express",
           category: "Supply Chain Partner",
           image: CLOUDINARY_SPONSORS.safexpress || "/sponsors/safexpress.png",
+          fallbackImage: "/sponsors/safexpress.png",
           description: "Official Supply Chain Partner for Renaissance 2026.",
+        },
+        {
+          name: "Lotte",
+          category: "Confectionery Partner",
+          image: CLOUDINARY_SPONSORS.lotte || "/sponsors/lotte.png",
+          fallbackImage: "/sponsors/lotte.png",
+          description: "Official Confectionery Partner for Renaissance 2026.",
         },
       ];
 
@@ -273,7 +296,7 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
 
       <div 
         ref={gridRef}
-        className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full max-w-4xl mx-auto"
+        className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full max-w-6xl mx-auto"
       >
         {sponsors.length === 0 ? (
           <div className="premium-sponsor-item aspect-video flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-5 opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_8px_25px_rgba(0,0,0,0.3)]">
@@ -285,7 +308,7 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
           sponsors.map((sponsor, idx) => (
             <div
               key={idx}
-              className="premium-sponsor-item flex flex-col items-center group w-full sm:w-[calc(50%-1.25rem)] max-w-[380px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+              className="premium-sponsor-item flex flex-col items-center group w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
             >
               <div className="relative flex h-[180px] sm:h-[200px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-2xl shadow-[0_8px_30px_rgba(12,43,61,0.2)] overflow-hidden">
                 {/* Subtle glow / oceanic depth */}
@@ -300,6 +323,12 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
                       src={getAssetUrl(sponsor.image)}
                       alt={sponsor.name}
                       loading="lazy"
+                      onError={(e) => {
+                        const fallback = sponsor.fallbackImage ? getAssetUrl(sponsor.fallbackImage) : "";
+                        if (fallback && e.currentTarget.src !== fallback) {
+                          e.currentTarget.src = fallback;
+                        }
+                      }}
                       className="relative z-10 max-h-[120px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
                     />
                   ) : (

@@ -20,6 +20,13 @@ import { getAssetUrl } from "../utils/assetUrl";
    Boat: Boat thing completely removed!
 ================================================================ */
 
+const allSponsors = SPONSOR_TIERS.flatMap((tier) =>
+  tier.sponsors.map((s) => ({
+    ...s,
+    category: s.category || tier.title,
+  }))
+);
+
 export default function Sponsors({ embedded = false }) {
 
 
@@ -229,18 +236,48 @@ export default function Sponsors({ embedded = false }) {
 
 
       {/* ============================================================
-          SPONSORS TIERS
+          SPONSORS SECTION (3 in the same row, 2 in the down row)
       ============================================================ */}
-      {SPONSOR_TIERS.map((tier, idx) => (
-        <SponsorSection
-          key={tier.id}
-          id={tier.id}
-          eyebrow={`Tier 0${idx + 1}`}
-          title={tier.title}
-          sponsors={tier.sponsors}
-          size="medium"
-        />
-      ))}
+      <section
+        id="sponsors-grid"
+        className="relative z-10"
+        style={{ contentVisibility: "auto", containIntrinsicSize: "600px" }}
+      >
+        <div className="mx-auto max-w-[1300px] px-5 py-20 sm:px-8 lg:py-24">
+          <SectionHeading
+            icon={<Compass className="h-5 w-5" />}
+            eyebrow="Voyage Allies"
+            title="Our Official Sponsors"
+            subtitle="The pioneering organizations and brands empowering the Renaissance 2026 expedition."
+          />
+
+          <div className="mx-auto mt-14 max-w-6xl space-y-8 sm:space-y-10">
+            {/* Row 1: 3 sponsors in the same row */}
+            <div className="flex flex-wrap items-stretch justify-center gap-7 sm:gap-8 w-full">
+              {allSponsors.slice(0, 3).map((sponsor, index) => (
+                <div
+                  key={`${sponsor.name}-${index}`}
+                  className="flex justify-center w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px]"
+                >
+                  <SponsorCard sponsor={sponsor} size="medium" />
+                </div>
+              ))}
+            </div>
+
+            {/* Row 2: 2 sponsors in the down row */}
+            <div className="flex flex-wrap items-stretch justify-center gap-7 sm:gap-8 w-full">
+              {allSponsors.slice(3, 5).map((sponsor, index) => (
+                <div
+                  key={`${sponsor.name}-${index}`}
+                  className="flex justify-center w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px]"
+                >
+                  <SponsorCard sponsor={sponsor} size="medium" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
 
       {/* ============================================================
@@ -482,15 +519,28 @@ function SponsorCard({ sponsor, size = "medium" }) {
             src={getAssetUrl(sponsor.image)}
             alt={sponsor.name}
             loading="lazy"
+            onError={(e) => {
+              const fallback = sponsor.fallbackImage ? getAssetUrl(sponsor.fallbackImage) : "";
+              if (fallback && e.currentTarget.src !== fallback) {
+                e.currentTarget.src = fallback;
+              }
+            }}
             className="relative z-10 max-h-[120px] max-w-[90%] object-contain drop-shadow-md mix-blend-multiply"
           />
         </div>
       </article>
 
-      {/* Sponsor Name Below Card */}
-      <h3 className="mt-4 font-cinzel text-xl sm:text-2xl font-bold text-[#0C2B3D] tracking-wider text-center transition-colors duration-300 group-hover:text-[#9E6D1F]">
-        {sponsor.name}
-      </h3>
+      {/* Sponsor Info Below Card */}
+      <div className="mt-4 text-center">
+        {sponsor.category && (
+          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#8E6422] font-bold block mb-1">
+            {sponsor.category}
+          </span>
+        )}
+        <h3 className="font-cinzel text-xl sm:text-2xl font-bold text-[#0C2B3D] tracking-wider transition-colors duration-300 group-hover:text-[#9E6D1F]">
+          {sponsor.name}
+        </h3>
+      </div>
     </div>
   );
 }
