@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Navigation,
   Wind,
@@ -8,7 +9,10 @@ import {
   Sparkles,
   ExternalLink,
   Trophy,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+import { FaLinkedin, FaLinkedinIn } from "react-icons/fa";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Draggable } from "gsap/Draggable";
@@ -16,6 +20,7 @@ import { useSmoothScroll } from "../lib/smoothScroll";
 import ContactFooter from "../components/ContactFooter";
 import NauticalCartographyBg from "../components/NauticalCartographyBg";
 import { SPONSOR_TIERS } from "../data/sponsorsData";
+import { SPEAKERS_DATA } from "../data/speakersData";
 import { CLOUDINARY_SPONSORS } from "../constants/cloudinaryAssets";
 import { getAssetUrl } from "../utils/assetUrl";
 
@@ -190,63 +195,193 @@ const PAST_SPONSORS = [
 ];
 
 function FeaturedSpeakersGrid({ speakers }) {
-  const gridRef = React.useRef(null);
+  const scrollRef = useRef(null);
+  const isPausedRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
 
-  React.useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container || !speakers || speakers.length === 0) return;
 
-    const items = grid.querySelectorAll(".speaker-card");
-    if (items.length === 0) return;
+    let animationFrameId;
+    let lastTime = performance.now();
+    const speed = 85; // Faster, responsive glide
+    let direction = 1;
+    let pauseUntil = 0;
 
-    items.forEach((item) => {
-      item.style.willChange = "transform, opacity, filter";
-    });
+    const scrollStep = (currentTime) => {
+      const deltaTime = (currentTime - lastTime) / 1000;
+      lastTime = currentTime;
 
-    const observer = new IntersectionObserver(
-      (entries, obs) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            items.forEach((item, index) => {
-              const delay = index * 100;
-              item.style.transitionDelay = `${delay}ms`;
-              item.classList.add("opacity-100", "translate-y-0");
-              item.classList.remove("opacity-0", "translate-y-[30px]");
+      if (!isPausedRef.current && !isDraggingRef.current && container) {
+        if (currentTime >= pauseUntil) {
+          const maxScroll = container.scrollWidth - container.clientWidth;
 
-              setTimeout(() => {
-                item.style.willChange = "auto";
-                item.style.transitionDelay = "0ms"; // reset for hover
-              }, delay + 800);
-            });
-            obs.disconnect();
+          if (maxScroll > 10) {
+            container.scrollLeft += speed * deltaTime * direction;
+
+            if (container.scrollLeft >= maxScroll - 4 && direction === 1) {
+              direction = -1;
+              pauseUntil = currentTime + 1200; // Pause briefly at the right boundary
+            } else if (container.scrollLeft <= 4 && direction === -1) {
+              direction = 1;
+              pauseUntil = currentTime + 1200; // Pause briefly at the left boundary
+            }
           }
-        });
-      },
-      { threshold: 0.15 },
-    );
+        }
+      }
 
-    observer.observe(grid);
-    return () => observer.disconnect();
+      animationFrameId = requestAnimationFrame(scrollStep);
+    };
+
+    animationFrameId = requestAnimationFrame(scrollStep);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [speakers]);
 
-  return (
-    <section className="relative w-full bg-transparent flex flex-col items-center justify-center px-4 sm:px-12 pt-20 sm:pt-32 pb-20 sm:pb-32 overflow-hidden select-none z-20">
-      <div className="max-w-6xl w-full mx-auto flex flex-col items-center justify-center relative z-10 my-auto">
-        <div className="speakers-header text-center mb-12 sm:mb-20">
-          <span className="text-xs sm:text-sm text-[#E6DFD3] font-black uppercase tracking-[0.3em] block mb-3 opacity-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-            Eminent Voyagers
-          </span>
-          <h2 className="text-[2.2rem] sm:text-5xl md:text-6xl font-black tracking-tight animate-renaissance-theme pb-2 leading-tight">
-            Featured Keynote Speakers
-          </h2>
-        </div>
+  const handleMouseDown = (e) => {
+    if (!scrollRef.current) return;
+    isDraggingRef.current = true;
+    isPausedRef.current = true;
+    startXRef.current = e.pageX - scrollRef.current.offsetLeft;
+    scrollLeftRef.current = scrollRef.current.scrollLeft;
+  };
 
-        <div ref={gridRef} className="w-full flex items-center justify-center">
-          <div className="speaker-card relative flex w-full max-w-2xl translate-y-[20px] items-center justify-center px-6 py-10 sm:px-12 sm:py-14 rounded-2xl sm:rounded-3xl border border-[#d4af37]/60 bg-[#F4EBD9]/95 text-[#0C2B3D] backdrop-blur-md shadow-[0_15px_40px_rgba(0,0,0,0.5)] opacity-0 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-            <span className="font-mono text-lg sm:text-2xl lg:text-3xl font-extrabold tracking-[0.14em] text-center uppercase text-[#0C2B3D]">
-              To be announced soon...
-            </span>
-          </div>
+  const handleMouseLeave = () => {
+    isDraggingRef.current = false;
+    isPausedRef.current = false;
+  };
+
+  const handleMouseUp = () => {
+    isDraggingRef.current = false;
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDraggingRef.current || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startXRef.current) * 1.5;
+    scrollRef.current.scrollLeft = scrollLeftRef.current - walk;
+  };
+
+  if (!speakers || speakers.length === 0) return null;
+
+  return (
+    <section
+      id="speakers"
+      className="relative w-full bg-transparent py-16 sm:py-24 select-none z-20 overflow-hidden"
+    >
+      {/* Subtle atmospheric ambient glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[350px] bg-[#38BDF8]/10 blur-[160px] pointer-events-none" />
+
+      {/* Section Header with Signature Gold Text Animation */}
+      <div className="container mx-auto px-4 mb-10 sm:mb-12 text-center relative z-10">
+        <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.3em] font-bold text-[#D4AF37] block mb-1 drop-shadow-md">
+          Eminent Voyagers
+        </span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-cinzel leading-tight animate-whitegold-shine drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] pb-1">
+          Featured Keynote Speakers
+        </h2>
+        <div className="h-[2px] w-20 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-3" />
+      </div>
+
+      {/* Seamless Edge-Feathered Container Mask */}
+      <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)]">
+        {/* Horizontal Carousel (Faster auto-scroll, pauses on hover / drag, no duplicates) */}
+        <div
+          ref={scrollRef}
+          onMouseEnter={() => {
+            isPausedRef.current = true;
+          }}
+          onMouseLeave={handleMouseLeave}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          onTouchStart={() => {
+            isPausedRef.current = true;
+          }}
+          onTouchEnd={() => {
+            isPausedRef.current = false;
+          }}
+          className="flex overflow-x-auto overflow-y-hidden gap-6 sm:gap-8 px-8 sm:px-16 lg:px-24 py-8 cursor-grab active:cursor-grabbing no-scrollbar scroll-smooth"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {speakers.map((speaker, idx) => (
+            <div
+              key={speaker.id || idx}
+              className="flex-shrink-0 w-[285px] sm:w-[305px] md:w-[325px] h-[475px] snap-center select-none group relative"
+            >
+              {/* Small Ship's Wheel Emblem at Top Middle of the Box */}
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+                <img
+                  src={getAssetUrl("/sticker-wheel.png")}
+                  alt="Helm"
+                  className="w-7 h-7 sm:w-8 sm:h-8 object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)] group-hover:rotate-90 transition-transform duration-700 ease-out"
+                />
+              </div>
+
+              <div className="w-full h-full bg-[#020b14]/85 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/15 hover:border-[#D4AF37] transition-all duration-300 shadow-[0_20px_45px_rgba(0,0,0,0.85)] hover:shadow-[0_0_35px_rgba(212,175,55,0.4)] hover:-translate-y-2 flex flex-col justify-between relative">
+                <div className="flex flex-col flex-1">
+                  {/* Speaker Portrait */}
+                  <div className="w-full h-56 sm:h-60 rounded-xl overflow-hidden relative shadow-[0_12px_28px_rgba(0,0,0,0.8)] border border-white/10 group-hover:border-[#D4AF37]/50 bg-[#020b14] mb-3 shrink-0">
+                    <img
+                      src={speaker.image}
+                      alt={speaker.name}
+                      className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                      draggable="false"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#020b14]/90 via-transparent to-transparent pointer-events-none" />
+                  </div>
+
+                  {/* Alumni / Speaker Category Slot (Strictly Fixed Height) */}
+                  <div className="h-5 flex items-center mb-1">
+                    {speaker.alumni ? (
+                      <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.2em] text-[#D4AF37] uppercase drop-shadow-sm truncate">
+                        {speaker.alumni}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.2em] text-[#D4AF37]/80 uppercase drop-shadow-sm truncate">
+                        Keynote Speaker
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Speaker Name (Strictly Fixed Height) */}
+                  <div className="h-7 flex items-center mb-1">
+                    <h3 className="font-cinzel text-lg sm:text-xl font-bold text-white tracking-tight leading-tight group-hover:text-[#D4AF37] transition-colors line-clamp-1 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+                      {speaker.name}
+                    </h3>
+                  </div>
+
+                  {/* Title (Strictly Fixed Height) */}
+                  <div className="h-11 flex items-start overflow-hidden">
+                    <p className="font-mono text-xs sm:text-[12.5px] text-[#38BDF8] tracking-wider uppercase font-semibold leading-snug line-clamp-2">
+                      {speaker.title || speaker.role}
+                    </p>
+                  </div>
+                </div>
+
+                {/* LinkedIn Action Button (Pinned to Bottom) */}
+                <div className="mt-auto pt-3 border-t border-white/10 shrink-0">
+                  {speaker.linkedin && (
+                    <a
+                      href={speaker.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-black/60 hover:bg-[#0A66C2] text-white border border-white/20 hover:border-[#0A66C2] text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-sm hover:shadow-[0_0_20px_rgba(10,102,194,0.7)] cursor-pointer group/btn"
+                      title={`Connect with ${speaker.name} on LinkedIn`}
+                    >
+                      <FaLinkedin className="w-4 h-4 text-[#38BDF8] group-hover/btn:text-white transition-colors" />
+                      <span>Connect on LinkedIn</span>
+                      <ExternalLink className="w-3 h-3 opacity-70 group-hover/btn:opacity-100 transition-opacity" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -507,12 +642,7 @@ function AccommodationSection() {
   );
 }
 
-const SPEAKERS = [
-  { id: 1, label: "Speaker 01" },
-  { id: 2, label: "Speaker 02" },
-  { id: 3, label: "Speaker 03" },
-  { id: 4, label: "Speaker 04" },
-];
+const SPEAKERS = SPEAKERS_DATA;
 
 export default function Home() {
   const smoothScroll = useSmoothScroll();
