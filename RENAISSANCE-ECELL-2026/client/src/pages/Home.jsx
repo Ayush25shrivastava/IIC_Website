@@ -145,6 +145,20 @@ const CURRENT_SPONSORS =
           fallbackImage: "/sponsors/lotte.png",
           description: "Official Confectionery Partner for Renaissance 2026.",
         },
+        {
+          name: "Unstop",
+          category: "Platform Partner",
+          image: CLOUDINARY_SPONSORS.unstop || "/sponsors/unstop.png",
+          fallbackImage: "/sponsors/unstop.png",
+          description: "Official Platform Partner for Renaissance 2026.",
+        },
+        {
+          name: "AbhiBus",
+          category: "Travel Partner",
+          image: CLOUDINARY_SPONSORS.abhibus || "/sponsors/abhibus.png",
+          fallbackImage: "/sponsors/abhibus.png",
+          description: "Official Travel Partner for Renaissance 2026.",
+        },
       ];
 
 const PAST_SPONSORS = [
@@ -239,6 +253,51 @@ function FeaturedSpeakersGrid({ speakers }) {
   );
 }
 
+function PremiumSponsorCard({ sponsor }) {
+  return (
+    <div className="premium-sponsor-item flex flex-col items-center group w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+      <div className="relative flex h-[180px] sm:h-[200px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-2xl shadow-[0_8px_30px_rgba(12,43,61,0.2)] overflow-hidden">
+        {/* Subtle glow / oceanic depth */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-[180px] h-[180px] bg-white/40 rounded-full blur-[40px]" />
+        </div>
+        
+        {/* Logo Central Area */}
+        <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105 z-10 p-6">
+          {sponsor.image ? (
+            <img
+              src={getAssetUrl(sponsor.image)}
+              alt={sponsor.name}
+              loading="lazy"
+              onError={(e) => {
+                const fallback = sponsor.fallbackImage ? getAssetUrl(sponsor.fallbackImage) : "";
+                if (fallback && e.currentTarget.src !== fallback) {
+                  e.currentTarget.src = fallback;
+                }
+              }}
+              className="relative z-10 max-h-[120px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
+            />
+          ) : (
+            <span className="text-[#0C2B3D] font-cinzel text-xl font-bold">{sponsor.name}</span>
+          )}
+        </div>
+      </div>
+
+      {/* Sponsor Info Below Card */}
+      <div className="mt-4 text-center">
+        {sponsor.category && (
+          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#C5A25F] font-bold block mb-1">
+            {sponsor.category}
+          </span>
+        )}
+        <h3 className="font-cinzel text-xl sm:text-2xl font-bold text-[#F4EBD9] tracking-wider transition-colors duration-300 group-hover:text-[#D4AF37]">
+          {sponsor.name}
+        </h3>
+      </div>
+    </div>
+  );
+}
+
 function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
   const gridRef = useRef(null);
 
@@ -296,60 +355,43 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
 
       <div 
         ref={gridRef}
-        className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full max-w-6xl mx-auto"
+        className="mx-auto mt-2 max-w-6xl space-y-6 sm:space-y-8 w-full"
       >
         {sponsors.length === 0 ? (
-          <div className="premium-sponsor-item aspect-video flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-5 opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_8px_25px_rgba(0,0,0,0.3)]">
-            <span className="text-[#E6DFD3] font-mono text-[11px] sm:text-sm font-bold tracking-wider text-center uppercase opacity-85">
-              To be announced soon...
-            </span>
+          <div className="flex justify-center w-full">
+            <div className="premium-sponsor-item aspect-video flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-5 opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_8px_25px_rgba(0,0,0,0.3)]">
+              <span className="text-[#E6DFD3] font-mono text-[11px] sm:text-sm font-bold tracking-wider text-center uppercase opacity-85">
+                To be announced soon...
+              </span>
+            </div>
           </div>
         ) : (
-          sponsors.map((sponsor, idx) => (
-            <div
-              key={idx}
-              className="premium-sponsor-item flex flex-col items-center group w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-            >
-              <div className="relative flex h-[180px] sm:h-[200px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-2xl shadow-[0_8px_30px_rgba(12,43,61,0.2)] overflow-hidden">
-                {/* Subtle glow / oceanic depth */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-[180px] h-[180px] bg-white/40 rounded-full blur-[40px]" />
-                </div>
-                
-                {/* Logo Central Area */}
-                <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105 z-10 p-6">
-                  {sponsor.image ? (
-                    <img
-                      src={getAssetUrl(sponsor.image)}
-                      alt={sponsor.name}
-                      loading="lazy"
-                      onError={(e) => {
-                        const fallback = sponsor.fallbackImage ? getAssetUrl(sponsor.fallbackImage) : "";
-                        if (fallback && e.currentTarget.src !== fallback) {
-                          e.currentTarget.src = fallback;
-                        }
-                      }}
-                      className="relative z-10 max-h-[120px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
-                    />
-                  ) : (
-                    <span className="text-[#0C2B3D] font-cinzel text-xl font-bold">{sponsor.name}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Sponsor Info Below Card */}
-              <div className="mt-4 text-center">
-                {sponsor.category && (
-                  <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#C5A25F] font-bold block mb-1">
-                    {sponsor.category}
-                  </span>
-                )}
-                <h3 className="font-cinzel text-xl sm:text-2xl font-bold text-[#F4EBD9] tracking-wider transition-colors duration-300 group-hover:text-[#D4AF37]">
-                  {sponsor.name}
-                </h3>
-              </div>
+          <>
+            {/* Row 1: 3 sponsors in the first row */}
+            <div className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full">
+              {sponsors.slice(0, 3).map((sponsor, idx) => (
+                <PremiumSponsorCard key={idx} sponsor={sponsor} />
+              ))}
             </div>
-          ))
+
+            {/* Row 2: 2 sponsors in the second row */}
+            {sponsors.length > 3 && (
+              <div className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full">
+                {sponsors.slice(3, 5).map((sponsor, idx) => (
+                  <PremiumSponsorCard key={idx + 3} sponsor={sponsor} />
+                ))}
+              </div>
+            )}
+
+            {/* Row 3: Additional sponsors (Unstop & AbhiBus) */}
+            {sponsors.length > 5 && (
+              <div className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full">
+                {sponsors.slice(5).map((sponsor, idx) => (
+                  <PremiumSponsorCard key={idx + 5} sponsor={sponsor} />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

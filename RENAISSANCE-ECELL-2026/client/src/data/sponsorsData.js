@@ -68,5 +68,31 @@ export const SPONSOR_TIERS = [
         description: "Official Confectionery Partner for Renaissance 2026.",
       }
     ],
+  },
+  {
+    id: "platform",
+    title: "Platform Partner",
+    sponsors: [
+      {
+        name: "Unstop",
+        category: "Platform Partner",
+        image: CLOUDINARY_SPONSORS.unstop || getAssetUrl("/sponsors/unstop.png"),
+        fallbackImage: getAssetUrl("/sponsors/unstop.png"),
+        description: "Official Platform Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "travel",
+    title: "Travel Partner",
+    sponsors: [
+      {
+        name: "AbhiBus",
+        category: "Travel Partner",
+        image: CLOUDINARY_SPONSORS.abhibus || getAssetUrl("/sponsors/abhibus.png"),
+        fallbackImage: getAssetUrl("/sponsors/abhibus.png"),
+        description: "Official Travel Partner for Renaissance 2026.",
+      }
+    ],
   }
 ];

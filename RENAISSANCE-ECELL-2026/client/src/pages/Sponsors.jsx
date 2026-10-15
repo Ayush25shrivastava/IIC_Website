@@ -275,6 +275,20 @@ export default function Sponsors({ embedded = false }) {
                 </div>
               ))}
             </div>
+
+            {/* Row 3: Additional sponsors (Unstop & AbhiBus) */}
+            {allSponsors.length > 5 && (
+              <div className="flex flex-wrap items-stretch justify-center gap-7 sm:gap-8 w-full">
+                {allSponsors.slice(5).map((sponsor, index) => (
+                  <div
+                    key={`${sponsor.name}-${index}`}
+                    className="flex justify-center w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px]"
+                  >
+                    <SponsorCard sponsor={sponsor} size="medium" />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
