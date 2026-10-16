@@ -70,7 +70,7 @@ async function readResponse(response) {
   return payload?.data ?? payload;
 }
 
-async function send(path, { method = "GET", body, query, signal, keepalive = false } = {}, baseUrl = API_BASE_URL) {
+async function send(path, { method = "GET", body, query, signal, cache, keepalive = false } = {}, baseUrl = API_BASE_URL) {
   const headers = { Accept: "application/json" };
   let requestBody;
 
@@ -88,6 +88,7 @@ async function send(path, { method = "GET", body, query, signal, keepalive = fal
     headers,
     body: requestBody,
     credentials: "include",
+    cache,
     keepalive,
     signal: signal || AbortSignal.timeout(15000),
   });
@@ -310,7 +311,19 @@ export const ticketApi = {
 };
 
 export const server1ApiBaseUrl = API_BASE_URL;
-export const getTeamPhotos = () => request("/team-photos");
+export const getTeamPhotos = () => request("/team-photos", { cache: "no-store", signal: AbortSignal.timeout(60000) });
+export function createTeamPhotoApi(local = false) {
+  const prefix = local ? "/local-admin/team-photos" : "/admin/team-photos";
+  const scope = local ? null : "admin";
+  const call = (path, options = {}) => request(`${prefix}${path}`, { ...options, cache: "no-store", signal: AbortSignal.timeout(60000) }, scope);
+  return {
+    teamPhotos: () => call(""),
+    createTeamPhoto: (body) => call("", { method: "POST", body }),
+    updateTeamPhoto: (id, body) => call(`/${encodeURIComponent(id)}`, { method: "PUT", body }),
+    deleteTeamPhoto: (id) => call(`/${encodeURIComponent(id)}`, { method: "DELETE" }),
+    importTeamPhoto: (id, body) => call(`/import/${encodeURIComponent(id)}`, { method: "POST", body }),
+  };
+}
 export const teamPhotoUrl = (member) => member.uploaded
   ? buildUrl(`/team-photos/${encodeURIComponent(member.id)}/image`, { v: member.updatedAt })
   : member.image_url;

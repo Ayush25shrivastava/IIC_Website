@@ -13,42 +13,11 @@ export const localAdminMode = isLocalAdminLocation(
 export const LOCAL_ADMIN = { id: "local-admin", name: "Local Administrator", email: "", role: "ADMIN" };
 const STORAGE_KEY = "renaissance.local.team-photos.v1";
 
-export function createLocalTeamPhotoApi(storage) {
-  const read = () => {
+// Read-only migration source. New photos are always saved through Cloudinary.
+export function legacyTeamPhotos(storage = window.localStorage) {
+  try {
     const saved = storage.getItem(STORAGE_KEY);
-    if (saved === null) return structuredClone(DEFAULT_TEAM_PHOTOS);
-    const members = JSON.parse(saved);
-    if (!Array.isArray(members)) throw new Error("Saved team photos could not be read.");
-    return members;
-  };
-  const write = (members) => {
-    try { storage.setItem(STORAGE_KEY, JSON.stringify(members)); }
-    catch { throw new Error("Browser storage is full or unavailable. Remove an unused photo or use an image URL."); }
-  };
-  return {
-    async teamPhotos() { return { members: read() }; },
-    async createTeamPhoto(body) {
-      const members = read();
-      const member = { ...body, id: crypto.randomUUID(), updatedAt: new Date().toISOString() };
-      write([...members, member]);
-      return { member };
-    },
-    async updateTeamPhoto(id, body) {
-      const members = read();
-      const index = members.findIndex((member) => member.id === id);
-      if (index === -1) throw new Error("Team member not found. Refresh and try again.");
-      members[index] = { ...members[index], ...body, id, updatedAt: new Date().toISOString() };
-      write(members);
-      return { member: members[index] };
-    },
-    async deleteTeamPhoto(id) {
-      write(read().filter((member) => member.id !== id));
-    },
-  };
+    const photos = saved === null ? DEFAULT_TEAM_PHOTOS : JSON.parse(saved);
+    return Array.isArray(photos) ? photos.filter((photo) => photo.id && photo.name && photo.image_url) : [];
+  } catch { return []; }
 }
-
-// Access browser storage lazily so module imports also work outside a browser.
-export const localTeamPhotoApi = createLocalTeamPhotoApi({
-  getItem: (key) => window.localStorage.getItem(key),
-  setItem: (key, value) => window.localStorage.setItem(key, value),
-});
