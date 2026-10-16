@@ -432,26 +432,44 @@ export default function TicketsAccommodation() {
       pdf.setDrawColor(197, 162, 95);
       pdf.line(14, 32, 117, 32);
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(16);
-      pdf.text(searchedTicket.name, 14, 44);
+      pdf.setFontSize(15);
+      pdf.text(searchedTicket.name, 14, 40);
+
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(10);
+      pdf.setTextColor(197, 162, 95);
+      pdf.text(passName, 14, 47);
+
+      pdf.setTextColor(242, 229, 212);
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(11);
-      pdf.text(passName, 14, 53);
+      pdf.setFontSize(9);
+
+      let currentY = 54;
       if (searchedTicket.teamName) {
-        pdf.text(`Team: ${searchedTicket.teamName}`, 14, 61);
-        pdf.text(`Ticket ID: ${searchedTicket.ticketId}`, 14, 69);
-        pdf.text(`Paid: INR ${searchedTicket.amountPaid}`, 14, 77);
-        if (searchedTicket.accommodationDays) pdf.text(`Accommodation: ${searchedTicket.accommodationDays} day(s)`, 14, 85);
-      } else {
-        pdf.text(`Ticket ID: ${searchedTicket.ticketId}`, 14, 63);
-        pdf.text(`Paid: INR ${searchedTicket.amountPaid}`, 14, 71);
-        if (searchedTicket.accommodationDays) pdf.text(`Accommodation: ${searchedTicket.accommodationDays} day(s)`, 14, 79);
+        pdf.text(`Team: ${searchedTicket.teamName}`, 14, currentY, { maxWidth: 104 });
+        currentY += 6;
       }
+      if (searchedTicket.college) {
+        const collegeLines = pdf.splitTextToSize(`College: ${searchedTicket.college}${searchedTicket.city ? ` (${searchedTicket.city})` : ""}`, 104);
+        pdf.text(collegeLines, 14, currentY);
+        currentY += collegeLines.length > 1 ? 4.5 * collegeLines.length : 6;
+      }
+      pdf.text(`Ticket ID: ${searchedTicket.ticketId}`, 14, currentY);
+      currentY += 6;
+      pdf.text(`Paid: INR ${searchedTicket.amountPaid}`, 14, currentY);
+      currentY += 6;
+      if (searchedTicket.accommodationDays) {
+        pdf.text(`Accommodation: ${searchedTicket.accommodationDays} day(s)`, 14, currentY);
+        currentY += 6;
+      }
+
       pdf.setFontSize(8);
+      pdf.setTextColor(180, 205, 216);
       pdf.text("Present this QR at each event stage. Each stage admits you once.", 14, 91);
       pdf.addImage(qrData, "PNG", 124, 24, 43, 43);
       pdf.setFontSize(8);
-      pdf.text("Keep this ticket safe · Do not share the QR", 124, 74, { maxWidth: 44, align: "center" });
+      pdf.setTextColor(197, 162, 95);
+      pdf.text("Keep this ticket safe · Do not share the QR", 145.5, 74, { maxWidth: 44, align: "center" });
       pdf.save(`${searchedTicket.ticketId}-ticket.pdf`);
     } catch {
       setDownloadError("Could not create the ticket PDF. Please try again.");
@@ -627,6 +645,12 @@ export default function TicketsAccommodation() {
                           <p className="font-mono text-sm font-black text-[#9E6D1F]">{searchedTicket.ticketId}</p>
                         </div>
                       </div>
+                      {searchedTicket.college && (
+                        <div className="mb-2 flex items-center justify-between border-t border-[#0C2B3D]/10 pt-3">
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#2C5263]">College / Org</span>
+                          <strong className="font-montserrat text-sm font-semibold text-[#0C2B3D] text-right">{searchedTicket.college}{searchedTicket.city ? ` (${searchedTicket.city})` : ""}</strong>
+                        </div>
+                      )}
                       {searchedTicket.teamName && (
                         <div className="mb-2 flex items-center justify-between border-t border-[#0C2B3D]/10 pt-3">
                           <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#2C5263]">Team Name</span>

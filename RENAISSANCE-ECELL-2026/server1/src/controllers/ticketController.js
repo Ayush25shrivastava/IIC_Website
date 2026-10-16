@@ -36,6 +36,8 @@ function publicTicket(ticket) {
     ticketId: ticket.ticketId,
     name: ticket.name,
     teamName: ticket.teamName,
+    college: ticket.college,
+    city: ticket.city,
     ticketType: ticket.ticketType,
     accommodationDays: ticket.accommodationDays,
     amountPaid: ticket.amountPaid,
@@ -232,6 +234,8 @@ export const getTicketStatus = async (req, res) => {
       Object.assign(result, {
         name: ticket.name,
         teamName: ticket.teamName,
+        college: ticket.college,
+        city: ticket.city,
         ticketType: ticket.ticketType,
         accommodationDays: ticket.accommodationDays,
         amountPaid: ticket.amountPaid,
