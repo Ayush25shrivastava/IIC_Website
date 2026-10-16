@@ -1,5 +1,12 @@
 import mongoose from 'mongoose';
+import { randomBytes } from 'node:crypto';
 const { Schema } = mongoose;
+
+const ticketScanSchema = new Schema({
+  stage: { type: Number, required: true, min: 1, max: 3 },
+  scannedAt: { type: Date, required: true, default: Date.now },
+  scannedBy: { type: Schema.Types.ObjectId, ref: 'Admin', required: true },
+}, { _id: false });
 
 const ticketSchema = new Schema({
   name: { type: String, required: true },
@@ -7,28 +14,31 @@ const ticketSchema = new Schema({
   phone: { type: String, required: true },
   college: { type: String, required: true },
   city: { type: String, required: true },
-  
-  ticketType: { 
-    type: String, 
-    enum: ['event-only', '1-day', '2-day'],
-    required: true 
+
+  ticketType: {
+    type: String,
+    enum: ['event-standard', 'event-premium', 'event-elite', 'accom-standard', 'accom-premium', 'accom-elite'],
+    required: true
   },
-  
+  accommodationDays: { type: Number, min: 0, max: 4, default: 0 },
+
   checkInDate: { type: Date },
   checkOutDate: { type: Date },
   accommodationPreferences: { type: String },
-  
-  transactionId: { 
-    type: String, 
+
+  transactionId: {
+    type: String,
     required: true,
     unique: true
   },
-  
+
   ticketId: {
     type: String,
-    unique: true
+    unique: true,
+    required: true,
+    default: () => `REN-${randomBytes(6).toString('hex').toUpperCase()}`
   },
-  
+
   amount: { type: Number, required: true },
   amountPaid: { type: Number, required: true },
 
@@ -37,9 +47,10 @@ const ticketSchema = new Schema({
     enum: ['Pending', 'Verified', 'Rejected'],
     default: 'Pending'
   },
-  
-  verifiedBy: { type: Schema.Types.ObjectId, ref: 'User' },
-  verificationRemarks: { type: String }
+
+  verifiedBy: { type: Schema.Types.ObjectId, ref: 'Admin' },
+  verificationRemarks: { type: String },
+  stageScans: { type: [ticketScanSchema], default: [] }
 
 }, { timestamps: true });
 
