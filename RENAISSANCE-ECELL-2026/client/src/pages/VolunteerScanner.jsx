@@ -23,7 +23,7 @@ function CameraReader({ onDecoded, onError }) {
                 () => { },
             );
         });
-        scannerLifecycle = startTask.catch(() => {});
+        scannerLifecycle = startTask.catch(() => { });
         startTask.catch((error) => {
             if (active) onError(error?.message || "Camera could not start. Check its browser permission.");
         });
@@ -31,9 +31,9 @@ function CameraReader({ onDecoded, onError }) {
         return () => {
             active = false;
             scannerLifecycle = scannerLifecycle.then(async () => {
-                if (scanner.isScanning) await scanner.stop().catch(() => {});
+                if (scanner.isScanning) await scanner.stop().catch(() => { });
                 try { scanner.clear(); } catch { /* The scanner host is unmounted. */ }
-            }).catch(() => {});
+            }).catch(() => { });
         };
     }, [onDecoded, onError]);
     return <div id="volunteer-qr-reader" className="mx-auto min-h-64 w-full max-w-lg overflow-hidden rounded-2xl bg-slate-950 [&_video]:w-full [&_video]:rounded-xl [&_button]:m-2 [&_button]:rounded-lg [&_button]:bg-white [&_button]:px-3 [&_button]:py-2 [&_button]:text-slate-900 [&_select]:rounded-lg" />;
