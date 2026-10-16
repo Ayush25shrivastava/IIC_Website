@@ -16,6 +16,6 @@ function requireAdminPage(req, res, next) {
   });
 }
 adminPagesRouter.get("/login", (_req, res, next) => res.sendFile(indexFile, (error) => { if (error) next(error); }));
-adminPagesRouter.get("/", requireAdminPage, (req, res) => res.redirect(302, `${req.baseUrl}/campus-ambassadors`));
+adminPagesRouter.get("/", (req, res) => res.redirect(302, `${req.baseUrl}/login`));
 adminPagesRouter.get("/campus-ambassadors", requireAdminPage, (_req, res, next) => res.sendFile(indexFile, (error) => { if (error) next(error); }));
 adminPagesRouter.get("/tickets", requireAdminPage, (_req, res, next) => res.sendFile(indexFile, (error) => { if (error) next(error); }));

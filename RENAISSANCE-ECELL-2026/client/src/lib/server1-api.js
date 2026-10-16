@@ -1,4 +1,4 @@
-const API_BASE_URL = (import.meta.env?.VITE_SERVER1_API_URL || "http://localhost:5001/api/v1").replace(/\/+$/, "");
+const API_BASE_URL = (import.meta.env?.VITE_SERVER1_API_URL || "http://localhost:5008/api/v1").replace(/\/+$/, "");
 const API_ROOT_URL = API_BASE_URL.replace(/\/api\/v1$/, "");
 
 export class ApiClientError extends Error {
@@ -171,6 +171,10 @@ export const ambassadorApi = {
 };
 
 export const adminApi = {
+  teamPhotos: () => request("/admin/team-photos", {}, "admin"),
+  createTeamPhoto: (body) => request("/admin/team-photos", { method: "POST", body }, "admin"),
+  updateTeamPhoto: (id, body) => request(`/admin/team-photos/${encodeURIComponent(id)}`, { method: "PUT", body }, "admin"),
+  deleteTeamPhoto: (id) => request(`/admin/team-photos/${encodeURIComponent(id)}`, { method: "DELETE" }, "admin"),
   login: (body) => request("/admin/auth/login", { method: "POST", body }, null, false),
   me: () => request("/admin/auth/me", {}, "admin"),
   logout: () => request("/admin/auth/logout", { method: "POST" }, null, false),
@@ -268,3 +272,7 @@ export const ticketApi = {
 };
 
 export const server1ApiBaseUrl = API_BASE_URL;
+export const getTeamPhotos = () => request("/team-photos");
+export const teamPhotoUrl = (member) => member.uploaded
+  ? buildUrl(`/team-photos/${encodeURIComponent(member.id)}/image`, { v: member.updatedAt })
+  : member.image_url;
