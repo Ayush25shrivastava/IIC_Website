@@ -6,8 +6,8 @@ import { localAdminMode, LOCAL_ADMIN } from "../lib/local-admin";
 import "./admin-dashboard.css";
 
 export default function AdminSession() {
-  const [admin, setAdmin] = useState(localAdminMode ? LOCAL_ADMIN : null);
-  const [loading, setLoading] = useState(!localAdminMode);
+  const [admin, setAdmin] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
   const { pathname } = useLocation();
@@ -36,16 +36,27 @@ export default function AdminSession() {
   }, []);
 
   useEffect(() => {
-    if (localAdminMode) return;
     let active = true;
-    adminApi.me().then((data) => { if (active) setAdmin(data.admin); })
-      .catch((err) => { if (active && err.status !== 401 && err.status !== 403) setError("We couldn't reach the admin service. Please try again."); })
+    adminApi.me().then((data) => {
+      if (active) setAdmin(data.admin);
+    })
+      .catch((err) => {
+        if (!active) return;
+        if (localAdminMode) {
+          // If on localhost and not authenticated, fallback to local admin for photo management
+          setAdmin((curr) => (curr && curr.id !== "local-admin" ? curr : LOCAL_ADMIN));
+          return;
+        }
+        if (err.status !== 401 && err.status !== 403) {
+          setError("We couldn't reach the admin service. Please try again.");
+        }
+      })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [attempt]);
 
   useEffect(() => {
-    if (!admin || localAdminMode) return;
+    if (!admin || admin.id === "local-admin") return;
     const check = () => { if (document.visibilityState === "visible") adminApi.me().catch(handleError); };
     const interval = setInterval(check, 60000);
     window.addEventListener("focus", check);
@@ -53,19 +64,19 @@ export default function AdminSession() {
   }, [admin, handleError]);
 
   async function logout() {
-    if (localAdminMode) { navigate("/"); return; }
-    await adminApi.logout(); // A failed revocation must not look like a successful logout.
+    try { await adminApi.logout(); } catch { /* Ignore network errors on logout */ }
     setAdmin(null);
     navigate("/admin/login", { replace: true });
   }
 
   // Navigation and the sign-in form must work even when the API is offline.
+  const isRealAdmin = admin && admin.id !== "local-admin";
   const context = { admin, setAdmin, logout, handleError };
-  if (localAdminMode && pathname.endsWith("/tickets")) return <Navigate to="/admin/campus-ambassadors" replace />;
   if (adminEntry) return <Navigate to={admin ? "/admin/campus-ambassadors" : "/admin/login"} replace />;
-  if (loginPage) return admin ? <Navigate to="/admin/campus-ambassadors" replace /> : <Outlet context={context} />;
+  if (loginPage) return isRealAdmin ? <Navigate to="/admin/campus-ambassadors" replace /> : <Outlet context={context} />;
   if (loading && !admin) return <div className="admin-app admin-gate" role="status"><LoaderCircle className="animate-spin" /> Checking admin session…</div>;
   if (error && !admin) return <div className="admin-app admin-gate"><p role="alert">{error}</p><button onClick={() => { setError(""); setLoading(true); setAttempt((n) => n + 1); }}>Try again</button><button onClick={() => navigate("/admin/login")}>Go to admin sign-in</button></div>;
   if (!admin && !loginPage) return <Navigate to="/admin/login" replace />;
+  if (pathname.endsWith("/tickets") && !isRealAdmin) return <Navigate to="/admin/login" replace />;
   return <Outlet context={context} />;
 }

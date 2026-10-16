@@ -39,7 +39,8 @@ app.use(
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Request-ID"],
     origin(origin, callback) {
-      if (!origin || env.CLIENT_ORIGINS.includes(origin)) {
+      const cleanOrigin = origin ? origin.replace(/\/+$/, "") : "";
+      if (!origin || env.CLIENT_ORIGINS.includes(cleanOrigin) || env.CLIENT_ORIGINS.includes(origin)) {
         callback(null, true);
         return;
       }

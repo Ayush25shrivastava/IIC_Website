@@ -1,5 +1,19 @@
-const API_BASE_URL = (import.meta.env?.VITE_SERVER1_API_URL || "http://localhost:5008/api/v1").replace(/\/+$/, "");
+const API_BASE_URL = (import.meta.env?.VITE_SERVER1_API_URL || "http://localhost:5001/api/v1").replace(/\/+$/, "");
 const API_ROOT_URL = API_BASE_URL.replace(/\/api\/v1$/, "");
+
+let adminToken = typeof window !== "undefined" ? localStorage.getItem("rn_admin_token") || null : null;
+
+export function setStoredAdminToken(token) {
+  adminToken = token;
+  if (typeof window !== "undefined") {
+    if (token) localStorage.setItem("rn_admin_token", token);
+    else localStorage.removeItem("rn_admin_token");
+  }
+}
+
+export function getStoredAdminToken() {
+  return adminToken;
+}
 
 export class ApiClientError extends Error {
   constructor(message, { status = 0, code = "REQUEST_FAILED", details = null, requestId = null } = {}) {
@@ -65,6 +79,10 @@ async function send(path, { method = "GET", body, query, signal, keepalive = fal
     requestBody = JSON.stringify(body);
   }
 
+  if (adminToken) {
+    headers["Authorization"] = `Bearer ${adminToken}`;
+  }
+
   return fetch(buildUrl(path, query, baseUrl), {
     method,
     headers,
@@ -105,6 +123,12 @@ async function refreshAuth(authScope) {
       : send(refreshPath, { method: "POST" }));
 
     if (response.ok) {
+      if (authScope === "admin") {
+        try {
+          const payload = await response.clone().json();
+          if (payload?.data?.accessToken) setStoredAdminToken(payload.data.accessToken);
+        } catch { /* response was not json */ }
+      }
       return { ok: true, status: response.status, error: null };
     }
 
@@ -114,6 +138,10 @@ async function refreshAuth(authScope) {
       } catch (error) {
         return { ok: false, status: response.status, error };
       }
+    }
+
+    if (authScope === "admin" && (response.status === 401 || response.status === 403)) {
+      setStoredAdminToken(null);
     }
 
     return { ok: false, status: response.status, error: null };
@@ -175,9 +203,19 @@ export const adminApi = {
   createTeamPhoto: (body) => request("/admin/team-photos", { method: "POST", body }, "admin"),
   updateTeamPhoto: (id, body) => request(`/admin/team-photos/${encodeURIComponent(id)}`, { method: "PUT", body }, "admin"),
   deleteTeamPhoto: (id) => request(`/admin/team-photos/${encodeURIComponent(id)}`, { method: "DELETE" }, "admin"),
-  login: (body) => request("/admin/auth/login", { method: "POST", body }, null, false),
+  login: async (body) => {
+    const data = await request("/admin/auth/login", { method: "POST", body }, null, false);
+    if (data?.accessToken) setStoredAdminToken(data.accessToken);
+    return data;
+  },
   me: () => request("/admin/auth/me", {}, "admin"),
-  logout: () => request("/admin/auth/logout", { method: "POST" }, null, false),
+  logout: async () => {
+    try {
+      await request("/admin/auth/logout", { method: "POST" }, null, false);
+    } finally {
+      setStoredAdminToken(null);
+    }
+  },
   changePassword: (body) => request(
     "/admin/auth/change-password",
     { method: "POST", body },

@@ -39,7 +39,7 @@ const schema = z.object({
   JWT_ACCESS_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(900),
   JWT_REFRESH_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
   AUTH_COOKIE_SECURE: booleanFromEnv.optional(),
-  AUTH_COOKIE_SAME_SITE: z.enum(["lax", "strict", "none"]).default("lax"),
+  AUTH_COOKIE_SAME_SITE: z.enum(["lax", "strict", "none"]).default(process.env.NODE_ENV === "production" ? "none" : "lax"),
   AUTH_COOKIE_DOMAIN: z.string().trim().optional(),
   VOLUNTEER_SCANNER_EMAIL: z.string().trim().email().optional(),
   VOLUNTEER_SCANNER_PASSWORD: z.string().min(8).optional(),
@@ -61,7 +61,7 @@ if (Boolean(parsed.data.VOLUNTEER_SCANNER_EMAIL) !== Boolean(parsed.data.VOLUNTE
 
 const clientOrigins = parsed.data.CLIENT_ORIGIN
   .split(",")
-  .map((origin) => origin.trim())
+  .map((origin) => origin.trim().replace(/\/+$/, ""))
   .filter(Boolean);
 
 if (clientOrigins.length === 0) {

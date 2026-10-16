@@ -24,10 +24,11 @@
 .admin-brand .admin-kicker { font-size: 10px; }
 .admin-nav-label { margin: 42px 12px 20px; color: var(--admin-muted); }
 .admin-sidebar nav { display: grid; gap: 10px; }
-.admin-sidebar nav button { justify-content: flex-start; padding: 15px 12px; background: transparent; border-color: transparent; text-align: left; font-size: 14px; }
-.admin-sidebar nav button svg { flex-shrink: 0; color: #679caf; }
-.admin-sidebar nav button.selected { background: #f7f1df; border-color: #dcbb6e; color: #224c60; }
-.admin-sidebar nav button.selected svg { color: #b18b36; }
+.admin-sidebar nav :is(button, a) { justify-content: flex-start; padding: 15px 12px; background: transparent; border: 1px solid transparent; border-radius: 11px; text-align: left; font-size: 14px; display: inline-flex; align-items: center; gap: 9px; color: #376579; font-weight: 600; text-decoration: none; cursor: pointer; transition: background .15s; }
+.admin-sidebar nav :is(button, a):hover { background: #f4fcfd; }
+.admin-sidebar nav :is(button, a) svg { flex-shrink: 0; color: #679caf; }
+.admin-sidebar nav :is(button, a).selected { background: #f7f1df; border-color: #dcbb6e; color: #224c60; }
+.admin-sidebar nav :is(button, a).selected svg { color: #b18b36; }
 .admin-sidebar nav button b { margin-left: auto; color: #997329; background: #f7eed5; border: 1px solid #dfc580; border-radius: 6px; padding: 0 6px; }
 .admin-sidebar-footer { border-top: 1px solid #afd4df; display: flex; align-items: center; gap: 10px; padding: 22px 0 12px; margin-top: auto; font-size: 12px; }
 .admin-sidebar-footer > svg { color: #b18b36; }

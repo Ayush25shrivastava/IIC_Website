@@ -142,7 +142,13 @@ export default function CampusAmbassadorAdmin() {
     <aside className={`admin-sidebar ${mobileOpen ? "is-open" : ""}`}>
       <div className="admin-brand"><img src={logo} alt="Renaissance" /><span className="admin-kicker">Admin command center</span></div>
       <p className="admin-kicker admin-nav-label">The command deck</p>
-      <nav aria-label="Admin navigation">{sections.map(([id, label, Icon]) => <button key={id} className={tab === id ? "selected" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => navigateSection(id)}><Icon size={20} /><span>{label}</span>{id === "reviews" && pending.length > 0 && <b>{pending.length}</b>}</button>)}{!localAdminMode && <Link to="/admin/tickets" className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm font-semibold text-[#376579] transition hover:bg-white/70"><Ticket size={20} className="text-[#b18b36]" /><span>Ticket operations</span></Link>}</nav>
+      <nav aria-label="Admin navigation">
+        {sections.map(([id, label, Icon]) => <button key={id} className={tab === id ? "selected" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => navigateSection(id)}><Icon size={20} /><span>{label}</span>{id === "reviews" && pending.length > 0 && <b>{pending.length}</b>}</button>)}
+        <Link to="/admin/tickets">
+          <Ticket size={20} />
+          <span>Ticket management</span>
+        </Link>
+      </nav>
       <div className="admin-sidebar-footer"><ShieldCheck /><div><strong>{admin.name}</strong><small>Program administrator</small></div><button aria-label={localAdminMode ? "Exit local portal" : "Sign out"} disabled={busy} onClick={async () => { setBusy(true); try { await logout(); } catch (err) { report(err); setBusy(false); } }}><LogOut size={18} /></button></div>
       <p className="admin-kicker admin-credit">E-CELL · MNNIT ALLAHABAD</p>
     </aside>

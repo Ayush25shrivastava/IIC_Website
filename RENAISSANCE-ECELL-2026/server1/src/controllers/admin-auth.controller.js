@@ -40,11 +40,11 @@ export async function adminLogin(req, res) {
   admin.mustChangePassword = false;
   admin.lastLoginAt = new Date();
   await admin.save();
-  await createAdminAuthSession({ admin, req, res });
+  const { accessToken } = await createAdminAuthSession({ admin, req, res });
 
   res.set("Cache-Control", "no-store").status(200).json({
     success: true,
-    data: { admin: publicAdmin(admin), mustChangePassword: admin.mustChangePassword },
+    data: { admin: publicAdmin(admin), accessToken, mustChangePassword: admin.mustChangePassword },
   });
 }
 
@@ -83,7 +83,10 @@ export async function adminRefresh(req, res) {
     throw new ApiError(401, "Admin refresh token reuse was detected", "ADMIN_REFRESH_REUSE_DETECTED");
   }
 
-  res.set("Cache-Control", "no-store").status(200).json({ success: true, data: { admin: publicAdmin(admin) } });
+  res.set("Cache-Control", "no-store").status(200).json({
+    success: true,
+    data: { admin: publicAdmin(admin), accessToken: rotated.accessToken },
+  });
 }
 
 export async function adminLogout(req, res) {
