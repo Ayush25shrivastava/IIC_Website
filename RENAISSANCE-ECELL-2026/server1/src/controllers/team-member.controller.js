@@ -338,19 +338,25 @@ export async function adminDeleteTeamMember(req, res) {
 
 // Admin: Quick +1 / -1 Slot
 export async function adminAdjustSlots(req, res) {
-  const { category, action } = req.body;
+  const { category, action, subTeam } = req.body;
   if (!category || !["add", "remove"].includes(action)) {
     throw new ApiError(400, "Valid category and action ('add' | 'remove') are required", "INVALID_SLOT_ACTION");
   }
 
+  const query = { category };
+  if (subTeam && subTeam !== "ALL") {
+    query.subTeam = subTeam;
+  }
+
   if (action === "add") {
-    const highest = await TeamMember.findOne({ category }).sort({ sequence: -1 });
+    const highest = await TeamMember.findOne(query).sort({ sequence: -1 });
     const nextSeq = highest ? highest.sequence + 1 : 1;
     const label = DEFAULT_CATEGORY_LABELS[category] || "Our Team";
     const member = await TeamMember.create({
       name: `Member ${nextSeq}`,
       category,
       categoryLabel: label,
+      subTeam: subTeam && subTeam !== "ALL" ? subTeam : (category === "pre_final_year" ? "Marketing Team" : ""),
       role: "",
       sequence: nextSeq,
       imageUrl: "",
@@ -360,7 +366,7 @@ export async function adminAdjustSlots(req, res) {
   }
 
   if (action === "remove") {
-    const highest = await TeamMember.findOne({ category }).sort({ sequence: -1 });
+    const highest = await TeamMember.findOne(query).sort({ sequence: -1 });
     if (!highest) {
       throw new ApiError(400, "No slots left to remove in this category", "NO_SLOTS_TO_REMOVE");
     }

@@ -28,49 +28,55 @@ const INITIAL_FACULTY = [
   },
 ];
 
-// Faculty Card - exact dimensions matching reference photo without role text inside
+// Faculty Card - exact dimensions matching Photo 1 with hover scale & highlight
 function FacultyCard({ member }) {
   const imageSrc = member.imageUrl || member.image_url || "/placeholder-speaker.svg";
 
   return (
-    <article className="teams-member-card teams-faculty-card group flex w-full max-w-[280px] shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-3.5 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:w-[245px] sm:rounded-2xl sm:p-4 hover:border-[#238BBB] hover:shadow-[0_16px_32px_rgba(35,93,119,0.25)]">
-      <div className="aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC] shadow-inner group-hover:border-[#78C8ED] transition-colors">
-        <img
-          src={imageSrc}
-          alt={member.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => {
-            e.currentTarget.src = "/placeholder-speaker.svg";
-          }}
-        />
+    <article className="teams-member-card teams-faculty-card group relative flex w-full max-w-[270px] sm:w-[260px] h-full shrink-0 cursor-pointer flex-col justify-between rounded-2xl border border-[#D8C4A8] bg-[#FDF3DF] p-3.5 sm:p-4 text-center shadow-[0_10px_24px_rgba(84,64,43,0.18)] transition-all duration-300 ease-out hover:z-20 hover:-translate-y-2 hover:scale-[1.04] hover:border-[#238BBB] hover:bg-[#FFF9EE] hover:shadow-[0_22px_44px_rgba(84,64,43,0.30)]">
+      <div className="flex flex-col items-center">
+        {/* Square Portrait Photo (matching Photo 1) */}
+        <div className="aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC] shadow-inner transition-colors group-hover:border-[#78C8ED]">
+          <img
+            src={imageSrc}
+            alt={member.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => {
+              e.currentTarget.src = "/placeholder-speaker.svg";
+            }}
+          />
+        </div>
+        <h3 className="mt-3.5 flex min-h-[2.5rem] items-center justify-center font-cinzel text-base font-bold uppercase leading-snug text-[#40352B] transition-colors group-hover:text-[#166E94] sm:min-h-[3rem] sm:text-xl">
+          {member.name}
+        </h3>
       </div>
-      <h3 className="mt-3 font-cinzel text-base font-bold leading-snug text-[#40352B] transition-colors group-hover:text-[#166E94] sm:mt-5 sm:text-2xl">
-        {member.name}
-      </h3>
-      {member.linkedin && (
+
+      {member.linkedin ? (
         <a
           href={member.linkedin}
           target="_blank"
           rel="noreferrer"
-          className="mt-2.5 inline-flex items-center justify-center gap-1.5 self-center font-montserrat text-[10px] font-bold uppercase tracking-[0.1em] text-[#7A6A58] transition-colors hover:text-[#40352B] sm:mt-4 sm:gap-2 sm:text-xs sm:tracking-[0.13em]"
+          className="mt-3 inline-flex items-center justify-center gap-1.5 self-center font-montserrat text-[10px] font-bold uppercase tracking-[0.1em] text-[#7A6A58] transition-colors hover:text-[#40352B] sm:gap-2 sm:text-xs sm:tracking-[0.13em]"
         >
           <FaLinkedin className="text-lg text-[#0077B5]" aria-hidden="true" />
           <span>LINKEDIN</span>
         </a>
+      ) : (
+        <div className="mt-3 h-[20px] sm:h-[24px]" />
       )}
     </article>
   );
 }
 
-// Student & Member Card - 4 in a row, with role description box
+// Student & Member Card - identical dimensions to Photo 1 with role pill and hover highlight
 function MemberCard({ member }) {
   const imageSrc = member.imageUrl || member.image_url || "/placeholder-speaker.svg";
 
   return (
-    <article className="teams-member-card group relative flex w-full max-w-[270px] shrink-0 flex-col justify-between overflow-hidden rounded-2xl border border-[#D8C4A8] bg-[#FDF3DF] p-3.5 text-center shadow-[0_10px_24px_rgba(84,64,43,0.18)] transition-all duration-300 hover:border-[#238BBB] hover:shadow-[0_16px_32px_rgba(35,93,119,0.25)] sm:p-4">
-      <div>
-        {/* Portrait Photo (3:4 ratio) */}
-        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC] shadow-inner group-hover:border-[#78C8ED] transition-colors">
+    <article className="teams-member-card group relative flex w-full max-w-[270px] sm:w-[260px] h-full shrink-0 cursor-pointer flex-col justify-between rounded-2xl border border-[#D8C4A8] bg-[#FDF3DF] p-3.5 sm:p-4 text-center shadow-[0_10px_24px_rgba(84,64,43,0.18)] transition-all duration-300 ease-out hover:z-20 hover:-translate-y-2 hover:scale-[1.04] hover:border-[#238BBB] hover:bg-[#FFF9EE] hover:shadow-[0_22px_44px_rgba(84,64,43,0.30)]">
+      <div className="flex flex-col items-center">
+        {/* Square Photo matching Photo 1 */}
+        <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC] shadow-inner transition-colors group-hover:border-[#78C8ED]">
           <img
             src={imageSrc}
             alt={member.name}
@@ -83,18 +89,18 @@ function MemberCard({ member }) {
         </div>
 
         {/* Member Name */}
-        <h3 className="mt-3.5 font-cinzel text-base font-bold uppercase leading-snug tracking-wide text-[#31291F] transition-colors group-hover:text-[#166E94]">
+        <h3 className="mt-3.5 flex min-h-[2.5rem] items-center justify-center text-center font-cinzel text-base font-bold uppercase leading-snug tracking-wide text-[#31291F] transition-colors group-hover:text-[#166E94] line-clamp-2">
           {member.name}
         </h3>
 
-        {/* Role Description Box (e.g. President, Media co-lead) */}
-        <div className="mt-2.5 w-full rounded-lg border border-[#D8C4A8] bg-[#F4E9D5] px-2.5 py-1.5 text-center font-montserrat text-xs font-bold uppercase tracking-wider text-[#54402B] shadow-sm group-hover:border-[#78C8ED] group-hover:text-[#166E94] transition-colors">
+        {/* Role Description Box */}
+        <div className="mt-2 flex min-h-[34px] w-full items-center justify-center rounded-lg border border-[#D8C4A8] bg-[#F4E9D5] px-2.5 py-1.5 text-center font-montserrat text-xs font-bold uppercase tracking-wider text-[#54402B] shadow-sm transition-colors group-hover:border-[#78C8ED] group-hover:text-[#166E94]">
           {member.role || "Member"}
         </div>
       </div>
 
       {/* Social Links */}
-      <div className="mt-4 flex items-center justify-center gap-3 border-t border-[#D8C4A8]/40 pt-2.5 text-[#7A6A58]">
+      <div className="mt-3 flex min-h-[32px] items-center justify-center gap-3 border-t border-[#D8C4A8]/40 pt-2 text-[#7A6A58]">
         {member.linkedin && (
           <a
             href={member.linkedin}
@@ -173,13 +179,26 @@ export default function Teams({ embedded = false }) {
     .filter((m) => m.category === "second_year")
     .sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
 
-  // Group Pre-Final Year by sub-teams (e.g. Marketing Team, Media Team, Event Management Team, Web Team)
-  const preFinalSubteams = preFinalYearMembers.reduce((acc, member) => {
-    const sub = (member.subTeam || "General").trim();
-    if (!acc[sub]) acc[sub] = [];
-    acc[sub].push(member);
-    return acc;
-  }, {});
+  // Group sub-teams dynamically
+  const groupBySubteam = (memberList) => {
+    return memberList.reduce((acc, member) => {
+      const sub = (member.subTeam || "General").trim();
+      if (!acc[sub]) acc[sub] = [];
+      acc[sub].push(member);
+      return acc;
+    }, {});
+  };
+
+  const finalYearSubteams = groupBySubteam(finalYearMembers);
+  const finalYearHasDistinctSubteams =
+    Object.keys(finalYearSubteams).length > 1 ||
+    (Object.keys(finalYearSubteams).length === 1 && !finalYearSubteams["General"]);
+
+  const preFinalSubteams = groupBySubteam(preFinalYearMembers);
+  const secondYearSubteams = groupBySubteam(secondYearMembers);
+  const secondYearHasDistinctSubteams =
+    Object.keys(secondYearSubteams).length > 1 ||
+    (Object.keys(secondYearSubteams).length === 1 && !secondYearSubteams["General"]);
 
   return (
     <div
@@ -215,7 +234,7 @@ export default function Teams({ embedded = false }) {
 
         {/* Seamless Scroll Sections */}
         <div className="space-y-20 sm:space-y-28">
-          {/* SECTION 1: FACULTY INCHARGE (At the top, 2 professors) */}
+          {/* SECTION 1: FACULTY INCHARGE (If 2: centered side-by-side as screenshot; If >2: 4-in-a-row) */}
           <section className="teams-faculty-section" aria-labelledby="faculty-incharge-heading">
             <h2 id="faculty-incharge-heading" className={MAIN_SECTION_HEADING_CLASS}>
               <span className="transition-transform duration-300 group-hover:scale-105">
@@ -223,14 +242,22 @@ export default function Teams({ embedded = false }) {
               </span>
               <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%] sm:mt-3 sm:w-24" />
             </h2>
-            <div className="flex flex-col items-center justify-center gap-6 px-1 pb-2 sm:flex-row sm:gap-12">
-              {facultyMembers.map((member) => (
-                <FacultyCard key={member._id} member={member} />
-              ))}
-            </div>
+            {facultyMembers.length <= 2 ? (
+              <div className="flex flex-col items-center justify-center gap-6 px-1 pb-2 sm:flex-row sm:gap-12">
+                {facultyMembers.map((member) => (
+                  <FacultyCard key={member._id} member={member} />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-8 justify-items-center">
+                {facultyMembers.map((member) => (
+                  <FacultyCard key={member._id} member={member} />
+                ))}
+              </div>
+            )}
           </section>
 
-          {/* SECTION 2: FINAL YEAR (4 cards in a row) */}
+          {/* SECTION 2: FINAL YEAR (4 cards in a row, with dynamic sub-teams if defined) */}
           {finalYearMembers.length > 0 && (
             <section className="teams-final-year-section" aria-labelledby="final-year-heading">
               <h2 id="final-year-heading" className={MAIN_SECTION_HEADING_CLASS}>
@@ -240,15 +267,38 @@ export default function Teams({ embedded = false }) {
                 <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%] sm:mt-3 sm:w-24" />
               </h2>
 
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-8 justify-items-center">
-                {finalYearMembers.map((member) => (
-                  <MemberCard key={member._id} member={member} />
-                ))}
-              </div>
+              {finalYearHasDistinctSubteams ? (
+                <div className="space-y-16">
+                  {Object.entries(finalYearSubteams).map(([subteamName, subMembers]) => (
+                    <div key={subteamName} className="subteam-block">
+                      <h3 className={SUB_SECTION_HEADING_CLASS}>
+                        <span className="transition-transform duration-300 group-hover:scale-105">
+                          {subteamName}
+                        </span>
+                        <span className="mt-2 h-0.5 w-14 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[60%]" />
+                      </h3>
+
+                      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-8 justify-items-center">
+                        {subMembers
+                          .sort((a, b) => (a.sequence || 0) - (b.sequence || 0))
+                          .map((member) => (
+                            <MemberCard key={member._id} member={member} />
+                          ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-8 justify-items-center">
+                  {finalYearMembers.map((member) => (
+                    <MemberCard key={member._id} member={member} />
+                  ))}
+                </div>
+              )}
             </section>
           )}
 
-          {/* SECTION 3: PRE-FINAL YEAR (Sub-teams: Marketing, Media, Events, Web, etc. - 4 cards in a row) */}
+          {/* SECTION 3: PRE-FINAL YEAR (Sub-teams: Marketing, Media, Events, Web, and any customizable sub-team - 4 cards in a row) */}
           {preFinalYearMembers.length > 0 && (
             <section className="teams-prefinal-section" aria-labelledby="pre-final-year-heading">
               <h2 id="pre-final-year-heading" className={MAIN_SECTION_HEADING_CLASS}>
@@ -281,7 +331,7 @@ export default function Teams({ embedded = false }) {
             </section>
           )}
 
-          {/* SECTION 4: SECOND YEAR (4 cards in a row, if any) */}
+          {/* SECTION 4: SECOND YEAR (4 cards in a row, with dynamic sub-teams if present) */}
           {secondYearMembers.length > 0 && (
             <section className="teams-second-year-section" aria-labelledby="second-year-heading">
               <h2 id="second-year-heading" className={MAIN_SECTION_HEADING_CLASS}>
@@ -291,11 +341,34 @@ export default function Teams({ embedded = false }) {
                 <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%] sm:mt-3 sm:w-24" />
               </h2>
 
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-8 justify-items-center">
-                {secondYearMembers.map((member) => (
-                  <MemberCard key={member._id} member={member} />
-                ))}
-              </div>
+              {secondYearHasDistinctSubteams ? (
+                <div className="space-y-16">
+                  {Object.entries(secondYearSubteams).map(([subteamName, subMembers]) => (
+                    <div key={subteamName} className="subteam-block">
+                      <h3 className={SUB_SECTION_HEADING_CLASS}>
+                        <span className="transition-transform duration-300 group-hover:scale-105">
+                          {subteamName}
+                        </span>
+                        <span className="mt-2 h-0.5 w-14 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[60%]" />
+                      </h3>
+
+                      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-8 justify-items-center">
+                        {subMembers
+                          .sort((a, b) => (a.sequence || 0) - (b.sequence || 0))
+                          .map((member) => (
+                            <MemberCard key={member._id} member={member} />
+                          ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-8 justify-items-center">
+                  {secondYearMembers.map((member) => (
+                    <MemberCard key={member._id} member={member} />
+                  ))}
+                </div>
+              )}
             </section>
           )}
         </div>

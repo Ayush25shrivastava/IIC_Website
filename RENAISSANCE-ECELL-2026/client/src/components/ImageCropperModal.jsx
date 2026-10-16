@@ -5,10 +5,10 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
   const canvasRef = useRef(null);
   const [imageObj, setImageObj] = useState(null);
 
-  // Settings
-  const [preset, setPreset] = useState("3:4");
+  // Settings - defaults to Square 1:1 matching card layout
+  const [preset, setPreset] = useState("1:1");
   const [targetWidth, setTargetWidth] = useState(600);
-  const [targetHeight, setTargetHeight] = useState(800);
+  const [targetHeight, setTargetHeight] = useState(600);
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -33,15 +33,15 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
   // Handle Preset change
   const handlePresetChange = (newPreset) => {
     setPreset(newPreset);
-    if (newPreset === "3:4") {
+    if (newPreset === "1:1") {
+      setTargetWidth(600);
+      setTargetHeight(600);
+    } else if (newPreset === "3:4") {
       setTargetWidth(600);
       setTargetHeight(800);
     } else if (newPreset === "4:5") {
       setTargetWidth(800);
       setTargetHeight(1000);
-    } else if (newPreset === "1:1") {
-      setTargetWidth(600);
-      setTargetHeight(600);
     }
   };
 
@@ -78,7 +78,7 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
     ctx.restore();
 
     // Subtle framing border
-    ctx.strokeStyle = "rgba(227, 85, 33, 0.7)";
+    ctx.strokeStyle = "rgba(225, 188, 115, 0.85)";
     ctx.lineWidth = 2;
     ctx.strokeRect(1, 1, previewWidth - 2, previewHeight - 2);
   }, [imageObj, targetWidth, targetHeight, zoom, rotation, position]);
@@ -144,21 +144,21 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-2xl rounded-2xl border border-[#3b1717] bg-[#140b0b] p-6 text-neutral-100 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#062030]/80 p-4 backdrop-blur-md">
+      <div className="relative w-full max-w-2xl rounded-2xl border border-[#b4dbe3] bg-gradient-to-br from-[#eaf7fa] to-[#cbeaf0] p-6 text-[#173f52] shadow-2xl">
         {/* Header */}
-        <div className="mb-4 flex items-center justify-between border-b border-neutral-800 pb-3">
+        <div className="mb-4 flex items-center justify-between border-b border-[#b0d8e2] pb-3">
           <div>
-            <h3 className="flex items-center gap-2 text-lg font-bold text-orange-500">
-              <Sparkles size={18} /> Edit & Crop Image
+            <h3 className="flex items-center gap-2 font-cinzel text-lg font-bold text-[#173f52]">
+              <Sparkles size={18} className="text-[#b17e2e]" /> Edit & Crop Portrait Image
             </h3>
-            <p className="text-xs text-neutral-400">
-              Adjust position, zoom, and resolution for: <span className="font-semibold text-neutral-200">{targetTitle}</span>
+            <p className="text-xs text-[#527e8e]">
+              Adjust framing, zoom, and orientation for: <span className="font-semibold text-[#173f52]">{targetTitle}</span>
             </p>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-neutral-400 transition hover:bg-neutral-800 hover:text-white"
+            className="rounded-lg p-1.5 text-[#527e8e] transition hover:bg-[#d0ecf2] hover:text-[#173f52]"
           >
             <X size={20} />
           </button>
@@ -167,7 +167,7 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
         {/* Workspace */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Canvas Preview */}
-          <div className="flex flex-col items-center justify-center rounded-xl border border-neutral-800 bg-[#0c0505] p-4">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-[#b4dbe3] bg-[#0c2433] p-4 shadow-inner">
             <div
               className="relative cursor-move overflow-hidden rounded-lg shadow-lg select-none"
               onMouseDown={handleMouseDown}
@@ -176,11 +176,11 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
               onMouseLeave={handleMouseUp}
             >
               <canvas ref={canvasRef} className="block" />
-              <div className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/70 px-2 py-0.5 text-[10px] text-neutral-300">
-                <Move size={12} /> Drag to position
+              <div className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-1 rounded bg-[#062030]/80 px-2 py-0.5 text-[10px] text-[#e2f4f7]">
+                <Move size={12} className="text-[#efd084]" /> Drag to position
               </div>
             </div>
-            <span className="mt-2 text-[11px] font-mono text-neutral-400">
+            <span className="mt-2 text-[11px] font-mono text-[#a2cbdb]">
               Output: {targetWidth} × {targetHeight} px ({preset})
             </span>
           </div>
@@ -190,7 +190,7 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
             <div className="space-y-4">
               {/* Presets */}
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-neutral-300">
+                <label className="mb-1.5 block font-montserrat text-xs font-bold text-[#173f52]">
                   Aspect Ratio & Preset
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -203,10 +203,10 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
                       key={val}
                       type="button"
                       onClick={() => handlePresetChange(val)}
-                      className={`rounded-lg border px-2 py-1.5 text-xs font-medium transition ${
+                      className={`rounded-lg border px-2 py-1.5 text-xs font-semibold transition ${
                         preset === val
-                          ? "border-orange-500 bg-orange-600/20 text-orange-400"
-                          : "border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:border-neutral-700"
+                          ? "border-[#b17e2e] bg-[#f9ebbd] text-[#72551c] shadow-sm"
+                          : "border-[#b8dce4] bg-[#e4f5f8] text-[#4d7b8d] hover:bg-[#d6f0f5]"
                       }`}
                     >
                       {lbl}
@@ -217,12 +217,12 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
 
               {/* Resolution settings */}
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-neutral-300">
+                <label className="mb-1.5 block font-montserrat text-xs font-bold text-[#173f52]">
                   Target Resolution (Pixels)
                 </label>
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
-                    <span className="mb-0.5 block text-[10px] text-neutral-500">Width</span>
+                    <span className="mb-0.5 block text-[10px] text-[#527e8e]">Width</span>
                     <input
                       type="number"
                       value={targetWidth}
@@ -230,12 +230,12 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
                         setTargetWidth(Math.max(100, Number(e.target.value)));
                         setPreset("custom");
                       }}
-                      className="w-full rounded-md border border-neutral-800 bg-neutral-900 px-2.5 py-1 text-xs text-white"
+                      className="w-full rounded-md border border-[#afd6e1] bg-[#f0fbfc] px-2.5 py-1 text-xs text-[#173f52]"
                     />
                   </div>
-                  <span className="mt-4 text-xs text-neutral-500">×</span>
+                  <span className="mt-4 text-xs text-[#527e8e]">×</span>
                   <div className="flex-1">
-                    <span className="mb-0.5 block text-[10px] text-neutral-500">Height</span>
+                    <span className="mb-0.5 block text-[10px] text-[#527e8e]">Height</span>
                     <input
                       type="number"
                       value={targetHeight}
@@ -243,7 +243,7 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
                         setTargetHeight(Math.max(100, Number(e.target.value)));
                         setPreset("custom");
                       }}
-                      className="w-full rounded-md border border-neutral-800 bg-neutral-900 px-2.5 py-1 text-xs text-white"
+                      className="w-full rounded-md border border-[#afd6e1] bg-[#f0fbfc] px-2.5 py-1 text-xs text-[#173f52]"
                     />
                   </div>
                 </div>
@@ -251,11 +251,11 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
 
               {/* Zoom slider */}
               <div>
-                <div className="mb-1 flex items-center justify-between text-xs font-semibold text-neutral-300">
+                <div className="mb-1 flex items-center justify-between text-xs font-bold text-[#173f52]">
                   <span className="flex items-center gap-1">
-                    <ZoomIn size={14} /> Zoom
+                    <ZoomIn size={14} className="text-[#0d7892]" /> Zoom
                   </span>
-                  <span className="font-mono text-orange-400">{zoom.toFixed(1)}x</span>
+                  <span className="font-mono text-[#b17e2e]">{zoom.toFixed(1)}x</span>
                 </div>
                 <input
                   type="range"
@@ -264,17 +264,17 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
                   step="0.05"
                   value={zoom}
                   onChange={(e) => setZoom(Number(e.target.value))}
-                  className="w-full accent-orange-500"
+                  className="w-full accent-[#b17e2e]"
                 />
               </div>
 
               {/* Rotation */}
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-neutral-300">Rotate</label>
+                <label className="mb-1.5 block font-montserrat text-xs font-bold text-[#173f52]">Orientation</label>
                 <button
                   type="button"
                   onClick={() => setRotation((prev) => (prev + 90) % 360)}
-                  className="flex items-center gap-1.5 rounded-lg border border-neutral-800 bg-neutral-900/60 px-3 py-1.5 text-xs text-neutral-300 transition hover:bg-neutral-800"
+                  className="flex items-center gap-1.5 rounded-lg border border-[#b8dce4] bg-[#e4f5f8] px-3 py-1.5 text-xs font-semibold text-[#376579] transition hover:bg-[#d5eff4]"
                 >
                   <RotateCw size={14} /> Rotate 90° ({rotation}°)
                 </button>
@@ -282,18 +282,18 @@ export default function ImageCropperModal({ imageSrc, onCropComplete, onClose, t
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-2 border-t border-neutral-800 pt-3">
+            <div className="flex items-center justify-end gap-2 border-t border-[#b0d8e2] pt-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg border border-neutral-700 px-4 py-2 text-xs font-medium text-neutral-300 transition hover:bg-neutral-800"
+                className="rounded-lg border border-[#b8dce4] bg-[#e4f5f8] px-4 py-2 text-xs font-semibold text-[#527e8e] transition hover:bg-[#d6f0f5]"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSave}
-                className="flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-xs font-bold text-white shadow-lg transition hover:bg-orange-500"
+                className="flex items-center gap-1.5 rounded-lg border border-[#d8b15c] bg-gradient-to-r from-[#f9ebbd] to-[#efd084] px-4 py-2 text-xs font-bold text-[#72551c] shadow transition hover:brightness-105 active:scale-95"
               >
                 <Check size={16} /> Apply & Use Crop
               </button>
