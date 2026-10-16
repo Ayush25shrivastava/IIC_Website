@@ -1,142 +1,32 @@
+import { useEffect, useState } from "react";
+import { getTeamPhotos, teamPhotoUrl } from "../lib/server1-api";
+import { TEAM_PHOTO_CATEGORIES } from "../data/teamPhotoCategories";
+import { getAssetUrl } from "../utils/assetUrl";
 import { FaLinkedin } from "react-icons/fa";
 import ContactFooter from "../components/ContactFooter";
 
-// Replace this path with each member's photo when it is available.
-// const DUMMY_MEMBER_PHOTO = "/placeholder-speaker.svg";
 const MAIN_SECTION_HEADING_CLASS =
   "group mx-auto mb-5 flex w-fit cursor-default flex-col items-center font-cinzel text-[1.65rem] font-bold leading-tight tracking-[0.04em] text-[#166E94] sm:mb-9 sm:text-5xl sm:tracking-[0.06em]";
-
-const facultyIncharges = [
-  {
-    name: "Prof. Mukul Shukla",
-    image_url:
-      "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029796/image_1_roojuv.avif",
-    linkedin: "https://www.linkedin.com/in/mukul-shukla-329a7121",
-  },
-  {
-    name: "Prof. Mayank Pandey",
-    image_url:
-      "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029797/image_wj6szw.avif",
-    linkedin: "https://www.linkedin.com/in/mayank-pandey-0b433137/",
-  },
-];
-
-/* Temporarily hidden along with the Final, Third, and Second Year card sections.
-const finalYearMembers = Array.from({ length: 10 }, (_, index) => ({
-  name: `Final Year Member ${index + 1}`,
-  position: "Final Year",
-  image_url: DUMMY_MEMBER_PHOTO,
-  linkedin: `https://www.linkedin.com/in/final-year-member-${index + 1}/`,
-}));
-
-const thirdYearTeams = [
-  "Web Team",
-  "Marketing Team",
-  "Design Team",
-  "Content Team",
-  "Video Team",
-].map((teamName) => ({
-  name: teamName,
-  members: Array.from({ length: 10 }, (_, index) => ({
-    name: `${teamName} Member ${index + 1}`,
-    position: "Third Year",
-    image_url: DUMMY_MEMBER_PHOTO,
-    linkedin: `https://www.linkedin.com/in/${teamName
-      .toLowerCase()
-      .replace(/\s/g, "-")}-member-${index + 1}/`,
-  })),
-}));
-
-const secondYearTeams = [
-  "Web Team",
-  "Marketing Team",
-  "Design Team",
-  "Content Team",
-  "Video Team",
-].map((teamName) => ({
-  name: teamName,
-  members: Array.from({ length: 10 }, (_, index) => ({
-    name: `${teamName} Member ${index + 1}`,
-    registration_no: `2024${String(index + 1).padStart(4, "0")}`,
-    linkedin: `https://www.linkedin.com/in/second-year-${teamName
-      .toLowerCase()
-      .replace(/\s/g, "-")}-member-${index + 1}/`,
-  })),
-}));
-*/
-
-/* Temporarily hidden along with the Final, Third, and Second Year card sections.
-const MemberCard = ({ member, compact = false }) => (
-  <div className={`teams-member-card group relative rounded-2xl bg-[#FDF3DF] border border-[#78C8ED] hover:border-[#238BBB] shadow-[0_8px_22px_rgba(35,93,119,0.16)] hover:shadow-[0_12px_28px_rgba(35,93,119,0.22)] transition-all duration-300 flex flex-col items-center text-center overflow-hidden cursor-pointer ${compact ? "min-h-[210px] justify-center px-6 py-8" : "p-6"}`}>
-
-    {!compact && (
-      <div className="relative w-24 h-24 rounded-full p-1 bg-[#78C8ED] mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300">
-        <div className="w-full h-full rounded-full overflow-hidden bg-[#FDF3DF] p-0.5 border border-[#238BBB]">
-          <img
-            src={member.image_url || "/placeholder-speaker.svg"}
-            alt={member.name}
-            className="w-full h-full object-cover rounded-full filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
-            onError={(e) => {
-              e.target.src = "/placeholder-speaker.svg";
-            }}
-          />
-        </div>
-      </div>
-    )}
-
-    <h3 className={`font-cinzel font-bold text-[#173F56] mb-1.5 tracking-wide group-hover:text-[#238BBB] transition-colors ${compact ? "text-lg" : "text-sm sm:text-base"}`}>
-      {member.name}
-    </h3>
-
-    {!compact && member.position && (
-      <p className="text-[11px] text-[#166E94] font-montserrat font-semibold tracking-wide uppercase px-2.5 py-0.5 rounded-full bg-[#C7EBFA] border border-[#78C8ED] shadow-sm">
-        {member.position}
-      </p>
-    )}
-
-    {compact && member.registration_no && (
-      <p className="mt-4 text-xs font-montserrat font-semibold tracking-wider text-[#7A6A58] uppercase">
-        Reg: {member.registration_no}
-      </p>
-    )}
-
-    {member.team && (
-      <p className="text-[10px] text-[#9A6B27] font-mono mt-2 tracking-widest uppercase">
-        {member.team}
-      </p>
-    )}
-
-    {member.linkedin && (
-      <a
-        href={member.linkedin}
-        target="_blank"
-        rel="noreferrer"
-        className={`mt-3 inline-flex items-center justify-center gap-2 font-montserrat font-bold uppercase tracking-wider text-[#7A6A58] transition-colors hover:text-[#173F56] ${compact ? "w-full rounded-lg border border-[#D8C4A8] bg-[#F1E0C9] px-4 py-3 text-xs" : "text-[10px] underline underline-offset-4"}`}
-      >
-        <FaLinkedin className="text-base" aria-hidden="true" />
-        <span>LinkedIn</span>
-      </a>
-    )}
-  </div>
-);
-*/
 
 const FacultyCard = ({ member }) => (
   <article className="teams-member-card teams-faculty-card group flex w-full max-w-[280px] shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-3 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:w-[232px] sm:rounded-2xl sm:p-4">
     <div className="aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC]">
       <img
-        src={member.image_url}
+        src={teamPhotoUrl(member)}
         alt={member.name}
         className="h-full w-full object-cover"
         onError={(e) => {
-          e.currentTarget.src = "/placeholder-speaker.svg";
+          const fallback = getAssetUrl("/placeholder-speaker.svg");
+          if (e.currentTarget.getAttribute("src") !== fallback) e.currentTarget.src = fallback;
         }}
       />
     </div>
     <h3 className="mt-3 font-cinzel text-base font-bold leading-snug text-[#40352B] sm:mt-5 sm:text-2xl">
       {member.name}
     </h3>
-    <a
+    {member.position && <p className="mt-2 text-sm text-[#7A6A58]">{member.position}</p>}
+    {member.team && <p className="mt-1 text-xs text-[#7A6A58]">{member.team}</p>}
+    {member.linkedin && <a
       href={member.linkedin}
       target="_blank"
       rel="noreferrer"
@@ -144,76 +34,28 @@ const FacultyCard = ({ member }) => (
     >
       <FaLinkedin className="text-lg" aria-hidden="true" />
       <span>LinkedIn</span>
-    </a>
+    </a>}
   </article>
 );
 
-/* Temporarily hidden along with the Final, Third, and Second Year card sections.
-const ScrollingMemberRow = ({
-  members,
-  label,
-  compact = false,
-  reverse = false,
-}) => {
-  const [isPaused, setIsPaused] = useState(false);
-  const carouselRef = useRef(null);
-  const trackRef = useRef(null);
-
-  const keepScrollLooping = () => {
-    const carousel = carouselRef.current;
-    const track = trackRef.current;
-
-    if (!carousel || !track) return;
-
-    const groupWidth = track.scrollWidth / 3;
-
-    if (carousel.scrollLeft < groupWidth / 2) {
-      carousel.scrollLeft += groupWidth;
-    } else if (carousel.scrollLeft > groupWidth * 1.5) {
-      carousel.scrollLeft -= groupWidth;
-    }
-  };
-
-  return (
-    <div
-      ref={carouselRef}
-      className={`teams-member-row -mx-4 -my-6 rounded-2xl px-4 py-6 ${
-        isPaused
-          ? "overflow-x-auto cursor-ew-resize"
-          : "overflow-hidden"
-      }`}
-      aria-label={`Automatically scrolling ${label} members`}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onScroll={keepScrollLooping}
-    >
-      <div
-        ref={trackRef}
-        className="flex w-max"
-        style={{
-          animation: `${reverse ? "teams-member-scroll-reverse" : "teams-member-scroll"} 36s linear infinite`,
-          animationPlayState: isPaused ? "paused" : "running",
-        }}
-      >
-        {[...members, ...members, ...members].map((member, index) => (
-          <div
-            key={`${member.name}-${index}`}
-            className={`${compact ? "w-[372px]" : "w-[312px]"} shrink-0 pr-8`}
-            aria-hidden={index >= members.length}
-          >
-            <MemberCard
-              member={member}
-              compact={compact}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-*/
 
 export default function Teams({ embedded = false }) {
+  const [members, setMembers] = useState([]);
+  const [photoError, setPhotoError] = useState("");
+  const [photosLoading, setPhotosLoading] = useState(true);
+  useEffect(() => {
+    let active = true;
+    const refresh = () => {
+      if (document.visibilityState !== "visible") return;
+      getTeamPhotos().then((data) => { if (active) { setMembers(data.members); setPhotoError(""); } })
+        .catch(() => { if (active) setPhotoError("Team photos are temporarily unavailable. Please try again shortly."); })
+        .finally(() => { if (active) setPhotosLoading(false); });
+    };
+    refresh();
+    window.addEventListener("focus", refresh);
+    window.addEventListener("visibilitychange", refresh);
+    return () => { active = false; window.removeEventListener("focus", refresh); window.removeEventListener("visibilitychange", refresh); };
+  }, []);
   return (
     <div className={`${embedded ? "py-12 sm:py-16" : "teams-page-root min-h-[100svh] pt-[68px] sm:pt-24"} flex flex-col justify-between overflow-x-hidden bg-[radial-gradient(ellipse_at_15%_18%,rgba(249,231,196,0.60)_0%,transparent_34%),radial-gradient(ellipse_at_85%_76%,rgba(128,199,220,0.35)_0%,transparent_36%),linear-gradient(180deg,#E9DFC9_0%,#C6DEE0_20%,#D7E1D9_44%,#F2E8C8_72%,#FFD9A5_100%)] text-[#173F56]`}>
       <style>{`
@@ -349,91 +191,22 @@ export default function Teams({ embedded = false }) {
         </header>
 
         <div className="space-y-14">
-          <section
-            className="teams-faculty-section overflow-x-clip"
-            aria-labelledby="faculty-incharge-heading"
-          >
-            <h2
-              id="faculty-incharge-heading"
-              className={`${MAIN_SECTION_HEADING_CLASS} teams-faculty-heading`}
-            >
-              <span className="transition-transform duration-300 group-hover:scale-105">Faculty Incharge</span>
-              <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%] sm:mt-3 sm:w-24" />
-            </h2>
-            <div className="teams-faculty-cards flex flex-col items-center justify-center gap-4 px-1 pb-2 sm:flex-row sm:gap-12">
-              {facultyIncharges.map((member) => (
-                <FacultyCard key={member.name} member={member} />
-              ))}
-            </div>
-          </section>
-
-          {/* Temporarily hidden: Final Year member cards.
-          <section aria-labelledby="final-year-heading">
-            <h2
-              id="final-year-heading"
-              className={MAIN_SECTION_HEADING_CLASS}
-            >
-              <span className="transition-transform duration-300 group-hover:scale-105">Final Year</span>
-              <span className="mt-3 h-1 w-24 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%]" />
-            </h2>
-            <ScrollingMemberRow
-              members={finalYearMembers}
-              label="final year"
-            />
-          </section> */}
-
-          {/* Temporarily hidden: Third Year team cards.
-          <section aria-labelledby="third-year-heading">
-            <h2
-              id="third-year-heading"
-              className={MAIN_SECTION_HEADING_CLASS}
-            >
-              <span className="transition-transform duration-300 group-hover:scale-105">Third Year</span>
-              <span className="mt-3 h-1 w-24 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%]" />
-            </h2>
-            <div className="space-y-10">
-              {thirdYearTeams.map(({ name, members }, index) => (
-                <div key={name}>
-                  <h3 className="group mx-auto mb-14 flex w-fit cursor-default flex-col items-center font-cinzel text-lg font-bold uppercase tracking-[0.06em] text-[#173F56]">
-                    <span className="transition-transform duration-300 group-hover:scale-105">{name}</span>
-                    <span className="mt-2 h-0.5 w-12 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%]" />
-                  </h3>
-                  <ScrollingMemberRow
-                    members={members}
-                    label={name}
-                    reverse={index % 2 === 0}
-                  />
-                </div>
-              ))}
-            </div>
-          </section> */}
-
-          {/* Temporarily hidden: Second Year team cards.
-          <section aria-labelledby="second-year-heading">
-            <h2
-              id="second-year-heading"
-              className={MAIN_SECTION_HEADING_CLASS}
-            >
-              <span className="transition-transform duration-300 group-hover:scale-105">Second Year</span>
-              <span className="mt-3 h-1 w-24 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%]" />
-            </h2>
-            <div className="space-y-10">
-              {secondYearTeams.map(({ name, members }, index) => (
-                <div key={name}>
-                  <h3 className="group mx-auto mb-14 flex w-fit cursor-default flex-col items-center font-cinzel text-lg font-bold uppercase tracking-[0.06em] text-[#173F56]">
-                    <span className="transition-transform duration-300 group-hover:scale-105">{name}</span>
-                    <span className="mt-2 h-0.5 w-12 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%]" />
-                  </h3>
-                  <ScrollingMemberRow
-                    members={members}
-                    label={name}
-                    compact
-                    reverse={(thirdYearTeams.length + index + 1) % 2 === 1}
-                  />
-                </div>
-              ))}
-            </div>
-          </section> */}
+          {photosLoading && <p role="status" className="text-center">Loading team photos…</p>}
+          {photoError && <p role="alert" className="text-center">{photoError}</p>}
+          {!photosLoading && !photoError && !members.length && <p className="text-center">Team photos will be added soon.</p>}
+          {TEAM_PHOTO_CATEGORIES.map(([category, label]) => {
+            const group = members.filter((member) => member.category === category);
+            if (!group.length) return null;
+            return <section key={category} className="teams-faculty-section overflow-x-clip" aria-labelledby={`team-${category}-heading`}>
+              <h2 id={`team-${category}-heading`} className={`${MAIN_SECTION_HEADING_CLASS} teams-faculty-heading`}>
+                <span>{label}</span>
+                <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-24" />
+              </h2>
+              <div className="teams-faculty-cards flex flex-wrap items-stretch justify-center gap-4 px-1 pb-2 sm:gap-12">
+                {group.map((member) => <FacultyCard key={member.id} member={member} />)}
+              </div>
+            </section>;
+          })}
         </div>
       </div>
 

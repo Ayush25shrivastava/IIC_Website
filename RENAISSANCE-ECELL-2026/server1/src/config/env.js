@@ -22,6 +22,10 @@ const schema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(5008),
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
   REQUEST_BODY_LIMIT: z.string().min(1).default("1mb"),
+  CLOUDINARY_CLOUD_NAME: z.string().regex(/^[a-zA-Z0-9_-]+$/).default("zs9y1gjj"),
+  CLOUDINARY_API_KEY: z.string().trim().default(""),
+  CLOUDINARY_API_SECRET: z.string().trim().default(""),
+  LOCAL_TEAM_PHOTO_ADMIN: booleanFromEnv.default(false),
   CLIENT_ORIGIN: z.string().min(1, "CLIENT_ORIGIN is required"),
   MONGODB_URI: mongoUriSchema,
   MONGO_SERVER_SELECTION_TIMEOUT_MS: z.coerce.number().int().min(1000).max(60000).default(10000),
@@ -39,7 +43,7 @@ const schema = z.object({
   JWT_ACCESS_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(900),
   JWT_REFRESH_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
   AUTH_COOKIE_SECURE: booleanFromEnv.optional(),
-  AUTH_COOKIE_SAME_SITE: z.enum(["lax", "strict", "none"]).default("lax"),
+  AUTH_COOKIE_SAME_SITE: z.enum(["lax", "strict", "none"]).default(process.env.NODE_ENV === "production" ? "none" : "lax"),
   AUTH_COOKIE_DOMAIN: z.string().trim().optional(),
   VOLUNTEER_SCANNER_EMAIL: z.string().trim().email().optional(),
   VOLUNTEER_SCANNER_PASSWORD: z.string().min(8).optional(),
@@ -61,7 +65,7 @@ if (Boolean(parsed.data.VOLUNTEER_SCANNER_EMAIL) !== Boolean(parsed.data.VOLUNTE
 
 const clientOrigins = parsed.data.CLIENT_ORIGIN
   .split(",")
-  .map((origin) => origin.trim())
+  .map((origin) => origin.trim().replace(/\/+$/, ""))
   .filter(Boolean);
 
 if (clientOrigins.length === 0) {

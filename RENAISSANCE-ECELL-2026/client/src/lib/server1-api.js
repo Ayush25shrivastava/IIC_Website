@@ -5,6 +5,22 @@ const API_BASE_URL = import.meta.env?.DEV
   ? (configuredApiBaseUrl || "/api/v1")
   : (configuredApiBaseUrl?.startsWith("/") ? configuredApiBaseUrl : "/api/v1");
 const API_ROOT_URL = API_BASE_URL.startsWith("/") ? "" : API_BASE_URL.replace(/\/api\/v1$/, "");
+const API_BASE_URL = (import.meta.env?.VITE_SERVER1_API_URL || "http://localhost:5001/api/v1").replace(/\/+$/, "");
+const API_ROOT_URL = API_BASE_URL.replace(/\/api\/v1$/, "");
+
+let adminToken = typeof window !== "undefined" ? localStorage.getItem("rn_admin_token") || null : null;
+
+export function setStoredAdminToken(token) {
+  adminToken = token;
+  if (typeof window !== "undefined") {
+    if (token) localStorage.setItem("rn_admin_token", token);
+    else localStorage.removeItem("rn_admin_token");
+  }
+}
+
+export function getStoredAdminToken() {
+  return adminToken;
+}
 
 export class ApiClientError extends Error {
   constructor(message, { status = 0, code = "REQUEST_FAILED", details = null, requestId = null } = {}) {
@@ -61,7 +77,7 @@ async function readResponse(response) {
   return payload?.data ?? payload;
 }
 
-async function send(path, { method = "GET", body, query, signal, keepalive = false } = {}, baseUrl = API_BASE_URL) {
+async function send(path, { method = "GET", body, query, signal, cache, keepalive = false } = {}, baseUrl = API_BASE_URL) {
   const headers = { Accept: "application/json" };
   let requestBody;
 
@@ -70,11 +86,16 @@ async function send(path, { method = "GET", body, query, signal, keepalive = fal
     requestBody = JSON.stringify(body);
   }
 
+  if (adminToken) {
+    headers["Authorization"] = `Bearer ${adminToken}`;
+  }
+
   return fetch(buildUrl(path, query, baseUrl), {
     method,
     headers,
     body: requestBody,
     credentials: "include",
+    cache,
     keepalive,
     signal: signal || AbortSignal.timeout(15000),
   });
@@ -110,6 +131,12 @@ async function refreshAuth(authScope) {
       : send(refreshPath, { method: "POST" }));
 
     if (response.ok) {
+      if (authScope === "admin") {
+        try {
+          const payload = await response.clone().json();
+          if (payload?.data?.accessToken) setStoredAdminToken(payload.data.accessToken);
+        } catch { /* response was not json */ }
+      }
       return { ok: true, status: response.status, error: null };
     }
 
@@ -119,6 +146,10 @@ async function refreshAuth(authScope) {
       } catch (error) {
         return { ok: false, status: response.status, error };
       }
+    }
+
+    if (authScope === "admin" && (response.status === 401 || response.status === 403)) {
+      setStoredAdminToken(null);
     }
 
     return { ok: false, status: response.status, error: null };
@@ -176,9 +207,23 @@ export const ambassadorApi = {
 };
 
 export const adminApi = {
-  login: (body) => request("/admin/auth/login", { method: "POST", body }, null, false),
+  teamPhotos: () => request("/admin/team-photos", {}, "admin"),
+  createTeamPhoto: (body) => request("/admin/team-photos", { method: "POST", body }, "admin"),
+  updateTeamPhoto: (id, body) => request(`/admin/team-photos/${encodeURIComponent(id)}`, { method: "PUT", body }, "admin"),
+  deleteTeamPhoto: (id) => request(`/admin/team-photos/${encodeURIComponent(id)}`, { method: "DELETE" }, "admin"),
+  login: async (body) => {
+    const data = await request("/admin/auth/login", { method: "POST", body }, null, false);
+    if (data?.accessToken) setStoredAdminToken(data.accessToken);
+    return data;
+  },
   me: () => request("/admin/auth/me", {}, "admin"),
-  logout: () => request("/admin/auth/logout", { method: "POST" }, null, false),
+  logout: async () => {
+    try {
+      await request("/admin/auth/logout", { method: "POST" }, null, false);
+    } finally {
+      setStoredAdminToken(null);
+    }
+  },
   changePassword: (body) => request(
     "/admin/auth/change-password",
     { method: "POST", body },
@@ -273,3 +318,19 @@ export const ticketApi = {
 };
 
 export const server1ApiBaseUrl = API_BASE_URL;
+export const getTeamPhotos = () => request("/team-photos", { cache: "no-store", signal: AbortSignal.timeout(60000) });
+export function createTeamPhotoApi(local = false) {
+  const prefix = local ? "/local-admin/team-photos" : "/admin/team-photos";
+  const scope = local ? null : "admin";
+  const call = (path, options = {}) => request(`${prefix}${path}`, { ...options, cache: "no-store", signal: AbortSignal.timeout(60000) }, scope);
+  return {
+    teamPhotos: () => call(""),
+    createTeamPhoto: (body) => call("", { method: "POST", body }),
+    updateTeamPhoto: (id, body) => call(`/${encodeURIComponent(id)}`, { method: "PUT", body }),
+    deleteTeamPhoto: (id) => call(`/${encodeURIComponent(id)}`, { method: "DELETE" }),
+    importTeamPhoto: (id, body) => call(`/import/${encodeURIComponent(id)}`, { method: "POST", body }),
+  };
+}
+export const teamPhotoUrl = (member) => member.uploaded
+  ? buildUrl(`/team-photos/${encodeURIComponent(member.id)}/image`, { v: member.updatedAt })
+  : member.image_url;
