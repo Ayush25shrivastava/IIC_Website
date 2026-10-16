@@ -8,6 +8,20 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  server: {
+    proxy: {
+      '/api/v1': {
+        target: 'http://localhost:5001',
+        changeOrigin: true,
+        cookieDomainRewrite: '',
+      },
+      '/tickets': {
+        target: 'http://localhost:5001',
+        changeOrigin: true,
+        cookieDomainRewrite: '',
+      },
+    },
+  },
   optimizeDeps: {
     include: ['lenis'],
   },
