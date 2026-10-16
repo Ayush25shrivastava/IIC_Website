@@ -35,6 +35,7 @@ function publicTicket(ticket) {
   return {
     ticketId: ticket.ticketId,
     name: ticket.name,
+    teamName: ticket.teamName,
     ticketType: ticket.ticketType,
     accommodationDays: ticket.accommodationDays,
     amountPaid: ticket.amountPaid,
@@ -49,10 +50,11 @@ export const purchaseTicket = async (req, res) => {
       name, email, phone, college, city, ticketType,
       checkInDate, checkOutDate, accommodationPreferences, transactionId, amountPaid,
       accommodationDays = 0,
+      teamName,
     } = req.body;
 
     // Validate required fields
-    const requiredText = [name, email, phone, college, city, ticketType, transactionId];
+    const requiredText = [name, email, phone, college, city, ticketType, transactionId, teamName];
     if (!requiredText.every((value) => typeof value === 'string' && value.trim()) || amountPaid === undefined || amountPaid === null || String(amountPaid).trim() === '') {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
@@ -85,6 +87,7 @@ export const purchaseTicket = async (req, res) => {
       phone: phone.trim(),
       college: college.trim(),
       city: city.trim(),
+      teamName: teamName.trim(),
       ticketType,
       accommodationDays: days,
       checkInDate: checkInDate || null,
@@ -228,6 +231,7 @@ export const getTicketStatus = async (req, res) => {
     if (ticket.status === 'Verified') {
       Object.assign(result, {
         name: ticket.name,
+        teamName: ticket.teamName,
         ticketType: ticket.ticketType,
         accommodationDays: ticket.accommodationDays,
         amountPaid: ticket.amountPaid,
