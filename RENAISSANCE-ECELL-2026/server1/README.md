@@ -191,13 +191,15 @@ Use the existing variables from `.env.example`:
 
 - Backend: `MONGODB_URI`, `CLIENT_ORIGIN`, distinct `JWT_ACCESS_SECRET` and
   `JWT_REFRESH_SECRET` (at least 32 characters each).
-- Client: `VITE_SERVER1_API_URL`, including `/api/v1`. Rebuild the client after changing it.
-- HTTPS production: `NODE_ENV=production` forces secure cookies. Set
-  `AUTH_COOKIE_SAME_SITE=none` when the frontend and API are on different sites;
-  configure the exact frontend origin in `CLIENT_ORIGIN`. Browser third-party cookie
-  restrictions can require hosting the API on the same site.
-- The existing Vercel SPA rewrite supports direct dashboard URLs. Other hosts must
-  similarly serve `index.html` for client routes.
+- Client development: `VITE_SERVER1_API_URL` can point to the local server and must
+  include `/api/v1`. Production Vercel builds use same-origin rewrites for `/api/v1/*`
+  and `/tickets/*` to this service so browser auth cookies are first-party.
+- HTTPS production: `NODE_ENV=production` forces secure cookies. Leave
+  `AUTH_COOKIE_DOMAIN` unset when using the Vercel proxy; cookies must be host-only
+  for the Vercel site, not scoped to `onrender.com`. `CLIENT_ORIGIN` must include the
+  exact Vercel origin. `SameSite=Lax` is suitable for the same-origin proxy.
+- The Vercel SPA rewrite supports direct dashboard URLs. Other hosts must similarly
+  serve `index.html` for client routes.
 
 No new secret is required. Before enabling the new admin dashboard on an existing database, run the dry-run migration documented below. Existing ambassador
 records receive the role default when hydrated; old tasks return `dueAt: null`.

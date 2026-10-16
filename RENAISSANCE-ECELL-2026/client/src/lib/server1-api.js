@@ -1,3 +1,10 @@
+const configuredApiBaseUrl = import.meta.env?.VITE_SERVER1_API_URL?.replace(/\/+$/, "");
+// Production uses same-origin Vercel rewrites so HttpOnly auth cookies are first-party.
+// Development can still target a locally running Express server.
+const API_BASE_URL = import.meta.env?.DEV
+  ? (configuredApiBaseUrl || "/api/v1")
+  : (configuredApiBaseUrl?.startsWith("/") ? configuredApiBaseUrl : "/api/v1");
+const API_ROOT_URL = API_BASE_URL.startsWith("/") ? "" : API_BASE_URL.replace(/\/api\/v1$/, "");
 const API_BASE_URL = (import.meta.env?.VITE_SERVER1_API_URL || "http://localhost:5001/api/v1").replace(/\/+$/, "");
 const API_ROOT_URL = API_BASE_URL.replace(/\/api\/v1$/, "");
 
@@ -28,7 +35,7 @@ export class ApiClientError extends Error {
 
 function buildUrl(path, query, baseUrl = API_BASE_URL) {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const url = new URL(`${baseUrl}${normalizedPath}`);
+  const url = new URL(`${baseUrl}${normalizedPath}`, globalThis.location?.origin || "http://localhost");
 
   if (query) {
     for (const [key, value] of Object.entries(query)) {
