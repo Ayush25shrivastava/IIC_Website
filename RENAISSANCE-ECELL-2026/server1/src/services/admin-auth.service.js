@@ -31,7 +31,29 @@ export function publicAdmin(admin) {
   };
 }
 
+export const MAX_CONCURRENT_ADMIN_SESSIONS = 10;
+
+export async function pruneAdminAuthSessions(adminId, keepCount = MAX_CONCURRENT_ADMIN_SESSIONS - 1) {
+  const activeSessions = await AdminAuthSession.find({
+    adminId,
+    revokedAt: null,
+    expiresAt: { $gt: new Date() },
+  })
+    .sort({ lastUsedAt: -1, createdAt: -1 })
+    .select("_id");
+
+  if (activeSessions.length > keepCount) {
+    const excessSessions = activeSessions.slice(keepCount);
+    await AdminAuthSession.updateMany(
+      { _id: { $in: excessSessions.map((s) => s._id) } },
+      { $set: { revokedAt: new Date(), revokeReason: "MAX_CONCURRENT_SESSIONS_REACHED" } },
+    );
+  }
+}
+
 export async function createAdminAuthSession({ admin, req, res }) {
+  await pruneAdminAuthSessions(admin._id, MAX_CONCURRENT_ADMIN_SESSIONS - 1);
+
   const sessionId = crypto.randomUUID();
   const accessToken = signAdminAccessToken(admin, sessionId);
   const refreshToken = signAdminRefreshToken(admin, sessionId);

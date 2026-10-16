@@ -7,6 +7,7 @@ const PASS_TYPES = [
     ["event-standard", "Standard Pass"], ["event-premium", "Premium Pass"], ["event-elite", "Elite Pass"],
     ["accom-standard", "Standard Pass + Stay"], ["accom-premium", "Premium Pass + Stay"], ["accom-elite", "Elite Pass + Stay"],
 ];
+const PASS_NAMES = Object.fromEntries(PASS_TYPES);
 
 function CameraReader({ onDecoded, onError }) {
     useEffect(() => {
@@ -158,6 +159,7 @@ export default function VolunteerScanner() {
                 {result && <div role={result.error ? "alert" : "status"} className={`mt-5 rounded-2xl border p-4 ${result.error ? "border-rose-300 bg-rose-50 text-rose-900" : result.alreadyScanned ? "border-amber-300 bg-amber-100 text-amber-950" : "border-emerald-300 bg-emerald-50 text-emerald-950"}`}>
                     <div className="flex items-center gap-2 font-black">{result.error ? <XCircle size={21} /> : result.alreadyScanned ? <Ticket size={21} /> : <CheckCircle2 size={21} />}{result.error ? "Scan blocked" : result.alreadyScanned ? `Already scanned · ${result.selectedStage}` : `Admitted · ${result.selectedStage}`}</div>
                     {result.error ? <p className="mt-2 text-sm">{result.error}</p> : <><p className="mt-2 font-cinzel text-lg font-black">{result.ticket?.name}{result.ticket?.teamName ? ` · Team: ${result.ticket.teamName}` : ""}</p><p className="font-mono text-xs">{result.ticket?.ticketId}</p><ScanHistory scans={result.ticket?.stageScans} stages={configs[result.ticket?.ticketType] || []} /></>}
+                    {result.error ? <p className="mt-2 text-sm">{result.error}</p> : <><p className="mt-2 font-cinzel text-lg font-black">{result.ticket?.name}</p><p className="font-mono text-xs">{result.ticket?.ticketId}{result.ticket?.ticketType ? ` · ${PASS_NAMES[result.ticket.ticketType] || result.ticket.ticketType}` : ""}</p><ScanHistory scans={result.ticket?.stageScans} stages={configs[result.ticket?.ticketType] || []} /></>}
                 </div>}
                 <p className="mt-5 text-center text-xs text-[#688b96]">Yellow means this ticket has already been scanned at that stage. Each pass type has its own stage list.</p>
             </div>

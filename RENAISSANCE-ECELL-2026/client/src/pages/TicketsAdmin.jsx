@@ -8,6 +8,7 @@ const PASS_TYPES = [
     ["event-standard", "Standard Pass"], ["event-premium", "Premium Pass"], ["event-elite", "Elite Pass"],
     ["accom-standard", "Standard Pass + Stay"], ["accom-premium", "Premium Pass + Stay"], ["accom-elite", "Elite Pass + Stay"],
 ];
+const PASS_NAMES = Object.fromEntries(PASS_TYPES);
 
 const statusColors = {
     Pending: "border-amber-300 bg-amber-100 text-amber-800",
@@ -212,6 +213,7 @@ export default function TicketsAdmin() {
                 {scanResult && <div role={scanResult.error ? "alert" : "status"} className={`mt-5 rounded-xl border p-4 ${scanResult.error ? "border-rose-300 bg-rose-50 text-rose-800" : scanResult.alreadyScanned ? "border-amber-300 bg-amber-100 text-amber-900" : "border-emerald-300 bg-emerald-50 text-emerald-900"}`}>
                     <div className="flex items-center gap-2 font-black">{scanResult.error ? <XCircle size={20} /> : scanResult.alreadyScanned ? <Ticket size={20} /> : <CheckCircle2 size={20} />}{scanResult.error ? "Scan blocked" : scanResult.alreadyScanned ? `Already scanned · ${scanResult.selectedStage}` : `Admitted · ${scanResult.selectedStage}`}</div>
                     {scanResult.error ? <p className="mt-2 text-sm">{scanResult.error}</p> : <><p className="mt-2 font-cinzel font-bold">{scanResult.ticket?.name}{scanResult.ticket?.teamName ? ` · Team: ${scanResult.ticket.teamName}` : ""}</p><p className="font-mono text-xs">{scanResult.ticket?.ticketId}</p><div className="mt-3"><StageBadges scans={scanResult.ticket?.stageScans} stages={stageConfigs[scanResult.ticket?.ticketType] || []} /></div></>}
+                    {scanResult.error ? <p className="mt-2 text-sm">{scanResult.error}</p> : <><p className="mt-2 font-cinzel font-bold">{scanResult.ticket?.name}</p><p className="font-mono text-xs">{scanResult.ticket?.ticketId}{scanResult.ticket?.ticketType ? ` · ${PASS_NAMES[scanResult.ticket.ticketType] || scanResult.ticket.ticketType}` : ""}</p><div className="mt-3"><StageBadges scans={scanResult.ticket?.stageScans} stages={stageConfigs[scanResult.ticket?.ticketType] || []} /></div></>}
                 </div>}
                 <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900"><strong>Color guide:</strong> yellow indicates a stage that has already been scanned. A ticket’s stages are configured separately for each pass type.</div>
             </aside>

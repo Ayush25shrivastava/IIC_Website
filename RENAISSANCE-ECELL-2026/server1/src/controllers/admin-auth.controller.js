@@ -15,7 +15,7 @@ import { hashPassword, verifyPassword } from "../utils/password.js";
 
 export const adminLoginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 10,
+  limit: 30,
   standardHeaders: "draft-8",
   legacyHeaders: false,
   message: { success: false, error: { code: "ADMIN_LOGIN_RATE_LIMITED", message: "Too many admin login attempts" } },
