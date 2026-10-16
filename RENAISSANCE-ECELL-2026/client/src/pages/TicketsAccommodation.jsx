@@ -26,6 +26,7 @@ import {
   Sparkles,
   Tag,
   Flame,
+  Users,
 } from "lucide-react";
 import ContactFooter from "../components/ContactFooter";
 import PageTransitionShimmer from "../components/PageTransitionShimmer";
@@ -193,6 +194,7 @@ export default function TicketsAccommodation() {
     phone: "",
     college: "",
     city: "",
+    teamName: "",
     checkInDate: "",
     checkOutDate: "",
     accommodationPreferences: "",
@@ -337,18 +339,27 @@ export default function TicketsAccommodation() {
       if (!formData.checkOutDate.trim()) newErrors.checkOutDate = "Check-out Date is required";
     }
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+    if (!formData.teamName.trim()) {
+      newErrors.teamName = "Team Name is required";
     }
 
     if (!formData.transactionId.trim()) {
-      alert("Please enter the Transaction ID / UTR Number");
-      return;
+      newErrors.transactionId = "Transaction ID / UTR is required";
     }
 
     if (!formData.amountPaid.toString().trim()) {
-      alert("Please enter the Amount Paid");
+      newErrors.amountPaid = "Amount Paid is required";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      if (!formData.teamName.trim()) {
+        alert("Please enter your Team Name");
+      } else if (!formData.transactionId.trim()) {
+        alert("Please enter the Transaction ID / UTR Number");
+      } else if (!formData.amountPaid.toString().trim()) {
+        alert("Please enter the Amount Paid");
+      }
       return;
     }
 
@@ -356,6 +367,7 @@ export default function TicketsAccommodation() {
     try {
       const data = await ticketApi.purchase({
         ...formData,
+        teamName: formData.teamName.trim(),
         ticketType: selectedTicket,
         accommodationDays: activeTicketData?.includesAccommodation ? accommodationDays : 0,
         checkInDate: formData.checkInDate || null,
@@ -371,7 +383,7 @@ export default function TicketsAccommodation() {
       setSelectedTicket(null);
       setAccommodationDays(1);
       setFormData({
-        name: "", email: "", phone: "", college: "", city: "", checkInDate: "", checkOutDate: "", accommodationPreferences: "", transactionId: "", amountPaid: "",
+        name: "", email: "", phone: "", college: "", city: "", teamName: "", checkInDate: "", checkOutDate: "", accommodationPreferences: "", transactionId: "", amountPaid: "",
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
@@ -425,9 +437,16 @@ export default function TicketsAccommodation() {
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(11);
       pdf.text(passName, 14, 53);
-      pdf.text(`Ticket ID: ${searchedTicket.ticketId}`, 14, 63);
-      pdf.text(`Paid: INR ${searchedTicket.amountPaid}`, 14, 71);
-      if (searchedTicket.accommodationDays) pdf.text(`Accommodation: ${searchedTicket.accommodationDays} day(s)`, 14, 79);
+      if (searchedTicket.teamName) {
+        pdf.text(`Team: ${searchedTicket.teamName}`, 14, 61);
+        pdf.text(`Ticket ID: ${searchedTicket.ticketId}`, 14, 69);
+        pdf.text(`Paid: INR ${searchedTicket.amountPaid}`, 14, 77);
+        if (searchedTicket.accommodationDays) pdf.text(`Accommodation: ${searchedTicket.accommodationDays} day(s)`, 14, 85);
+      } else {
+        pdf.text(`Ticket ID: ${searchedTicket.ticketId}`, 14, 63);
+        pdf.text(`Paid: INR ${searchedTicket.amountPaid}`, 14, 71);
+        if (searchedTicket.accommodationDays) pdf.text(`Accommodation: ${searchedTicket.accommodationDays} day(s)`, 14, 79);
+      }
       pdf.setFontSize(8);
       pdf.text("Present this QR at each event stage. Each stage admits you once.", 14, 91);
       pdf.addImage(qrData, "PNG", 124, 24, 43, 43);
@@ -596,12 +615,24 @@ export default function TicketsAccommodation() {
                         <div>
                           <p className="text-[10px] font-mono text-[#8A5F1C] uppercase font-bold tracking-widest mb-1">Participant Name</p>
                           <p className="font-cinzel text-xl font-black text-[#0C2B3D]">{searchedTicket.name || "Payment submitted"}</p>
+                          {searchedTicket.teamName && (
+                            <p className="mt-1 font-mono text-xs font-bold text-[#8A5F1C] flex items-center gap-1.5">
+                              <Users className="w-3.5 h-3.5 text-[#8A5F1C]" />
+                              <span>Team: {searchedTicket.teamName}</span>
+                            </p>
+                          )}
                         </div>
                         <div className="text-right">
                           <p className="text-[10px] font-mono text-[#8A5F1C] uppercase font-bold tracking-widest mb-1">Ticket ID</p>
                           <p className="font-mono text-sm font-black text-[#9E6D1F]">{searchedTicket.ticketId}</p>
                         </div>
                       </div>
+                      {searchedTicket.teamName && (
+                        <div className="mb-2 flex items-center justify-between border-t border-[#0C2B3D]/10 pt-3">
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#2C5263]">Team Name</span>
+                          <strong className="font-montserrat text-sm font-black text-[#0C2B3D]">{searchedTicket.teamName}</strong>
+                        </div>
+                      )}
                       {searchedTicket.status === "Verified" && <div className="mb-4 flex items-center justify-between border-t border-[#0C2B3D]/10 pt-3"><span className="text-xs font-mono font-bold uppercase tracking-wider text-[#2C5263]">Amount paid</span><strong className="font-montserrat text-xl font-black text-[#9E6D1F]">₹{searchedTicket.amountPaid}</strong></div>}
                       <div className="pt-4 border-t border-[#0C2B3D]/10 flex items-center justify-between">
                         <p className="text-[11px] font-mono text-[#2C5263] uppercase font-bold tracking-widest">Status</p>
@@ -1209,7 +1240,7 @@ export default function TicketsAccommodation() {
                               {errors.college && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.college}</p>}
                             </div>
 
-                            <div className="sm:col-span-2">
+                            <div>
                               <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
                                 City & State *
                               </label>
@@ -1225,6 +1256,24 @@ export default function TicketsAccommodation() {
                                 />
                               </div>
                               {errors.city && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.city}</p>}
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                                Team Name *
+                              </label>
+                              <div className="relative">
+                                <Users className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
+                                <input
+                                  type="text"
+                                  name="teamName"
+                                  value={formData.teamName}
+                                  onChange={handleFormChange}
+                                  placeholder="e.g. Innovators Club / Squad Alpha"
+                                  className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.teamName ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
+                                />
+                              </div>
+                              {errors.teamName && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.teamName}</p>}
                             </div>
                           </div>
                         </div>
