@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import { Html5Qrcode } from "html5-qrcode";
-import { ArrowLeft, Camera, Check, CheckCircle2, LoaderCircle, Plus, RefreshCw, Search, ShieldCheck, Ticket, Trash2, XCircle } from "lucide-react";
+import { ArrowLeft, Check, LoaderCircle, Plus, RefreshCw, Search, ShieldCheck, Ticket, Trash2, XCircle } from "lucide-react";
 import { ticketApi } from "../lib/server1-api";
 
 const PASS_TYPES = [
@@ -26,32 +25,6 @@ function StageBadges({ scans = [], stages = [] }) {
     })}{scans.filter((scan) => !visibleStages.some((stage) => stage.stageId === (scan.stageId || `stage-${scan.stage}`))).map((scan) => <span key={scan.stageId || `legacy-${scan.stage}`} title={`Scanned ${new Date(scan.scannedAt).toLocaleString()}`} className="rounded-full border border-amber-300 bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800">{scan.stageName || scan.stageId || `Legacy stage ${scan.stage}`} · scanned</span>)}</div>;
 }
 
-function CameraReader({ onDecoded, onError }) {
-    useEffect(() => {
-        const scanner = new Html5Qrcode("ticket-qr-reader");
-        let active = true;
-        let disposed = false;
-        const stopScanner = () => {
-            const clear = () => { try { scanner.clear(); } catch { /* The host is removed with this component. */ } };
-            if (scanner.isScanning) scanner.stop().then(clear).catch(clear);
-            else clear();
-        };
-        scanner.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1 },
-            (decoded) => { if (active) { active = false; onDecoded(decoded); } },
-            () => { },
-        ).then(() => { if (disposed) stopScanner(); })
-            .catch((error) => { if (active) onError(error?.message || "Camera could not be started. Check browser permissions."); });
-        return () => {
-            active = false;
-            disposed = true;
-            stopScanner();
-        };
-    }, [onDecoded, onError]);
-    return <div id="ticket-qr-reader" className="mx-auto min-h-64 w-full max-w-md overflow-hidden rounded-2xl bg-slate-950 [&_video]:w-full [&_video]:rounded-xl [&_button]:m-2 [&_button]:rounded-lg [&_button]:bg-white [&_button]:px-3 [&_button]:py-2 [&_button]:text-slate-900 [&_select]:rounded-lg" />;
-}
-
 export default function TicketsAdmin() {
     const { admin, handleError } = useOutletContext();
     const [tickets, setTickets] = useState([]);
@@ -63,13 +36,8 @@ export default function TicketsAdmin() {
     const [search, setSearch] = useState("");
     const [stageConfigs, setStageConfigs] = useState({});
     const [passType, setPassType] = useState("event-standard");
-    const [stageId, setStageId] = useState("stage-1");
     const [stageName, setStageName] = useState("");
     const [stageConfigBusy, setStageConfigBusy] = useState(false);
-    const [manualId, setManualId] = useState("");
-    const [cameraOn, setCameraOn] = useState(false);
-    const [scanResult, setScanResult] = useState(null);
-    const [scanBusy, setScanBusy] = useState(false);
 
     const loadTickets = useCallback(async () => {
         const data = await ticketApi.adminList();
@@ -105,7 +73,6 @@ export default function TicketsAdmin() {
         try {
             const data = await ticketApi.addStage(passType, stageName.trim());
             setStageConfigs((current) => ({ ...current, [passType]: data.stages }));
-            setStageId(data.stages.at(-1)?.stageId || "");
             setStageName("");
             setNotice(`Added ${data.stages.at(-1)?.name} to ${PASS_TYPES.find(([id]) => id === passType)?.[1]}.`);
         } catch (err) { if (!handleError(err)) setError(err.message || "Could not add stage."); }
@@ -118,7 +85,6 @@ export default function TicketsAdmin() {
         try {
             const data = await ticketApi.deleteStage(passType, stage.stageId);
             setStageConfigs((current) => ({ ...current, [passType]: data.stages }));
-            if (stageId === stage.stageId) setStageId(data.stages[0]?.stageId || "");
             setNotice(`Removed ${stage.name}. Existing ticket scan history was preserved.`);
         } catch (err) { if (!handleError(err)) setError(err.message || "Could not remove stage."); }
         finally { setStageConfigBusy(false); }
@@ -135,29 +101,9 @@ export default function TicketsAdmin() {
     }
 
     const activeStages = useMemo(() => stageConfigs[passType] || [], [passType, stageConfigs]);
-    const handleScan = useCallback(async (rawValue) => {
-        const ticketId = String(rawValue || "").trim().toUpperCase();
-        if (!ticketId) return;
-        setCameraOn(false);
-        setScanBusy(true); setScanResult(null); setError("");
-        try {
-            const data = await ticketApi.scan({ ticketId, ticketType: passType, stageId });
-            const result = { ...data, selectedStage: data.selectedStage?.name || "Selected stage" };
-            setScanResult(result);
-            setManualId("");
-            await loadTickets();
-        } catch (err) {
-            if (handleError(err)) return;
-            setScanResult({ error: err.message || "Ticket scan failed.", selectedStage: activeStages.find((item) => item.stageId === stageId)?.name || "Selected stage" });
-        } finally { setScanBusy(false); }
-    }, [activeStages, handleError, loadTickets, passType, stageId]);
     const changePassType = (nextType) => {
         setPassType(nextType);
-        setStageId((stageConfigs[nextType] || [])[0]?.stageId || "");
-        setScanResult(null);
     };
-
-    const cameraError = useCallback((message) => { setCameraOn(false); setError(message); }, []);
     const visibleTickets = tickets.filter((ticket) => {
         const matchesFilter = filter === "All" || ticket.status === filter;
         const term = search.trim().toLowerCase();
@@ -198,12 +144,12 @@ export default function TicketsAdmin() {
             </div>
 
             <aside className="h-fit rounded-2xl border border-white/40 bg-[#e5f5f8] p-5 shadow-xl">
-                <div className="flex items-center gap-2"><ShieldCheck className="text-[#b17e2e]" /><div><p className="text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">Entry gate</p><h2 className="font-cinzel text-xl font-bold text-[#173f52]">Stage QR scanner</h2></div></div>
-                <p className="mt-3 text-sm text-[#527e8e]">Set up separate entry stages for each pass. Scans are recorded once per ticket at each configured stage.</p>
+                <div className="flex items-center gap-2"><ShieldCheck className="text-[#b17e2e]" /><div><p className="text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">Admin settings</p><h2 className="font-cinzel text-xl font-bold text-[#173f52]">Pass stages</h2></div></div>
+                <p className="mt-3 text-sm text-[#527e8e]">Configure the stages volunteers see on the dedicated scanner page: <strong>/volunteer</strong>.</p>
                 <label className="mt-5 block text-xs font-bold uppercase tracking-wider text-[#527e8e]">Pass type<select value={passType} onChange={(event) => changePassType(event.target.value)} className="mt-2 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 text-sm font-bold text-[#173f52]">{PASS_TYPES.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
                 <div className="mt-4 rounded-xl border border-[#b6dce4] bg-white/75 p-4">
                     <div className="flex items-center justify-between gap-3"><h3 className="text-xs font-black uppercase tracking-wider text-[#173f52]">Stages for this pass</h3><span className="text-[10px] font-bold text-[#527e8e]">{activeStages.length}/20</span></div>
-                    {activeStages.length ? <ul className="mt-3 space-y-2">{activeStages.map((stage, index) => <li key={stage.stageId} className="flex items-center justify-between gap-3 rounded-lg border border-[#d4e7eb] bg-white px-3 py-2"><span className="min-w-0"><span className="mr-2 font-mono text-[10px] font-bold text-[#8A5F1C]">{index + 1}.</span><span className="wrap-break-word text-sm font-semibold text-[#173f52]">{stage.name}</span></span><button type="button" aria-label={`Delete ${stage.name}`} disabled={stageConfigBusy} onClick={() => removeStage(stage)} className="rounded-lg border border-rose-200 bg-rose-50 p-2 text-rose-700 hover:bg-rose-100 disabled:opacity-50"><Trash2 size={15} /></button></li>)}</ul> : <p className="mt-3 text-xs text-[#7b5b25]">No stages configured. Add at least one below before scanning this pass.</p>}
+                    {activeStages.length ? <ul className="mt-3 space-y-2">{activeStages.map((stage, index) => <li key={stage.stageId} className="flex items-center justify-between gap-3 rounded-lg border border-[#d4e7eb] bg-white px-3 py-2"><span className="min-w-0"><span className="mr-2 font-mono text-[10px] font-bold text-[#8A5F1C]">{index + 1}.</span><span className="wrap-break-word text-sm font-semibold text-[#173f52]">{stage.name}</span></span><button type="button" aria-label={`Delete ${stage.name}`} disabled={stageConfigBusy} onClick={() => removeStage(stage)} className="rounded-lg border border-rose-200 bg-rose-50 p-2 text-rose-700 hover:bg-rose-100 disabled:opacity-50"><Trash2 size={15} /></button></li>)}</ul> : <p className="mt-3 text-xs text-[#7b5b25]">No stages configured. Add stages for volunteers to use.</p>}
                     <form onSubmit={addStage} className="mt-3 flex gap-2"><input aria-label="New stage name" value={stageName} onChange={(event) => setStageName(event.target.value)} minLength={2} maxLength={50} placeholder="e.g. Main auditorium" className="min-w-0 flex-1 rounded-xl border border-[#afd6e1] bg-white px-3 py-2 text-sm text-[#173f52]" /><button type="submit" disabled={stageConfigBusy || activeStages.length >= 20 || stageName.trim().length < 2} className="rounded-xl bg-[#b17e2e] px-3 py-2 text-sm font-bold text-white disabled:opacity-50"><Plus size={16} /> Add</button></form>
                 </div>
                 <label className="mt-4 block text-xs font-bold uppercase tracking-wider text-[#527e8e]">Current stage<select value={stageId} onChange={(event) => { setStageId(event.target.value); setScanResult(null); }} disabled={!activeStages.length} className="mt-2 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 text-sm font-bold text-[#173f52]">{activeStages.map((stage, index) => <option key={stage.stageId} value={stage.stageId}>{index + 1}. {stage.name}</option>)}</select></label>
