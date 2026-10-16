@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getTeamPhotos, teamPhotoUrl } from "../lib/server1-api";
-import { TEAM_PHOTO_CATEGORIES } from "../data/teamPhotoCategories";
+import { STUDENT_TEAMS, TEAM_PHOTO_CATEGORIES } from "../data/teamPhotoCategories";
 import { getAssetUrl } from "../utils/assetUrl";
 import { FaLinkedin } from "react-icons/fa";
 import ContactFooter from "../components/ContactFooter";
@@ -8,7 +8,9 @@ import ContactFooter from "../components/ContactFooter";
 const MAIN_SECTION_HEADING_CLASS =
   "group mx-auto mb-5 flex w-fit cursor-default flex-col items-center font-cinzel text-[1.65rem] font-bold leading-tight tracking-[0.04em] text-[#166E94] sm:mb-9 sm:text-5xl sm:tracking-[0.06em]";
 
-const FacultyCard = ({ member }) => (
+const FacultyCard = ({ member, grouped = false }) => {
+  const NameHeading = grouped ? "h4" : "h3";
+  return (
   <article className="teams-member-card teams-faculty-card group flex w-full max-w-[280px] shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-3 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:w-[232px] sm:rounded-2xl sm:p-4">
     <div className="aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC]">
       <img
@@ -21,11 +23,11 @@ const FacultyCard = ({ member }) => (
         }}
       />
     </div>
-    <h3 className="mt-3 font-cinzel text-base font-bold leading-snug text-[#40352B] sm:mt-5 sm:text-2xl">
+    <NameHeading className="teams-member-name mt-3 font-cinzel text-base font-bold leading-snug text-[#40352B] sm:mt-5 sm:text-2xl">
       {member.name}
-    </h3>
+    </NameHeading>
     {member.position && <p className="mt-2 text-sm text-[#7A6A58]">{member.position}</p>}
-    {member.team && <p className="mt-1 text-xs text-[#7A6A58]">{member.team}</p>}
+    {!grouped && member.team && <p className="mt-1 text-xs text-[#7A6A58]">{member.team}</p>}
     {member.linkedin && <a
       href={member.linkedin}
       target="_blank"
@@ -36,8 +38,35 @@ const FacultyCard = ({ member }) => (
       <span>LinkedIn</span>
     </a>}
   </article>
-);
+  );
+};
 
+function StudentTeamGroups({ members, category }) {
+  const groups = new Map(STUDENT_TEAMS.map((team) => [team, []]));
+  for (const member of members) {
+    const team = member.team?.trim() || "Team Members";
+    if (!groups.has(team)) groups.set(team, []);
+    groups.get(team).push(member);
+  }
+
+  return <div className="space-y-10 sm:space-y-16">
+    {[...groups].map(([team, teamMembers], index) => {
+      if (!teamMembers.length) return null;
+      const headingId = `team-${category}-${index}-heading`;
+      return <section key={team} aria-labelledby={headingId}>
+        <h3 id={headingId} className="mx-auto mb-5 flex w-fit flex-col items-center text-center font-cinzel text-2xl font-bold text-[#166E94] sm:mb-8 sm:text-4xl">
+          {team}
+          <span className="mt-3 h-0.5 w-16 rounded-full bg-[#78C8ED]" />
+        </h3>
+        <div className="teams-student-row overflow-x-auto rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#166E94]" tabIndex={0} role="region" aria-labelledby={headingId}>
+          <div className="teams-faculty-cards flex w-max min-w-full items-stretch justify-center gap-5 px-3 pb-6 pt-2 sm:gap-12">
+            {teamMembers.map((member) => <FacultyCard key={member.id} member={member} grouped />)}
+          </div>
+        </div>
+      </section>;
+    })}
+  </div>;
+}
 
 export default function Teams({ embedded = false }) {
   const [members, setMembers] = useState([]);
@@ -78,6 +107,15 @@ export default function Teams({ embedded = false }) {
         .teams-member-card:hover {
           transform: perspective(900px) translateZ(36px) scale(1.025);
           box-shadow: 0 0 14px rgba(120, 200, 237, 0.7), 0 0 30px rgba(120, 200, 237, 0.4);
+        }
+
+        .teams-student-row {
+          scrollbar-width: thin;
+          scrollbar-color: #78C8ED transparent;
+        }
+
+        .teams-student-row .teams-member-card {
+          width: min(76vw, 280px);
         }
 
         .teams-member-row {
@@ -153,7 +191,7 @@ export default function Teams({ embedded = false }) {
             padding: 0.75rem !important;
           }
 
-          .teams-faculty-card h3 {
+          .teams-faculty-card .teams-member-name {
             margin-top: 0.75rem !important;
             font-size: 1.25rem !important;
             line-height: 1.25 !important;
@@ -202,9 +240,13 @@ export default function Teams({ embedded = false }) {
                 <span>{label}</span>
                 <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-24" />
               </h2>
-              <div className="teams-faculty-cards flex flex-wrap items-stretch justify-center gap-4 px-1 pb-2 sm:gap-12">
-                {group.map((member) => <FacultyCard key={member.id} member={member} />)}
-              </div>
+              {category === "third" || category === "second" ? (
+                <StudentTeamGroups members={group} category={category} />
+              ) : (
+                <div className="teams-faculty-cards flex flex-wrap items-stretch justify-center gap-4 px-1 pb-2 sm:gap-12">
+                  {group.map((member) => <FacultyCard key={member.id} member={member} />)}
+                </div>
+              )}
             </section>;
           })}
         </div>
