@@ -1,439 +1,303 @@
-import { FaLinkedin } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaLinkedin, FaInstagram, FaEnvelope } from "react-icons/fa";
 import ContactFooter from "../components/ContactFooter";
+import { teamApi } from "../lib/server1-api";
 
-// Replace this path with each member's photo when it is available.
-// const DUMMY_MEMBER_PHOTO = "/placeholder-speaker.svg";
 const MAIN_SECTION_HEADING_CLASS =
-  "group mx-auto mb-5 flex w-fit cursor-default flex-col items-center font-cinzel text-[1.65rem] font-bold leading-tight tracking-[0.04em] text-[#166E94] sm:mb-9 sm:text-5xl sm:tracking-[0.06em]";
+  "group mx-auto mb-6 flex w-fit cursor-default flex-col items-center font-cinzel text-[1.65rem] font-bold leading-tight tracking-[0.04em] text-[#166E94] sm:mb-10 sm:text-4xl sm:tracking-[0.06em]";
 
-const facultyIncharges = [
+const SUB_SECTION_HEADING_CLASS =
+  "group mx-auto mb-6 mt-4 flex w-fit cursor-default flex-col items-center font-cinzel text-xl font-bold uppercase tracking-[0.06em] text-[#31291F] sm:text-2xl";
+
+const INITIAL_FACULTY = [
   {
+    _id: "init-1",
     name: "Prof. Mukul Shukla",
-    image_url:
-      "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029796/image_1_roojuv.avif",
+    category: "faculty",
+    sequence: 1,
+    imageUrl: "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029796/image_1_roojuv.avif",
     linkedin: "https://www.linkedin.com/in/mukul-shukla-329a7121",
   },
   {
+    _id: "init-2",
     name: "Prof. Mayank Pandey",
-    image_url:
-      "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029797/image_wj6szw.avif",
+    category: "faculty",
+    sequence: 2,
+    imageUrl: "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029797/image_wj6szw.avif",
     linkedin: "https://www.linkedin.com/in/mayank-pandey-0b433137/",
   },
 ];
 
-/* Temporarily hidden along with the Final, Third, and Second Year card sections.
-const finalYearMembers = Array.from({ length: 10 }, (_, index) => ({
-  name: `Final Year Member ${index + 1}`,
-  position: "Final Year",
-  image_url: DUMMY_MEMBER_PHOTO,
-  linkedin: `https://www.linkedin.com/in/final-year-member-${index + 1}/`,
-}));
+// Faculty Card - exact dimensions matching reference photo without role text inside
+function FacultyCard({ member }) {
+  const imageSrc = member.imageUrl || member.image_url || "/placeholder-speaker.svg";
 
-const thirdYearTeams = [
-  "Web Team",
-  "Marketing Team",
-  "Design Team",
-  "Content Team",
-  "Video Team",
-].map((teamName) => ({
-  name: teamName,
-  members: Array.from({ length: 10 }, (_, index) => ({
-    name: `${teamName} Member ${index + 1}`,
-    position: "Third Year",
-    image_url: DUMMY_MEMBER_PHOTO,
-    linkedin: `https://www.linkedin.com/in/${teamName
-      .toLowerCase()
-      .replace(/\s/g, "-")}-member-${index + 1}/`,
-  })),
-}));
+  return (
+    <article className="teams-member-card teams-faculty-card group flex w-full max-w-[280px] shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-3.5 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:w-[245px] sm:rounded-2xl sm:p-4 hover:border-[#238BBB] hover:shadow-[0_16px_32px_rgba(35,93,119,0.25)]">
+      <div className="aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC] shadow-inner group-hover:border-[#78C8ED] transition-colors">
+        <img
+          src={imageSrc}
+          alt={member.name}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => {
+            e.currentTarget.src = "/placeholder-speaker.svg";
+          }}
+        />
+      </div>
+      <h3 className="mt-3 font-cinzel text-base font-bold leading-snug text-[#40352B] transition-colors group-hover:text-[#166E94] sm:mt-5 sm:text-2xl">
+        {member.name}
+      </h3>
+      {member.linkedin && (
+        <a
+          href={member.linkedin}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-2.5 inline-flex items-center justify-center gap-1.5 self-center font-montserrat text-[10px] font-bold uppercase tracking-[0.1em] text-[#7A6A58] transition-colors hover:text-[#40352B] sm:mt-4 sm:gap-2 sm:text-xs sm:tracking-[0.13em]"
+        >
+          <FaLinkedin className="text-lg text-[#0077B5]" aria-hidden="true" />
+          <span>LINKEDIN</span>
+        </a>
+      )}
+    </article>
+  );
+}
 
-const secondYearTeams = [
-  "Web Team",
-  "Marketing Team",
-  "Design Team",
-  "Content Team",
-  "Video Team",
-].map((teamName) => ({
-  name: teamName,
-  members: Array.from({ length: 10 }, (_, index) => ({
-    name: `${teamName} Member ${index + 1}`,
-    registration_no: `2024${String(index + 1).padStart(4, "0")}`,
-    linkedin: `https://www.linkedin.com/in/second-year-${teamName
-      .toLowerCase()
-      .replace(/\s/g, "-")}-member-${index + 1}/`,
-  })),
-}));
-*/
+// Student & Member Card - 4 in a row, with role description box
+function MemberCard({ member }) {
+  const imageSrc = member.imageUrl || member.image_url || "/placeholder-speaker.svg";
 
-/* Temporarily hidden along with the Final, Third, and Second Year card sections.
-const MemberCard = ({ member, compact = false }) => (
-  <div className={`teams-member-card group relative rounded-2xl bg-[#FDF3DF] border border-[#78C8ED] hover:border-[#238BBB] shadow-[0_8px_22px_rgba(35,93,119,0.16)] hover:shadow-[0_12px_28px_rgba(35,93,119,0.22)] transition-all duration-300 flex flex-col items-center text-center overflow-hidden cursor-pointer ${compact ? "min-h-[210px] justify-center px-6 py-8" : "p-6"}`}>
-
-    {!compact && (
-      <div className="relative w-24 h-24 rounded-full p-1 bg-[#78C8ED] mb-4 shadow-lg group-hover:scale-105 transition-transform duration-300">
-        <div className="w-full h-full rounded-full overflow-hidden bg-[#FDF3DF] p-0.5 border border-[#238BBB]">
+  return (
+    <article className="teams-member-card group relative flex w-full max-w-[270px] shrink-0 flex-col justify-between overflow-hidden rounded-2xl border border-[#D8C4A8] bg-[#FDF3DF] p-3.5 text-center shadow-[0_10px_24px_rgba(84,64,43,0.18)] transition-all duration-300 hover:border-[#238BBB] hover:shadow-[0_16px_32px_rgba(35,93,119,0.25)] sm:p-4">
+      <div>
+        {/* Portrait Photo (3:4 ratio) */}
+        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC] shadow-inner group-hover:border-[#78C8ED] transition-colors">
           <img
-            src={member.image_url || "/placeholder-speaker.svg"}
+            src={imageSrc}
             alt={member.name}
-            className="w-full h-full object-cover rounded-full filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
-              e.target.src = "/placeholder-speaker.svg";
+              e.currentTarget.src = "/placeholder-speaker.svg";
             }}
           />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        </div>
+
+        {/* Member Name */}
+        <h3 className="mt-3.5 font-cinzel text-base font-bold uppercase leading-snug tracking-wide text-[#31291F] transition-colors group-hover:text-[#166E94]">
+          {member.name}
+        </h3>
+
+        {/* Role Description Box (e.g. President, Media co-lead) */}
+        <div className="mt-2.5 w-full rounded-lg border border-[#D8C4A8] bg-[#F4E9D5] px-2.5 py-1.5 text-center font-montserrat text-xs font-bold uppercase tracking-wider text-[#54402B] shadow-sm group-hover:border-[#78C8ED] group-hover:text-[#166E94] transition-colors">
+          {member.role || "Member"}
         </div>
       </div>
-    )}
 
-    <h3 className={`font-cinzel font-bold text-[#173F56] mb-1.5 tracking-wide group-hover:text-[#238BBB] transition-colors ${compact ? "text-lg" : "text-sm sm:text-base"}`}>
-      {member.name}
-    </h3>
+      {/* Social Links */}
+      <div className="mt-4 flex items-center justify-center gap-3 border-t border-[#D8C4A8]/40 pt-2.5 text-[#7A6A58]">
+        {member.linkedin && (
+          <a
+            href={member.linkedin}
+            target="_blank"
+            rel="noreferrer"
+            title="LinkedIn Profile"
+            className="rounded-full p-1.5 transition-colors hover:bg-[#78C8ED]/20 hover:text-[#0077B5]"
+          >
+            <FaLinkedin className="text-base" />
+            <span className="sr-only">LinkedIn</span>
+          </a>
+        )}
+        {member.instagram && (
+          <a
+            href={member.instagram}
+            target="_blank"
+            rel="noreferrer"
+            title="Instagram Profile"
+            className="rounded-full p-1.5 transition-colors hover:bg-pink-100 hover:text-[#E4405F]"
+          >
+            <FaInstagram className="text-base" />
+            <span className="sr-only">Instagram</span>
+          </a>
+        )}
+        {member.email && (
+          <a
+            href={`mailto:${member.email}`}
+            title="Send Email"
+            className="rounded-full p-1.5 transition-colors hover:bg-sky-100 hover:text-[#EA4335]"
+          >
+            <FaEnvelope className="text-sm" />
+            <span className="sr-only">Email</span>
+          </a>
+        )}
+      </div>
+    </article>
+  );
+}
 
-    {!compact && member.position && (
-      <p className="text-[11px] text-[#166E94] font-montserrat font-semibold tracking-wide uppercase px-2.5 py-0.5 rounded-full bg-[#C7EBFA] border border-[#78C8ED] shadow-sm">
-        {member.position}
-      </p>
-    )}
+export default function Teams({ embedded = false }) {
+  const [members, setMembers] = useState(INITIAL_FACULTY);
 
-    {compact && member.registration_no && (
-      <p className="mt-4 text-xs font-montserrat font-semibold tracking-wider text-[#7A6A58] uppercase">
-        Reg: {member.registration_no}
-      </p>
-    )}
+  useEffect(() => {
+    let mounted = true;
+    teamApi
+      .getTeamMembers()
+      .then((data) => {
+        if (!mounted) return;
+        if (data?.members?.length > 0) {
+          setMembers(data.members);
+        }
+      })
+      .catch((err) => {
+        console.warn("Using initial faculty data", err);
+      });
 
-    {member.team && (
-      <p className="text-[10px] text-[#9A6B27] font-mono mt-2 tracking-widest uppercase">
-        {member.team}
-      </p>
-    )}
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-    {member.linkedin && (
-      <a
-        href={member.linkedin}
-        target="_blank"
-        rel="noreferrer"
-        className={`mt-3 inline-flex items-center justify-center gap-2 font-montserrat font-bold uppercase tracking-wider text-[#7A6A58] transition-colors hover:text-[#173F56] ${compact ? "w-full rounded-lg border border-[#D8C4A8] bg-[#F1E0C9] px-4 py-3 text-xs" : "text-[10px] underline underline-offset-4"}`}
-      >
-        <FaLinkedin className="text-base" aria-hidden="true" />
-        <span>LinkedIn</span>
-      </a>
-    )}
-  </div>
-);
-*/
+  // Filter by category
+  const facultyMembers = members
+    .filter((m) => m.category === "faculty")
+    .sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
 
-const FacultyCard = ({ member }) => (
-  <article className="teams-member-card teams-faculty-card group flex w-full max-w-[280px] shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-3 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:w-[232px] sm:rounded-2xl sm:p-4">
-    <div className="aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC]">
-      <img
-        src={member.image_url}
-        alt={member.name}
-        className="h-full w-full object-cover"
-        onError={(e) => {
-          e.currentTarget.src = "/placeholder-speaker.svg";
-        }}
-      />
-    </div>
-    <h3 className="mt-3 font-cinzel text-base font-bold leading-snug text-[#40352B] sm:mt-5 sm:text-2xl">
-      {member.name}
-    </h3>
-    <a
-      href={member.linkedin}
-      target="_blank"
-      rel="noreferrer"
-      className="mt-2.5 inline-flex items-center justify-center gap-1.5 self-center font-montserrat text-[10px] font-bold uppercase tracking-[0.1em] text-[#7A6A58] transition-colors hover:text-[#40352B] sm:mt-4 sm:gap-2 sm:text-xs sm:tracking-[0.13em]"
-    >
-      <FaLinkedin className="text-lg" aria-hidden="true" />
-      <span>LinkedIn</span>
-    </a>
-  </article>
-);
+  const finalYearMembers = members
+    .filter((m) => m.category === "final_year")
+    .sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
 
-/* Temporarily hidden along with the Final, Third, and Second Year card sections.
-const ScrollingMemberRow = ({
-  members,
-  label,
-  compact = false,
-  reverse = false,
-}) => {
-  const [isPaused, setIsPaused] = useState(false);
-  const carouselRef = useRef(null);
-  const trackRef = useRef(null);
+  const preFinalYearMembers = members
+    .filter((m) => m.category === "pre_final_year")
+    .sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
 
-  const keepScrollLooping = () => {
-    const carousel = carouselRef.current;
-    const track = trackRef.current;
+  const secondYearMembers = members
+    .filter((m) => m.category === "second_year")
+    .sort((a, b) => (a.sequence || 0) - (b.sequence || 0));
 
-    if (!carousel || !track) return;
-
-    const groupWidth = track.scrollWidth / 3;
-
-    if (carousel.scrollLeft < groupWidth / 2) {
-      carousel.scrollLeft += groupWidth;
-    } else if (carousel.scrollLeft > groupWidth * 1.5) {
-      carousel.scrollLeft -= groupWidth;
-    }
-  };
+  // Group Pre-Final Year by sub-teams (e.g. Marketing Team, Media Team, Event Management Team, Web Team)
+  const preFinalSubteams = preFinalYearMembers.reduce((acc, member) => {
+    const sub = (member.subTeam || "General").trim();
+    if (!acc[sub]) acc[sub] = [];
+    acc[sub].push(member);
+    return acc;
+  }, {});
 
   return (
     <div
-      ref={carouselRef}
-      className={`teams-member-row -mx-4 -my-6 rounded-2xl px-4 py-6 ${
-        isPaused
-          ? "overflow-x-auto cursor-ew-resize"
-          : "overflow-hidden"
-      }`}
-      aria-label={`Automatically scrolling ${label} members`}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onScroll={keepScrollLooping}
+      className={`${
+        embedded ? "py-12 sm:py-16" : "teams-page-root min-h-[100svh] pt-[68px] sm:pt-24"
+      } flex flex-col justify-between overflow-x-hidden bg-[radial-gradient(ellipse_at_15%_18%,rgba(249,231,196,0.60)_0%,transparent_34%),radial-gradient(ellipse_at_85%_76%,rgba(128,199,220,0.35)_0%,transparent_36%),linear-gradient(180deg,#E9DFC9_0%,#C6DEE0_20%,#D7E1D9_44%,#F2E8C8_72%,#FFD9A5_100%)] text-[#173F56]`}
     >
-      <div
-        ref={trackRef}
-        className="flex w-max"
-        style={{
-          animation: `${reverse ? "teams-member-scroll-reverse" : "teams-member-scroll"} 36s linear infinite`,
-          animationPlayState: isPaused ? "paused" : "running",
-        }}
-      >
-        {[...members, ...members, ...members].map((member, index) => (
-          <div
-            key={`${member.name}-${index}`}
-            className={`${compact ? "w-[372px]" : "w-[312px]"} shrink-0 pr-8`}
-            aria-hidden={index >= members.length}
-          >
-            <MemberCard
-              member={member}
-              compact={compact}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-*/
-
-export default function Teams({ embedded = false }) {
-  return (
-    <div className={`${embedded ? "py-12 sm:py-16" : "teams-page-root min-h-[100svh] pt-[68px] sm:pt-24"} flex flex-col justify-between overflow-x-hidden bg-[radial-gradient(ellipse_at_15%_18%,rgba(249,231,196,0.60)_0%,transparent_34%),radial-gradient(ellipse_at_85%_76%,rgba(128,199,220,0.35)_0%,transparent_36%),linear-gradient(180deg,#E9DFC9_0%,#C6DEE0_20%,#D7E1D9_44%,#F2E8C8_72%,#FFD9A5_100%)] text-[#173F56]`}>
-      <style>{`
-        @keyframes teams-member-scroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-33.333333%); }
-        }
-
-        @keyframes teams-member-scroll-reverse {
-          from { transform: translateX(-50%); }
-          to { transform: translateX(0); }
-        }
-
-        .teams-member-card {
-          transform: perspective(900px) translateZ(0);
-          transform-style: preserve-3d;
-          will-change: transform;
-        }
-
-        .teams-member-card:hover {
-          transform: perspective(900px) translateZ(36px) scale(1.025);
-          box-shadow: 0 0 14px rgba(120, 200, 237, 0.7), 0 0 30px rgba(120, 200, 237, 0.4);
-        }
-
-        .teams-member-row {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-
-        .teams-member-row::-webkit-scrollbar {
-          display: none;
-        }
-
-        /* Scale the reference composition across the full desktop range. */
-        @media (min-width: 1024px) {
-          .teams-content {
-            max-width: min(calc(100% - 4rem), 91.75rem);
-          }
-
-          .teams-faculty-cards {
-            gap: clamp(2rem, 3.3vw, 4rem);
-          }
-
-          .teams-faculty-card {
-            width: clamp(16.25rem, 17.6vw, 21.5625rem);
-          }
-        }
-
-        /* Keep the complete faculty introduction above the fold on short desktop windows. */
-        @media (min-width: 1024px) and (max-height: 780px) {
-          .teams-page-root {
-            padding-top: 4rem !important;
-          }
-
-          .teams-team-banner {
-            margin-bottom: 1rem !important;
-          }
-
-          .teams-team-banner__inner {
-            min-height: 150px !important;
-            padding-top: 1rem !important;
-            padding-bottom: 1rem !important;
-          }
-
-          .teams-team-banner__inner > span:not(.absolute) {
-            padding: 0.25rem 1rem !important;
-            font-size: 0.625rem !important;
-          }
-
-          .teams-team-banner__inner h1 {
-            margin-top: 0.5rem !important;
-            font-size: 2rem !important;
-          }
-
-          .teams-team-banner__inner > div {
-            margin-top: 0.75rem !important;
-          }
-
-          .teams-team-banner__inner p {
-            margin-top: 0.5rem !important;
-            font-size: 0.875rem !important;
-          }
-
-          .teams-faculty-heading {
-            margin-bottom: 1rem !important;
-            font-size: 2.25rem !important;
-          }
-
-          .teams-faculty-heading > span:last-child {
-            margin-top: 0.5rem !important;
-          }
-
-          .teams-faculty-card {
-            width: 260px !important;
-            padding: 0.75rem !important;
-          }
-
-          .teams-faculty-card h3 {
-            margin-top: 0.75rem !important;
-            font-size: 1.25rem !important;
-            line-height: 1.25 !important;
-          }
-
-          .teams-faculty-card a {
-            margin-top: 0.75rem !important;
-            font-size: 0.625rem !important;
-          }
-        }
-      `}</style>
-      <div className="teams-content mx-auto mb-16 w-full max-w-6xl px-3 sm:mb-36 sm:px-6">
-        <header className="teams-team-banner relative mb-4 rounded-[22px] border border-[#C9953D] bg-[#FDF6E8] p-1 shadow-[0_16px_32px_rgba(92,67,27,0.18)] sm:mb-6 sm:rounded-[30px] sm:p-2">
-          <div className="teams-team-banner__inner relative flex min-h-[142px] flex-col items-center justify-center overflow-hidden rounded-[17px] border border-[#E1BC73] px-4 py-4 text-center sm:min-h-[200px] sm:rounded-[23px] sm:px-5 sm:py-6">
+      <div className="teams-content mx-auto mb-16 w-full max-w-7xl px-4 sm:mb-28 sm:px-6">
+        {/* Banner */}
+        <header className="teams-team-banner relative mb-8 rounded-[22px] border border-[#C9953D] bg-[#FDF6E8] p-1 shadow-[0_16px_32px_rgba(92,67,27,0.18)] sm:mb-12 sm:rounded-[30px] sm:p-2">
+          <div className="teams-team-banner__inner relative flex min-h-[142px] flex-col items-center justify-center overflow-hidden rounded-[17px] border border-[#E1BC73] px-4 py-4 text-center sm:min-h-[180px] sm:rounded-[23px] sm:px-5 sm:py-6">
             <span className="absolute left-3 top-2 font-serif text-sm text-[#B98531] sm:left-4 sm:top-3">✦</span>
             <span className="absolute right-3 top-2 font-serif text-sm text-[#B98531] sm:right-4 sm:top-3">✦</span>
             <span className="absolute bottom-2 left-3 font-serif text-sm text-[#B98531] sm:bottom-3 sm:left-4">✦</span>
             <span className="absolute bottom-2 right-3 font-serif text-sm text-[#B98531] sm:bottom-3 sm:right-4">✦</span>
 
-            <span className="rounded-full border border-[#C9953D] px-3 py-1.5 font-mono text-[7px] font-bold uppercase tracking-[0.26em] text-[#A97929] sm:px-6 sm:py-2 sm:text-xs sm:tracking-[0.5em]">
+            <span className="rounded-full border border-[#C9953D] px-3 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.26em] text-[#A97929] sm:px-6 sm:py-1.5 sm:text-xs sm:tracking-[0.4em]">
               ✦ The Organizing Guild ✦
             </span>
-            <h1 className="mt-2.5 pt-3 font-cinzel text-[1.65rem] font-bold uppercase tracking-[0.08em] text-[#31291F] sm:mt-5 sm:text-4xl">
+            <h1 className="mt-2 font-cinzel text-2xl font-bold uppercase tracking-[0.08em] text-[#31291F] sm:mt-4 sm:text-4xl">
               Our Team
             </h1>
-            <div className="mt-2.5 flex items-center gap-3 text-[#C9953D] sm:mt-5 sm:gap-5">
+            <div className="mt-2 flex items-center gap-3 text-[#C9953D] sm:mt-3 sm:gap-5">
               <span className="h-px w-11 bg-[#C9953D] sm:w-28" />
-              <span className="text-sm">✦</span>
+              <span className="text-xs">✦</span>
               <span className="h-px w-11 bg-[#C9953D] sm:w-28" />
             </div>
-            <p className="mt-2 font-montserrat text-[11px] font-medium leading-snug tracking-wide text-[#796E5B] sm:mt-4 sm:text-base">
+            <p className="mt-2 font-montserrat text-xs font-medium leading-snug tracking-wide text-[#796E5B] sm:mt-3 sm:text-sm">
               Meet the people behind Renaissance 2026.
             </p>
           </div>
         </header>
 
-        <div className="space-y-14">
-          <section
-            className="teams-faculty-section overflow-x-clip"
-            aria-labelledby="faculty-incharge-heading"
-          >
-            <h2
-              id="faculty-incharge-heading"
-              className={`${MAIN_SECTION_HEADING_CLASS} teams-faculty-heading`}
-            >
-              <span className="transition-transform duration-300 group-hover:scale-105">Faculty Incharge</span>
+        {/* Seamless Scroll Sections */}
+        <div className="space-y-20 sm:space-y-28">
+          {/* SECTION 1: FACULTY INCHARGE (At the top, 2 professors) */}
+          <section className="teams-faculty-section" aria-labelledby="faculty-incharge-heading">
+            <h2 id="faculty-incharge-heading" className={MAIN_SECTION_HEADING_CLASS}>
+              <span className="transition-transform duration-300 group-hover:scale-105">
+                Faculty Incharge
+              </span>
               <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%] sm:mt-3 sm:w-24" />
             </h2>
-            <div className="teams-faculty-cards flex flex-col items-center justify-center gap-4 px-1 pb-2 sm:flex-row sm:gap-12">
-              {facultyIncharges.map((member) => (
-                <FacultyCard key={member.name} member={member} />
+            <div className="flex flex-col items-center justify-center gap-6 px-1 pb-2 sm:flex-row sm:gap-12">
+              {facultyMembers.map((member) => (
+                <FacultyCard key={member._id} member={member} />
               ))}
             </div>
           </section>
 
-          {/* Temporarily hidden: Final Year member cards.
-          <section aria-labelledby="final-year-heading">
-            <h2
-              id="final-year-heading"
-              className={MAIN_SECTION_HEADING_CLASS}
-            >
-              <span className="transition-transform duration-300 group-hover:scale-105">Final Year</span>
-              <span className="mt-3 h-1 w-24 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%]" />
-            </h2>
-            <ScrollingMemberRow
-              members={finalYearMembers}
-              label="final year"
-            />
-          </section> */}
+          {/* SECTION 2: FINAL YEAR (4 cards in a row) */}
+          {finalYearMembers.length > 0 && (
+            <section className="teams-final-year-section" aria-labelledby="final-year-heading">
+              <h2 id="final-year-heading" className={MAIN_SECTION_HEADING_CLASS}>
+                <span className="transition-transform duration-300 group-hover:scale-105">
+                  Final Year
+                </span>
+                <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%] sm:mt-3 sm:w-24" />
+              </h2>
 
-          {/* Temporarily hidden: Third Year team cards.
-          <section aria-labelledby="third-year-heading">
-            <h2
-              id="third-year-heading"
-              className={MAIN_SECTION_HEADING_CLASS}
-            >
-              <span className="transition-transform duration-300 group-hover:scale-105">Third Year</span>
-              <span className="mt-3 h-1 w-24 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%]" />
-            </h2>
-            <div className="space-y-10">
-              {thirdYearTeams.map(({ name, members }, index) => (
-                <div key={name}>
-                  <h3 className="group mx-auto mb-14 flex w-fit cursor-default flex-col items-center font-cinzel text-lg font-bold uppercase tracking-[0.06em] text-[#173F56]">
-                    <span className="transition-transform duration-300 group-hover:scale-105">{name}</span>
-                    <span className="mt-2 h-0.5 w-12 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%]" />
-                  </h3>
-                  <ScrollingMemberRow
-                    members={members}
-                    label={name}
-                    reverse={index % 2 === 0}
-                  />
-                </div>
-              ))}
-            </div>
-          </section> */}
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-8 justify-items-center">
+                {finalYearMembers.map((member) => (
+                  <MemberCard key={member._id} member={member} />
+                ))}
+              </div>
+            </section>
+          )}
 
-          {/* Temporarily hidden: Second Year team cards.
-          <section aria-labelledby="second-year-heading">
-            <h2
-              id="second-year-heading"
-              className={MAIN_SECTION_HEADING_CLASS}
-            >
-              <span className="transition-transform duration-300 group-hover:scale-105">Second Year</span>
-              <span className="mt-3 h-1 w-24 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%]" />
-            </h2>
-            <div className="space-y-10">
-              {secondYearTeams.map(({ name, members }, index) => (
-                <div key={name}>
-                  <h3 className="group mx-auto mb-14 flex w-fit cursor-default flex-col items-center font-cinzel text-lg font-bold uppercase tracking-[0.06em] text-[#173F56]">
-                    <span className="transition-transform duration-300 group-hover:scale-105">{name}</span>
-                    <span className="mt-2 h-0.5 w-12 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%]" />
-                  </h3>
-                  <ScrollingMemberRow
-                    members={members}
-                    label={name}
-                    compact
-                    reverse={(thirdYearTeams.length + index + 1) % 2 === 1}
-                  />
-                </div>
-              ))}
-            </div>
-          </section> */}
+          {/* SECTION 3: PRE-FINAL YEAR (Sub-teams: Marketing, Media, Events, Web, etc. - 4 cards in a row) */}
+          {preFinalYearMembers.length > 0 && (
+            <section className="teams-prefinal-section" aria-labelledby="pre-final-year-heading">
+              <h2 id="pre-final-year-heading" className={MAIN_SECTION_HEADING_CLASS}>
+                <span className="transition-transform duration-300 group-hover:scale-105">
+                  Pre-Final Year
+                </span>
+                <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%] sm:mt-3 sm:w-24" />
+              </h2>
+
+              <div className="space-y-16">
+                {Object.entries(preFinalSubteams).map(([subteamName, subMembers]) => (
+                  <div key={subteamName} className="subteam-block">
+                    <h3 className={SUB_SECTION_HEADING_CLASS}>
+                      <span className="transition-transform duration-300 group-hover:scale-105">
+                        {subteamName}
+                      </span>
+                      <span className="mt-2 h-0.5 w-14 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[60%]" />
+                    </h3>
+
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-8 justify-items-center">
+                      {subMembers
+                        .sort((a, b) => (a.sequence || 0) - (b.sequence || 0))
+                        .map((member) => (
+                          <MemberCard key={member._id} member={member} />
+                        ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* SECTION 4: SECOND YEAR (4 cards in a row, if any) */}
+          {secondYearMembers.length > 0 && (
+            <section className="teams-second-year-section" aria-labelledby="second-year-heading">
+              <h2 id="second-year-heading" className={MAIN_SECTION_HEADING_CLASS}>
+                <span className="transition-transform duration-300 group-hover:scale-105">
+                  Second Year
+                </span>
+                <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] transition-all duration-300 group-hover:w-[70%] sm:mt-3 sm:w-24" />
+              </h2>
+
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-8 justify-items-center">
+                {secondYearMembers.map((member) => (
+                  <MemberCard key={member._id} member={member} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
 

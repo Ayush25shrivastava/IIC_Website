@@ -14,6 +14,7 @@ import { adminAuthRouter } from "./routes/admin-auth.routes.js";
 import { adminManagementRouter } from "./routes/admin-management.routes.js";
 import { ambassadorDashboardRouter } from "./routes/ambassador-dashboard.routes.js";
 import { healthRouter } from "./routes/health.routes.js";
+import { teamMemberPublicRouter, teamMemberAdminRouter } from "./routes/team-member.routes.js";
 import { ApiError } from "./utils/api-error.js";
 
 import authRoutes from "./routes/authRoutes.js";
@@ -81,7 +82,9 @@ app.use("/api/v1/admin", (_req, res, next) => {
   next();
 });
 app.use("/api/v1/admin/auth", adminAuthRouter);
+app.use("/api/v1/admin/team-members", teamMemberAdminRouter);
 app.use("/api/v1/admin", adminManagementRouter);
+app.use("/api/v1/team-members", teamMemberPublicRouter);
 
 app.use("/auth", (_req, _res, next) => {
   if (!googleAuthEnabled) {

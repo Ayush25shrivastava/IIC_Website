@@ -242,12 +242,16 @@ export const adminApi = {
     { method: "POST", body: { ambassadorId } },
     "admin",
   ),
-  deleteTask: (taskId) => request(
-    `/admin/tasks/${encodeURIComponent(taskId)}`,
-    { method: "DELETE" },
-    "admin",
-  ),
   referrals: (query) => request("/admin/referrals", { query }, "admin"),
+  teamMembers: (query) => request("/admin/team-members", { query }, "admin"),
+  createTeamMember: (body) => request("/admin/team-members", { method: "POST", body }, "admin"),
+  adjustTeamSlots: (body) => request("/admin/team-members/adjust-slots", { method: "POST", body }, "admin"),
+  updateTeamMember: (id, body) => request(`/admin/team-members/${encodeURIComponent(id)}`, { method: "PUT", body }, "admin"),
+  deleteTeamMember: (id) => request(`/admin/team-members/${encodeURIComponent(id)}`, { method: "DELETE" }, "admin"),
+};
+
+export const teamApi = {
+  getTeamMembers: (query) => request("/team-members", { query }),
 };
 
 export const server1ApiBaseUrl = API_BASE_URL;
