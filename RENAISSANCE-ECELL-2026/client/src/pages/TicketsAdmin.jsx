@@ -1,0 +1,162 @@
+import { useCallback, useEffect, useState } from "react";
+import { Link, useOutletContext } from "react-router-dom";
+import { Html5Qrcode } from "html5-qrcode";
+import { ArrowLeft, Camera, Check, CheckCircle2, LoaderCircle, RefreshCw, Search, ShieldCheck, Ticket, XCircle } from "lucide-react";
+import { ticketApi } from "../lib/server1-api";
+
+const statusColors = {
+    Pending: "border-amber-300 bg-amber-100 text-amber-800",
+    Verified: "border-emerald-300 bg-emerald-100 text-emerald-800",
+    Rejected: "border-rose-300 bg-rose-100 text-rose-800",
+};
+
+function StageBadges({ scans = [] }) {
+    return <div className="flex flex-wrap gap-1.5">{[1, 2, 3].map((stage) => {
+        const scan = scans.find((item) => Number(item.stage) === stage);
+        return <span key={stage} title={scan ? `Scanned ${new Date(scan.scannedAt).toLocaleString()}` : `Stage ${stage} not scanned`} className={`rounded-full border px-2 py-1 text-[10px] font-bold ${scan ? "border-amber-300 bg-amber-100 text-amber-800" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
+            {scan ? `Stage ${stage} · scanned` : `Stage ${stage} · open`}
+        </span>;
+    })}</div>;
+}
+
+function CameraReader({ onDecoded, onError }) {
+    useEffect(() => {
+        const scanner = new Html5Qrcode("ticket-qr-reader");
+        let active = true;
+        let disposed = false;
+        const stopScanner = () => {
+            const clear = () => { try { scanner.clear(); } catch { /* The host is removed with this component. */ } };
+            if (scanner.isScanning) scanner.stop().then(clear).catch(clear);
+            else clear();
+        };
+        scanner.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1 },
+            (decoded) => { if (active) { active = false; onDecoded(decoded); } },
+            () => { },
+        ).then(() => { if (disposed) stopScanner(); })
+            .catch((error) => { if (active) onError(error?.message || "Camera could not be started. Check browser permissions."); });
+        return () => {
+            active = false;
+            disposed = true;
+            stopScanner();
+        };
+    }, [onDecoded, onError]);
+    return <div id="ticket-qr-reader" className="mx-auto min-h-64 w-full max-w-md overflow-hidden rounded-2xl bg-slate-950 [&_video]:w-full [&_video]:rounded-xl [&_button]:m-2 [&_button]:rounded-lg [&_button]:bg-white [&_button]:px-3 [&_button]:py-2 [&_button]:text-slate-900 [&_select]:rounded-lg" />;
+}
+
+export default function TicketsAdmin() {
+    const { admin, handleError } = useOutletContext();
+    const [tickets, setTickets] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [busyId, setBusyId] = useState("");
+    const [error, setError] = useState("");
+    const [notice, setNotice] = useState("");
+    const [filter, setFilter] = useState("Pending");
+    const [search, setSearch] = useState("");
+    const [stage, setStage] = useState("1");
+    const [manualId, setManualId] = useState("");
+    const [cameraOn, setCameraOn] = useState(false);
+    const [scanResult, setScanResult] = useState(null);
+    const [scanBusy, setScanBusy] = useState(false);
+
+    const loadTickets = useCallback(async () => {
+        const data = await ticketApi.adminList();
+        setTickets(data.tickets || []);
+    }, []);
+    useEffect(() => {
+        let active = true;
+        ticketApi.adminList().then((data) => { if (active) setTickets(data.tickets || []); })
+            .catch((err) => { if (active && !handleError(err)) setError(err.message || "Could not load ticket submissions."); })
+            .finally(() => { if (active) setLoading(false); });
+        return () => { active = false; };
+    }, [handleError]);
+
+    async function refresh() {
+        setError("");
+        try { await loadTickets(); } catch (err) { if (!handleError(err)) setError(err.message || "Could not refresh tickets."); }
+    }
+
+    async function verify(ticket, status) {
+        setBusyId(ticket._id); setError(""); setNotice("");
+        try {
+            await ticketApi.verify(ticket._id, { status });
+            setNotice(`${ticket.ticketId} marked ${status.toLowerCase()}.`);
+            await loadTickets();
+        } catch (err) { if (!handleError(err)) setError(err.message || "Ticket status could not be updated."); }
+        finally { setBusyId(""); }
+    }
+
+    const handleScan = useCallback(async (rawValue) => {
+        const ticketId = String(rawValue || "").trim().toUpperCase();
+        if (!ticketId) return;
+        setCameraOn(false);
+        setScanBusy(true); setScanResult(null); setError("");
+        try {
+            const data = await ticketApi.scan({ ticketId, stage: Number(stage) });
+            const result = { ...data, selectedStage: Number(stage) };
+            setScanResult(result);
+            setManualId("");
+            await loadTickets();
+        } catch (err) {
+            if (handleError(err)) return;
+            setScanResult({ error: err.message || "Ticket scan failed.", selectedStage: Number(stage) });
+        } finally { setScanBusy(false); }
+    }, [handleError, loadTickets, stage]);
+
+    const cameraError = useCallback((message) => { setCameraOn(false); setError(message); }, []);
+    const visibleTickets = tickets.filter((ticket) => {
+        const matchesFilter = filter === "All" || ticket.status === filter;
+        const term = search.trim().toLowerCase();
+        const matchesSearch = !term || [ticket.name, ticket.email, ticket.phone, ticket.ticketId, ticket.transactionId, ticket.college]
+            .some((value) => String(value || "").toLowerCase().includes(term));
+        return matchesFilter && matchesSearch;
+    });
+    const counts = { Pending: tickets.filter((item) => item.status === "Pending").length, Verified: tickets.filter((item) => item.status === "Verified").length, Rejected: tickets.filter((item) => item.status === "Rejected").length };
+
+    return <main className="admin-app min-h-screen px-4 py-5 sm:px-6 lg:px-10">
+        <header className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/40 bg-[#e5f5f8] px-5 py-4 shadow-lg">
+            <div className="flex items-center gap-3"><Ticket className="text-[#b17e2e]" /><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#527e8e]">Admin command center</p><h1 className="font-cinzel text-xl font-black text-[#173f52]">Ticket operations</h1></div></div>
+            <div className="flex items-center gap-2"><span className="hidden text-xs font-bold text-[#527e8e] sm:inline">{admin?.name}</span><button type="button" onClick={refresh} className="rounded-xl border border-[#b6dce4] bg-white px-3 py-2 text-sm font-bold text-[#376579] hover:bg-slate-50"><RefreshCw size={16} /> Refresh</button><Link to="/admin/campus-ambassadors" className="rounded-xl border border-[#b6dce4] bg-white px-3 py-2 text-sm font-bold text-[#376579] hover:bg-slate-50"><ArrowLeft size={16} /> Admin home</Link></div>
+        </header>
+
+        <section className="mx-auto mt-6 grid w-full max-w-7xl gap-4 sm:grid-cols-3">
+            {[["Pending review", counts.Pending, "text-amber-800"], ["Verified", counts.Verified, "text-emerald-800"], ["Rejected", counts.Rejected, "text-rose-800"]].map(([label, value, color]) => <article key={label} className="rounded-2xl border border-white/40 bg-[#e5f5f8] p-5 shadow-lg"><p className="text-xs font-bold uppercase tracking-widest text-[#527e8e]">{label}</p><strong className={`mt-2 block text-3xl ${color}`}>{value}</strong></article>)}
+        </section>
+
+        {error && <div role="alert" className="mx-auto mt-5 max-w-7xl rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 font-semibold text-rose-800">{error}</div>}
+        {notice && <div role="status" className="mx-auto mt-5 max-w-7xl rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 font-semibold text-emerald-800">{notice}</div>}
+
+        <section className="mx-auto mt-6 grid w-full max-w-7xl gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(360px,.8fr)]">
+            <div className="overflow-hidden rounded-2xl border border-white/40 bg-[#e5f5f8] shadow-xl">
+                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#b6dce4] p-5">
+                    <div><p className="text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">Payment reconciliation</p><h2 className="mt-1 font-cinzel text-xl font-bold text-[#173f52]">Submissions <span className="font-sans text-sm text-[#527e8e]">({visibleTickets.length})</span></h2></div>
+                    <div className="flex flex-wrap gap-2"><label className="relative"><Search size={16} className="absolute left-3 top-3 text-[#6396aa]" /><input aria-label="Search tickets" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Name, ID, UTR…" className="w-48 rounded-xl border border-[#afd6e1] bg-white py-2 pl-9 pr-3 text-sm text-[#173f52]" /></label><select aria-label="Filter ticket status" value={filter} onChange={(event) => setFilter(event.target.value)} className="rounded-xl border border-[#afd6e1] bg-white px-3 py-2 text-sm text-[#173f52]"><option>Pending</option><option>Verified</option><option>Rejected</option><option>All</option></select></div>
+                </div>
+                {loading ? <div role="status" className="flex items-center justify-center gap-2 p-12 text-[#527e8e]"><LoaderCircle className="animate-spin" /> Loading ticket submissions…</div> : visibleTickets.length === 0 ? <p className="p-12 text-center text-sm font-semibold text-[#527e8e]">No tickets match this view.</p> : <div className="divide-y divide-[#b6dce4]">
+                    {visibleTickets.map((ticket) => <article key={ticket._id} className="p-5">
+                        <div className="flex flex-wrap items-start justify-between gap-3"><div><div className="flex flex-wrap items-center gap-2"><h3 className="font-cinzel text-lg font-black text-[#173f52]">{ticket.name}</h3><span className={`rounded-full border px-2.5 py-1 text-[10px] font-extrabold uppercase ${statusColors[ticket.status]}`}>{ticket.status}</span></div><p className="mt-1 text-sm text-[#527e8e]">{ticket.email} · {ticket.phone}</p></div><span className="rounded-lg bg-white px-2.5 py-1 font-mono text-xs font-black text-[#986e24]">{ticket.ticketId}</span></div>
+                        <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-3"><div><dt className="text-[#527e8e]">Pass</dt><dd className="font-bold text-[#173f52]">{ticket.ticketType}</dd></div><div><dt className="text-[#527e8e]">Paid / expected</dt><dd className="font-bold text-[#173f52]">₹{ticket.amountPaid} / ₹{ticket.amount}</dd></div><div><dt className="text-[#527e8e]">Transaction / UTR</dt><dd className="break-all font-mono font-bold text-[#173f52]">{ticket.transactionId}</dd></div><div><dt className="text-[#527e8e]">College · city</dt><dd className="font-semibold text-[#173f52]">{ticket.college} · {ticket.city}</dd></div><div><dt className="text-[#527e8e]">Submitted</dt><dd className="font-semibold text-[#173f52]">{new Date(ticket.createdAt).toLocaleString()}</dd></div></dl>
+                        {ticket.verificationRemarks && <p className="mt-3 rounded-lg bg-white/70 p-3 text-xs text-[#527e8e]">Admin note: {ticket.verificationRemarks}</p>}
+                        {ticket.status === "Pending" && <div className="mt-4 flex flex-wrap gap-2"><button type="button" disabled={Boolean(busyId)} onClick={() => verify(ticket, "Verified")} className="rounded-xl bg-emerald-700 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-800 disabled:opacity-50"><Check size={16} /> {busyId === ticket._id ? "Saving…" : "Verify payment"}</button><button type="button" disabled={Boolean(busyId)} onClick={() => verify(ticket, "Rejected")} className="rounded-xl border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-bold text-rose-800 hover:bg-rose-100 disabled:opacity-50"><XCircle size={16} /> Reject</button></div>}
+                        {ticket.status === "Verified" && <div className="mt-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">Entry by stage</p><StageBadges scans={ticket.stageScans} /></div>}
+                    </article>)}
+                </div>}
+            </div>
+
+            <aside className="h-fit rounded-2xl border border-white/40 bg-[#e5f5f8] p-5 shadow-xl">
+                <div className="flex items-center gap-2"><ShieldCheck className="text-[#b17e2e]" /><div><p className="text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">Entry gate</p><h2 className="font-cinzel text-xl font-bold text-[#173f52]">Stage QR scanner</h2></div></div>
+                <p className="mt-3 text-sm text-[#527e8e]">Choose the active event stage. The same verified ticket can be scanned once at each stage.</p>
+                <label className="mt-5 block text-xs font-bold uppercase tracking-wider text-[#527e8e]">Current stage<select value={stage} onChange={(event) => { setStage(event.target.value); setScanResult(null); }} className="mt-2 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 text-sm font-bold text-[#173f52]"><option value="1">Stage 1</option><option value="2">Stage 2</option><option value="3">Stage 3</option></select></label>
+                {cameraOn ? <div className="mt-4"><CameraReader onDecoded={handleScan} onError={cameraError} /><button type="button" onClick={() => setCameraOn(false)} className="mt-3 w-full rounded-xl border border-[#b6dce4] bg-white px-4 py-2 font-bold text-[#376579]">Stop camera</button></div> : <button type="button" onClick={() => { setError(""); setCameraOn(true); }} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#173f52] px-4 py-3 font-bold text-white hover:bg-[#245970]"><Camera size={18} /> Scan with camera</button>}
+                <div className="my-5 flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-[#7a99a2]"><span className="h-px flex-1 bg-[#b6dce4]" />or enter ID manually<span className="h-px flex-1 bg-[#b6dce4]" /></div>
+                <form onSubmit={(event) => { event.preventDefault(); handleScan(manualId); }} className="flex gap-2"><input aria-label="Ticket ID to scan" value={manualId} onChange={(event) => setManualId(event.target.value)} placeholder="REN-XXXXXXXXXXXX" className="min-w-0 flex-1 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 font-mono text-sm uppercase text-[#173f52]" /><button disabled={scanBusy || !manualId.trim()} className="rounded-xl bg-[#b17e2e] px-4 py-3 font-bold text-white disabled:opacity-50">{scanBusy ? <LoaderCircle size={18} className="animate-spin" /> : "Check in"}</button></form>
+                {scanResult && <div role={scanResult.error ? "alert" : "status"} className={`mt-5 rounded-xl border p-4 ${scanResult.error ? "border-rose-300 bg-rose-50 text-rose-800" : scanResult.alreadyScanned ? "border-amber-300 bg-amber-100 text-amber-900" : "border-emerald-300 bg-emerald-50 text-emerald-900"}`}>
+                    <div className="flex items-center gap-2 font-black">{scanResult.error ? <XCircle size={20} /> : scanResult.alreadyScanned ? <Ticket size={20} /> : <CheckCircle2 size={20} />}{scanResult.error ? "Scan blocked" : scanResult.alreadyScanned ? `Already scanned at Stage ${scanResult.selectedStage}` : `Admitted · Stage ${scanResult.selectedStage}`}</div>
+                    {scanResult.error ? <p className="mt-2 text-sm">{scanResult.error}</p> : <><p className="mt-2 font-cinzel font-bold">{scanResult.ticket?.name}</p><p className="font-mono text-xs">{scanResult.ticket?.ticketId}</p><div className="mt-3"><StageBadges scans={scanResult.ticket?.stageScans} /></div></>}
+                </div>}
+                <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900"><strong>Color guide:</strong> yellow indicates this stage was already scanned. Change the stage selector to validate a different stage; scans are stored independently.</div>
+            </aside>
+        </section>
+    </main>;
+}

@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   motion,
   useReducedMotion,
@@ -27,14 +26,27 @@ import {
   Sparkles,
   Tag,
   Flame,
-  Info,
 } from "lucide-react";
 import ContactFooter from "../components/ContactFooter";
 import PageTransitionShimmer from "../components/PageTransitionShimmer";
 import { getAssetUrl } from "../utils/assetUrl";
 import { CLOUDINARY_QR } from "../constants/cloudinaryAssets";
+import QRCode from "qrcode";
+import { jsPDF } from "jspdf";
+import { ticketApi } from "../lib/server1-api";
 
-export const TICKET_OPTIONS = [
+const TICKET_CACHE_KEY = "renaissance.savedTicketIds";
+
+function getSavedTicketIds() {
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(TICKET_CACHE_KEY) || "[]");
+    return Array.isArray(saved) ? saved.filter((id) => typeof id === "string").slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+}
+
+const TICKET_OPTIONS = [
   // --- Event Passes (Without Accommodation) ---
   {
     id: "event-standard",
@@ -190,13 +202,14 @@ export default function TicketsAccommodation() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedTicketId, setSubmittedTicketId] = useState("");
+  const [savedTicketIds, setSavedTicketIds] = useState(getSavedTicketIds);
 
   const [searchTicketId, setSearchTicketId] = useState("");
   const [searchedTicket, setSearchedTicket] = useState(null);
   const [searchError, setSearchError] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-
-  const navigate = useNavigate();
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState("");
   const prefersReducedMotion = useReducedMotion();
   const heroRef = useRef(null);
 
@@ -341,28 +354,18 @@ export default function TicketsAccommodation() {
 
     setIsSubmitting(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
-      const res = await fetch(`${API_URL}/tickets/purchase`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ...formData,
-          ticketType: selectedTicket,
-          accommodationDays: activeTicketData?.includesAccommodation ? accommodationDays : 0,
-          checkInDate: formData.checkInDate || null,
-          checkOutDate: formData.checkOutDate || null,
-        })
+      const data = await ticketApi.purchase({
+        ...formData,
+        ticketType: selectedTicket,
+        accommodationDays: activeTicketData?.includesAccommodation ? accommodationDays : 0,
+        checkInDate: formData.checkInDate || null,
+        checkOutDate: formData.checkOutDate || null,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to submit. Please try again.");
-      }
-
       setSubmittedTicketId(data.ticket.ticketId);
+      const nextIds = [data.ticket.ticketId, ...savedTicketIds.filter((id) => id !== data.ticket.ticketId)].slice(0, 5);
+      setSavedTicketIds(nextIds);
+      try { window.localStorage.setItem(TICKET_CACHE_KEY, JSON.stringify(nextIds)); } catch { /* The ID remains visible for this visit. */ }
 
       setShowForm(false);
       setSelectedTicket(null);
@@ -388,17 +391,53 @@ export default function TicketsAccommodation() {
     setIsSearching(true);
     setSearchedTicket(null);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
-      const res = await fetch(`${API_URL}/tickets/status/${searchTicketId}`);
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Ticket not found");
-      }
+      const data = await ticketApi.status(searchTicketId.trim());
       setSearchedTicket(data.ticket);
     } catch (error) {
       setSearchError(error.message);
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const downloadTicket = async () => {
+    if (searchedTicket?.status !== "Verified") return;
+    setIsDownloading(true);
+    setDownloadError("");
+    try {
+      const qrData = await QRCode.toDataURL(searchedTicket.ticketId, { width: 480, margin: 1, errorCorrectionLevel: "H" });
+      const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: [180, 105] });
+      const passName = TICKET_OPTIONS.find((option) => option.id === searchedTicket.ticketType)?.name || "Renaissance Pass";
+      pdf.setFillColor(12, 43, 61);
+      pdf.roundedRect(5, 5, 170, 95, 5, 5, "F");
+      pdf.setTextColor(242, 229, 212);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(19);
+      pdf.text("RENAISSANCE 10.0", 14, 20);
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "normal");
+      pdf.text("OFFICIAL VERIFIED EVENT PASS", 14, 27);
+      pdf.setDrawColor(197, 162, 95);
+      pdf.line(14, 32, 117, 32);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(16);
+      pdf.text(searchedTicket.name, 14, 44);
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(11);
+      pdf.text(passName, 14, 53);
+      pdf.text(`Ticket ID: ${searchedTicket.ticketId}`, 14, 63);
+      pdf.text(`Paid: INR ${searchedTicket.amountPaid}`, 14, 71);
+      if (searchedTicket.accommodationDays) pdf.text(`Accommodation: ${searchedTicket.accommodationDays} day(s)`, 14, 79);
+      pdf.setFontSize(8);
+      pdf.text("Present this QR at each event stage. Each stage admits you once.", 14, 91);
+      pdf.addImage(qrData, "PNG", 124, 24, 43, 43);
+      pdf.setFontSize(8);
+      pdf.text("Keep this ticket safe · Do not share the QR", 124, 74, { maxWidth: 44, align: "center" });
+      pdf.save(`${searchedTicket.ticketId}-ticket.pdf`);
+    } catch {
+      setDownloadError("Could not create the ticket PDF. Please try again.");
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -496,12 +535,13 @@ export default function TicketsAccommodation() {
                   <CheckCircle2 className="w-12 h-12 text-[#4CAF50] mb-3" />
                   <h3 className="font-cinzel text-2xl font-black text-[#2E7D32] mb-2">Registration Submitted!</h3>
                   <p className="font-montserrat text-[#1B5E20] font-bold mb-4">
-                    Please save this Ticket ID for verification and tracking.
+                    This is your one-time Ticket ID. Save it now or write it down; it is also remembered in this browser.
                   </p>
                   <div className="px-6 py-3 bg-white border-2 border-[#4CAF50]/40 rounded-xl font-mono text-xl font-black text-[#2E7D32] tracking-widest shadow-inner">
                     {submittedTicketId}
                   </div>
-                  <button 
+                  <p className="mt-3 max-w-xl text-xs font-bold text-[#8B5E20]">Your payment is pending admin verification. The QR ticket becomes available only after your payment is verified.</p>
+                  <button
                     onClick={() => setSubmittedTicketId("")}
                     className="mt-6 text-sm text-[#4CAF50] font-bold underline hover:text-[#2E7D32]"
                   >
@@ -535,11 +575,19 @@ export default function TicketsAccommodation() {
                       {isSearching ? "Searching..." : "Search"}
                     </button>
                   </form>
+                  {savedTicketIds.length > 0 && (
+                    <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#2C5263]">Saved in this browser</span>
+                      {savedTicketIds.map((id) => (
+                        <button key={id} type="button" onClick={() => setSearchTicketId(id)} className="rounded-lg border border-[#C5A25F]/40 bg-white/70 px-3 py-1.5 font-mono text-xs font-bold text-[#0C2B3D] hover:bg-white">{id}</button>
+                      ))}
+                    </div>
+                  )}
                   {searchError && (
                     <p className="text-center text-[#D9534F] font-mono text-sm font-bold mt-4">{searchError}</p>
                   )}
                   {searchedTicket && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="mt-8 p-6 bg-white/80 rounded-2xl border border-[#C5A25F]/30 max-w-xl mx-auto shadow-sm"
@@ -547,23 +595,32 @@ export default function TicketsAccommodation() {
                       <div className="flex justify-between items-start mb-4">
                         <div>
                           <p className="text-[10px] font-mono text-[#8A5F1C] uppercase font-bold tracking-widest mb-1">Participant Name</p>
-                          <p className="font-cinzel text-xl font-black text-[#0C2B3D]">{searchedTicket.name}</p>
+                          <p className="font-cinzel text-xl font-black text-[#0C2B3D]">{searchedTicket.name || "Payment submitted"}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-[10px] font-mono text-[#8A5F1C] uppercase font-bold tracking-widest mb-1">Amount Paid</p>
-                          <p className="font-montserrat text-xl font-black text-[#9E6D1F]">₹{searchedTicket.amountPaid}</p>
+                          <p className="text-[10px] font-mono text-[#8A5F1C] uppercase font-bold tracking-widest mb-1">Ticket ID</p>
+                          <p className="font-mono text-sm font-black text-[#9E6D1F]">{searchedTicket.ticketId}</p>
                         </div>
                       </div>
+                      {searchedTicket.status === "Verified" && <div className="mb-4 flex items-center justify-between border-t border-[#0C2B3D]/10 pt-3"><span className="text-xs font-mono font-bold uppercase tracking-wider text-[#2C5263]">Amount paid</span><strong className="font-montserrat text-xl font-black text-[#9E6D1F]">₹{searchedTicket.amountPaid}</strong></div>}
                       <div className="pt-4 border-t border-[#0C2B3D]/10 flex items-center justify-between">
                         <p className="text-[11px] font-mono text-[#2C5263] uppercase font-bold tracking-widest">Status</p>
-                        <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${
-                          searchedTicket.status === 'Verified' ? 'bg-[#E8F5E9] text-[#2E7D32] border border-[#4CAF50]/30' :
-                          searchedTicket.status === 'Rejected' ? 'bg-[#FFEBEE] text-[#C62828] border border-[#E53935]/30' :
-                          'bg-[#FFF8E1] text-[#F57F17] border border-[#FBC02D]/30'
-                        }`}>
+                        <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${searchedTicket.status === 'Verified' ? 'bg-[#E8F5E9] text-[#2E7D32] border border-[#4CAF50]/30' :
+                            searchedTicket.status === 'Rejected' ? 'bg-[#FFEBEE] text-[#C62828] border border-[#E53935]/30' :
+                              'bg-[#FFF8E1] text-[#F57F17] border border-[#FBC02D]/30'
+                          }`}>
                           {searchedTicket.status}
                         </span>
                       </div>
+                      {searchedTicket.status === "Verified" && (
+                        <div className="mt-5">
+                          <p className="mb-3 text-xs font-semibold text-[#2C5263]">Your approved pass is ready. The downloaded PDF contains the QR used at event entry.</p>
+                          <button type="button" onClick={downloadTicket} disabled={isDownloading} className="w-full rounded-xl bg-[#0C2B3D] px-5 py-3 text-xs font-extrabold uppercase tracking-widest text-[#F2E5D4] transition hover:bg-[#16435E] disabled:cursor-wait disabled:opacity-60">
+                            {isDownloading ? "Preparing ticket…" : "Download verified ticket PDF"}
+                          </button>
+                          {downloadError && <p role="alert" className="mt-2 text-center text-xs font-bold text-[#D9534F]">{downloadError}</p>}
+                        </div>
+                      )}
                     </motion.div>
                   )}
                 </div>
@@ -722,8 +779,8 @@ export default function TicketsAccommodation() {
                     type="button"
                     onClick={() => setSelectedCategory("all")}
                     className={`px-4 sm:px-6 py-2 rounded-xl font-mono text-xs uppercase font-extrabold tracking-wider transition-all duration-300 ${selectedCategory === "all"
-                        ? "bg-[#0C2B3D] text-[#F2E5D4] shadow-md"
-                        : "text-[#0C2B3D] hover:text-[#9E6D1F]"
+                      ? "bg-[#0C2B3D] text-[#F2E5D4] shadow-md"
+                      : "text-[#0C2B3D] hover:text-[#9E6D1F]"
                       }`}
                   >
                     All Passes (6)
@@ -732,8 +789,8 @@ export default function TicketsAccommodation() {
                     type="button"
                     onClick={() => setSelectedCategory("event")}
                     className={`px-4 sm:px-6 py-2 rounded-xl font-mono text-xs uppercase font-extrabold tracking-wider transition-all duration-300 ${selectedCategory === "event"
-                        ? "bg-[#0C2B3D] text-[#F2E5D4] shadow-md"
-                        : "text-[#0C2B3D] hover:text-[#9E6D1F]"
+                      ? "bg-[#0C2B3D] text-[#F2E5D4] shadow-md"
+                      : "text-[#0C2B3D] hover:text-[#9E6D1F]"
                       }`}
                   >
                     Event Passes (3)
@@ -742,8 +799,8 @@ export default function TicketsAccommodation() {
                     type="button"
                     onClick={() => setSelectedCategory("accommodation")}
                     className={`px-4 sm:px-6 py-2 rounded-xl font-mono text-xs uppercase font-extrabold tracking-wider transition-all duration-300 ${selectedCategory === "accommodation"
-                        ? "bg-[#0C2B3D] text-[#F2E5D4] shadow-md"
-                        : "text-[#0C2B3D] hover:text-[#9E6D1F]"
+                      ? "bg-[#0C2B3D] text-[#F2E5D4] shadow-md"
+                      : "text-[#0C2B3D] hover:text-[#9E6D1F]"
                       }`}
                   >
                     With Accommodation (3)
@@ -766,8 +823,8 @@ export default function TicketsAccommodation() {
                       transition={{ duration: 0.4, delay: idx * 0.08 }}
                       onClick={() => handleSelectTicket(option.id)}
                       className={`group relative flex flex-col p-6 sm:p-7 rounded-3xl border-2 transition-all duration-500 cursor-pointer overflow-hidden ${isSelected
-                          ? "bg-gradient-to-br from-[#E8D4B4] via-[#DECAA5] to-[#D5C29C] border-[#9E6D1F] shadow-[0_22px_55px_rgba(12,38,50,0.25)] transform scale-[1.02]"
-                          : "bg-gradient-to-br from-[#EEDFCA] via-[#E6D6C0] to-[#DCECEE] border-[#C5A25F]/70 hover:border-[#B58B3E] shadow-[0_14px_38px_rgba(12,38,50,0.15)] hover:-translate-y-1"
+                        ? "bg-gradient-to-br from-[#E8D4B4] via-[#DECAA5] to-[#D5C29C] border-[#9E6D1F] shadow-[0_22px_55px_rgba(12,38,50,0.25)] transform scale-[1.02]"
+                        : "bg-gradient-to-br from-[#EEDFCA] via-[#E6D6C0] to-[#DCECEE] border-[#C5A25F]/70 hover:border-[#B58B3E] shadow-[0_14px_38px_rgba(12,38,50,0.15)] hover:-translate-y-1"
                         }`}
                     >
                       {/* Active Inner Frame */}
@@ -871,8 +928,8 @@ export default function TicketsAccommodation() {
                   onClick={handleContinue}
                   disabled={!selectedTicket}
                   className={`group relative flex items-center justify-center gap-3 px-8 sm:px-12 py-4 rounded-full font-bold text-sm uppercase tracking-widest transition-all duration-300 w-full sm:w-auto overflow-hidden ${selectedTicket
-                      ? "bg-[#0C2B3D] text-[#F2E5D4] hover:shadow-[0_8px_30px_rgba(12,43,61,0.3)] cursor-pointer transform hover:scale-[1.02] active:scale-[0.98]"
-                      : "bg-[#0C2B3D]/10 text-[#0C2B3D]/40 border border-[#0C2B3D]/10 cursor-not-allowed"
+                    ? "bg-[#0C2B3D] text-[#F2E5D4] hover:shadow-[0_8px_30px_rgba(12,43,61,0.3)] cursor-pointer transform hover:scale-[1.02] active:scale-[0.98]"
+                    : "bg-[#0C2B3D]/10 text-[#0C2B3D]/40 border border-[#0C2B3D]/10 cursor-not-allowed"
                     }`}
                 >
                   {selectedTicket && (
@@ -974,11 +1031,10 @@ export default function TicketsAccommodation() {
                                 key={days}
                                 type="button"
                                 onClick={() => handleAccommodationDaysChange(days)}
-                                className={`px-3 py-2.5 rounded-xl border text-left transition-all ${
-                                  isDaysSelected
+                                className={`px-3 py-2.5 rounded-xl border text-left transition-all ${isDaysSelected
                                     ? "bg-[#0C2B3D] text-[#F2E5D4] border-[#0C2B3D] shadow-md"
                                     : "bg-white/80 hover:bg-white text-[#0C2B3D] border-[#C5A25F]/40"
-                                }`}
+                                  }`}
                               >
                                 <div className="font-montserrat text-xs font-black">
                                   {days} Day{days > 1 ? "s" : ""}
@@ -1014,10 +1070,10 @@ export default function TicketsAccommodation() {
                         Scan to pay <span className="text-[#9E6D1F] font-black">₹{currentPayableAmount}</span> for your {activeTicketData?.name}
                         {activeTicketData?.includesAccommodation ? ` (${accommodationDays} Day Stay)` : ""}.
                       </p>
-                      
+
                       <div className="bg-white p-3 rounded-2xl shadow-md border-2 border-[#C5A25F]/40 mb-4 w-full max-w-[220px] aspect-square flex items-center justify-center">
-                        <img 
-                          src={CLOUDINARY_QR.paymentQr || getAssetUrl("/cropped-qr.jpg")} 
+                        <img
+                          src={CLOUDINARY_QR.paymentQr || getAssetUrl("/cropped-qr.jpg")}
                           alt="Payment QR Code"
                           className="w-full h-full object-contain"
                         />
@@ -1076,193 +1132,193 @@ export default function TicketsAccommodation() {
                       <form onSubmit={handleFormSubmit} className="space-y-8">
                         <div className="space-y-5">
                           <div className="flex items-center gap-2 mb-4 border-b border-[#0C2B3D]/15 pb-4">
-                        <Shield className="w-5 h-5 text-[#9E6D1F]" />
-                        <h4 className="font-cinzel text-lg font-black text-[#0C2B3D] uppercase tracking-wider">Participant Details</h4>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div>
-                          <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                            Full Name *
-                          </label>
-                          <div className="relative">
-                            <User className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
-                            <input
-                              type="text"
-                              name="name"
-                              value={formData.name}
-                              onChange={handleFormChange}
-                              placeholder="John Doe"
-                              className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.name ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
-                            />
+                            <Shield className="w-5 h-5 text-[#9E6D1F]" />
+                            <h4 className="font-cinzel text-lg font-black text-[#0C2B3D] uppercase tracking-wider">Participant Details</h4>
                           </div>
-                          {errors.name && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.name}</p>}
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                              <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                                Full Name *
+                              </label>
+                              <div className="relative">
+                                <User className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
+                                <input
+                                  type="text"
+                                  name="name"
+                                  value={formData.name}
+                                  onChange={handleFormChange}
+                                  placeholder="John Doe"
+                                  className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.name ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
+                                />
+                              </div>
+                              {errors.name && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.name}</p>}
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                                Email Address *
+                              </label>
+                              <div className="relative">
+                                <Mail className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
+                                <input
+                                  type="email"
+                                  name="email"
+                                  value={formData.email}
+                                  onChange={handleFormChange}
+                                  placeholder="john@example.com"
+                                  className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.email ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
+                                />
+                              </div>
+                              {errors.email && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.email}</p>}
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                                Phone Number *
+                              </label>
+                              <div className="relative">
+                                <Phone className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
+                                <input
+                                  type="tel"
+                                  name="phone"
+                                  value={formData.phone}
+                                  onChange={handleFormChange}
+                                  placeholder="+91 98765 43210"
+                                  className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.phone ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
+                                />
+                              </div>
+                              {errors.phone && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.phone}</p>}
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                                College / Organization *
+                              </label>
+                              <div className="relative">
+                                <Building2 className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
+                                <input
+                                  type="text"
+                                  name="college"
+                                  value={formData.college}
+                                  onChange={handleFormChange}
+                                  placeholder="MNNIT Allahabad"
+                                  className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.college ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
+                                />
+                              </div>
+                              {errors.college && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.college}</p>}
+                            </div>
+
+                            <div className="sm:col-span-2">
+                              <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                                City & State *
+                              </label>
+                              <div className="relative">
+                                <MapPin className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
+                                <input
+                                  type="text"
+                                  name="city"
+                                  value={formData.city}
+                                  onChange={handleFormChange}
+                                  placeholder="Prayagraj, UP"
+                                  className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.city ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
+                                />
+                              </div>
+                              {errors.city && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.city}</p>}
+                            </div>
+                          </div>
                         </div>
 
-                        <div>
-                          <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                            Email Address *
-                          </label>
-                          <div className="relative">
-                            <Mail className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
-                            <input
-                              type="email"
-                              name="email"
-                              value={formData.email}
-                              onChange={handleFormChange}
-                              placeholder="john@example.com"
-                              className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.email ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
-                            />
-                          </div>
-                          {errors.email && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.email}</p>}
-                        </div>
+                        {/* Dynamic Accommodation Section */}
+                        {activeTicketData?.includesAccommodation && (
+                          <div className="space-y-5 pt-8 border-t border-[#0C2B3D]/15">
+                            <div className="flex items-center justify-between flex-wrap gap-2 mb-4 border-b border-[#0C2B3D]/15 pb-4">
+                              <div className="flex items-center gap-2">
+                                <BedDouble className="w-5 h-5 text-[#9E6D1F]" />
+                                <h4 className="font-cinzel text-lg font-black text-[#0C2B3D] uppercase tracking-wider">Accommodation Info</h4>
+                              </div>
+                              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-[#E8D4B4] text-[#8A5F1C] border border-[#BFA275]/40">
+                                {accommodationDays} Day Stay Selected
+                              </span>
+                            </div>
 
-                        <div>
-                          <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                            Phone Number *
-                          </label>
-                          <div className="relative">
-                            <Phone className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
-                            <input
-                              type="tel"
-                              name="phone"
-                              value={formData.phone}
-                              onChange={handleFormChange}
-                              placeholder="+91 98765 43210"
-                              className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.phone ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
-                            />
-                          </div>
-                          {errors.phone && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.phone}</p>}
-                        </div>
+                            {/* Accommodation inclusions banner */}
+                            <div className="p-3.5 rounded-xl bg-white/70 border border-[#C5A25F]/30 text-xs font-montserrat text-[#1A3B4D] space-y-1">
+                              <p className="font-bold flex items-center gap-1.5 text-[#0C2B3D]">
+                                <CheckCircle2 className="w-4 h-4 text-[#219653]" />
+                                <span>Included with your pass: 3-time meals daily + 1 bed, pillow, blanket & linen.</span>
+                              </p>
+                              <p className="text-[11px] text-[#2C5263] font-mono">
+                                Base package covers 1 day. Extra days are charged at ₹500/day.
+                              </p>
+                            </div>
 
-                        <div>
-                          <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                            College / Organization *
-                          </label>
-                          <div className="relative">
-                            <Building2 className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
-                            <input
-                              type="text"
-                              name="college"
-                              value={formData.college}
-                              onChange={handleFormChange}
-                              placeholder="MNNIT Allahabad"
-                              className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.college ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
-                            />
-                          </div>
-                          {errors.college && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.college}</p>}
-                        </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                              <div>
+                                <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                                  Check-in Date *
+                                </label>
+                                <input
+                                  type="date"
+                                  name="checkInDate"
+                                  value={formData.checkInDate}
+                                  onChange={handleFormChange}
+                                  className={`w-full px-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.checkInDate ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
+                                />
+                                {errors.checkInDate && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.checkInDate}</p>}
+                              </div>
 
-                        <div className="sm:col-span-2">
-                          <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                            City & State *
-                          </label>
-                          <div className="relative">
-                            <MapPin className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
-                            <input
-                              type="text"
-                              name="city"
-                              value={formData.city}
-                              onChange={handleFormChange}
-                              placeholder="Prayagraj, UP"
-                              className={`w-full pl-11 pr-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.city ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
-                            />
+                              <div>
+                                <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                                  Check-out Date *
+                                </label>
+                                <input
+                                  type="date"
+                                  name="checkOutDate"
+                                  value={formData.checkOutDate}
+                                  onChange={handleFormChange}
+                                  className={`w-full px-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.checkOutDate ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
+                                />
+                                {errors.checkOutDate && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.checkOutDate}</p>}
+                              </div>
+
+                              <div className="sm:col-span-2">
+                                <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                                  Accommodation / Food Preferences
+                                </label>
+                                <textarea
+                                  name="accommodationPreferences"
+                                  value={formData.accommodationPreferences}
+                                  onChange={handleFormChange}
+                                  rows="3"
+                                  placeholder="Any specific requests? (e.g. Vegetarian food only)"
+                                  className="w-full px-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 border-[#C5A25F]/40 text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors resize-none"
+                                ></textarea>
+                              </div>
+                            </div>
                           </div>
-                          {errors.city && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.city}</p>}
+                        )}
+
+                        {/* Submit Section */}
+                        <div className="pt-8 flex justify-end">
+                          <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="group relative flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#0C2B3D] text-[#F2E5D4] font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_8px_30px_rgba(12,43,61,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer border border-[#0C2B3D] w-full sm:w-auto overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed"
+                          >
+                            <div className="absolute inset-0 bg-[#16435E] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                            <span className="relative z-10">{isSubmitting ? "Submitting..." : "Verify & Complete Registration"}</span>
+                            <ChevronRight className="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                          </button>
                         </div>
-                      </div>
+                      </form>
                     </div>
-
-                    {/* Dynamic Accommodation Section */}
-                    {activeTicketData?.includesAccommodation && (
-                      <div className="space-y-5 pt-8 border-t border-[#0C2B3D]/15">
-                        <div className="flex items-center justify-between flex-wrap gap-2 mb-4 border-b border-[#0C2B3D]/15 pb-4">
-                          <div className="flex items-center gap-2">
-                            <BedDouble className="w-5 h-5 text-[#9E6D1F]" />
-                            <h4 className="font-cinzel text-lg font-black text-[#0C2B3D] uppercase tracking-wider">Accommodation Info</h4>
-                          </div>
-                          <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-[#E8D4B4] text-[#8A5F1C] border border-[#BFA275]/40">
-                            {accommodationDays} Day Stay Selected
-                          </span>
-                        </div>
-
-                        {/* Accommodation inclusions banner */}
-                        <div className="p-3.5 rounded-xl bg-white/70 border border-[#C5A25F]/30 text-xs font-montserrat text-[#1A3B4D] space-y-1">
-                          <p className="font-bold flex items-center gap-1.5 text-[#0C2B3D]">
-                            <CheckCircle2 className="w-4 h-4 text-[#219653]" />
-                            <span>Included with your pass: 3-time meals daily + 1 bed, pillow, blanket & linen.</span>
-                          </p>
-                          <p className="text-[11px] text-[#2C5263] font-mono">
-                            Base package covers 1 day. Extra days are charged at ₹500/day.
-                          </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                          <div>
-                            <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                              Check-in Date *
-                            </label>
-                            <input
-                              type="date"
-                              name="checkInDate"
-                              value={formData.checkInDate}
-                              onChange={handleFormChange}
-                              className={`w-full px-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.checkInDate ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
-                            />
-                            {errors.checkInDate && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.checkInDate}</p>}
-                          </div>
-                          
-                          <div>
-                            <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                              Check-out Date *
-                            </label>
-                            <input
-                              type="date"
-                              name="checkOutDate"
-                              value={formData.checkOutDate}
-                              onChange={handleFormChange}
-                              className={`w-full px-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.checkOutDate ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors`}
-                            />
-                            {errors.checkOutDate && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.checkOutDate}</p>}
-                          </div>
-                          
-                          <div className="sm:col-span-2">
-                            <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                              Accommodation / Food Preferences
-                            </label>
-                            <textarea
-                              name="accommodationPreferences"
-                              value={formData.accommodationPreferences}
-                              onChange={handleFormChange}
-                              rows="3"
-                              placeholder="Any specific requests? (e.g. Vegetarian food only)"
-                              className="w-full px-4 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 border-[#C5A25F]/40 text-sm text-[#0C2B3D] font-semibold placeholder-[#2C5263]/60 focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors resize-none"
-                            ></textarea>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Submit Section */}
-                    <div className="pt-8 flex justify-end">
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="group relative flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#0C2B3D] text-[#F2E5D4] font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_8px_30px_rgba(12,43,61,0.3)] transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer border border-[#0C2B3D] w-full sm:w-auto overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed"
-                      >
-                        <div className="absolute inset-0 bg-[#16435E] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                        <span className="relative z-10">{isSubmitting ? "Submitting..." : "Verify & Complete Registration"}</span>
-                        <ChevronRight className="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </button>
-                    </div>
-                  </form>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </section>
 
@@ -1270,5 +1326,5 @@ export default function TicketsAccommodation() {
         <ContactFooter />
       </div>
     </main>
-        );
+  );
 }
