@@ -3,9 +3,14 @@ import { randomBytes } from 'node:crypto';
 const { Schema } = mongoose;
 
 const ticketScanSchema = new Schema({
-  stage: { type: Number, required: true, min: 1, max: 3 },
+  stageId: { type: String },
+  stageName: { type: String, trim: true, maxlength: 50 },
+  // Kept for existing numeric scans and older client builds.
+  stage: { type: Number, min: 1, max: 3 },
   scannedAt: { type: Date, required: true, default: Date.now },
-  scannedBy: { type: Schema.Types.ObjectId, ref: 'Admin', required: true },
+  scannedBy: { type: Schema.Types.ObjectId, ref: 'Admin' },
+  scannedByRole: { type: String, enum: ['ADMIN', 'VOLUNTEER_SCANNER'] },
+  scannedByEmail: { type: String, trim: true, lowercase: true, maxlength: 254 },
 }, { _id: false });
 
 const ticketSchema = new Schema({

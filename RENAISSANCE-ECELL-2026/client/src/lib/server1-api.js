@@ -255,8 +255,16 @@ export const ticketApi = {
   purchase: (body) => request("/tickets/purchase", { method: "POST", body }, null, false, API_ROOT_URL),
   status: (ticketId) => request(`/tickets/status/${encodeURIComponent(ticketId)}`, {}, null, false, API_ROOT_URL),
   adminList: () => request("/tickets/admin", {}, "admin", true, API_ROOT_URL),
+  stageConfigs: () => request("/tickets/admin/stages", {}, "admin", true, API_ROOT_URL),
+  addStage: (ticketType, name) => request(`/tickets/admin/stages/${encodeURIComponent(ticketType)}`, { method: "POST", body: { name } }, "admin", true, API_ROOT_URL),
+  deleteStage: (ticketType, stageId) => request(`/tickets/admin/stages/${encodeURIComponent(ticketType)}/${encodeURIComponent(stageId)}`, { method: "DELETE" }, "admin", true, API_ROOT_URL),
   verify: (id, body) => request(`/tickets/admin/${encodeURIComponent(id)}/verify`, { method: "PATCH", body }, "admin", true, API_ROOT_URL),
   scan: (body) => request("/tickets/admin/scan", { method: "POST", body }, "admin", true, API_ROOT_URL),
+  volunteerLogin: (body) => request("/tickets/volunteer/login", { method: "POST", body }, null, false, API_ROOT_URL),
+  volunteerSession: () => request("/tickets/volunteer/session", {}, null, false, API_ROOT_URL),
+  volunteerLogout: () => request("/tickets/volunteer/logout", { method: "POST" }, null, false, API_ROOT_URL),
+  volunteerStages: () => request("/tickets/volunteer/stages", {}, null, false, API_ROOT_URL),
+  volunteerScan: (body) => request("/tickets/volunteer/scan", { method: "POST", body }, null, false, API_ROOT_URL),
 };
 
 export const server1ApiBaseUrl = API_BASE_URL;
