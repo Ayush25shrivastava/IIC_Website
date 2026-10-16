@@ -144,11 +144,6 @@ export default function App() {
                 path="/udbhav/tickets-accommodation"
                 element={<TicketsAccommodation />}
               />
-              <Route
-                path="/admin/tickets"
-                element={<TicketsAdmin />}
-              />
-
               {/* Dashboard */}
               <Route
                 path="/dashboard"
@@ -199,6 +194,7 @@ export default function App() {
                 <Route index element={<Navigate to="campus-ambassadors" replace />} />
                 <Route path="login" element={<AdminLogin />} />
                 <Route path="campus-ambassadors" element={<CampusAmbassadorAdmin />} />
+                <Route path="tickets" element={<TicketsAdmin />} />
               </Route>
               <Route path="/campus-ambassador/admin" element={<Navigate to="/admin" replace />} />
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { ArrowRight, BadgeCheck, CheckCheck, ClipboardList, Compass, Download, Eye, EyeOff, LayoutGrid, LoaderCircle, LogOut, Menu, Plus, RefreshCw, Search, ShieldCheck, Ticket, Users, X } from "lucide-react";
 import { adminApi } from "../lib/server1-api";
 import { downloadCsv } from "../lib/admin-csv";
@@ -126,16 +126,18 @@ export default function CampusAmbassadorAdmin() {
   const registrations = (data?.registrations || []).filter((r) => (!registrationFilter || r.status === registrationFilter) && (!registrationOwner || String(r.ambassadorId) === registrationOwner) && [r.name, r.email, r.promoCode, r.registrationId].some((s) => String(s || "").toLowerCase().includes(term)));
   function exportAmbassadors() { downloadCsv("renaissance-ambassadors.csv", [["Ambassador ID", "Name", "Email", "College", "Promo code", "Registrations (all statuses)", "Completed tasks", "Account"], ...visibleAmbassadors.map((a) => [a.ambassadorId, a.name, a.email, a.college, a.promoCode, a.registrationCount, a.taskProgress.completed, a.status])]); }
   function exportRegistrations() { downloadCsv("renaissance-registrations.csv", [["Registration ID", "Name", "Email", "Ambassador ID", "Original promo code", "Package", "Status", "Payment", "Created"], ...registrations.map((r) => [r.registrationId, r.name, r.email, owner(r.ambassadorId)?.ambassadorId || r.ambassadorId, r.promoCode, r.packageName, r.status, r.paymentStatus, r.createdAt])]); }
-  function roster(rows, compact = false) { return <div className="admin-table-scroll"><table><thead><tr><th>Ambassador</th><th>Promo code</th><th>Registrations</th>{!compact && <th>Task progress</th>}<th>Account</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>
-    {!rows.length && <tr><td colSpan={compact ? 5 : 6} className="admin-empty">No ambassadors match this view.</td></tr>}
-    {rows.map((a) => <tr key={a.id}><td><div className="admin-person"><span className="admin-avatar">{initials(a.name)}</span><div><strong>{a.name}</strong><small>{a.college}</small></div></div></td><td className="admin-code">{a.promoCode || "Not assigned"}</td><td><strong>{a.registrationCount}</strong></td>{!compact && <td><small>{a.taskProgress.completed} / {a.taskProgress.total} complete</small><progress aria-label={`${a.name} task completion`} max={a.taskProgress.total || 1} value={a.taskProgress.completed} /></td>}<td><span className={`admin-status ${a.status === "ACTIVE" ? "" : "muted"}`}>{nice(a.status)}</span></td><td><button className="admin-text-button" aria-label={`Manage ${a.name}`} onClick={() => setModal({ type: "ambassador-details", ambassador: a })}>Manage</button></td></tr>)}
-  </tbody></table></div>; }
+  function roster(rows, compact = false) {
+    return <div className="admin-table-scroll"><table><thead><tr><th>Ambassador</th><th>Promo code</th><th>Registrations</th>{!compact && <th>Task progress</th>}<th>Account</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>
+      {!rows.length && <tr><td colSpan={compact ? 5 : 6} className="admin-empty">No ambassadors match this view.</td></tr>}
+      {rows.map((a) => <tr key={a.id}><td><div className="admin-person"><span className="admin-avatar">{initials(a.name)}</span><div><strong>{a.name}</strong><small>{a.college}</small></div></div></td><td className="admin-code">{a.promoCode || "Not assigned"}</td><td><strong>{a.registrationCount}</strong></td>{!compact && <td><small>{a.taskProgress.completed} / {a.taskProgress.total} complete</small><progress aria-label={`${a.name} task completion`} max={a.taskProgress.total || 1} value={a.taskProgress.completed} /></td>}<td><span className={`admin-status ${a.status === "ACTIVE" ? "" : "muted"}`}>{nice(a.status)}</span></td><td><button className="admin-text-button" aria-label={`Manage ${a.name}`} onClick={() => setModal({ type: "ambassador-details", ambassador: a })}>Manage</button></td></tr>)}
+    </tbody></table></div>;
+  }
 
   return <div className="admin-app">
     <aside className={`admin-sidebar ${mobileOpen ? "is-open" : ""}`}>
       <div className="admin-brand"><img src={logo} alt="Renaissance" /><span className="admin-kicker">Admin command center</span></div>
       <p className="admin-kicker admin-nav-label">The command deck</p>
-      <nav aria-label="Admin navigation">{sections.map(([id, label, Icon]) => <button key={id} className={tab === id ? "selected" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => navigateSection(id)}><Icon size={20} /><span>{label}</span>{id === "reviews" && pending.length > 0 && <b>{pending.length}</b>}</button>)}</nav>
+      <nav aria-label="Admin navigation">{sections.map(([id, label, Icon]) => <button key={id} className={tab === id ? "selected" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => navigateSection(id)}><Icon size={20} /><span>{label}</span>{id === "reviews" && pending.length > 0 && <b>{pending.length}</b>}</button>)}<Link to="/admin/tickets" className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm font-semibold text-[#376579] transition hover:bg-white/70"><Ticket size={20} className="text-[#b18b36]" /><span>Ticket operations</span></Link></nav>
       <div className="admin-sidebar-footer"><ShieldCheck /><div><strong>{admin.name}</strong><small>Program administrator</small></div><button aria-label="Sign out" disabled={busy} onClick={async () => { setBusy(true); try { await logout(); } catch (err) { report(err); setBusy(false); } }}><LogOut size={18} /></button></div>
       <p className="admin-kicker admin-credit">E-CELL · MNNIT ALLAHABAD</p>
     </aside>

@@ -1,4 +1,5 @@
 const API_BASE_URL = (import.meta.env?.VITE_SERVER1_API_URL || "http://localhost:5001/api/v1").replace(/\/+$/, "");
+const API_ROOT_URL = API_BASE_URL.replace(/\/api\/v1$/, "");
 
 export class ApiClientError extends Error {
   constructor(message, { status = 0, code = "REQUEST_FAILED", details = null, requestId = null } = {}) {
@@ -11,9 +12,9 @@ export class ApiClientError extends Error {
   }
 }
 
-function buildUrl(path, query) {
+function buildUrl(path, query, baseUrl = API_BASE_URL) {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const url = new URL(`${API_BASE_URL}${normalizedPath}`);
+  const url = new URL(`${baseUrl}${normalizedPath}`);
 
   if (query) {
     for (const [key, value] of Object.entries(query)) {
@@ -42,7 +43,7 @@ async function readResponse(response) {
   const payload = await response.json();
   if (!response.ok || payload?.success === false) {
     throw new ApiClientError(
-      payload?.error?.message || `Request failed with status ${response.status}`,
+      payload?.error?.message || payload?.message || `Request failed with status ${response.status}`,
       {
         status: response.status,
         code: payload?.error?.code || "REQUEST_FAILED",
@@ -55,7 +56,7 @@ async function readResponse(response) {
   return payload?.data ?? payload;
 }
 
-async function send(path, { method = "GET", body, query, signal, keepalive = false } = {}) {
+async function send(path, { method = "GET", body, query, signal, keepalive = false } = {}, baseUrl = API_BASE_URL) {
   const headers = { Accept: "application/json" };
   let requestBody;
 
@@ -64,7 +65,7 @@ async function send(path, { method = "GET", body, query, signal, keepalive = fal
     requestBody = JSON.stringify(body);
   }
 
-  return fetch(buildUrl(path, query), {
+  return fetch(buildUrl(path, query, baseUrl), {
     method,
     headers,
     body: requestBody,
@@ -80,7 +81,7 @@ let ambassadorAuthMutation = null;
 // Finish revoking an old visit before login can issue new cookies.
 function mutateAmbassadorAuth(action) {
   const result = ambassadorAuthMutation
-    ? ambassadorAuthMutation.catch(() => {}).then(action)
+    ? ambassadorAuthMutation.catch(() => { }).then(action)
     : action();
   ambassadorAuthMutation = result;
   const clear = () => {
@@ -123,14 +124,14 @@ async function refreshAuth(authScope) {
   refreshRequests.set(authScope, refreshPromise);
   return refreshPromise;
 }
-async function request(path, options = {}, authScope = null, retry = true) {
-  let response = await send(path, options);
+async function request(path, options = {}, authScope = null, retry = true, baseUrl = API_BASE_URL) {
+  let response = await send(path, options, baseUrl);
 
   if (response.status === 401 && retry && authScope) {
     const refreshResult = await refreshAuth(authScope);
 
     if (refreshResult.ok) {
-      response = await send(path, options);
+      response = await send(path, options, baseUrl);
     } else if (refreshResult.error) {
       throw refreshResult.error;
     }
@@ -248,6 +249,14 @@ export const adminApi = {
     "admin",
   ),
   referrals: (query) => request("/admin/referrals", { query }, "admin"),
+};
+
+export const ticketApi = {
+  purchase: (body) => request("/tickets/purchase", { method: "POST", body }, null, false, API_ROOT_URL),
+  status: (ticketId) => request(`/tickets/status/${encodeURIComponent(ticketId)}`, {}, null, false, API_ROOT_URL),
+  adminList: () => request("/tickets/admin", {}, "admin", true, API_ROOT_URL),
+  verify: (id, body) => request(`/tickets/admin/${encodeURIComponent(id)}/verify`, { method: "PATCH", body }, "admin", true, API_ROOT_URL),
+  scan: (body) => request("/tickets/admin/scan", { method: "POST", body }, "admin", true, API_ROOT_URL),
 };
 
 export const server1ApiBaseUrl = API_BASE_URL;

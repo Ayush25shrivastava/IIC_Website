@@ -60,7 +60,7 @@ async function shutdown(signal) {
   }, 10000);
   forceExitTimer.unref();
 
-  httpServer.close(async (serverError) => {
+  const finishShutdown = async (serverError) => {
     try {
       await disconnectDatabase();
     } catch (databaseError) {
@@ -76,7 +76,13 @@ async function shutdown(signal) {
     clearTimeout(forceExitTimer);
     logger.info("Graceful shutdown complete");
     process.exit(process.exitCode || 0);
-  });
+  };
+
+  if (httpServer.listening) {
+    httpServer.close(finishShutdown);
+  } else {
+    void finishShutdown();
+  }
 }
 
 process.on("SIGTERM", () => void shutdown("SIGTERM"));
