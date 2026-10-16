@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ImagePlus, Plus, RefreshCw, X } from "lucide-react";
-import { adminApi, teamPhotoUrl } from "../lib/server1-api";
+import { createTeamPhotoApi, teamPhotoUrl } from "../lib/server1-api";
 import { TEAM_PHOTO_CATEGORIES, STUDENT_TEAMS } from "../data/teamPhotoCategories";
 import PhotoCropper from "./PhotoCropper";
-import { localAdminMode, localTeamPhotoApi } from "../lib/local-admin";
+import { localAdminMode, legacyTeamPhotos } from "../lib/local-admin";
 
-const photoApi = localAdminMode ? localTeamPhotoApi : adminApi;
+const photoApi = createTeamPhotoApi(localAdminMode);
 
 function PhotoEditor({ member, busy, onSave, onClose }) {
   const dialog = useRef(null);
@@ -49,6 +49,7 @@ function PhotoEditor({ member, busy, onSave, onClose }) {
         <small>JPEG, PNG or WebP, up to 10 MB. Crop and zoom your photo before saving.</small>
         {!form.image_url.startsWith("data:") && <label>Or use an HTTPS photo URL<input type="url" required={!member} maxLength={2000} placeholder={member?.uploaded ? "Leave blank to keep the current photo" : "https://…"} {...field("image_url")} /></label>}
         {preview && <img className="admin-photo-preview" src={preview} alt="Team photo preview" />}
+        {member?.cloudinaryPublicId && !form.image_url.startsWith("data:") && <button type="button" onClick={() => setCropSource(preview)}>Edit crop</button>}
         {form.image_url.startsWith("data:") && <div className="admin-actions">
           <button type="button" onClick={() => setCropSource(originalSource || form.image_url)}>Edit crop</button>
           <button type="button" onClick={() => { setForm({ ...form, image_url: "" }); setOriginalSource(null); }}>Clear selected upload</button>
@@ -60,6 +61,7 @@ function PhotoEditor({ member, busy, onSave, onClose }) {
 }
 
 export default function TeamPhotoManagement({ handleError }) {
+  const [legacyPhotos] = useState(legacyTeamPhotos);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -79,12 +81,25 @@ export default function TeamPhotoManagement({ handleError }) {
   useEffect(() => { load(); return () => { sequence.current += 1; }; }, [load]);
   const refresh = () => { setLoading(true); setError(""); load(); };
   const visible = members.filter((member) => (!category || member.category === category) && `${member.name} ${member.position} ${member.team}`.toLowerCase().includes(search.trim().toLowerCase()));
+  const pendingImports = legacyPhotos.filter((photo) => !members.some((member) => member.id === photo.id));
+  async function importPhotos() {
+    setBusy(true); setError(""); setNotice("");
+    let importError;
+    try {
+      for (const photo of pendingImports) {
+        const { name, category, image_url, position = "", team = "", linkedin = "" } = photo;
+        await photoApi.importTeamPhoto(photo.id, { name, category, image_url, position, team, linkedin });
+      }
+      setNotice("Existing photos copied to Cloudinary. Your browser copies are kept as a backup.");
+    } catch (err) { if (!handleError(err)) importError = err.message || "Import interrupted. You can safely retry."; }
+    finally { await load(); if (importError) setError(importError); setBusy(false); }
+  }
   async function save(body) {
     setBusy(true); setNotice("");
     try {
       if (editor.member) await photoApi.updateTeamPhoto(editor.member.id, body);
       else await photoApi.createTeamPhoto(body);
-      setEditor(null); setNotice("Team member saved. The team page will show this update."); await load();
+      setEditor(null); setNotice("Team member saved to Cloudinary. The team page will show this update."); await load();
     } catch (err) { handleError(err); throw err; }
     finally { setBusy(false); }
   }
@@ -96,10 +111,11 @@ export default function TeamPhotoManagement({ handleError }) {
     finally { setBusy(false); }
   }
   return <section className="admin-panel">
-    {localAdminMode && <p className="admin-notice">Local portal · Team photos are saved in this browser and appear on your local team page.</p>}
+    <p className="admin-notice">Team photos are saved to Cloudinary and loaded fresh when you open this page.</p>
     <div className="admin-panel-heading"><div><p className="admin-kicker">Management</p><h2>Team photo management</h2><p>Manage faculty and student photos shown on the team page.</p></div><button className="admin-gold" disabled={busy || loading || !!error} onClick={() => setEditor({})}><Plus size={18} /> Add member</button></div>
     {error && <div className="admin-alert" role="alert">{error}<button onClick={refresh} disabled={busy || loading}>Retry</button></div>}
     {notice && <div className="admin-notice" role="status">{notice}</div>}
+    {!loading && !error && pendingImports.length > 0 && <div className="admin-notice"><p>{pendingImports.length} existing photos can be copied to Cloudinary.</p><button disabled={busy} onClick={importPhotos}>{busy ? "Please wait…" : "Import existing photos"}</button></div>}
     <div className="admin-filters"><input aria-label="Search team members" placeholder="Search name, role or team…" value={search} onChange={(event) => setSearch(event.target.value)} /><select aria-label="Filter team photo type" value={category} onChange={(event) => setCategory(event.target.value)}><option value="">All types</option>{TEAM_PHOTO_CATEGORIES.map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select><button disabled={busy || loading} onClick={refresh}><RefreshCw size={16} /> Refresh</button></div>
     {loading ? <p className="admin-empty" role="status">Loading team photos…</p> : !error && <>
       {!visible.length && <div className="admin-empty"><ImagePlus size={32} /><p>No team members in this view. Add a member or change the filters.</p></div>}

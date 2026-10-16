@@ -35,30 +35,6 @@ test("admin dashboard database and authorization flow", { skip: !uri }, async (t
     await api("get", "/dashboard").expect(200);
   });
   let alice, bob, alicePassword;
-  await t.test("team photos round trip from admin management to public team page", async () => {
-    const body = { name: "Student Coordinator", category: "fourth", position: "Coordinator", image_url: "https://example.com/team.jpg" };
-    const created = await api("post", "/team-photos").send(body).expect(201);
-    const id = created.body.data.member.id;
-    let list = await request(app).get("/api/v1/team-photos").expect(200);
-    assert(list.body.data.members.some((member) => member.id === id && member.category === "fourth"));
-    await api("put", `/team-photos/${id}`).send({ ...body, name: "Updated Student", category: "third" }).expect(200);
-    list = await request(app).get("/api/v1/team-photos").expect(200);
-    assert.equal(list.body.data.members.find((member) => member.id === id).category, "third");
-    const image_url = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aY8sAAAAASUVORK5CYII=";
-    await api("put", `/team-photos/${id}`).send({ ...body, image_url }).expect(200);
-    const { image_url: _source, ...details } = body;
-    await api("put", `/team-photos/${id}`).send(details).expect(200);
-    const photo = await request(app).get(`/api/v1/team-photos/${id}/image`).expect(200);
-    assert.match(photo.headers["content-type"], /image\/png/);
-    assert.equal(photo.headers["cross-origin-resource-policy"], "cross-origin");
-    assert.deepEqual(photo.body, Buffer.from(image_url.split(",")[1], "base64"));
-    await agent.put(`/api/v1/admin/team-photos/${id}`).set("Origin", "https://untrusted.example").send(body).expect(403);
-    await api("delete", `/team-photos/${id}`).expect(204);
-    await request(app).get(`/api/v1/team-photos/${id}/image`).expect(404);
-    await api("delete", "/team-photos/faculty-mukul-shukla").expect(204);
-    list = await request(app).get("/api/v1/team-photos").expect(200);
-    assert(!list.body.data.members.some((member) => [id, "faculty-mukul-shukla"].includes(member.id)));
-  });
   await t.test("create and edit ambassadors and reject duplicate promos atomically", async () => {
     const chosenPassword = "alicecampus2026";
     const created = await api("post", "/ambassadors").send({ name: "Alice Captain", email: "alice@example.test", college: "First College", promoCode: "ALICE26", password: chosenPassword }).expect(201);

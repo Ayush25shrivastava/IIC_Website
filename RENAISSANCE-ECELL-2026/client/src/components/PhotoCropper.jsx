@@ -14,6 +14,7 @@ export default function PhotoCropper({ source, onApply, onCancel }) {
     let active = true;
     const objectUrl = typeof source === "string" ? null : URL.createObjectURL(source);
     const image = new Image();
+    if (typeof source === "string" && source.startsWith("https://")) image.crossOrigin = "anonymous";
     image.onload = () => { if (active) setPhoto(image); };
     image.onerror = () => { if (active) setError("This photo could not be opened. Choose another JPEG, PNG or WebP image."); };
     image.src = objectUrl || source;

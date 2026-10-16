@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getTeamPhotos, teamPhotoUrl } from "../lib/server1-api";
-import { TEAM_PHOTO_CATEGORIES, DEFAULT_TEAM_PHOTOS } from "../data/teamPhotoCategories";
-import { localAdminMode, localTeamPhotoApi } from "../lib/local-admin";
+import { TEAM_PHOTO_CATEGORIES } from "../data/teamPhotoCategories";
 import { getAssetUrl } from "../utils/assetUrl";
 import { FaLinkedin } from "react-icons/fa";
 import ContactFooter from "../components/ContactFooter";
@@ -41,20 +40,21 @@ const FacultyCard = ({ member }) => (
 
 
 export default function Teams({ embedded = false }) {
-  const [members, setMembers] = useState(DEFAULT_TEAM_PHOTOS);
+  const [members, setMembers] = useState([]);
+  const [photoError, setPhotoError] = useState("");
+  const [photosLoading, setPhotosLoading] = useState(true);
   useEffect(() => {
     let active = true;
     const refresh = () => {
       if (document.visibilityState !== "visible") return;
-      const request = localAdminMode ? localTeamPhotoApi.teamPhotos() : getTeamPhotos();
-      request.then((data) => { if (active) setMembers(data.members); }).catch(() => {
-        // Preserve the last available team if the API is temporarily unavailable.
-      });
+      getTeamPhotos().then((data) => { if (active) { setMembers(data.members); setPhotoError(""); } })
+        .catch(() => { if (active) setPhotoError("Team photos are temporarily unavailable. Please try again shortly."); })
+        .finally(() => { if (active) setPhotosLoading(false); });
     };
     refresh();
     window.addEventListener("focus", refresh);
-    window.addEventListener("storage", refresh);
-    return () => { active = false; window.removeEventListener("focus", refresh); window.removeEventListener("storage", refresh); };
+    window.addEventListener("visibilitychange", refresh);
+    return () => { active = false; window.removeEventListener("focus", refresh); window.removeEventListener("visibilitychange", refresh); };
   }, []);
   return (
     <div className={`${embedded ? "py-12 sm:py-16" : "teams-page-root min-h-[100svh] pt-[68px] sm:pt-24"} flex flex-col justify-between overflow-x-hidden bg-[radial-gradient(ellipse_at_15%_18%,rgba(249,231,196,0.60)_0%,transparent_34%),radial-gradient(ellipse_at_85%_76%,rgba(128,199,220,0.35)_0%,transparent_36%),linear-gradient(180deg,#E9DFC9_0%,#C6DEE0_20%,#D7E1D9_44%,#F2E8C8_72%,#FFD9A5_100%)] text-[#173F56]`}>
@@ -191,6 +191,9 @@ export default function Teams({ embedded = false }) {
         </header>
 
         <div className="space-y-14">
+          {photosLoading && <p role="status" className="text-center">Loading team photos…</p>}
+          {photoError && <p role="alert" className="text-center">{photoError}</p>}
+          {!photosLoading && !photoError && !members.length && <p className="text-center">Team photos will be added soon.</p>}
           {TEAM_PHOTO_CATEGORIES.map(([category, label]) => {
             const group = members.filter((member) => member.category === category);
             if (!group.length) return null;
