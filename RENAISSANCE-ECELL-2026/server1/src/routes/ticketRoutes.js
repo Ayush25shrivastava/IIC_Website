@@ -1,7 +1,27 @@
 import express from 'express';
-import { purchaseTicket, getAllTickets, verifyTicket, getTicketStatus, scanTicket } from '../controllers/ticketController.js';
+import { rateLimit } from 'express-rate-limit';
+import {
+    purchaseTicket, getAllTickets, verifyTicket, getTicketStatus, scanTicket,
+    getTicketStageConfigs, addTicketStage, deleteTicketStage,
+} from '../controllers/ticketController.js';
 import { requireAdminAuth } from '../middleware/admin-auth.js';
 import { requireTrustedOrigin } from '../middleware/trusted-origin.js';
+import { requireVolunteerScanner } from '../middleware/volunteer-scanner-auth.js';
+import {
+    getVolunteerScannerSession,
+    loginVolunteerScanner,
+    logoutVolunteerScanner,
+} from '../controllers/volunteer-scanner.controller.js';
+
+const volunteerLoginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 8,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    handler(_req, res) {
+        res.status(429).json({ success: false, message: 'Too many sign-in attempts. Try again later.' });
+    },
+});
 
 const router = express.Router();
 
@@ -11,7 +31,17 @@ router.post('/purchase', purchaseTicket);
 // Public route to get ticket status
 router.get('/status/:ticketId', getTicketStatus);
 
+// Scanner-only volunteer access; this role cannot review payments or edit stages.
+router.post('/volunteer/login', requireTrustedOrigin, volunteerLoginLimiter, loginVolunteerScanner);
+router.get('/volunteer/session', requireVolunteerScanner, getVolunteerScannerSession);
+router.post('/volunteer/logout', requireTrustedOrigin, logoutVolunteerScanner);
+router.get('/volunteer/stages', requireVolunteerScanner, getTicketStageConfigs);
+router.post('/volunteer/scan', requireVolunteerScanner, requireTrustedOrigin, scanTicket);
+
 // Admin routes use the same cookie-backed session as the current command center.
+router.get('/admin/stages', requireAdminAuth, getTicketStageConfigs);
+router.post('/admin/stages/:ticketType', requireAdminAuth, requireTrustedOrigin, addTicketStage);
+router.delete('/admin/stages/:ticketType/:stageId', requireAdminAuth, requireTrustedOrigin, deleteTicketStage);
 router.get('/admin', requireAdminAuth, getAllTickets);
 
 router.patch('/admin/:id/verify', requireAdminAuth, requireTrustedOrigin, verifyTicket);
