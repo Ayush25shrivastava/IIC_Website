@@ -12,6 +12,7 @@ import { requestLogger } from "./middleware/request-context.js";
 import { ambassadorAuthRouter } from "./routes/ambassador-auth.routes.js";
 import { adminAuthRouter } from "./routes/admin-auth.routes.js";
 import { adminManagementRouter } from "./routes/admin-management.routes.js";
+import { adminTeamPhotoRouter, publicTeamPhotoRouter } from "./routes/team-photo.routes.js";
 import { ambassadorDashboardRouter } from "./routes/ambassador-dashboard.routes.js";
 import { healthRouter } from "./routes/health.routes.js";
 import { ApiError } from "./utils/api-error.js";
@@ -81,7 +82,9 @@ app.use("/api/v1/admin", (_req, res, next) => {
   next();
 });
 app.use("/api/v1/admin/auth", adminAuthRouter);
+app.use("/api/v1/admin/team-photos", adminTeamPhotoRouter);
 app.use("/api/v1/admin", adminManagementRouter);
+app.use("/api/v1/team-photos", publicTeamPhotoRouter);
 
 app.use("/auth", (_req, _res, next) => {
   if (!googleAuthEnabled) {

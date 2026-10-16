@@ -113,6 +113,22 @@
 .admin-dialog header { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 22px; }
 .admin-dialog header button { padding: 8px; background: transparent; border: 0; }
 .admin-form, .admin-login form { display: grid; gap: 16px; }
+.admin-photo-fields { display: grid; gap: 16px; border: 0; padding: 0; min-width: 0; }
+.admin-photo-preview { width: 160px; height: 160px; object-fit: cover; border-radius: 12px; }
+.admin-photo-cropper { display: grid; gap: 16px; }
+.admin-photo-cropper label { display: grid; gap: 6px; font-weight: 600; }
+.admin-photo-cropper input[type="range"] { width: 100%; min-height: 30px; padding: 0; accent-color: #98742f; cursor: pointer; }
+.admin-crop-stage { position: relative; width: min(100%, 350px); aspect-ratio: 1; margin: 0 auto; overflow: hidden; border: 2px solid #98742f; border-radius: 8px; touch-action: none; cursor: grab; user-select: none; }
+.admin-crop-stage:active { cursor: grabbing; }
+.admin-crop-stage:focus-visible { outline: 3px solid #166e94; outline-offset: 3px; }
+.admin-crop-stage canvas { display: block; width: 100%; height: 100%; }
+.admin-crop-grid { pointer-events: none; position: absolute; inset: 0; background: linear-gradient(to right, transparent 33.1%, #ffffff80 33.1%, #ffffff80 33.5%, transparent 33.5%, transparent 66.4%, #ffffff80 66.4%, #ffffff80 66.8%, transparent 66.8%), linear-gradient(to bottom, transparent 33.1%, #ffffff80 33.1%, #ffffff80 33.5%, transparent 33.5%, transparent 66.4%, #ffffff80 66.4%, #ffffff80 66.8%, transparent 66.8%); }
+.admin-photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 20px; padding: 0 26px 26px; }
+.admin-photo-card { overflow: hidden; border: 1px solid #b5dbe3; border-radius: 14px; background: #f4fbfc; }
+.admin-photo-card > img { width: 100%; aspect-ratio: 1; object-fit: cover; background: #d6e9ee; }
+.admin-photo-card > div { padding: 16px; }
+.admin-photo-card h3 { font-size: 17px; font-weight: 600; margin: 8px 0; overflow-wrap: anywhere; }
+.admin-photo-card p { min-height: 22px; margin-bottom: 14px; overflow-wrap: anywhere; }
 .admin-form label, .admin-login label { display: grid; gap: 7px; font-weight: 600; }
 .admin-form details { padding: 15px; border: 1px solid #b8d6df; border-radius: 10px; }
 .admin-form summary { cursor: pointer; }

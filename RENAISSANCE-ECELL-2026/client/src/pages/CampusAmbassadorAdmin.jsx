@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import { ArrowRight, BadgeCheck, CheckCheck, ClipboardList, Compass, Download, Eye, EyeOff, LayoutGrid, LoaderCircle, LogOut, Menu, Plus, RefreshCw, Search, ShieldCheck, Ticket, Users, X } from "lucide-react";
+import { ArrowRight, BadgeCheck, CheckCheck, ClipboardList, Compass, Download, Eye, EyeOff, Images, LayoutGrid, LoaderCircle, LogOut, Menu, Plus, RefreshCw, Search, ShieldCheck, Ticket, Users, X } from "lucide-react";
 import { adminApi } from "../lib/server1-api";
 import { downloadCsv } from "../lib/admin-csv";
+import { localAdminMode } from "../lib/local-admin";
+import TeamPhotoManagement from "../components/TeamPhotoManagement";
 import logo from "../assets/renaissance-logo.png";
 
 const sections = [
   ["overview", "Overview", LayoutGrid], ["ambassadors", "Ambassadors", Users],
   ["tasks", "Tasks & assignments", ClipboardList], ["reviews", "Submission reviews", BadgeCheck],
-  ["promos", "Promo & registrations", Ticket],
+  ["promos", "Promo & registrations", Ticket], ["management", "Management", Images],
 ];
 const nice = (value) => String(value || "").toLowerCase().replaceAll("_", " ");
 const initials = (name) => name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("");
@@ -58,10 +60,10 @@ function TaskForm({ task, ambassadors, busy, onSave }) {
 
 export default function CampusAmbassadorAdmin() {
   const { admin, logout, handleError } = useOutletContext();
-  const [tab, setTab] = useState("overview");
+  const [tab, setTab] = useState(localAdminMode ? "management" : "overview");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!localAdminMode);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -76,6 +78,7 @@ export default function CampusAmbassadorAdmin() {
   const [assignee, setAssignee] = useState("");
   const requestSequence = useRef(0);
   const load = useCallback(async () => {
+    if (localAdminMode) return;
     const seq = ++requestSequence.current;
     const [summary, ambassadors, tasks, promos, registrations] = await Promise.all([
       adminApi.dashboard(), allPages(adminApi.ambassadors, "ambassadors"), allPages(adminApi.tasks, "tasks"),
@@ -85,11 +88,13 @@ export default function CampusAmbassadorAdmin() {
   }, []);
   const report = useCallback((err) => { if (!handleError(err)) setError(err.status ? err.message : "The admin service could not be reached. Please try again."); }, [handleError]);
   useEffect(() => {
+    if (localAdminMode) return;
     let active = true;
     load().catch((err) => { if (active) report(err); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; requestSequence.current += 1; };
   }, [load, report]);
   useEffect(() => {
+    if (localAdminMode) return;
     const refresh = () => { if (document.visibilityState === "visible") load().catch(report); };
     const timer = setInterval(refresh, 30000);
     window.addEventListener("focus", refresh);
@@ -137,17 +142,17 @@ export default function CampusAmbassadorAdmin() {
     <aside className={`admin-sidebar ${mobileOpen ? "is-open" : ""}`}>
       <div className="admin-brand"><img src={logo} alt="Renaissance" /><span className="admin-kicker">Admin command center</span></div>
       <p className="admin-kicker admin-nav-label">The command deck</p>
-      <nav aria-label="Admin navigation">{sections.map(([id, label, Icon]) => <button key={id} className={tab === id ? "selected" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => navigateSection(id)}><Icon size={20} /><span>{label}</span>{id === "reviews" && pending.length > 0 && <b>{pending.length}</b>}</button>)}<Link to="/admin/tickets" className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm font-semibold text-[#376579] transition hover:bg-white/70"><Ticket size={20} className="text-[#b18b36]" /><span>Ticket operations</span></Link></nav>
-      <div className="admin-sidebar-footer"><ShieldCheck /><div><strong>{admin.name}</strong><small>Program administrator</small></div><button aria-label="Sign out" disabled={busy} onClick={async () => { setBusy(true); try { await logout(); } catch (err) { report(err); setBusy(false); } }}><LogOut size={18} /></button></div>
+      <nav aria-label="Admin navigation">{sections.map(([id, label, Icon]) => <button key={id} className={tab === id ? "selected" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => navigateSection(id)}><Icon size={20} /><span>{label}</span>{id === "reviews" && pending.length > 0 && <b>{pending.length}</b>}</button>)}{!localAdminMode && <Link to="/admin/tickets" className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-3 text-left text-sm font-semibold text-[#376579] transition hover:bg-white/70"><Ticket size={20} className="text-[#b18b36]" /><span>Ticket operations</span></Link>}</nav>
+      <div className="admin-sidebar-footer"><ShieldCheck /><div><strong>{admin.name}</strong><small>Program administrator</small></div><button aria-label={localAdminMode ? "Exit local portal" : "Sign out"} disabled={busy} onClick={async () => { setBusy(true); try { await logout(); } catch (err) { report(err); setBusy(false); } }}><LogOut size={18} /></button></div>
       <p className="admin-kicker admin-credit">E-CELL · MNNIT ALLAHABAD</p>
     </aside>
     <main className="admin-main">
       <header className="admin-topbar"><div><button className="admin-mobile-menu" aria-label="Toggle admin navigation" aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}><Menu size={20} /></button><Compass size={20} /><span className="admin-kicker">Command center</span><span aria-hidden="true">›</span><strong>{sections.find(([id]) => id === tab)[1]}</strong></div><div><span className="admin-access"><ShieldCheck size={16} /> Admin access</span><span className="admin-avatar">{initials(admin.name)}</span></div></header>
-      <section className="admin-hero"><p className="admin-kicker">Renaissance X · Administration</p><div><h1>Your fleet. <em>One command.</em></h1><div className="admin-actions"><button onClick={() => setModal({ type: "task" })} disabled={loading || !data}><Plus size={19} /> Assign task</button><button className="admin-gold" onClick={() => setModal({ type: "ambassador" })} disabled={loading || !data}><Plus size={19} /> Add ambassador</button></div></div><p>Manage your ambassadors, guide their missions, and follow their impact.</p></section>
+      <section className="admin-hero"><p className="admin-kicker">Renaissance X · Administration</p><div><h1>{tab === "management" ? <>Your team. <em>In focus.</em></> : <>Your fleet. <em>One command.</em></>}</h1>{tab !== "management" && !localAdminMode && <div className="admin-actions"><button onClick={() => setModal({ type: "task" })} disabled={loading || !data}><Plus size={19} /> Assign task</button><button className="admin-gold" onClick={() => setModal({ type: "ambassador" })} disabled={loading || !data}><Plus size={19} /> Add ambassador</button></div>}</div><p>{tab === "management" ? "Manage faculty and student team photos in one place." : "Manage your ambassadors, guide their missions, and follow their impact."}</p></section>
       {error && <div className="admin-alert" role="alert">{error}<button onClick={() => mutate(load, "Dashboard refreshed.")}>Retry</button></div>}
       {notice && <div className="admin-notice" role="status">{notice}</div>}
       {credential && <div className="admin-credential" role="status"><strong>New credential · shown once</strong><p>{credential.ambassador.email}</p><code>{credential.temporaryPassword}</code><p>Share this email and password privately with the ambassador.</p><button onClick={() => setCredential(null)}>Dismiss credential</button></div>}
-      {loading ? <div className="admin-panel admin-empty" role="status"><LoaderCircle className="animate-spin" /> Loading your command center…</div> : !data ? <div className="admin-panel admin-empty">Dashboard data is unavailable. Use Retry above.</div> : <>
+      {tab === "management" ? <TeamPhotoManagement handleError={handleError} /> : localAdminMode ? <section className="admin-panel admin-empty"><h2>Local admin portal</h2><p>Team photo management is available without sign-in. Ambassador and ticket operations require the connected admin service.</p><button onClick={() => navigateSection("management")}>Manage team photos</button></section> : loading ? <div className="admin-panel admin-empty" role="status"><LoaderCircle className="animate-spin" /> Loading your command center…</div> : !data ? <div className="admin-panel admin-empty">Dashboard data is unavailable. Use Retry above.</div> : <>
         <section className="admin-stats" aria-label="Program totals">
           {[[Users, "Campus ambassadors", summary.ambassadors.total, `${summary.ambassadors.ACTIVE} active in the crew`], [Ticket, "Total registrations", summary.referrals.total, "Attributed records · all statuses"], [CheckCheck, "Tasks completed", `${summary.tasks.COMPLETED}/${summary.tasks.total}`, `${summary.tasks.ASSIGNED + summary.tasks.IN_PROGRESS} missions still underway`], [BadgeCheck, "Awaiting review", summary.pendingReviews, "Submissions ready for your review"]].map(([Icon, label, value, detail], i) => <article key={label} className={`admin-panel admin-stat ${i === 3 ? "gold" : ""}`}><div><span className="admin-kicker">{label}</span><Icon size={23} /></div><strong>{value}</strong><p>{detail}</p></article>)}
         </section>
