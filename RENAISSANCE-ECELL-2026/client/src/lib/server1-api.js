@@ -260,6 +260,11 @@ export const ticketApi = {
   deleteStage: (ticketType, stageId) => request(`/tickets/admin/stages/${encodeURIComponent(ticketType)}/${encodeURIComponent(stageId)}`, { method: "DELETE" }, "admin", true, API_ROOT_URL),
   verify: (id, body) => request(`/tickets/admin/${encodeURIComponent(id)}/verify`, { method: "PATCH", body }, "admin", true, API_ROOT_URL),
   scan: (body) => request("/tickets/admin/scan", { method: "POST", body }, "admin", true, API_ROOT_URL),
+  volunteerLogin: (body) => request("/tickets/volunteer/login", { method: "POST", body }, null, false, API_ROOT_URL),
+  volunteerSession: () => request("/tickets/volunteer/session", {}, null, false, API_ROOT_URL),
+  volunteerLogout: () => request("/tickets/volunteer/logout", { method: "POST" }, null, false, API_ROOT_URL),
+  volunteerStages: () => request("/tickets/volunteer/stages", {}, null, false, API_ROOT_URL),
+  volunteerScan: (body) => request("/tickets/volunteer/scan", { method: "POST", body }, null, false, API_ROOT_URL),
 };
 
 export const server1ApiBaseUrl = API_BASE_URL;

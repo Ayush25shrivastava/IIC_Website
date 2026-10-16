@@ -35,6 +35,7 @@ const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const CampusAmbassadorAdmin = lazy(() => import("./pages/CampusAmbassadorAdmin"));
 const TicketsAccommodation = lazy(() => import("./pages/TicketsAccommodation"));
 const TicketsAdmin = lazy(() => import("./pages/TicketsAdmin"));
+const VolunteerScanner = lazy(() => import("./pages/VolunteerScanner"));
 const SupportUs = lazy(() => import("./pages/SupportUs"));
 
 function ScrollToTop() {
@@ -53,7 +54,7 @@ function ScrollToTop() {
 
 function PublicChrome({ showIntro, onIntroComplete }) {
   const { pathname } = useLocation();
-  if (/^\/admin(?:\/|$)/.test(pathname)) return null;
+  if (/^\/(?:admin|volunteer)(?:\/|$)/.test(pathname)) return null;
   return <>
     <PageTransitionShimmer />
     <AdisyonShader className="fixed inset-0 z-0 opacity-90 mix-blend-screen pointer-events-none" />
@@ -63,7 +64,7 @@ function PublicChrome({ showIntro, onIntroComplete }) {
 }
 
 export default function App() {
-  const [showIntro, setShowIntro] = useState(() => !/\/admin(?:\/|$)/.test(window.location.pathname));
+  const [showIntro, setShowIntro] = useState(() => !/^\/(?:admin|volunteer)(?:\/|$)/.test(window.location.pathname));
 
   const handleIntroComplete = () => {
     setShowIntro(false);
@@ -140,6 +141,7 @@ export default function App() {
                 path="/tickets-accommodation"
                 element={<TicketsAccommodation />}
               />
+              <Route path="/volunteer" element={<VolunteerScanner />} />
               <Route
                 path="/udbhav/tickets-accommodation"
                 element={<TicketsAccommodation />}
