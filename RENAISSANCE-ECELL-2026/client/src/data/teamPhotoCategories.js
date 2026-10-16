@@ -6,7 +6,7 @@ export const TEAM_PHOTO_CATEGORIES = [
   ["first", "1st Year"],
 ];
 
-export const STUDENT_TEAMS = ["Web Team", "PR Team", "Media Team", "Marketing Team", "Networking Team"];
+export const STUDENT_TEAMS = ["Web Team", "PR Team", "Media Team", "Marketing Team", "Networking Team", "Design Team", "Video Team"];
 
 export const DEFAULT_TEAM_PHOTOS = [
   { id: "faculty-mukul-shukla", category: "faculty", name: "Prof. Mukul Shukla", image_url: "https://res.cloudinary.com/ddjzcyl4d/image/upload/v1774029796/image_1_roojuv.avif", linkedin: "https://www.linkedin.com/in/mukul-shukla-329a7121" },

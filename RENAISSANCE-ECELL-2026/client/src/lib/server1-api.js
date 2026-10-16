@@ -5,8 +5,6 @@ const API_BASE_URL = import.meta.env?.DEV
   ? (configuredApiBaseUrl || "/api/v1")
   : (configuredApiBaseUrl?.startsWith("/") ? configuredApiBaseUrl : "/api/v1");
 const API_ROOT_URL = API_BASE_URL.startsWith("/") ? "" : API_BASE_URL.replace(/\/api\/v1$/, "");
-const API_BASE_URL = (import.meta.env?.VITE_SERVER1_API_URL || "http://localhost:5001/api/v1").replace(/\/+$/, "");
-const API_ROOT_URL = API_BASE_URL.replace(/\/api\/v1$/, "");
 
 let adminToken = typeof window !== "undefined" ? localStorage.getItem("rn_admin_token") || null : null;
 
