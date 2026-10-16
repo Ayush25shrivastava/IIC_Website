@@ -1,5 +1,19 @@
 # React + Vite
 
+## Deployment
+
+The Vercel configuration proxies `/api/v1/*` and `/tickets/*` to the server1
+Render service. Production builds call those same-origin paths so admin and
+volunteer HttpOnly cookies are not treated as third-party cookies. Keep the
+Render `CLIENT_ORIGIN` allowlist set to the deployed Vercel origin, and leave
+`AUTH_COOKIE_DOMAIN` unset so cookies are scoped to the Vercel host. Do not set
+`VITE_SERVER1_API_URL` to the Render hostname in Vercel production environment
+variables; local development may use the URL in `.env.example`.
+
+When deploying the client, deploy the Vercel project rooted at this `client`
+directory so its `vercel.json` rewrites are applied. The app also reloads once
+when an open tab encounters a stale lazy-loaded chunk after a deployment.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
