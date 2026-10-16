@@ -1,8 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
-import { ArrowLeft, Camera, Check, CheckCircle2, LoaderCircle, RefreshCw, Search, ShieldCheck, Ticket, XCircle } from "lucide-react";
+import { ArrowLeft, Camera, Check, CheckCircle2, LoaderCircle, Plus, RefreshCw, Search, ShieldCheck, Ticket, Trash2, XCircle } from "lucide-react";
 import { ticketApi } from "../lib/server1-api";
+
+const PASS_TYPES = [
+    ["event-standard", "Standard Pass"], ["event-premium", "Premium Pass"], ["event-elite", "Elite Pass"],
+    ["accom-standard", "Standard Pass + Stay"], ["accom-premium", "Premium Pass + Stay"], ["accom-elite", "Elite Pass + Stay"],
+];
 
 const statusColors = {
     Pending: "border-amber-300 bg-amber-100 text-amber-800",
@@ -10,13 +15,14 @@ const statusColors = {
     Rejected: "border-rose-300 bg-rose-100 text-rose-800",
 };
 
-function StageBadges({ scans = [] }) {
-    return <div className="flex flex-wrap gap-1.5">{[1, 2, 3].map((stage) => {
-        const scan = scans.find((item) => Number(item.stage) === stage);
-        return <span key={stage} title={scan ? `Scanned ${new Date(scan.scannedAt).toLocaleString()}` : `Stage ${stage} not scanned`} className={`rounded-full border px-2 py-1 text-[10px] font-bold ${scan ? "border-amber-300 bg-amber-100 text-amber-800" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
-            {scan ? `Stage ${stage} · scanned` : `Stage ${stage} · open`}
+function StageBadges({ scans = [], stages = [] }) {
+    const visibleStages = stages.length ? stages : [1, 2, 3].map((stage) => ({ stageId: `stage-${stage}`, name: `Stage ${stage}` }));
+    return <div className="flex flex-wrap gap-1.5">{visibleStages.map((stage) => {
+        const scan = scans.find((item) => item.stageId === stage.stageId || (!item.stageId && stage.stageId === `stage-${item.stage}`));
+        return <span key={stage.stageId} title={scan ? `Scanned ${new Date(scan.scannedAt).toLocaleString()}` : `${stage.name} not scanned`} className={`rounded-full border px-2 py-1 text-[10px] font-bold ${scan ? "border-amber-300 bg-amber-100 text-amber-800" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
+            {scan ? `${stage.name} · scanned` : `${stage.name} · open`}
         </span>;
-    })}</div>;
+    })}{scans.filter((scan) => !visibleStages.some((stage) => stage.stageId === (scan.stageId || `stage-${scan.stage}`))).map((scan) => <span key={scan.stageId || `legacy-${scan.stage}`} title={`Scanned ${new Date(scan.scannedAt).toLocaleString()}`} className="rounded-full border border-amber-300 bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800">{scan.stageName || scan.stageId || `Legacy stage ${scan.stage}`} · scanned</span>)}</div>;
 }
 
 function CameraReader({ onDecoded, onError }) {
@@ -54,7 +60,11 @@ export default function TicketsAdmin() {
     const [notice, setNotice] = useState("");
     const [filter, setFilter] = useState("Pending");
     const [search, setSearch] = useState("");
-    const [stage, setStage] = useState("1");
+    const [stageConfigs, setStageConfigs] = useState({});
+    const [passType, setPassType] = useState("event-standard");
+    const [stageId, setStageId] = useState("stage-1");
+    const [stageName, setStageName] = useState("");
+    const [stageConfigBusy, setStageConfigBusy] = useState(false);
     const [manualId, setManualId] = useState("");
     const [cameraOn, setCameraOn] = useState(false);
     const [scanResult, setScanResult] = useState(null);
@@ -64,9 +74,19 @@ export default function TicketsAdmin() {
         const data = await ticketApi.adminList();
         setTickets(data.tickets || []);
     }, []);
+    const loadStageConfigs = useCallback(async () => {
+        const data = await ticketApi.stageConfigs();
+        const configs = Object.fromEntries((data.configs || []).map((config) => [config.ticketType, config.stages || []]));
+        setStageConfigs(configs);
+        return configs;
+    }, []);
     useEffect(() => {
         let active = true;
-        ticketApi.adminList().then((data) => { if (active) setTickets(data.tickets || []); })
+        Promise.all([ticketApi.adminList(), ticketApi.stageConfigs()]).then(([ticketData, stageData]) => {
+            if (!active) return;
+            setTickets(ticketData.tickets || []);
+            setStageConfigs(Object.fromEntries((stageData.configs || []).map((config) => [config.ticketType, config.stages || []])));
+        })
             .catch((err) => { if (active && !handleError(err)) setError(err.message || "Could not load ticket submissions."); })
             .finally(() => { if (active) setLoading(false); });
         return () => { active = false; };
@@ -74,7 +94,33 @@ export default function TicketsAdmin() {
 
     async function refresh() {
         setError("");
-        try { await loadTickets(); } catch (err) { if (!handleError(err)) setError(err.message || "Could not refresh tickets."); }
+        try { await Promise.all([loadTickets(), loadStageConfigs()]); } catch (err) { if (!handleError(err)) setError(err.message || "Could not refresh ticket settings."); }
+    }
+
+    async function addStage(event) {
+        event.preventDefault();
+        if (!stageName.trim()) return;
+        setStageConfigBusy(true); setError(""); setNotice("");
+        try {
+            const data = await ticketApi.addStage(passType, stageName.trim());
+            setStageConfigs((current) => ({ ...current, [passType]: data.stages }));
+            setStageId(data.stages.at(-1)?.stageId || "");
+            setStageName("");
+            setNotice(`Added ${data.stages.at(-1)?.name} to ${PASS_TYPES.find(([id]) => id === passType)?.[1]}.`);
+        } catch (err) { if (!handleError(err)) setError(err.message || "Could not add stage."); }
+        finally { setStageConfigBusy(false); }
+    }
+
+    async function removeStage(stage) {
+        if (!window.confirm(`Remove “${stage.name}” from ${PASS_TYPES.find(([id]) => id === passType)?.[1]}? Existing scan records will be kept.`)) return;
+        setStageConfigBusy(true); setError(""); setNotice("");
+        try {
+            const data = await ticketApi.deleteStage(passType, stage.stageId);
+            setStageConfigs((current) => ({ ...current, [passType]: data.stages }));
+            if (stageId === stage.stageId) setStageId(data.stages[0]?.stageId || "");
+            setNotice(`Removed ${stage.name}. Existing ticket scan history was preserved.`);
+        } catch (err) { if (!handleError(err)) setError(err.message || "Could not remove stage."); }
+        finally { setStageConfigBusy(false); }
     }
 
     async function verify(ticket, status) {
@@ -87,22 +133,28 @@ export default function TicketsAdmin() {
         finally { setBusyId(""); }
     }
 
+    const activeStages = useMemo(() => stageConfigs[passType] || [], [passType, stageConfigs]);
     const handleScan = useCallback(async (rawValue) => {
         const ticketId = String(rawValue || "").trim().toUpperCase();
         if (!ticketId) return;
         setCameraOn(false);
         setScanBusy(true); setScanResult(null); setError("");
         try {
-            const data = await ticketApi.scan({ ticketId, stage: Number(stage) });
-            const result = { ...data, selectedStage: Number(stage) };
+            const data = await ticketApi.scan({ ticketId, ticketType: passType, stageId });
+            const result = { ...data, selectedStage: data.selectedStage?.name || "Selected stage" };
             setScanResult(result);
             setManualId("");
             await loadTickets();
         } catch (err) {
             if (handleError(err)) return;
-            setScanResult({ error: err.message || "Ticket scan failed.", selectedStage: Number(stage) });
+            setScanResult({ error: err.message || "Ticket scan failed.", selectedStage: activeStages.find((item) => item.stageId === stageId)?.name || "Selected stage" });
         } finally { setScanBusy(false); }
-    }, [handleError, loadTickets, stage]);
+    }, [activeStages, handleError, loadTickets, passType, stageId]);
+    const changePassType = (nextType) => {
+        setPassType(nextType);
+        setStageId((stageConfigs[nextType] || [])[0]?.stageId || "");
+        setScanResult(null);
+    };
 
     const cameraError = useCallback((message) => { setCameraOn(false); setError(message); }, []);
     const visibleTickets = tickets.filter((ticket) => {
@@ -139,23 +191,29 @@ export default function TicketsAdmin() {
                         <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-3"><div><dt className="text-[#527e8e]">Pass</dt><dd className="font-bold text-[#173f52]">{ticket.ticketType}</dd></div><div><dt className="text-[#527e8e]">Paid / expected</dt><dd className="font-bold text-[#173f52]">₹{ticket.amountPaid} / ₹{ticket.amount}</dd></div><div><dt className="text-[#527e8e]">Transaction / UTR</dt><dd className="break-all font-mono font-bold text-[#173f52]">{ticket.transactionId}</dd></div><div><dt className="text-[#527e8e]">College · city</dt><dd className="font-semibold text-[#173f52]">{ticket.college} · {ticket.city}</dd></div><div><dt className="text-[#527e8e]">Submitted</dt><dd className="font-semibold text-[#173f52]">{new Date(ticket.createdAt).toLocaleString()}</dd></div></dl>
                         {ticket.verificationRemarks && <p className="mt-3 rounded-lg bg-white/70 p-3 text-xs text-[#527e8e]">Admin note: {ticket.verificationRemarks}</p>}
                         {ticket.status === "Pending" && <div className="mt-4 flex flex-wrap gap-2"><button type="button" disabled={Boolean(busyId)} onClick={() => verify(ticket, "Verified")} className="rounded-xl bg-emerald-700 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-800 disabled:opacity-50"><Check size={16} /> {busyId === ticket._id ? "Saving…" : "Verify payment"}</button><button type="button" disabled={Boolean(busyId)} onClick={() => verify(ticket, "Rejected")} className="rounded-xl border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-bold text-rose-800 hover:bg-rose-100 disabled:opacity-50"><XCircle size={16} /> Reject</button></div>}
-                        {ticket.status === "Verified" && <div className="mt-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">Entry by stage</p><StageBadges scans={ticket.stageScans} /></div>}
+                        {ticket.status === "Verified" && <div className="mt-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">Entry by stage</p><StageBadges scans={ticket.stageScans} stages={stageConfigs[ticket.ticketType] || []} /></div>}
                     </article>)}
                 </div>}
             </div>
 
             <aside className="h-fit rounded-2xl border border-white/40 bg-[#e5f5f8] p-5 shadow-xl">
                 <div className="flex items-center gap-2"><ShieldCheck className="text-[#b17e2e]" /><div><p className="text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">Entry gate</p><h2 className="font-cinzel text-xl font-bold text-[#173f52]">Stage QR scanner</h2></div></div>
-                <p className="mt-3 text-sm text-[#527e8e]">Choose the active event stage. The same verified ticket can be scanned once at each stage.</p>
-                <label className="mt-5 block text-xs font-bold uppercase tracking-wider text-[#527e8e]">Current stage<select value={stage} onChange={(event) => { setStage(event.target.value); setScanResult(null); }} className="mt-2 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 text-sm font-bold text-[#173f52]"><option value="1">Stage 1</option><option value="2">Stage 2</option><option value="3">Stage 3</option></select></label>
-                {cameraOn ? <div className="mt-4"><CameraReader onDecoded={handleScan} onError={cameraError} /><button type="button" onClick={() => setCameraOn(false)} className="mt-3 w-full rounded-xl border border-[#b6dce4] bg-white px-4 py-2 font-bold text-[#376579]">Stop camera</button></div> : <button type="button" onClick={() => { setError(""); setCameraOn(true); }} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#173f52] px-4 py-3 font-bold text-white hover:bg-[#245970]"><Camera size={18} /> Scan with camera</button>}
+                <p className="mt-3 text-sm text-[#527e8e]">Set up separate entry stages for each pass. Scans are recorded once per ticket at each configured stage.</p>
+                <label className="mt-5 block text-xs font-bold uppercase tracking-wider text-[#527e8e]">Pass type<select value={passType} onChange={(event) => changePassType(event.target.value)} className="mt-2 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 text-sm font-bold text-[#173f52]">{PASS_TYPES.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
+                <div className="mt-4 rounded-xl border border-[#b6dce4] bg-white/75 p-4">
+                    <div className="flex items-center justify-between gap-3"><h3 className="text-xs font-black uppercase tracking-wider text-[#173f52]">Stages for this pass</h3><span className="text-[10px] font-bold text-[#527e8e]">{activeStages.length}/20</span></div>
+                    {activeStages.length ? <ul className="mt-3 space-y-2">{activeStages.map((stage, index) => <li key={stage.stageId} className="flex items-center justify-between gap-3 rounded-lg border border-[#d4e7eb] bg-white px-3 py-2"><span className="min-w-0"><span className="mr-2 font-mono text-[10px] font-bold text-[#8A5F1C]">{index + 1}.</span><span className="wrap-break-word text-sm font-semibold text-[#173f52]">{stage.name}</span></span><button type="button" aria-label={`Delete ${stage.name}`} disabled={stageConfigBusy} onClick={() => removeStage(stage)} className="rounded-lg border border-rose-200 bg-rose-50 p-2 text-rose-700 hover:bg-rose-100 disabled:opacity-50"><Trash2 size={15} /></button></li>)}</ul> : <p className="mt-3 text-xs text-[#7b5b25]">No stages configured. Add at least one below before scanning this pass.</p>}
+                    <form onSubmit={addStage} className="mt-3 flex gap-2"><input aria-label="New stage name" value={stageName} onChange={(event) => setStageName(event.target.value)} minLength={2} maxLength={50} placeholder="e.g. Main auditorium" className="min-w-0 flex-1 rounded-xl border border-[#afd6e1] bg-white px-3 py-2 text-sm text-[#173f52]" /><button type="submit" disabled={stageConfigBusy || activeStages.length >= 20 || stageName.trim().length < 2} className="rounded-xl bg-[#b17e2e] px-3 py-2 text-sm font-bold text-white disabled:opacity-50"><Plus size={16} /> Add</button></form>
+                </div>
+                <label className="mt-4 block text-xs font-bold uppercase tracking-wider text-[#527e8e]">Current stage<select value={stageId} onChange={(event) => { setStageId(event.target.value); setScanResult(null); }} disabled={!activeStages.length} className="mt-2 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 text-sm font-bold text-[#173f52]">{activeStages.map((stage, index) => <option key={stage.stageId} value={stage.stageId}>{index + 1}. {stage.name}</option>)}</select></label>
+                {cameraOn ? <div className="mt-4"><CameraReader onDecoded={handleScan} onError={cameraError} /><button type="button" onClick={() => setCameraOn(false)} className="mt-3 w-full rounded-xl border border-[#b6dce4] bg-white px-4 py-2 font-bold text-[#376579]">Stop camera</button></div> : <button type="button" disabled={!activeStages.length || scanBusy} onClick={() => { setError(""); setCameraOn(true); }} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#173f52] px-4 py-3 font-bold text-white hover:bg-[#245970] disabled:cursor-not-allowed disabled:opacity-50"><Camera size={18} /> Scan with camera</button>}
                 <div className="my-5 flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-[#7a99a2]"><span className="h-px flex-1 bg-[#b6dce4]" />or enter ID manually<span className="h-px flex-1 bg-[#b6dce4]" /></div>
-                <form onSubmit={(event) => { event.preventDefault(); handleScan(manualId); }} className="flex gap-2"><input aria-label="Ticket ID to scan" value={manualId} onChange={(event) => setManualId(event.target.value)} placeholder="REN-XXXXXXXXXXXX" className="min-w-0 flex-1 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 font-mono text-sm uppercase text-[#173f52]" /><button disabled={scanBusy || !manualId.trim()} className="rounded-xl bg-[#b17e2e] px-4 py-3 font-bold text-white disabled:opacity-50">{scanBusy ? <LoaderCircle size={18} className="animate-spin" /> : "Check in"}</button></form>
+                <form onSubmit={(event) => { event.preventDefault(); handleScan(manualId); }} className="flex gap-2"><input aria-label="Ticket ID to scan" value={manualId} onChange={(event) => setManualId(event.target.value)} placeholder="REN-XXXXXXXXXXXX" className="min-w-0 flex-1 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 font-mono text-sm uppercase text-[#173f52]" /><button disabled={scanBusy || !manualId.trim() || !stageId} className="rounded-xl bg-[#b17e2e] px-4 py-3 font-bold text-white disabled:opacity-50">{scanBusy ? <LoaderCircle size={18} className="animate-spin" /> : "Check in"}</button></form>
                 {scanResult && <div role={scanResult.error ? "alert" : "status"} className={`mt-5 rounded-xl border p-4 ${scanResult.error ? "border-rose-300 bg-rose-50 text-rose-800" : scanResult.alreadyScanned ? "border-amber-300 bg-amber-100 text-amber-900" : "border-emerald-300 bg-emerald-50 text-emerald-900"}`}>
-                    <div className="flex items-center gap-2 font-black">{scanResult.error ? <XCircle size={20} /> : scanResult.alreadyScanned ? <Ticket size={20} /> : <CheckCircle2 size={20} />}{scanResult.error ? "Scan blocked" : scanResult.alreadyScanned ? `Already scanned at Stage ${scanResult.selectedStage}` : `Admitted · Stage ${scanResult.selectedStage}`}</div>
-                    {scanResult.error ? <p className="mt-2 text-sm">{scanResult.error}</p> : <><p className="mt-2 font-cinzel font-bold">{scanResult.ticket?.name}</p><p className="font-mono text-xs">{scanResult.ticket?.ticketId}</p><div className="mt-3"><StageBadges scans={scanResult.ticket?.stageScans} /></div></>}
+                    <div className="flex items-center gap-2 font-black">{scanResult.error ? <XCircle size={20} /> : scanResult.alreadyScanned ? <Ticket size={20} /> : <CheckCircle2 size={20} />}{scanResult.error ? "Scan blocked" : scanResult.alreadyScanned ? `Already scanned · ${scanResult.selectedStage}` : `Admitted · ${scanResult.selectedStage}`}</div>
+                    {scanResult.error ? <p className="mt-2 text-sm">{scanResult.error}</p> : <><p className="mt-2 font-cinzel font-bold">{scanResult.ticket?.name}</p><p className="font-mono text-xs">{scanResult.ticket?.ticketId}</p><div className="mt-3"><StageBadges scans={scanResult.ticket?.stageScans} stages={stageConfigs[scanResult.ticket?.ticketType] || []} /></div></>}
                 </div>}
-                <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900"><strong>Color guide:</strong> yellow indicates this stage was already scanned. Change the stage selector to validate a different stage; scans are stored independently.</div>
+                <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900"><strong>Color guide:</strong> yellow indicates a stage that has already been scanned. A ticket’s stages are configured separately for each pass type.</div>
             </aside>
         </section>
     </main>;

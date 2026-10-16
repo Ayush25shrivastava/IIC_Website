@@ -6,6 +6,7 @@ import {
   PromoCode,
   Registration,
   Task,
+  TicketStageConfig,
 } from "../models/index.js";
 import { logger } from "../utils/logger.js";
 
@@ -17,6 +18,7 @@ const indexedModels = [
   PromoCode,
   Registration,
   Task,
+  TicketStageConfig,
 ];
 
 export async function ensureDatabaseIndexes() {
