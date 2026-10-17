@@ -6,85 +6,128 @@ import { FaLinkedin } from "react-icons/fa";
 import ContactFooter from "../components/ContactFooter";
 
 const MAIN_SECTION_HEADING_CLASS =
-  "group mx-auto mb-5 flex w-fit cursor-default flex-col items-center font-cinzel text-[1.65rem] font-bold leading-tight tracking-[0.04em] text-[#166E94] sm:mb-9 sm:text-5xl sm:tracking-[0.06em]";
+  "group mx-auto mb-6 flex w-fit cursor-default flex-col items-center font-cinzel text-[1.65rem] font-bold uppercase leading-tight tracking-[0.04em] text-[#166E94] sm:mb-10 sm:text-5xl sm:tracking-[0.06em]";
 
-const FacultyCard = ({ member, grouped = false }) => {
+const FacultyCard = ({ member, grouped = false, isTopLeader = false }) => {
   const NameHeading = grouped ? "h4" : "h3";
   return (
-  <article className="teams-member-card teams-faculty-card group flex w-full max-w-[280px] shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-3 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:w-[232px] sm:rounded-2xl sm:p-4">
-    <div className="aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC]">
-      <img
-        src={teamPhotoUrl(member)}
-        alt={member.name}
-        className="h-full w-full object-cover"
-        onError={(e) => {
-          const fallback = getAssetUrl("/placeholder-speaker.svg");
-          if (e.currentTarget.getAttribute("src") !== fallback) e.currentTarget.src = fallback;
-        }}
-      />
-    </div>
-    <NameHeading className="teams-member-name mt-3 font-cinzel text-base font-bold leading-snug text-[#40352B] sm:mt-5 sm:text-2xl">
-      {member.name}
-    </NameHeading>
-    {member.position && <p className="mt-2 text-sm text-[#7A6A58]">{member.position}</p>}
-    {!grouped && member.team && <p className="mt-1 text-xs text-[#7A6A58]">{member.team}</p>}
-    {member.linkedin && <a
-      href={member.linkedin}
-      target="_blank"
-      rel="noreferrer"
-      className="mt-2.5 inline-flex items-center justify-center gap-1.5 self-center font-montserrat text-[10px] font-bold uppercase tracking-[0.1em] text-[#7A6A58] transition-colors hover:text-[#40352B] sm:mt-4 sm:gap-2 sm:text-xs sm:tracking-[0.13em]"
-    >
-      <FaLinkedin className="text-lg" aria-hidden="true" />
-      <span>LinkedIn</span>
-    </a>}
-  </article>
+    <article className={`teams-member-card teams-faculty-card group flex w-full shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-3 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:rounded-2xl sm:p-4 ${isTopLeader ? 'max-w-[320px] sm:w-[280px]' : 'max-w-[280px] sm:w-[232px]'}`}>
+      <div className="aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC]">
+        <img
+          src={teamPhotoUrl(member)}
+          alt={member.name}
+          className="h-full w-full object-cover"
+          onError={(e) => {
+            const fallback = getAssetUrl("/placeholder-speaker.svg");
+            if (e.currentTarget.getAttribute("src") !== fallback) e.currentTarget.src = fallback;
+          }}
+        />
+      </div>
+      <NameHeading className={`teams-member-name mt-3 font-cinzel font-bold leading-snug text-[#40352B] sm:mt-5 ${isTopLeader ? 'text-xl sm:text-3xl' : 'text-base sm:text-2xl'}`}>
+        {member.name}
+      </NameHeading>
+      {member.position && <p className={`mt-2 font-semibold text-[#7A6A58] ${isTopLeader ? 'text-base' : 'text-sm'}`}>{member.position}</p>}
+      {!grouped && member.team && <p className="mt-1 text-xs text-[#7A6A58]">{member.team}</p>}
+      {member.linkedin && (
+        <a
+          href={member.linkedin}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-2.5 inline-flex items-center justify-center gap-1.5 self-center font-montserrat text-[10px] font-bold uppercase tracking-[0.1em] text-[#7A6A58] transition-colors hover:text-[#40352B] sm:mt-4 sm:gap-2 sm:text-xs sm:tracking-[0.13em]"
+        >
+          <FaLinkedin className="text-lg" aria-hidden="true" />
+          <span>LinkedIn</span>
+        </a>
+      )}
+    </article>
   );
 };
 
 function StudentTeamGroups({ members, category }) {
-  const groups = new Map(STUDENT_TEAMS.map((team) => [team, []]));
-  for (const member of members) {
-    const team = member.team?.trim() || "Team Members";
+  // Normalize and group teams
+  const groups = new Map();
+  
+  // Combine Media and Design teams, and route others
+  let processedMembers = members.map(member => {
+    let team = member.team?.trim() || "Team Members";
+    if (team.toLowerCase().includes('media') || team.toLowerCase().includes('design')) {
+        return { ...member, team: 'Design & Media' };
+    }
+    return member;
+  });
+
+  for (const member of processedMembers) {
+    const team = member.team;
     if (!groups.has(team)) groups.set(team, []);
     groups.get(team).push(member);
   }
 
-  return <div className="space-y-10 sm:space-y-16">
-    {[...groups].map(([team, teamMembers], index) => {
-      if (!teamMembers.length) return null;
-      const headingId = `team-${category}-${index}-heading`;
-      return <section key={team} aria-labelledby={headingId}>
-        <h3 id={headingId} className="mx-auto mb-5 flex w-fit flex-col items-center text-center font-cinzel text-2xl font-bold text-[#166E94] sm:mb-8 sm:text-4xl">
-          {team}
-          <span className="mt-3 h-0.5 w-16 rounded-full bg-[#78C8ED]" />
-        </h3>
-        <div className="teams-student-row overflow-x-auto rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#166E94]" tabIndex={0} role="region" aria-labelledby={headingId}>
-          <div className="teams-faculty-cards flex w-max min-w-full items-stretch justify-center gap-5 px-3 pb-6 pt-2 sm:gap-12">
-            {teamMembers.map((member) => <FacultyCard key={member.id} member={member} grouped />)}
-          </div>
-        </div>
-      </section>;
-    })}
-  </div>;
+  // Sort team names alphabetically
+  const sortedGroupKeys = Array.from(groups.keys()).sort((a, b) => a.localeCompare(b));
+
+  return (
+    <div className="space-y-8 sm:space-y-12">
+      {sortedGroupKeys.map((team, index) => {
+        const teamMembers = groups.get(team);
+        if (!teamMembers.length) return null;
+        
+        // Sort members within the team alphabetically
+        teamMembers.sort((a, b) => a.name.localeCompare(b.name));
+
+        const headingId = `team-${category}-${index}-heading`;
+        return (
+          <section key={team} aria-labelledby={headingId}>
+            {/* Differentiated Subcategory Heading */}
+            <h3 id={headingId} className="mx-auto mb-4 flex w-fit flex-col items-center text-center font-cinzel text-lg font-bold uppercase tracking-[0.05em] text-[#166E94] sm:mb-6 sm:text-[1.75rem]">
+              {team}
+              <span className="mt-2 h-[2px] w-12 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-16" />
+            </h3>
+            <div className="teams-student-row overflow-x-auto rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#166E94]" tabIndex={0} role="region" aria-labelledby={headingId}>
+              <div className="teams-faculty-cards flex w-max min-w-full items-stretch justify-center gap-5 px-3 pb-6 pt-2 sm:gap-12">
+                {teamMembers.map((member) => <FacultyCard key={member.id} member={member} grouped />)}
+              </div>
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
 }
 
 export default function Teams({ embedded = false }) {
   const [members, setMembers] = useState([]);
   const [photoError, setPhotoError] = useState("");
   const [photosLoading, setPhotosLoading] = useState(true);
+
   useEffect(() => {
     let active = true;
     const refresh = () => {
       if (document.visibilityState !== "visible") return;
-      getTeamPhotos().then((data) => { if (active) { setMembers(data.members); setPhotoError(""); } })
-        .catch(() => { if (active) setPhotoError("Team photos are temporarily unavailable. Please try again shortly."); })
-        .finally(() => { if (active) setPhotosLoading(false); });
+      getTeamPhotos().then((data) => { 
+        if (active) { 
+            // Ensure Mayank and Mukul have correct titles for rendering
+            const processedMembers = data.members.map(m => {
+                if (m.name.toLowerCase().includes('mayank')) {
+                    return {...m, position: 'President, IIC'};
+                }
+                if (m.name.toLowerCase().includes('mukul')) {
+                    return {...m, position: 'Vice President, IIC'};
+                }
+                return m;
+            });
+            setMembers(processedMembers); 
+            setPhotoError(""); 
+        } 
+      })
+      .catch(() => { if (active) setPhotoError("Team photos are temporarily unavailable. Please try again shortly."); })
+      .finally(() => { if (active) setPhotosLoading(false); });
     };
     refresh();
     window.addEventListener("focus", refresh);
     window.addEventListener("visibilitychange", refresh);
     return () => { active = false; window.removeEventListener("focus", refresh); window.removeEventListener("visibilitychange", refresh); };
   }, []);
+
   return (
     <div className={`${embedded ? "py-12 sm:py-16" : "teams-page-root min-h-[100svh] pt-[68px] sm:pt-24"} flex flex-col justify-between overflow-x-hidden bg-[radial-gradient(ellipse_at_15%_18%,rgba(249,231,196,0.60)_0%,transparent_34%),radial-gradient(ellipse_at_85%_76%,rgba(128,199,220,0.35)_0%,transparent_36%),linear-gradient(180deg,#E9DFC9_0%,#C6DEE0_20%,#D7E1D9_44%,#F2E8C8_72%,#FFD9A5_100%)] text-[#173F56]`}>
       <style>{`
@@ -127,7 +170,6 @@ export default function Teams({ embedded = false }) {
           display: none;
         }
 
-        /* Scale the reference composition across the full desktop range. */
         @media (min-width: 1024px) {
           .teams-content {
             max-width: min(calc(100% - 4rem), 91.75rem);
@@ -136,13 +178,28 @@ export default function Teams({ embedded = false }) {
           .teams-faculty-cards {
             gap: clamp(2rem, 3.3vw, 4rem);
           }
-
-          .teams-faculty-card {
-            width: clamp(16.25rem, 17.6vw, 21.5625rem);
+          
+          /* Ensures non-top leaders are in rows of 4 */
+          .teams-faculty-grid {
+             display: grid;
+             grid-template-columns: repeat(1, minmax(0, 1fr));
+             gap: 2rem;
+             justify-items: center;
+          }
+          
+          @media (min-width: 640px) {
+              .teams-faculty-grid {
+                  grid-template-columns: repeat(2, minmax(0, 1fr));
+              }
+          }
+          
+          @media (min-width: 1024px) {
+              .teams-faculty-grid {
+                  grid-template-columns: repeat(4, minmax(0, 1fr));
+              }
           }
         }
 
-        /* Keep the complete faculty introduction above the fold on short desktop windows. */
         @media (min-width: 1024px) and (max-height: 780px) {
           .teams-page-root {
             padding-top: 4rem !important;
@@ -204,7 +261,7 @@ export default function Teams({ embedded = false }) {
         }
       `}</style>
       <div className="teams-content mx-auto mb-16 w-full max-w-6xl px-3 sm:mb-36 sm:px-6">
-        <header className="teams-team-banner relative mb-4 rounded-[22px] border border-[#C9953D] bg-[#FDF6E8] p-1 shadow-[0_16px_32px_rgba(92,67,27,0.18)] sm:mb-6 sm:rounded-[30px] sm:p-2">
+        <header className="teams-team-banner relative mb-6 rounded-[22px] border border-[#C9953D] bg-[#FDF6E8] p-1 shadow-[0_16px_32px_rgba(92,67,27,0.18)] sm:mb-10 sm:rounded-[30px] sm:p-2">
           <div className="teams-team-banner__inner relative flex min-h-[142px] flex-col items-center justify-center overflow-hidden rounded-[17px] border border-[#E1BC73] px-4 py-4 text-center sm:min-h-[200px] sm:rounded-[23px] sm:px-5 sm:py-6">
             <span className="absolute left-3 top-2 font-serif text-sm text-[#B98531] sm:left-4 sm:top-3">✦</span>
             <span className="absolute right-3 top-2 font-serif text-sm text-[#B98531] sm:right-4 sm:top-3">✦</span>
@@ -228,26 +285,56 @@ export default function Teams({ embedded = false }) {
           </div>
         </header>
 
-        <div className="space-y-14">
+        <div className="space-y-16">
           {photosLoading && <p role="status" className="text-center">Loading team photos…</p>}
           {photoError && <p role="alert" className="text-center">{photoError}</p>}
           {!photosLoading && !photoError && !members.length && <p className="text-center">Team photos will be added soon.</p>}
+          
           {TEAM_PHOTO_CATEGORIES.map(([category, label]) => {
             const group = members.filter((member) => member.category === category);
             if (!group.length) return null;
-            return <section key={category} className="teams-faculty-section overflow-x-clip" aria-labelledby={`team-${category}-heading`}>
-              <h2 id={`team-${category}-heading`} className={`${MAIN_SECTION_HEADING_CLASS} teams-faculty-heading`}>
-                <span>{label}</span>
-                <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-24" />
-              </h2>
-              {category === "third" || category === "second" ? (
+
+            if (category === "faculty") {
+                // Separate top leaders from other faculty
+                const topLeaders = group.filter(m => m.name.toLowerCase().includes('mayank') || m.name.toLowerCase().includes('mukul'));
+                const otherFaculty = group.filter(m => !m.name.toLowerCase().includes('mayank') && !m.name.toLowerCase().includes('mukul'));
+
+                return (
+                    <section key={category} className="teams-faculty-section overflow-x-clip" aria-labelledby={`team-${category}-heading`}>
+                        <h2 id={`team-${category}-heading`} className={`${MAIN_SECTION_HEADING_CLASS} teams-faculty-heading`}>
+                            <span>{label}</span>
+                            <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-32" />
+                        </h2>
+                        
+                        {/* Top Leaders Row */}
+                        {topLeaders.length > 0 && (
+                            <div className="flex flex-wrap items-stretch justify-center gap-6 px-1 pb-10 sm:gap-16">
+                                {topLeaders.map((member) => <FacultyCard key={member.id} member={member} isTopLeader={true} />)}
+                            </div>
+                        )}
+
+                        {/* Other Faculty Grid (4 per row) */}
+                        {otherFaculty.length > 0 && (
+                            <div className="teams-faculty-grid w-full px-1 pb-2">
+                                {otherFaculty.map((member) => <FacultyCard key={member.id} member={member} />)}
+                            </div>
+                        )}
+                    </section>
+                );
+            }
+
+            return (
+              <section key={category} className="teams-faculty-section overflow-x-clip" aria-labelledby={`team-${category}-heading`}>
+                <h2 id={`team-${category}-heading`} className={`${MAIN_SECTION_HEADING_CLASS} teams-faculty-heading`}>
+                  <span>{label}</span>
+                  <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-32" />
+                </h2>
+                
+                {/* Horizontal scrolling and alphabetic grouping for final, third, and second year students */}
                 <StudentTeamGroups members={group} category={category} />
-              ) : (
-                <div className="teams-faculty-cards flex flex-wrap items-stretch justify-center gap-4 px-1 pb-2 sm:gap-12">
-                  {group.map((member) => <FacultyCard key={member.id} member={member} />)}
-                </div>
-              )}
-            </section>;
+                
+              </section>
+            );
           })}
         </div>
       </div>
