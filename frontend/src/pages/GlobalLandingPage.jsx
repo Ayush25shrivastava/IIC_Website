@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import udbhav from '../assets/udbhav image.png';
 import tedx from "../assets/WhatsApp Image 2026-03-21 at 1.09.44 AM.png";
-import renaissance from "../assets/WhatsApp Image 2026-03-21 at 1.08.30 AM.jpeg";
+import renaissance from "../assets/renaissance-logo.png";
 import iicLogo from "../assets/iic-logo.png"; 
 import mnnitLogo from "../assets/mnnit-logo.png";  
 import heroImg1 from '../assets/hero-section/academic building image.jpg';
@@ -85,48 +85,8 @@ const IICPage = () => {
         </div>
       </section>
 
-      {/* ABOUT CARD */}
-      <section id="aboutus" className="py-20 px-6 flex justify-center">
-        <div className="max-w-5xl w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="p-10 md:p-16 rounded-[2rem] bg-white border border-[#d1ccc0] shadow-[15px_15px_40px_rgba(0,0,0,0.08)]"
-          >
-            <h2 className="text-4xl md:text-5xl font-playfair font-black mb-8 text-center text-[#0E0E0E]">About IIC</h2>
-            <p className="text-[#0E0E0E]/80 leading-loose text-lg md:text-xl text-center md:text-left">
-              The Institution’s Innovation Council (IIC) at Motilal Nehru National Institute of Technology (MNNIT) Allahabad was established under the mandate of the Ministry of Education’s Innovation Cell (MIC). Its primary objective is to systematically foster the culture of Innovation and Entrepreneurship (I&E) amongst students and faculty and promote innovations in fields like IoT, AI/ML, healthcare, and agritech.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* FUNCTION + FOCUS */}
-      <section className="px-6 pb-32">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-16">
-
-          <GlassCard title="Vision & Mission of Institution's Innovation Council" content={`
-- To establish a sustainable, globally recognized innovation ecosystem at MNNIT Allahabad that nurtures creativity, facilitates deep-tech research, and drives the development of indigenous technologies and successful startups.
-- To Cultivate: Foster a pervasive culture of innovation through structured ideation workshops, design challenges, and hackathons in alignment with the National Innovation and Startup Policy (NISP).
-- To Incubate: Provide state-of-the-art infrastructure, mentorship, and administrative support to early-stage startups.
-- To Accelerate: Facilitate the commercialization of Intellectual Property (IP) and technology transfer by connecting innovators with angel investors, venture capitalists, and government grants.
-
-          `} />
-
-          <GlassCard title="Initiatives of IIC" content={`
-- IIC focuses on the pre-incubation phase. It organizes the academic calendar of innovation activities prescribed by the MoE, ensuring students are equipped with Design Thinking, Critical Problem Solving, and Entrepreneurial skills.
-
-Flagship Initiatives:
-- Udbhav (Annual Entrepreneurship & Financial Literacy Summit) is MNNIT’s premier event designed to bridge the gap between technical education and business acumen
-- Startup Sangam (The Startup Conclave) is an exclusive platform aimed at fostering Industry-Academia collaboration. It brings together investors, industry leaders, and budding entrepreneurs to explore funding opportunities, strategic partnerships, and market access for incubated startups.
-          `} />
-
-        </div>
-      </section>
-
       {/* EVENT CARDS */}
-      <section className="pb-32 px-6">
+      <section className="pb-12 px-6 mt-4">
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
 
           <EventCard 
@@ -152,6 +112,80 @@ Flagship Initiatives:
 
         </div>
       </section>
+
+      {/* ABOUT CARDS */}
+      <section id="aboutus" className="py-12 px-6 flex flex-col items-center gap-10">
+        <div className="max-w-5xl w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="p-10 md:p-16 rounded-[2rem] bg-white border border-[#d1ccc0] shadow-[15px_15px_40px_rgba(0,0,0,0.08)]"
+          >
+            <h2 className="text-4xl md:text-5xl font-playfair font-black mb-8 text-center text-[#0E0E0E]">About IIC</h2>
+            <p className="text-[#0E0E0E]/80 leading-loose text-lg md:text-xl text-center md:text-left">
+              The Institution’s Innovation Council (IIC) at Motilal Nehru National Institute of Technology (MNNIT) Allahabad was established under the mandate of the Ministry of Education’s Innovation Cell (MIC). Its primary objective is to systematically foster the culture of Innovation and Entrepreneurship (I&E) amongst students and faculty and promote innovations in fields like IoT, AI/ML, healthcare, and agritech.
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="max-w-5xl w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="p-10 md:p-16 rounded-[2rem] bg-white border border-[#d1ccc0] shadow-[15px_15px_40px_rgba(0,0,0,0.08)]"
+          >
+            <h2 className="text-4xl md:text-5xl font-playfair font-black mb-8 text-center text-[#0E0E0E]">About Entrepreneurship Cell</h2>
+            <p className="text-[#0E0E0E]/80 leading-loose text-lg md:text-xl text-center md:text-left">
+              Entrepreneurship Cell started its functioning in October 2014 to inculcate the passion and spirit among students to pursue entrepreneurship and bring together the hustling minds having innovative solutions to common societal problems.
+              <br /> <br />
+              To encourage the entrepreneurial journey of translating thoughts into action, the flagship event of E-Cell, Renaissance, is held annually, bringing together the academic community, new age entrepreneurs and fanatics who are passionate about ideating and innovating from all over the country.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* <div className="max-w-5xl w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="p-10 md:p-16 rounded-[2rem] bg-white border border-[#d1ccc0] shadow-[15px_15px_40px_rgba(0,0,0,0.08)]"
+          >
+            <h2 className="text-4xl md:text-5xl font-playfair font-black mb-8 text-center text-[#0E0E0E]">About Renaissance</h2>
+            <p className="text-[#0E0E0E]/80 leading-loose text-lg md:text-xl text-center md:text-left">
+              To encourage the entrepreneurial journey of translating thoughts into action, the flagship event of E-Cell is held annually, bringing together the academic community, new age entrepreneurs and fanatics who are passionate about ideating and innovating from all over the country. Renaissance 2026 will include a gamut of activities all of which provide an avenue to harbor entrepreneurial skills and stimulate discussion on ideas that possess the potential to turn the issues that plague us into opportunities to revolutionize the world.
+            </p>
+          </motion.div>
+        </div> */}
+      </section>
+
+      {/* FUNCTION + FOCUS */}
+      <section className="px-6 pb-32">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-16">
+
+          <GlassCard title="Vision & Mission of Institution's Innovation Council" content={`
+- To establish a sustainable, globally recognized innovation ecosystem at MNNIT Allahabad that nurtures creativity, facilitates deep-tech research, and drives the development of indigenous technologies and successful startups.
+- To Cultivate: Foster a pervasive culture of innovation through structured ideation workshops, design challenges, and hackathons in alignment with the National Innovation and Startup Policy (NISP).
+- To Incubate: Provide state-of-the-art infrastructure, mentorship, and administrative support to early-stage startups.
+- To Accelerate: Facilitate the commercialization of Intellectual Property (IP) and technology transfer by connecting innovators with angel investors, venture capitalists, and government grants.
+
+          `} />
+
+          <GlassCard title="Initiatives of IIC" content={`
+- IIC focuses on the pre-incubation phase. It organizes the academic calendar of innovation activities prescribed by the MoE, ensuring students are equipped with Design Thinking, Critical Problem Solving, and Entrepreneurial skills.
+
+Flagship Initiatives:
+- Udbhav (Annual Entrepreneurship & Financial Literacy Summit) is MNNIT’s premier event designed to bridge the gap between technical education and business acumen
+- Renaissance (Annual Entrepreneurship Summit) is an event organised by IIC to foster the culture of innovation and entrepreneurship among students and faculty.
+- TEDx MNNIT is a platform for sharing ideas worth spreading. It brings together inspiring speakers from various fields to share their ideas with the MNNIT community.
+- Startup Sangam (The Startup Conclave) is an exclusive platform aimed at fostering Industry-Academia collaboration. It brings together investors, industry leaders, and budding entrepreneurs to explore funding opportunities, strategic partnerships, and market access for incubated startups.
+          `} />
+
+        </div>
+      </section>
+
+      
 
       {/* <div className="pb-24">
         <LiveBar />
@@ -225,7 +259,7 @@ const EventCard = ({ image, title, description, link }) => (
         <img
           src={image}
           alt={title}
-          className="w-full h-48 object-fill transform group-hover:scale-110 transition-transform duration-700"
+          className="w-full h-48 object-contain transform group-hover:scale-110 transition-transform duration-700"
         />
       </a>
 
