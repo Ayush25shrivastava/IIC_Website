@@ -26,8 +26,10 @@ const FacultyCard = ({ member, grouped = false, isTopLeader = false }) => {
       <NameHeading className={`teams-member-name mt-3 font-cinzel font-bold leading-snug text-[#40352B] sm:mt-5 ${isTopLeader ? 'text-xl sm:text-3xl' : 'text-base sm:text-2xl'}`}>
         {member.name}
       </NameHeading>
+      {/* Designation conditionally renders only if added */}
       {member.position && <p className={`mt-2 font-semibold text-[#7A6A58] ${isTopLeader ? 'text-base' : 'text-sm'}`}>{member.position}</p>}
       {!grouped && member.team && <p className="mt-1 text-xs text-[#7A6A58]">{member.team}</p>}
+      {/* LinkedIn dynamically shows for anyone who has it, including final years */}
       {member.linkedin && (
         <a
           href={member.linkedin}
@@ -44,14 +46,12 @@ const FacultyCard = ({ member, grouped = false, isTopLeader = false }) => {
 };
 
 function StudentTeamGroups({ members, category }) {
-  // Normalize and group teams
   const groups = new Map();
   
-  // Combine Media and Design teams, and route others
   let processedMembers = members.map(member => {
     let team = member.team?.trim() || "Team Members";
     if (team.toLowerCase().includes('media') || team.toLowerCase().includes('design')) {
-        return { ...member, team: 'Design & Media' };
+        return { ...member, team: 'Design & Media Team' };
     }
     return member;
   });
@@ -62,7 +62,6 @@ function StudentTeamGroups({ members, category }) {
     groups.get(team).push(member);
   }
 
-  // Sort team names alphabetically
   const sortedGroupKeys = Array.from(groups.keys()).sort((a, b) => a.localeCompare(b));
 
   return (
@@ -71,13 +70,11 @@ function StudentTeamGroups({ members, category }) {
         const teamMembers = groups.get(team);
         if (!teamMembers.length) return null;
         
-        // Sort members within the team alphabetically
         teamMembers.sort((a, b) => a.name.localeCompare(b.name));
 
         const headingId = `team-${category}-${index}-heading`;
         return (
           <section key={team} aria-labelledby={headingId}>
-            {/* Differentiated Subcategory Heading */}
             <h3 id={headingId} className="mx-auto mb-4 flex w-fit flex-col items-center text-center font-cinzel text-lg font-bold uppercase tracking-[0.05em] text-[#166E94] sm:mb-6 sm:text-[1.75rem]">
               {team}
               <span className="mt-2 h-[2px] w-12 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-16" />
@@ -105,7 +102,6 @@ export default function Teams({ embedded = false }) {
       if (document.visibilityState !== "visible") return;
       getTeamPhotos().then((data) => { 
         if (active) { 
-            // Ensure Mayank and Mukul have correct titles for rendering
             const processedMembers = data.members.map(m => {
                 if (m.name.toLowerCase().includes('mayank')) {
                     return {...m, position: 'President, IIC'};
@@ -179,7 +175,6 @@ export default function Teams({ embedded = false }) {
             gap: clamp(2rem, 3.3vw, 4rem);
           }
           
-          /* Ensures non-top leaders are in rows of 4 */
           .teams-faculty-grid {
              display: grid;
              grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -295,25 +290,22 @@ export default function Teams({ embedded = false }) {
             if (!group.length) return null;
 
             if (category === "faculty") {
-                // Separate top leaders from other faculty
                 const topLeaders = group.filter(m => m.name.toLowerCase().includes('mayank') || m.name.toLowerCase().includes('mukul'));
                 const otherFaculty = group.filter(m => !m.name.toLowerCase().includes('mayank') && !m.name.toLowerCase().includes('mukul'));
 
                 return (
                     <section key={category} className="teams-faculty-section overflow-x-clip" aria-labelledby={`team-${category}-heading`}>
                         <h2 id={`team-${category}-heading`} className={`${MAIN_SECTION_HEADING_CLASS} teams-faculty-heading`}>
-                            <span>{label}</span>
+                            <span>Our-Mentors</span>
                             <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-32" />
                         </h2>
                         
-                        {/* Top Leaders Row */}
                         {topLeaders.length > 0 && (
                             <div className="flex flex-wrap items-stretch justify-center gap-6 px-1 pb-10 sm:gap-16">
                                 {topLeaders.map((member) => <FacultyCard key={member.id} member={member} isTopLeader={true} />)}
                             </div>
                         )}
 
-                        {/* Other Faculty Grid (4 per row) */}
                         {otherFaculty.length > 0 && (
                             <div className="teams-faculty-grid w-full px-1 pb-2">
                                 {otherFaculty.map((member) => <FacultyCard key={member.id} member={member} />)}
@@ -326,11 +318,10 @@ export default function Teams({ embedded = false }) {
             return (
               <section key={category} className="teams-faculty-section overflow-x-clip" aria-labelledby={`team-${category}-heading`}>
                 <h2 id={`team-${category}-heading`} className={`${MAIN_SECTION_HEADING_CLASS} teams-faculty-heading`}>
-                  <span>{label}</span>
+                  <span>{category === "faculty" ? "Our-Mentors" : label}</span>
                   <span className="mt-2 h-1 w-20 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-32" />
                 </h2>
                 
-                {/* Horizontal scrolling and alphabetic grouping for final, third, and second year students */}
                 <StudentTeamGroups members={group} category={category} />
                 
               </section>

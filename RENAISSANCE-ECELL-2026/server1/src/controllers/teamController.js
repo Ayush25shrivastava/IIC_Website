@@ -321,8 +321,7 @@ export const updateTeam = async (req, res) => {
 
             const existingMemberTeam = await Team.findOne({
                 event: team.event,
-                _id: { $ne: teamId },
-                $or: searchOr
+                _id: { $ne: teamId },$or: searchOr
             });
 
             if (existingMemberTeam) {
