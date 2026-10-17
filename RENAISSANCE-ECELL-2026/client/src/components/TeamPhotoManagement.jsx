@@ -10,7 +10,14 @@ const photoApi = createTeamPhotoApi(localAdminMode);
 
 function PhotoEditor({ member, busy, onSave, onClose }) {
   const dialog = useRef(null);
-  const [form, setForm] = useState({ name: member?.name || "", category: member?.category || "faculty", team: STUDENT_TEAMS.includes(member?.team) ? member.team : "", linkedin: member?.linkedin || "", image_url: member?.uploaded ? "" : member?.image_url || "" });
+  const [form, setForm] = useState({ 
+    name: member?.name || "", 
+    category: member?.category || "faculty", 
+    team: STUDENT_TEAMS.includes(member?.team) ? member.team : "", 
+    position: member?.position || "", // Added state for designation
+    linkedin: member?.linkedin || "", 
+    image_url: member?.uploaded ? "" : member?.image_url || "" 
+  });
   const [cropSource, setCropSource] = useState(null);
   const [originalSource, setOriginalSource] = useState(null);
   const [error, setError] = useState("");
@@ -25,18 +32,25 @@ function PhotoEditor({ member, busy, onSave, onClose }) {
       setOriginalSource(cropSource); setCropSource(null); setError("");
     }} /> : <form className={adminStyles.form} onSubmit={async (event) => {
       event.preventDefault(); setError("");
-      const body = { ...form, position: "", team: hasTeam ? form.team : "" };
+      // Safely preserve position/designation during submission
+      const body = { ...form, position: form.position || "", team: hasTeam ? form.team : "" };
       if (member && !body.image_url) delete body.image_url;
       try { await onSave(body); } catch (err) { setError(err.message || "Unable to save this team member."); }
     }}>
       {error && <p className={adminStyles.alert} role="alert">{error}</p>}
       <fieldset disabled={busy} className={adminStyles.photoFields}>
         <label className="grid gap-[7px] font-semibold text-[#173f52]">Name<input required minLength={2} maxLength={120} {...field("name")} className={adminStyles.input} /></label>
+        
         <label className="grid gap-[7px] font-semibold text-[#173f52]">Type<select value={form.category} onChange={(event) => {
           const category = event.target.value;
           setForm({ ...form, category, team: ["third", "second"].includes(category) ? form.team : "" });
         }} className={adminStyles.select}>{TEAM_PHOTO_CATEGORIES.map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
+        
+        {/* Designation Input added */}
+        <label className="grid gap-[7px] font-semibold text-[#173f52]">Designation / Position (optional)<input maxLength={120} placeholder="e.g. Technical Head" {...field("position")} className={adminStyles.input} /></label>
+
         {hasTeam && <label className="grid gap-[7px] font-semibold text-[#173f52]">Team<select required {...field("team")} className={adminStyles.select}><option value="">Select a team</option>{STUDENT_TEAMS.map((team) => <option key={team} value={team}>{team}</option>)}</select></label>}
+        
         <label className="grid gap-[7px] font-semibold text-[#173f52]">LinkedIn profile (optional)<input type="url" maxLength={500} placeholder="https://www.linkedin.com/in/…" {...field("linkedin")} className={adminStyles.input} /></label>
         <label className="grid gap-[7px] font-semibold text-[#173f52]">Upload photo<input type="file" accept="image/jpeg,image/png,image/webp" className={adminStyles.input} onChange={(event) => {
           const file = event.target.files?.[0];
