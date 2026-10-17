@@ -3,7 +3,7 @@ import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import { adminApi } from "../lib/server1-api";
 import { localAdminMode, LOCAL_ADMIN } from "../lib/local-admin";
-import "./admin-dashboard.css";
+import { adminStyles } from "../lib/adminStyles";
 
 export default function AdminSession() {
   const [admin, setAdmin] = useState(null);
@@ -74,8 +74,8 @@ export default function AdminSession() {
   const context = { admin, setAdmin, logout, handleError };
   if (adminEntry) return <Navigate to={admin ? "/admin/campus-ambassadors" : "/admin/login"} replace />;
   if (loginPage) return isRealAdmin ? <Navigate to="/admin/campus-ambassadors" replace /> : <Outlet context={context} />;
-  if (loading && !admin) return <div className="admin-app admin-gate" role="status"><LoaderCircle className="animate-spin" /> Checking admin session…</div>;
-  if (error && !admin) return <div className="admin-app admin-gate"><p role="alert">{error}</p><button onClick={() => { setError(""); setLoading(true); setAttempt((n) => n + 1); }}>Try again</button><button onClick={() => navigate("/admin/login")}>Go to admin sign-in</button></div>;
+  if (loading && !admin) return <div className={adminStyles.gate} role="status"><LoaderCircle className="animate-spin text-[#0d7892]" size={28} /> Checking admin session…</div>;
+  if (error && !admin) return <div className={adminStyles.gate}><p role="alert" className="text-[#933830] font-semibold">{error}</p><button className={adminStyles.btn} onClick={() => { setError(""); setLoading(true); setAttempt((n) => n + 1); }}>Try again</button><button className={adminStyles.btn} onClick={() => navigate("/admin/login")}>Go to admin sign-in</button></div>;
   if (!admin && !loginPage) return <Navigate to="/admin/login" replace />;
   if (pathname.endsWith("/tickets") && !isRealAdmin) return <Navigate to="/admin/login" replace />;
   return <Outlet context={context} />;

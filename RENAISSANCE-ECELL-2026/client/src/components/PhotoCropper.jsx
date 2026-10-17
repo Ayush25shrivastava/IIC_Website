@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { movePhotoCrop, photoCropRect } from "../lib/photo-crop";
+import { adminStyles } from "../lib/adminStyles";
 
 export default function PhotoCropper({ source, onApply, onCancel }) {
   const canvas = useRef(null);
@@ -56,12 +57,12 @@ export default function PhotoCropper({ source, onApply, onCancel }) {
     } catch (err) { setError(err.message || "Unable to crop the photo. Please try another image."); setSaving(false); }
   }
 
-  return <div className="admin-photo-cropper">
-    <p id="photo-crop-help">Drag the photo to position your face, then adjust the zoom. The square preview is exactly what will be saved.</p>
-    {error && <p className="admin-alert" role="alert">{error}</p>}
-    {!photo && !error && <p role="status">Opening photo…</p>}
+  return <div className={adminStyles.cropper}>
+    <p id="photo-crop-help" className="text-xs text-[#527e8e]">Drag the photo to position your face, then adjust the zoom. The square preview is exactly what will be saved.</p>
+    {error && <p className={adminStyles.alert} role="alert">{error}</p>}
+    {!photo && !error && <p role="status" className="text-xs text-[#527e8e]">Opening photo…</p>}
     {photo && <>
-      <div className="admin-crop-stage" tabIndex={0} role="group" aria-label="Photo crop preview" aria-describedby="photo-crop-help photo-crop-keyboard"
+      <div className={adminStyles.cropStage} tabIndex={0} role="group" aria-label="Photo crop preview" aria-describedby="photo-crop-help photo-crop-keyboard"
         onPointerDown={(event) => {
           if (saving || (event.pointerType === "mouse" && event.button !== 0)) return;
           event.currentTarget.focus();
@@ -79,17 +80,17 @@ export default function PhotoCropper({ source, onApply, onCancel }) {
           if (direction) { event.preventDefault(); move(...direction, event.currentTarget.clientWidth); }
         }}>
         <canvas ref={canvas} width={640} height={640} aria-label="Selected square photo crop" />
-        <div className="admin-crop-grid" aria-hidden="true" />
+        <div className={adminStyles.cropGrid} aria-hidden="true" />
       </div>
-      <small id="photo-crop-keyboard">You can also use the arrow keys or position sliders.</small>
-      <label>Zoom <span>{zoom.toFixed(1)}×</span><input autoFocus type="range" min="1" max="3" step="0.01" value={zoom} disabled={saving} onChange={(event) => setZoom(Number(event.target.value))} /></label>
-      <label>Horizontal position<input type="range" min="0" max="1" step="0.01" value={position.x} disabled={saving} onChange={(event) => setPosition({ ...position, x: Number(event.target.value) })} /></label>
-      <label>Vertical position<input type="range" min="0" max="1" step="0.01" value={position.y} disabled={saving} onChange={(event) => setPosition({ ...position, y: Number(event.target.value) })} /></label>
+      <small id="photo-crop-keyboard" className={adminStyles.small}>You can also use the arrow keys or position sliders.</small>
+      <label className="grid gap-[6px] font-semibold text-[#173f52]">Zoom <span className="font-normal text-[#527e8e]">{zoom.toFixed(1)}×</span><input autoFocus type="range" min="1" max="3" step="0.01" value={zoom} disabled={saving} onChange={(event) => setZoom(Number(event.target.value))} className="w-full min-h-[30px] p-0 accent-[#98742f] cursor-pointer" /></label>
+      <label className="grid gap-[6px] font-semibold text-[#173f52]">Horizontal position<input type="range" min="0" max="1" step="0.01" value={position.x} disabled={saving} onChange={(event) => setPosition({ ...position, x: Number(event.target.value) })} className="w-full min-h-[30px] p-0 accent-[#98742f] cursor-pointer" /></label>
+      <label className="grid gap-[6px] font-semibold text-[#173f52]">Vertical position<input type="range" min="0" max="1" step="0.01" value={position.y} disabled={saving} onChange={(event) => setPosition({ ...position, y: Number(event.target.value) })} className="w-full min-h-[30px] p-0 accent-[#98742f] cursor-pointer" /></label>
     </>}
-    <div className="admin-actions">
-      <button type="button" disabled={saving} onClick={onCancel}>Cancel</button>
-      <button type="button" disabled={!photo || saving} onClick={() => { setZoom(1); setPosition({ x: 0.5, y: 0.5 }); }}>Reset</button>
-      <button type="button" className="admin-gold" disabled={!photo || saving} onClick={apply}>{saving ? "Cropping…" : "Apply crop"}</button>
+    <div className={adminStyles.actions}>
+      <button type="button" className={adminStyles.btn} disabled={saving} onClick={onCancel}>Cancel</button>
+      <button type="button" className={adminStyles.btn} disabled={!photo || saving} onClick={() => { setZoom(1); setPosition({ x: 0.5, y: 0.5 }); }}>Reset</button>
+      <button type="button" className={adminStyles.btnGold} disabled={!photo || saving} onClick={apply}>{saving ? "Cropping…" : "Apply crop"}</button>
     </div>
   </div>;
 }

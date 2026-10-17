@@ -6,6 +6,7 @@ import {
     RefreshCw, Search, ShieldCheck, Ticket, Trash2, XCircle
 } from "lucide-react";
 import { ticketApi } from "../lib/server1-api";
+import { adminStyles } from "../lib/adminStyles";
 
 const PASS_TYPES = [
     ["event-standard", "Standard Pass"], ["event-premium", "Premium Pass"], ["event-elite", "Elite Pass"],
@@ -187,7 +188,7 @@ export default function TicketsAdmin() {
         Rejected: tickets.filter((item) => item.status === "Rejected").length,
     };
 
-    return <main className="admin-app min-h-screen px-4 py-5 sm:px-6 lg:px-10">
+    return <main className={`${adminStyles.app} px-4 py-5 sm:px-6 lg:px-10`}>
         <header className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/40 bg-[#e5f5f8] px-5 py-4 shadow-lg">
             <div className="flex items-center gap-3"><Ticket className="text-[#b17e2e]" /><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#527e8e]">Admin command center</p><h1 className="font-cinzel text-xl font-black text-[#173f52]">Ticket operations</h1></div></div>
             <div className="flex items-center gap-2"><span className="hidden text-xs font-bold text-[#527e8e] sm:inline">{admin?.name}</span><button type="button" onClick={refresh} className="rounded-xl border border-[#b6dce4] bg-white px-3 py-2 text-sm font-bold text-[#376579] hover:bg-slate-50"><RefreshCw size={16} /> Refresh</button><Link to="/admin/campus-ambassadors" className="rounded-xl border border-[#b6dce4] bg-white px-3 py-2 text-sm font-bold text-[#376579] hover:bg-slate-50"><ArrowLeft size={16} /> Admin home</Link></div>
