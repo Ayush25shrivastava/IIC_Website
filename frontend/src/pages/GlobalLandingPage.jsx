@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import udbhav from '../assets/udbhav image.png';
 import tedx from "../assets/WhatsApp Image 2026-03-21 at 1.09.44 AM.png";
 import renaissance from "../assets/renaissance-logo.png";
-import iicLogo from "../assets/iic-logo.png"; 
-import mnnitLogo from "../assets/mnnit-logo.png";  
+import iicLogo from "../assets/iic-logo.png";
+import mnnitLogo from "../assets/mnnit-logo.png";
 import heroImg1 from '../assets/hero-section/academic building image.jpg';
 import heroImg2 from '../assets/hero-section/front image.jpeg';
 import heroImg3 from '../assets/hero-section/hostels.png';
@@ -36,32 +36,31 @@ const IICPage = () => {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background Images Slider */}
         {images.map((img, idx) => (
-          <img 
+          <img
             key={idx}
             src={img}
             alt={`Slide ${idx}`}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
-              idx === currentImg ? 'opacity-100 z-0' : 'opacity-0 -z-10'
-            }`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${idx === currentImg ? 'opacity-100 z-0' : 'opacity-0 -z-10'
+              }`}
           />
         ))}
 
-{/* Overlay */}
-<div className="absolute inset-0 bg-black/60 z-0"></div>
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/60 z-0"></div>
 
         {/* Fixed Top Corner Logos */}
         <div className="absolute top-6 left-6 z-20 md:top-8 md:left-8">
-          <img 
-            src={mnnitLogo} 
-            alt="MNNIT Logo" 
+          <img
+            src={mnnitLogo}
+            alt="MNNIT Logo"
             className="h-24 md:h-36 w-auto object-contain]"
           />
         </div>
 
         <div className="absolute top-0 right-6 z-20 md:top-0 md:right-4">
-          <img 
-            src={iicLogo} 
-            alt="IIC Logo" 
+          <img
+            src={iicLogo}
+            alt="IIC Logo"
             className="h-36 md:h-54 w-auto object-contain]"
           />
         </div>
@@ -89,22 +88,22 @@ const IICPage = () => {
       <section className="pb-12 px-6 mt-4">
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
 
-          <EventCard 
-            image={tedx} 
+          <EventCard
+            image={tedx}
             title="TEDx MNNIT"
             description="Experience world-class speakers and ideas worth spreading."
-            link="https://www.ted.com/tedx/events/63792" 
+            link="https://www.ted.com/tedx/events/63792"
           />
 
-          <EventCard 
-            image={udbhav} 
+          <EventCard
+            image={udbhav}
             title="Udbhav"
             description="The flagship entrepreneurship and financial literacy summit of the Institute."
-            link="/udbhav" 
+            link="/udbhav"
           />
-          
-          <EventCard 
-            image={renaissance} 
+
+          <EventCard
+            image={renaissance}
             title="Renaissance"
             description="The annual entrepreneurship summit fostering business acumen."
             link="/renaissance"
@@ -185,7 +184,7 @@ Flagship Initiatives:
         </div>
       </section>
 
-      
+
 
       {/* <div className="pb-24">
         <LiveBar />
@@ -203,7 +202,7 @@ const LiveBar = () => (
 
       {[...Array(2)].map((_, idx) => (
         <div key={idx} className="flex">
-          {[1,2,3,4].map(i => (
+          {[1, 2, 3, 4].map(i => (
             <a
               key={i}
               href="/renaissance"
