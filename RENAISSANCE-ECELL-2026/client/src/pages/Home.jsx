@@ -117,10 +117,10 @@ const CURRENT_SPONSORS =
     : [
         {
           name: "Formcept",
-          category: "Technology Partner",
+          category: "Executive Partner",
           image: CLOUDINARY_SPONSORS.formcept || "/sponsors/formcept.png",
           fallbackImage: "/sponsors/formcept.png",
-          description: "Official Technology Partner for Renaissance 2026.",
+          description: "Official Executive Partner for Renaissance 2026.",
         },
         {
           name: "Max Protein",
@@ -207,7 +207,8 @@ function FeaturedSpeakersGrid({ speakers }) {
 
     let animationFrameId;
     let lastTime = performance.now();
-    const speed = 85; // Faster, responsive glide
+    // Smooth continuous glide speed (pixels per second)
+    const speed = 75;
     let direction = 1;
     let pauseUntil = 0;
 
@@ -219,15 +220,15 @@ function FeaturedSpeakersGrid({ speakers }) {
         if (currentTime >= pauseUntil) {
           const maxScroll = container.scrollWidth - container.clientWidth;
 
-          if (maxScroll > 10) {
+          if (maxScroll > 5) {
             container.scrollLeft += speed * deltaTime * direction;
 
-            if (container.scrollLeft >= maxScroll - 4 && direction === 1) {
+            if (container.scrollLeft >= maxScroll - 2 && direction === 1) {
               direction = -1;
-              pauseUntil = currentTime + 1200; // Pause briefly at the right boundary
-            } else if (container.scrollLeft <= 4 && direction === -1) {
+              pauseUntil = currentTime + 800; // brief natural pause at right edge
+            } else if (container.scrollLeft <= 2 && direction === -1) {
               direction = 1;
-              pauseUntil = currentTime + 1200; // Pause briefly at the left boundary
+              pauseUntil = currentTime + 800; // brief natural pause at left edge
             }
           }
         }
@@ -239,6 +240,24 @@ function FeaturedSpeakersGrid({ speakers }) {
     animationFrameId = requestAnimationFrame(scrollStep);
     return () => cancelAnimationFrame(animationFrameId);
   }, [speakers]);
+
+  // Horizontal mouse wheel support for smooth manual scrolling
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const onWheel = (e) => {
+      // If user scrolls horizontally or vertically inside speaker section, allow manual horizontal scrolling
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && Math.abs(e.deltaY) > 5) {
+        container.scrollLeft += e.deltaY;
+      } else if (Math.abs(e.deltaX) > 0) {
+        container.scrollLeft += e.deltaX;
+      }
+    };
+
+    container.addEventListener("wheel", onWheel, { passive: true });
+    return () => container.removeEventListener("wheel", onWheel);
+  }, []);
 
   const handleMouseDown = (e) => {
     if (!scrollRef.current) return;
@@ -288,7 +307,7 @@ function FeaturedSpeakersGrid({ speakers }) {
 
       {/* Seamless Edge-Feathered Container Mask */}
       <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)]">
-        {/* Horizontal Carousel (Faster auto-scroll, pauses on hover / drag, no duplicates) */}
+        {/* Horizontal Carousel (Smooth auto-scroll, pauses on hover / drag / wheel, full manual scroll support) */}
         <div
           ref={scrollRef}
           onMouseEnter={() => {
@@ -304,13 +323,13 @@ function FeaturedSpeakersGrid({ speakers }) {
           onTouchEnd={() => {
             isPausedRef.current = false;
           }}
-          className="flex overflow-x-auto overflow-y-hidden gap-6 sm:gap-8 px-8 sm:px-16 lg:px-24 py-8 cursor-grab active:cursor-grabbing no-scrollbar scroll-smooth"
+          className="flex overflow-x-auto overflow-y-hidden gap-6 sm:gap-8 px-8 sm:px-16 lg:px-24 py-8 cursor-grab active:cursor-grabbing no-scrollbar"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {speakers.map((speaker, idx) => (
             <div
               key={speaker.id || idx}
-              className="flex-shrink-0 w-[285px] sm:w-[305px] md:w-[325px] h-[475px] snap-center select-none group relative"
+              className="flex-shrink-0 w-[285px] sm:w-[305px] md:w-[325px] h-[455px] snap-center select-none group relative"
             >
               {/* Small Ship's Wheel Emblem at Top Middle of the Box */}
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
@@ -324,7 +343,7 @@ function FeaturedSpeakersGrid({ speakers }) {
               <div className="w-full h-full bg-[#020b14]/85 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/15 hover:border-[#D4AF37] transition-all duration-300 shadow-[0_20px_45px_rgba(0,0,0,0.85)] hover:shadow-[0_0_35px_rgba(212,175,55,0.4)] hover:-translate-y-2 flex flex-col justify-between relative">
                 <div className="flex flex-col flex-1">
                   {/* Speaker Portrait */}
-                  <div className="w-full h-56 sm:h-60 rounded-xl overflow-hidden relative shadow-[0_12px_28px_rgba(0,0,0,0.8)] border border-white/10 group-hover:border-[#D4AF37]/50 bg-[#020b14] mb-3 shrink-0">
+                  <div className="w-full h-56 sm:h-60 rounded-xl overflow-hidden relative shadow-[0_12px_28px_rgba(0,0,0,0.8)] border border-white/10 group-hover:border-[#D4AF37]/50 bg-[#020b14] mb-4 shrink-0">
                     <img
                       src={speaker.image}
                       alt={speaker.name}
@@ -335,21 +354,8 @@ function FeaturedSpeakersGrid({ speakers }) {
                     <div className="absolute inset-0 bg-gradient-to-t from-[#020b14]/90 via-transparent to-transparent pointer-events-none" />
                   </div>
 
-                  {/* Alumni / Speaker Category Slot (Strictly Fixed Height) */}
-                  <div className="h-5 flex items-center mb-1">
-                    {speaker.alumni ? (
-                      <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.2em] text-[#D4AF37] uppercase drop-shadow-sm truncate">
-                        {speaker.alumni}
-                      </span>
-                    ) : (
-                      <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.2em] text-[#D4AF37]/80 uppercase drop-shadow-sm truncate">
-                        Keynote Speaker
-                      </span>
-                    )}
-                  </div>
-
                   {/* Speaker Name (Strictly Fixed Height) */}
-                  <div className="h-7 flex items-center mb-1">
+                  <div className="h-7 flex items-center mb-1.5">
                     <h3 className="font-cinzel text-lg sm:text-xl font-bold text-white tracking-tight leading-tight group-hover:text-[#D4AF37] transition-colors line-clamp-1 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
                       {speaker.name}
                     </h3>

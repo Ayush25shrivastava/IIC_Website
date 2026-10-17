@@ -10,10 +10,10 @@ export const SPONSOR_TIERS = [
     sponsors: [
       {
         name: "Formcept",
-        category: "Technology Partner",
+        category: "Executive Partner",
         image: CLOUDINARY_SPONSORS.formcept || getAssetUrl("/sponsors/formcept.png"),
         fallbackImage: getAssetUrl("/sponsors/formcept.png"),
-        description: "Official Technology Partner for Renaissance 2026.",
+        description: "Official Executive Partner for Renaissance 2026.",
       }
     ],
   },
