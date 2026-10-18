@@ -15,7 +15,7 @@ export default defineConfig({
         changeOrigin: true,
         cookieDomainRewrite: '',
       },
-      '/tickets': {
+      '/tickets/': {
         target: 'http://localhost:5001',
         changeOrigin: true,
         cookieDomainRewrite: '',

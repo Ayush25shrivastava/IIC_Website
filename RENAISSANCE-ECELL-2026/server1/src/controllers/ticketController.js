@@ -55,8 +55,8 @@ export const purchaseTicket = async (req, res) => {
       teamName,
     } = req.body;
 
-    // Validate required fields
-    const requiredText = [name, email, phone, college, city, ticketType, transactionId, teamName];
+    // Validate required fields (teamName is optional)
+    const requiredText = [name, email, phone, college, city, ticketType, transactionId];
     if (!requiredText.every((value) => typeof value === 'string' && value.trim()) || amountPaid === undefined || amountPaid === null || String(amountPaid).trim() === '') {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
@@ -182,7 +182,7 @@ export const verifyTicket = async (req, res) => {
     const { id } = req.params;
     const { status, remarks } = req.body; // status should be 'Verified' or 'Rejected'
 
-    if (!['Verified', 'Rejected'].includes(status)) {
+    if (!['Verified', 'Rejected', 'Pending'].includes(status)) {
       return res.status(400).json({ success: false, message: 'Invalid status' });
     }
 
