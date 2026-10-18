@@ -5,4 +5,5 @@ export { CampusAmbassador } from "./campus-ambassador.model.js";
 export { PromoCode } from "./promo-code.model.js";
 export { Registration } from "./registration.model.js";
 export { Task } from "./task.model.js";
+export { default as Ticket } from "./ticketModel.js";
 export { TicketStageConfig } from "./ticket-stage-config.model.js";
