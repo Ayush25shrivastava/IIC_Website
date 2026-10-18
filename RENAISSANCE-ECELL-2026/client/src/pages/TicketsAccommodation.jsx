@@ -27,6 +27,7 @@ import {
   Tag,
   Flame,
   Users,
+  Copy,
 } from "lucide-react";
 import ContactFooter from "../components/ContactFooter";
 import PageTransitionShimmer from "../components/PageTransitionShimmer";
@@ -204,6 +205,7 @@ export default function TicketsAccommodation() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedTicketId, setSubmittedTicketId] = useState("");
+  const [copiedTicketId, setCopiedTicketId] = useState("");
   const [savedTicketIds, setSavedTicketIds] = useState(getSavedTicketIds);
 
   const [searchTicketId, setSearchTicketId] = useState("");
@@ -317,6 +319,16 @@ export default function TicketsAccommodation() {
     setShowForm(false);
   };
 
+  const handleCopyTicketId = async (ticketId) => {
+    try {
+      await navigator.clipboard.writeText(ticketId);
+      setCopiedTicketId(ticketId);
+      window.setTimeout(() => setCopiedTicketId((current) => current === ticketId ? "" : current), 1800);
+    } catch {
+      setSearchError("Could not copy the Ticket ID. Please select and copy it manually.");
+    }
+  };
+
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -339,8 +351,7 @@ export default function TicketsAccommodation() {
       if (!formData.checkOutDate.trim()) newErrors.checkOutDate = "Check-out Date is required";
     }
 
-    // Team Name is optional; no validation needed
-
+    // Transaction ID is required
     if (!formData.transactionId.trim()) {
       newErrors.transactionId = "Transaction ID / UTR is required";
     }
@@ -567,8 +578,14 @@ export default function TicketsAccommodation() {
                   <p className="font-montserrat text-[#1B5E20] font-bold mb-4">
                     This is your one-time Ticket ID. Save it now or write it down; it is also remembered in this browser.
                   </p>
-                  <div className="px-6 py-3 bg-white border-2 border-[#4CAF50]/40 rounded-xl font-mono text-xl font-black text-[#2E7D32] tracking-widest shadow-inner">
-                    {submittedTicketId}
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <div className="px-6 py-3 bg-white border-2 border-[#4CAF50]/40 rounded-xl font-mono text-xl font-black text-[#2E7D32] tracking-widest shadow-inner">
+                      {submittedTicketId}
+                    </div>
+                    <button type="button" onClick={() => handleCopyTicketId(submittedTicketId)} className="inline-flex items-center gap-2 rounded-xl border border-[#4CAF50]/50 bg-white px-4 py-3 text-sm font-bold text-[#2E7D32] hover:bg-[#F1F8E9]" aria-label="Copy ticket ID">
+                      {copiedTicketId === submittedTicketId ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                      {copiedTicketId === submittedTicketId ? "Copied" : "Copy ID"}
+                    </button>
                   </div>
                   <p className="mt-3 max-w-xl text-xs font-bold text-[#8B5E20]">Your payment is pending admin verification. The QR ticket becomes available only after your payment is verified.</p>
                   <button
@@ -635,7 +652,12 @@ export default function TicketsAccommodation() {
                         </div>
                         <div className="text-right">
                           <p className="text-[10px] font-mono text-[#8A5F1C] uppercase font-bold tracking-widest mb-1">Ticket ID</p>
-                          <p className="font-mono text-sm font-black text-[#9E6D1F]">{searchedTicket.ticketId}</p>
+                          <div className="flex items-center justify-end gap-2">
+                            <p className="font-mono text-sm font-black text-[#9E6D1F]">{searchedTicket.ticketId}</p>
+                            <button type="button" onClick={() => handleCopyTicketId(searchedTicket.ticketId)} className="inline-flex items-center gap-1 rounded-lg border border-[#C5A25F]/40 bg-white px-2 py-1 text-[10px] font-bold text-[#8A5F1C] hover:bg-[#F8F3EA]" aria-label="Copy ticket ID">
+                              {copiedTicketId === searchedTicket.ticketId ? "Copied" : <Copy className="h-3.5 w-3.5" />}
+                            </button>
+                          </div>
                         </div>
                       </div>
                       {searchedTicket.college && (
