@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import { ArrowRight, BadgeCheck, CheckCheck, ClipboardList, Compass, Download, Eye, EyeOff, Images, LayoutGrid, LoaderCircle, LogOut, Menu, Plus, RefreshCw, Search, ShieldCheck, Ticket, Users, X } from "lucide-react";
+import { ArrowRight, BadgeCheck, CheckCheck, ClipboardList, Compass, Download, Eye, EyeOff, Globe, Images, LayoutGrid, LoaderCircle, LogOut, Menu, Plus, RefreshCw, Search, ShieldCheck, Ticket, Users, X } from "lucide-react";
 import { adminApi } from "../lib/server1-api";
 import { downloadCsv } from "../lib/admin-csv";
 import { localAdminMode } from "../lib/local-admin";
@@ -149,6 +149,10 @@ export default function CampusAmbassadorAdmin() {
           <Ticket size={20} />
           <span>Ticket management</span>
         </Link>
+        <Link to="/" className={adminStyles.sidebarNavItem}>
+          <Globe size={20} />
+          <span>Return to website</span>
+        </Link>
       </nav>
       <div className={adminStyles.sidebarFooter}><ShieldCheck /><div><strong>{admin.name}</strong><small className={adminStyles.small}>Program administrator</small></div><button aria-label={localAdminMode ? "Exit local portal" : "Sign out"} disabled={busy} onClick={async () => { setBusy(true); try { await logout(); } catch (err) { report(err); setBusy(false); } }}><LogOut size={18} /></button></div>
       <p className={adminStyles.sidebarCredit}>E-CELL · MNNIT ALLAHABAD</p>
@@ -163,6 +167,10 @@ export default function CampusAmbassadorAdmin() {
           <strong className="text-[#173f52] font-semibold">{sections.find(([id]) => id === tab)[1]}</strong>
         </div>
         <div className={adminStyles.topbarGroup}>
+          <Link to="/" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#b6dce4] bg-[#f4fcfd] text-[#376579] hover:bg-white text-xs font-semibold no-underline transition-colors">
+            <Globe size={15} />
+            <span>Return to website</span>
+          </Link>
           <span className={adminStyles.topbarAccess}><ShieldCheck size={16} /> Admin access</span>
           <span className={adminStyles.avatar}>{initials(admin.name)}</span>
         </div>
@@ -181,7 +189,7 @@ export default function CampusAmbassadorAdmin() {
       {error && <div className={adminStyles.alert} role="alert"><span>{error}</span><button className={adminStyles.btn} onClick={() => mutate(load, "Dashboard refreshed.")}>Retry</button></div>}
       {notice && <div className={adminStyles.notice} role="status">{notice}</div>}
       {credential && <div className={adminStyles.credential} role="status"><strong>New credential · shown once</strong><p className="my-1">{credential.ambassador.email}</p><code className="font-mono text-[18px] bg-[#fdf2cc] p-1 rounded inline-block my-2">{credential.temporaryPassword}</code><p className="my-1">Share this email and password privately with the ambassador.</p><button className={adminStyles.btn + " mt-2"} onClick={() => setCredential(null)}>Dismiss credential</button></div>}
-      {tab === "management" ? <TeamPhotoManagement handleError={handleError} /> : localAdminMode ? <section className={`${adminStyles.panelMain} ${adminStyles.empty}`}><h2 className={adminStyles.h2}>Local admin portal</h2><p className="my-3">Team photo management is available without sign-in. Ambassador and ticket operations require the connected admin service.</p><button className={adminStyles.btn} onClick={() => navigateSection("management")}>Manage team photos</button></section> : loading ? <div className={`${adminStyles.panelMain} ${adminStyles.empty}`} role="status"><LoaderCircle className="animate-spin text-[#0d7892]" size={28} /> Loading your command center…</div> : !data ? <div className={`${adminStyles.panelMain} ${adminStyles.empty}`}>Dashboard data is unavailable. Use Retry above.</div> : <>
+      {tab === "management" ? <TeamPhotoManagement handleError={localAdminMode ? () => false : handleError} /> : localAdminMode ? <section className={`${adminStyles.panelMain} ${adminStyles.empty}`}><h2 className={adminStyles.h2}>Local admin portal</h2><p className="my-3">Team photo management is available without sign-in. Ambassador and ticket operations require the connected admin service.</p><button className={adminStyles.btn} onClick={() => navigateSection("management")}>Manage team photos</button></section> : loading ? <div className={`${adminStyles.panelMain} ${adminStyles.empty}`} role="status"><LoaderCircle className="animate-spin text-[#0d7892]" size={28} /> Loading your command center…</div> : !data ? <div className={`${adminStyles.panelMain} ${adminStyles.empty}`}>Dashboard data is unavailable. Use Retry above.</div> : <>
         <section className={adminStyles.statsGrid} aria-label="Program totals">
           {[[Users, "Campus ambassadors", summary.ambassadors.total, `${summary.ambassadors.ACTIVE} active in the crew`], [Ticket, "Total registrations", summary.referrals.total, "Attributed records · all statuses"], [CheckCheck, "Tasks completed", `${summary.tasks.COMPLETED}/${summary.tasks.total}`, `${summary.tasks.ASSIGNED + summary.tasks.IN_PROGRESS} missions still underway`], [BadgeCheck, "Awaiting review", summary.pendingReviews, "Submissions ready for your review"]].map(([Icon, label, value, detail], i) => <article key={label} className={`${adminStyles.statCard} ${i === 3 ? adminStyles.statCardGold : ""}`}><div className={adminStyles.statHead}><span className={adminStyles.kicker}>{label}</span><Icon size={23} /></div><strong className={adminStyles.statValue}>{value}</strong><p className={adminStyles.statDetail}>{detail}</p></article>)}
         </section>

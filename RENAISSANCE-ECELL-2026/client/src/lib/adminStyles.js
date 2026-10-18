@@ -36,7 +36,7 @@ export const adminStyles = {
   small: "block text-[#527e8e] text-[12px]",
 
   // Navigation & Layout
-  sidebar: "w-[260px] 2xl:w-[290px] max-[1250px]:w-[225px] max-[900px]:w-[260px] fixed inset-y-0 left-0 z-30 flex flex-col p-[32px_17px_24px] 2xl:p-[35px_20px_25px] border-r-2 border-[#508599] bg-[linear-gradient(150deg,#eefafa_0%,#c2e5ea_100%)] transition-transform duration-200 max-[900px]:top-[78px] max-[900px]:pt-5 max-[900px]:shadow-[15px_0_30px_#103c4940]",
+  sidebar: "w-[260px] 2xl:w-[290px] max-[1250px]:w-[225px] max-[900px]:w-[260px] fixed inset-y-0 left-0 z-30 flex flex-col p-[32px_17px_24px] 2xl:p-[35px_20px_25px] border-r-2 border-[#508599] bg-[linear-gradient(150deg,#eefafa_0%,#c2e5ea_100%)] transition-transform duration-200 max-[900px]:top-[78px] max-[900px]:pt-5 max-[900px]:shadow-[15px_0_30px_#103c4940] overflow-y-auto",
   sidebarBrand: "text-center px-[6px]",
   sidebarBrandImg: "block w-full h-[76px] object-contain p-[12px_18px] rounded-[22px] bg-[#f7fcfc] mb-[18px]",
   sidebarNavLabel: "font-mono text-[11px] uppercase tracking-[0.14em] font-semibold text-[#527e8e] my-[42px_20px] mx-3 max-[900px]:mt-5",

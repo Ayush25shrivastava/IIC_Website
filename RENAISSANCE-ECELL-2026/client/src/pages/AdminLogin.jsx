@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
-import { ShieldCheck, Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { ArrowLeft, ShieldCheck, Eye, EyeOff, LoaderCircle } from "lucide-react";
 import { adminApi } from "../lib/server1-api";
 import { adminStyles } from "../lib/adminStyles";
 import logo from "../assets/renaissance-logo.png";
@@ -37,7 +37,12 @@ export default function AdminLogin() {
         {error && <p className={adminStyles.alert} role="alert">{error}</p>}
         <button className={adminStyles.btnGold} disabled={busy}>{busy ? <LoaderCircle size={18} className="animate-spin" /> : <ShieldCheck size={18} />}Sign in</button>
       </form>
-      <small className="block text-center mt-[30px] text-[#527e8e] font-mono tracking-[0.1em] text-[12px]">E-CELL · MNNIT ALLAHABAD</small>
+      <div className="mt-4 text-center">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#376579] hover:text-[#173f52] transition-colors">
+          <ArrowLeft size={14} /> Return to website
+        </Link>
+      </div>
+      <small className="block text-center mt-[24px] text-[#527e8e] font-mono tracking-[0.1em] text-[12px]">E-CELL · MNNIT ALLAHABAD</small>
     </section>
   </main>;
 }

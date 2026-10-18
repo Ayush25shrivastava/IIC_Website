@@ -70,7 +70,12 @@ function StudentTeamGroups({ members, category }) {
         const teamMembers = groups.get(team);
         if (!teamMembers.length) return null;
         
-        teamMembers.sort((a, b) => a.name.localeCompare(b.name));
+        teamMembers.sort((a, b) => {
+          const orderA = a.displayOrder !== undefined && a.displayOrder !== "" ? Number(a.displayOrder) : Infinity;
+          const orderB = b.displayOrder !== undefined && b.displayOrder !== "" ? Number(b.displayOrder) : Infinity;
+          if (orderA !== orderB) return orderA - orderB;
+          return a.name.localeCompare(b.name);
+        });
 
         const headingId = `team-${category}-${index}-heading`;
         return (
@@ -102,16 +107,7 @@ export default function Teams({ embedded = false }) {
       if (document.visibilityState !== "visible") return;
       getTeamPhotos().then((data) => { 
         if (active) { 
-            const processedMembers = data.members.map(m => {
-                if (m.name.toLowerCase().includes('mayank')) {
-                    return {...m, position: 'President, IIC'};
-                }
-                if (m.name.toLowerCase().includes('mukul')) {
-                    return {...m, position: 'Vice President, IIC'};
-                }
-                return m;
-            });
-            setMembers(processedMembers); 
+            setMembers(data.members || []); 
             setPhotoError(""); 
         } 
       })
@@ -175,23 +171,30 @@ export default function Teams({ embedded = false }) {
             gap: clamp(2rem, 3.3vw, 4rem);
           }
           
+        .teams-faculty-grid {
+          display: grid;
+          grid-template-columns: repeat(1, minmax(0, 1fr));
+          gap: 2rem;
+          justify-items: center;
+        }
+        
+        @media (min-width: 640px) {
           .teams-faculty-grid {
-             display: grid;
-             grid-template-columns: repeat(1, minmax(0, 1fr));
-             gap: 2rem;
-             justify-items: center;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
-          
-          @media (min-width: 640px) {
-              .teams-faculty-grid {
-                  grid-template-columns: repeat(2, minmax(0, 1fr));
-              }
+        }
+        
+        @media (min-width: 1024px) {
+          .teams-content {
+            max-width: min(calc(100% - 4rem), 91.75rem);
           }
-          
-          @media (min-width: 1024px) {
-              .teams-faculty-grid {
-                  grid-template-columns: repeat(4, minmax(0, 1fr));
-              }
+
+          .teams-faculty-cards {
+            gap: clamp(2rem, 3.3vw, 4rem);
+          }
+
+          .teams-faculty-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
           }
         }
 
@@ -290,8 +293,15 @@ export default function Teams({ embedded = false }) {
             if (!group.length) return null;
 
             if (category === "faculty") {
-                const topLeaders = group.filter(m => m.name.toLowerCase().includes('mayank') || m.name.toLowerCase().includes('mukul'));
-                const otherFaculty = group.filter(m => !m.name.toLowerCase().includes('mayank') && !m.name.toLowerCase().includes('mukul'));
+                const sortedGroup = [...group].sort((a, b) => {
+                  const orderA = a.displayOrder !== undefined && a.displayOrder !== "" ? Number(a.displayOrder) : Infinity;
+                  const orderB = b.displayOrder !== undefined && b.displayOrder !== "" ? Number(b.displayOrder) : Infinity;
+                  if (orderA !== orderB) return orderA - orderB;
+                  return a.name.localeCompare(b.name);
+                });
+
+                const topLeaders = sortedGroup.slice(0, 2);
+                const otherFaculty = sortedGroup.slice(2);
 
                 return (
                     <section key={category} className="teams-faculty-section overflow-x-clip" aria-labelledby={`team-${category}-heading`}>
