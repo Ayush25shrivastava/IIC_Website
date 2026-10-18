@@ -316,19 +316,53 @@ export const ticketApi = {
 };
 
 export const server1ApiBaseUrl = API_BASE_URL;
-export const getTeamPhotos = () => request("/team-photos", { cache: "no-store", signal: AbortSignal.timeout(60000) });
+
+let cachedTeamPhotosPromise = null;
+
+export const getTeamPhotos = (forceFresh = false) => {
+  if (forceFresh || !cachedTeamPhotosPromise) {
+    cachedTeamPhotosPromise = request("/team-photos", { cache: "no-store", signal: AbortSignal.timeout(60000) })
+      .catch((err) => {
+        cachedTeamPhotosPromise = null;
+        throw err;
+      });
+  }
+  return cachedTeamPhotosPromise;
+};
+
+export const prefetchTeamPhotos = () => {
+  if (typeof window === "undefined") return;
+  getTeamPhotos()
+    .then((data) => {
+      // Preload image elements in background into browser cache
+      if (Array.isArray(data?.members)) {
+        for (const member of data.members) {
+          const url = teamPhotoUrl(member);
+          if (url) {
+            const img = new Image();
+            img.src = url;
+          }
+        }
+      }
+    })
+    .catch(() => {
+      // Silent fail on prefetch; will retry when visiting page
+    });
+};
+
 export function createTeamPhotoApi(local = false) {
   const prefix = local ? "/local-admin/team-photos" : "/admin/team-photos";
   const scope = local ? null : "admin";
   const call = (path, options = {}) => request(`${prefix}${path}`, { ...options, cache: "no-store", signal: AbortSignal.timeout(60000) }, scope);
   return {
     teamPhotos: () => call(""),
-    createTeamPhoto: (body) => call("", { method: "POST", body }),
-    updateTeamPhoto: (id, body) => call(`/${encodeURIComponent(id)}`, { method: "PUT", body }),
-    deleteTeamPhoto: (id) => call(`/${encodeURIComponent(id)}`, { method: "DELETE" }),
-    importTeamPhoto: (id, body) => call(`/import/${encodeURIComponent(id)}`, { method: "POST", body }),
+    createTeamPhoto: (body) => { cachedTeamPhotosPromise = null; return call("", { method: "POST", body }); },
+    updateTeamPhoto: (id, body) => { cachedTeamPhotosPromise = null; return call(`/${encodeURIComponent(id)}`, { method: "PUT", body }); },
+    deleteTeamPhoto: (id) => { cachedTeamPhotosPromise = null; return call(`/${encodeURIComponent(id)}`, { method: "DELETE" }); },
+    importTeamPhoto: (id, body) => { cachedTeamPhotosPromise = null; return call(`/import/${encodeURIComponent(id)}`, { method: "POST", body }); },
   };
 }
 export const teamPhotoUrl = (member) => member.uploaded
   ? buildUrl(`/team-photos/${encodeURIComponent(member.id)}/image`, { v: member.updatedAt })
   : member.image_url;
+

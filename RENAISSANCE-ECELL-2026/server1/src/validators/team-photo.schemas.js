@@ -19,6 +19,7 @@ export const teamPhotoSchema = z.object({
   position: z.string().trim().max(120).default(""),
   team: z.string().trim().max(120).default(""),
   linkedin: z.string().trim().max(500).refine((value) => !value || /^https:\/\/(www\.)?linkedin\.com\//i.test(value), "Use a LinkedIn HTTPS URL").default(""),
+  displayOrder: z.coerce.number().int().min(0).max(9999).optional().default(0),
   image_url: z.string().trim().max(470000).refine(validPhotoSource, "Use an HTTPS photo URL or a JPEG, PNG or WebP photo up to 350 KB"),
 }).strict();
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ImagePlus, Plus, RefreshCw, X } from "lucide-react";
+import { ArrowUpDown, ImagePlus, Plus, RefreshCw, X } from "lucide-react";
 import { createTeamPhotoApi, teamPhotoUrl } from "../lib/server1-api";
 import { TEAM_PHOTO_CATEGORIES, STUDENT_TEAMS } from "../data/teamPhotoCategories";
 import PhotoCropper from "./PhotoCropper";
@@ -15,6 +15,7 @@ function PhotoEditor({ member, busy, onSave, onClose }) {
     category: member?.category || "faculty", 
     team: STUDENT_TEAMS.includes(member?.team) ? member.team : "", 
     position: member?.position || "", // Added state for designation
+    displayOrder: member?.displayOrder !== undefined && member?.displayOrder !== "" ? Number(member.displayOrder) : "",
     linkedin: member?.linkedin || "", 
     image_url: member?.uploaded ? "" : member?.image_url || "" 
   });
@@ -32,8 +33,13 @@ function PhotoEditor({ member, busy, onSave, onClose }) {
       setOriginalSource(cropSource); setCropSource(null); setError("");
     }} /> : <form className={adminStyles.form} onSubmit={async (event) => {
       event.preventDefault(); setError("");
-      // Safely preserve position/designation during submission
-      const body = { ...form, position: form.position || "", team: hasTeam ? form.team : "" };
+      // Safely preserve position/designation and displayOrder during submission
+      const body = {
+        ...form,
+        position: form.position || "",
+        displayOrder: form.displayOrder !== "" && !isNaN(Number(form.displayOrder)) ? Number(form.displayOrder) : 0,
+        team: hasTeam ? form.team : ""
+      };
       if (member && !body.image_url) delete body.image_url;
       try { await onSave(body); } catch (err) { setError(err.message || "Unable to save this team member."); }
     }}>
@@ -48,6 +54,9 @@ function PhotoEditor({ member, busy, onSave, onClose }) {
         
         {/* Designation Input added */}
         <label className="grid gap-[7px] font-semibold text-[#173f52]">Designation / Position (optional)<input maxLength={120} placeholder="e.g. Technical Head" {...field("position")} className={adminStyles.input} /></label>
+
+        {/* Display Order Input */}
+        <label className="grid gap-[7px] font-semibold text-[#173f52]">Display Order (number, e.g. 1, 2, 3...)<input type="number" min="1" max="999" placeholder="e.g. 1" {...field("displayOrder")} className={adminStyles.input} /></label>
 
         {hasTeam && <label className="grid gap-[7px] font-semibold text-[#173f52]">Team<select required {...field("team")} className={adminStyles.select}><option value="">Select a team</option>{STUDENT_TEAMS.map((team) => <option key={team} value={team}>{team}</option>)}</select></label>}
         
@@ -95,7 +104,19 @@ export default function TeamPhotoManagement({ handleError }) {
   }, [handleError]);
   useEffect(() => { load(); return () => { sequence.current += 1; }; }, [load]);
   const refresh = () => { setLoading(true); setError(""); load(); };
-  const visible = members.filter((member) => (!category || member.category === category) && `${member.name} ${member.position} ${member.team}`.toLowerCase().includes(search.trim().toLowerCase()));
+  const categoryOrderMap = Object.fromEntries(TEAM_PHOTO_CATEGORIES.map(([id], index) => [id, index]));
+  const visible = members
+    .filter((member) => (!category || member.category === category) && `${member.name} ${member.position} ${member.team}`.toLowerCase().includes(search.trim().toLowerCase()))
+    .sort((a, b) => {
+      const catA = categoryOrderMap[a.category] ?? 99;
+      const catB = categoryOrderMap[b.category] ?? 99;
+      if (catA !== catB) return catA - catB;
+
+      const orderA = a.displayOrder !== undefined && a.displayOrder !== "" ? Number(a.displayOrder) : Infinity;
+      const orderB = b.displayOrder !== undefined && b.displayOrder !== "" ? Number(b.displayOrder) : Infinity;
+      if (orderA !== orderB) return orderA - orderB;
+      return a.name.localeCompare(b.name);
+    });
   const pendingImports = legacyPhotos.filter((photo) => !members.some((member) => member.id === photo.id));
   async function importPhotos() {
     setBusy(true); setError(""); setNotice("");
@@ -109,6 +130,47 @@ export default function TeamPhotoManagement({ handleError }) {
     } catch (err) { if (!handleError(err)) importError = err.message || "Import interrupted. You can safely retry."; }
     finally { await load(); if (importError) setError(importError); setBusy(false); }
   }
+  const handleOrderChange = async (member, newOrderStr) => {
+    const newOrder = parseInt(newOrderStr, 10);
+    if (isNaN(newOrder) || newOrder < 1) return;
+    
+    // Find category items
+    const categoryMembers = members.filter((m) => m.category === member.category);
+    // Find if another member in this category already has this target displayOrder
+    const targetMember = categoryMembers.find((m) => m.id !== member.id && Number(m.displayOrder) === newOrder);
+
+    setBusy(true);
+    setNotice("");
+    try {
+      if (targetMember) {
+        // Swap: give targetMember the current member's order
+        const currentOrder = member.displayOrder !== undefined && member.displayOrder !== "" ? Number(member.displayOrder) : 0;
+        await photoApi.updateTeamPhoto(targetMember.id, {
+          name: targetMember.name,
+          category: targetMember.category,
+          position: targetMember.position,
+          team: targetMember.team,
+          linkedin: targetMember.linkedin,
+          displayOrder: currentOrder,
+        });
+      }
+      await photoApi.updateTeamPhoto(member.id, {
+        name: member.name,
+        category: member.category,
+        position: member.position,
+        team: member.team,
+        linkedin: member.linkedin,
+        displayOrder: newOrder,
+      });
+      setNotice(targetMember ? `Swapped order: ${member.name} is now #${newOrder}, ${targetMember.name} is #${member.displayOrder || 0}.` : `Updated ${member.name} order to #${newOrder}.`);
+      await load();
+    } catch (err) {
+      if (!handleError(err)) setError(err.message || "Failed to update order.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   async function save(body) {
     setBusy(true); setNotice("");
     try {
@@ -134,10 +196,40 @@ export default function TeamPhotoManagement({ handleError }) {
     <div className={adminStyles.filters}><input className={adminStyles.input + " flex-1 max-w-[420px]"} aria-label="Search team members" placeholder="Search name, role or team…" value={search} onChange={(event) => setSearch(event.target.value)} /><select className={adminStyles.filterSelect} aria-label="Filter team photo type" value={category} onChange={(event) => setCategory(event.target.value)}><option value="">All types</option>{TEAM_PHOTO_CATEGORIES.map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select><button className={adminStyles.btn} disabled={busy || loading} onClick={refresh}><RefreshCw size={16} /> Refresh</button></div>
     {loading ? <p className={adminStyles.empty} role="status">Loading team photos…</p> : !error && <>
       {!visible.length && <div className={adminStyles.empty}><ImagePlus size={32} /><p>No team members in this view. Add a member or change the filters.</p></div>}
-      <div className={adminStyles.photoGrid}>{visible.map((member) => <article key={member.id} className={adminStyles.photoCard}>
-        <img src={teamPhotoUrl(member)} alt={member.name} loading="lazy" />
-        <div><span className={adminStyles.kicker}>{TEAM_PHOTO_CATEGORIES.find(([id]) => id === member.category)?.[1]}</span><h3 className={adminStyles.h3}>{member.name}</h3><p className="min-h-[22px] mb-[14px] break-all text-[#527e8e]">{[member.position, member.team].filter(Boolean).join(" · ")}</p><div className={adminStyles.actions}><button className={adminStyles.btn} disabled={busy} onClick={() => setEditor({ member })}>Edit</button><button className={adminStyles.btnDanger} disabled={busy} onClick={() => remove(member)}>Remove</button></div></div>
-      </article>)}</div>
+      <div className={adminStyles.photoGrid}>{visible.map((member) => {
+        const categoryCount = members.filter((m) => m.category === member.category).length;
+        const currentOrder = member.displayOrder !== undefined && member.displayOrder !== "" ? Number(member.displayOrder) : null;
+        
+        return <article key={member.id} className={adminStyles.photoCard}>
+          <img src={teamPhotoUrl(member)} alt={member.name} loading="lazy" />
+          <div>
+            <div className="flex items-center justify-between gap-1 mb-1">
+              <span className={adminStyles.kicker}>{TEAM_PHOTO_CATEGORIES.find(([id]) => id === member.category)?.[1]}</span>
+              <label className="inline-flex items-center gap-1 text-[11px] font-bold text-[#376579] bg-[#e5f5f8] border border-[#afd6e1] rounded-lg px-2 py-0.5">
+                <ArrowUpDown size={12} className="text-[#376579]" />
+                <span>Order:</span>
+                <select
+                  disabled={busy}
+                  value={currentOrder ?? ""}
+                  onChange={(e) => handleOrderChange(member, e.target.value)}
+                  className="bg-transparent font-bold text-[#173f52] outline-none cursor-pointer p-0 text-[11px]"
+                >
+                  <option value="" disabled>Set</option>
+                  {Array.from({ length: Math.max(categoryCount, 10) }, (_, i) => i + 1).map((num) => (
+                    <option key={num} value={num}>#{num}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <h3 className={adminStyles.h3}>{member.name}</h3>
+            <p className="min-h-[22px] mb-[14px] break-all text-[#527e8e]">{[member.position, member.team].filter(Boolean).join(" · ")}</p>
+            <div className={adminStyles.actions}>
+              <button className={adminStyles.btn} disabled={busy} onClick={() => setEditor({ member })}>Edit</button>
+              <button className={adminStyles.btnDanger} disabled={busy} onClick={() => remove(member)}>Remove</button>
+            </div>
+          </div>
+        </article>;
+      })}</div>
     </>}
     {editor && <PhotoEditor member={editor.member} busy={busy} onSave={save} onClose={() => setEditor(null)} />}
   </section>;

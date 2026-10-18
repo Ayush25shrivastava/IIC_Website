@@ -4,7 +4,7 @@ import { ApiError } from "../utils/api-error.js";
 
 const TAG = "renaissance_team_photos";
 const PREFIX = "renaissance/team/";
-const fields = ["name", "category", "position", "team", "linkedin"];
+const fields = ["name", "category", "position", "team", "linkedin", "displayOrder"];
 const escapeContext = (value) => String(value || "").replaceAll("\\", "\\\\").replaceAll("=", "\\=").replaceAll("|", "\\|");
 
 export function createCloudinaryTeamPhotoService(config, fetcher = (...args) => fetch(...args)) {
@@ -71,7 +71,12 @@ export function createCloudinaryTeamPhotoService(config, fetcher = (...args) => 
         }
         cursor = result.next_cursor;
       } while (cursor);
-      return members.sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
+      return members.sort((a, b) => {
+        const orderA = a.displayOrder !== undefined && a.displayOrder !== "" ? Number(a.displayOrder) : Infinity;
+        const orderB = b.displayOrder !== undefined && b.displayOrder !== "" ? Number(b.displayOrder) : Infinity;
+        if (orderA !== orderB) return orderA - orderB;
+        return a.name.localeCompare(b.name) || a.id.localeCompare(b.id);
+      });
     },
     async create(body) { return upload(randomUUID(), body, false); },
     async update(id, body) {
