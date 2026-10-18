@@ -77,11 +77,7 @@ export const purchaseTicket = async (req, res) => {
       return res.status(400).json({ success: false, message: `Amount paid must match the selected pass total of ₹${amount}` });
     }
 
-    // Check if transaction ID is already used
-    const existingTicket = await Ticket.findOne({ transactionId: normalizedTransactionId });
-    if (existingTicket) {
-      return res.status(400).json({ success: false, message: 'Transaction ID already exists' });
-    }
+    // Duplicate transaction ID check disabled to allow reuse of UTRs
 
     const ticket = new Ticket({
       name: name.trim(),
