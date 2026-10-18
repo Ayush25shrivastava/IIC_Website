@@ -20,7 +20,7 @@ export const CLOUDINARY_QR = {
  */
 export const CLOUDINARY_SPONSORS = {
   formcept: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_formcept_sponsor.png",
-  maxProtein: "https://res.cloudinary.com/fbf4uyoz/image/fetch/f_auto,q_auto/https://maxprotein.in/cdn/shop/files/max_protein_9bb6131c-0460-4ac0-afba-bf55f4949ecf.png",
+  // maxProtein: "https://res.cloudinary.com/fbf4uyoz/image/fetch/f_auto,q_auto/https://maxprotein.in/cdn/shop/files/max_protein_9bb6131c-0460-4ac0-afba-bf55f4949ecf.png",
   oatey: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/v1792007252/renaissance_oatey_sponsor.png",
   safexpress: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/WhatsApp_Image_2026-10-05_at_21.38.40_1",
   lotte: "https://res.cloudinary.com/fbf4uyoz/image/fetch/f_auto,q_auto/https://upload.wikimedia.org/wikipedia/commons/2/2a/Lotte_logo.svg",
