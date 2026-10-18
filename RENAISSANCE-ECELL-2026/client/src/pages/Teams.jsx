@@ -11,7 +11,7 @@ const MAIN_SECTION_HEADING_CLASS =
 const FacultyCard = ({ member, grouped = false, isTopLeader = false }) => {
   const NameHeading = grouped ? "h4" : "h3";
   return (
-    <article className={`teams-member-card teams-faculty-card group flex w-full shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-3 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:rounded-2xl sm:p-4 ${isTopLeader ? 'max-w-[320px] sm:w-[280px]' : 'max-w-[280px] sm:w-[232px]'}`}>
+    <article className={`teams-member-card teams-faculty-card group flex w-full shrink-0 flex-col rounded-xl border border-[#D8C4A8] bg-[#FDF3DF] p-3 text-center shadow-[0_10px_24px_rgba(84,64,43,0.2)] transition-all duration-300 sm:rounded-2xl sm:p-4 ${isTopLeader ? 'max-w-[320px] sm:w-[280px]' : 'max-w-[280px] sm:w-[232px] lg:w-full'}`}>
       <div className="aspect-square w-full overflow-hidden rounded-xl border border-[#D8C4A8] bg-[#EAD7BC]">
         <img
           src={teamPhotoUrl(member)}
@@ -84,8 +84,8 @@ function StudentTeamGroups({ members, category }) {
               {team}
               <span className="mt-2 h-[2px] w-12 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-16" />
             </h3>
-            <div className="teams-student-row overflow-x-auto rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#166E94]" tabIndex={0} role="region" aria-labelledby={headingId}>
-              <div className="teams-faculty-cards flex w-max min-w-full items-stretch justify-center gap-5 px-3 pb-6 pt-2 sm:gap-12">
+            <div className="teams-student-row rounded-xl" aria-labelledby={headingId}>
+              <div className="teams-faculty-cards grid grid-cols-2 items-stretch justify-items-center gap-3 px-1 pb-6 pt-2 sm:gap-5 lg:grid-cols-4">
                 {teamMembers.map((member) => <FacultyCard key={member.id} member={member} grouped />)}
               </div>
             </div>
@@ -150,7 +150,8 @@ export default function Teams({ embedded = false }) {
         }
 
         .teams-student-row .teams-member-card {
-          width: min(76vw, 280px);
+          width: 100%;
+          max-width: 280px;
         }
 
         .teams-member-row {
@@ -169,32 +170,6 @@ export default function Teams({ embedded = false }) {
 
           .teams-faculty-cards {
             gap: clamp(2rem, 3.3vw, 4rem);
-          }
-          
-        .teams-faculty-grid {
-          display: grid;
-          grid-template-columns: repeat(1, minmax(0, 1fr));
-          gap: 2rem;
-          justify-items: center;
-        }
-        
-        @media (min-width: 640px) {
-          .teams-faculty-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-        }
-        
-        @media (min-width: 1024px) {
-          .teams-content {
-            max-width: min(calc(100% - 4rem), 91.75rem);
-          }
-
-          .teams-faculty-cards {
-            gap: clamp(2rem, 3.3vw, 4rem);
-          }
-
-          .teams-faculty-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
           }
         }
 
@@ -242,7 +217,7 @@ export default function Teams({ embedded = false }) {
           }
 
           .teams-faculty-card {
-            width: 260px !important;
+            width: min(100%, 260px) !important;
             padding: 0.75rem !important;
           }
 
@@ -311,13 +286,13 @@ export default function Teams({ embedded = false }) {
                         </h2>
                         
                         {topLeaders.length > 0 && (
-                            <div className="flex flex-wrap items-stretch justify-center gap-6 px-1 pb-10 sm:gap-16">
+                            <div className="grid grid-cols-2 items-stretch justify-items-center gap-3 px-1 pb-10 sm:gap-5">
                                 {topLeaders.map((member) => <FacultyCard key={member.id} member={member} isTopLeader={true} />)}
                             </div>
                         )}
 
                         {otherFaculty.length > 0 && (
-                            <div className="teams-faculty-grid w-full px-1 pb-2">
+                            <div className="teams-faculty-grid grid w-full grid-cols-2 justify-items-center gap-3 px-1 pb-2 sm:gap-5 lg:grid-cols-4">
                                 {otherFaculty.map((member) => <FacultyCard key={member.id} member={member} />)}
                             </div>
                         )}
