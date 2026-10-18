@@ -62,6 +62,8 @@ const ticketSchema = new Schema({
 
   verifiedBy: { type: Schema.Types.ObjectId, ref: 'Admin' },
   verificationRemarks: { type: String },
+  editedAt: { type: Date },
+  editedBy: { type: Schema.Types.ObjectId, ref: 'Admin' },
   stageScans: { type: [ticketScanSchema], default: [] }
 
 }, { timestamps: true });

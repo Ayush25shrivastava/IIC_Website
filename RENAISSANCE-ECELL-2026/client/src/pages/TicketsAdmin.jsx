@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import {
-    ArrowLeft, Camera, Check, CheckCircle2, Globe, LoaderCircle, Plus,
+    ArrowLeft, Camera, Check, CheckCircle2, Edit3, Globe, LoaderCircle, Plus,
     RefreshCw, Search, ShieldCheck, Ticket, Trash2, XCircle
 } from "lucide-react";
 import { ticketApi } from "../lib/server1-api";
@@ -180,6 +180,9 @@ export default function TicketsAdmin() {
     const [cameraOn, setCameraOn] = useState(false);
     const [scanResult, setScanResult] = useState(null);
     const [scanBusy, setScanBusy] = useState(false);
+    const [editingTicket, setEditingTicket] = useState(null);
+    const [editForm, setEditForm] = useState(null);
+    const [editBusy, setEditBusy] = useState(false);
 
     const loadTickets = useCallback(async () => {
         const data = await ticketApi.adminList();
@@ -353,6 +356,39 @@ export default function TicketsAdmin() {
             }
         } finally {
             setBusyId("");
+        }
+    }
+
+    function startEditing(ticket) {
+        const dateValue = (value) => value ? new Date(value).toISOString().slice(0, 10) : "";
+        setEditingTicket(ticket);
+        setEditForm({
+            name: ticket.name || "", email: ticket.email || "", phone: ticket.phone || "",
+            college: ticket.college || "", city: ticket.city || "", teamName: ticket.teamName || "",
+            ticketType: ticket.ticketType || "event-standard", tshirtSize: ticket.tshirtSize || "",
+            accommodationDays: String(ticket.accommodationDays ?? 0),
+            checkInDate: dateValue(ticket.checkInDate), checkOutDate: dateValue(ticket.checkOutDate),
+            accommodationPreferences: ticket.accommodationPreferences || "",
+            transactionId: ticket.transactionId || "", amountPaid: String(ticket.amountPaid ?? ""),
+        });
+    }
+
+    async function saveTicketEdits(event) {
+        event.preventDefault();
+        if (!editingTicket || !editForm) return;
+        setEditBusy(true);
+        setError("");
+        setNotice("");
+        try {
+            await ticketApi.update(editingTicket._id, editForm);
+            setNotice(`${editingTicket.ticketId} updated. The Edited badge is now recorded.`);
+            setEditingTicket(null);
+            setEditForm(null);
+            await loadTickets();
+        } catch (err) {
+            if (!handleError(err)) setError(err.message || "Ticket could not be updated.");
+        } finally {
+            setEditBusy(false);
         }
     }
 
@@ -549,6 +585,27 @@ export default function TicketsAdmin() {
                 </div>
             )}
 
+            {editingTicket && editForm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/60 p-4" role="presentation">
+                    <form onSubmit={saveTicketEdits} className="my-auto max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-[#b6dce4] bg-[#f4fbfc] p-5 shadow-2xl sm:p-7" role="dialog" aria-modal="true" aria-labelledby="edit-ticket-title">
+                        <div className="mb-5 flex items-start justify-between gap-4">
+                            <div><p className="text-xs font-bold uppercase tracking-widest text-[#527e8e]">Ticket {editingTicket.ticketId}</p><h2 id="edit-ticket-title" className="mt-1 font-cinzel text-2xl font-black text-[#173f52]">Edit ticket entry</h2><p className="mt-1 text-xs text-[#527e8e]">Saving records who edited this ticket and displays an Edited badge.</p></div>
+                            <button type="button" onClick={() => { setEditingTicket(null); setEditForm(null); }} className="rounded-lg border border-[#b6dce4] bg-white px-3 py-2 text-sm font-bold text-[#376579]" aria-label="Close edit form">Close</button>
+                        </div>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            {[["name", "Full name"], ["email", "Email"], ["phone", "Phone"], ["college", "College / organization"], ["city", "City and state"], ["teamName", "Team name"], ["transactionId", "Transaction ID / UTR"], ["amountPaid", "Amount paid (₹)"], ["checkInDate", "Check-in date"], ["checkOutDate", "Check-out date"]].map(([key, label]) => (
+                                <label key={key} className="block text-xs font-bold text-[#527e8e]">{label}<input required={!['teamName', 'checkInDate', 'checkOutDate'].includes(key)} type={key.includes('Date') ? 'date' : key === 'amountPaid' ? 'number' : key === 'email' ? 'email' : 'text'} min={key === 'amountPaid' ? '0' : undefined} step={key === 'amountPaid' ? '0.01' : undefined} value={editForm[key]} onChange={(event) => setEditForm((current) => ({ ...current, [key]: event.target.value }))} className="mt-1 w-full rounded-lg border border-[#afd6e1] bg-white px-3 py-2.5 text-sm text-[#173f52]" /></label>
+                            ))}
+                            <label className="block text-xs font-bold text-[#527e8e]">Pass type<select required value={editForm.ticketType} onChange={(event) => { const ticketType = event.target.value; setEditForm((current) => ({ ...current, ticketType, accommodationDays: ticketType.startsWith('accom-') ? (Number(current.accommodationDays) || 1).toString() : '0' })); }} className="mt-1 w-full rounded-lg border border-[#afd6e1] bg-white px-3 py-2.5 text-sm font-bold text-[#173f52]">{PASS_TYPES.map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
+                            {editForm.ticketType.startsWith('accom-') && <label className="block text-xs font-bold text-[#527e8e]">Accommodation days<select value={editForm.accommodationDays} onChange={(event) => setEditForm((current) => ({ ...current, accommodationDays: event.target.value }))} className="mt-1 w-full rounded-lg border border-[#afd6e1] bg-white px-3 py-2.5 text-sm font-bold text-[#173f52]">{[1, 2, 3, 4].map((days) => <option key={days} value={days}>{days}</option>)}</select></label>}
+                            {(editForm.ticketType === 'event-elite' || editForm.ticketType === 'accom-elite') && <label className="block text-xs font-bold text-[#527e8e]">T-shirt size<select value={editForm.tshirtSize} onChange={(event) => setEditForm((current) => ({ ...current, tshirtSize: event.target.value }))} className="mt-1 w-full rounded-lg border border-[#afd6e1] bg-white px-3 py-2.5 text-sm font-bold text-[#173f52]">{['', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => <option key={size || 'unset'} value={size}>{size || 'Not set'}</option>)}</select></label>}
+                            {editForm.ticketType.startsWith('accom-') && <label className="block text-xs font-bold text-[#527e8e] sm:col-span-2">Accommodation preferences<textarea rows={2} value={editForm.accommodationPreferences} onChange={(event) => setEditForm((current) => ({ ...current, accommodationPreferences: event.target.value }))} className="mt-1 w-full rounded-lg border border-[#afd6e1] bg-white px-3 py-2.5 text-sm text-[#173f52]" /></label>}
+                        </div>
+                        <div className="mt-6 flex flex-wrap justify-end gap-2"><button type="button" disabled={editBusy} onClick={() => { setEditingTicket(null); setEditForm(null); }} className="rounded-xl border border-[#b6dce4] bg-white px-4 py-2.5 text-sm font-bold text-[#376579]">Cancel</button><button type="submit" disabled={editBusy} className="rounded-xl bg-[#0c5264] px-5 py-2.5 text-sm font-bold text-white disabled:opacity-60">{editBusy ? 'Saving…' : 'Save changes'}</button></div>
+                    </form>
+                </div>
+            )}
+
             <section className="mx-auto mt-6 grid w-full max-w-7xl gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(360px,.8fr)]">
                 <div className="overflow-hidden rounded-2xl border border-white/40 bg-[#e5f5f8] shadow-xl">
                     <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#b6dce4] p-5">
@@ -633,6 +690,11 @@ export default function TicketsAdmin() {
                                                 >
                                                     {ticket.status}
                                                 </span>
+                                                {ticket.editedAt && (
+                                                    <span title={`Edited ${new Date(ticket.editedAt).toLocaleString()}`} className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[10px] font-extrabold uppercase text-violet-800">
+                                                        Edited
+                                                    </span>
+                                                )}
                                             </div>
 
                                             <p className="mt-1 text-sm text-[#527e8e]">
@@ -727,6 +789,12 @@ export default function TicketsAdmin() {
                                             {ticket.verificationRemarks}
                                         </p>
                                     )}
+
+                                    <div className="mt-4">
+                                        <button type="button" disabled={editBusy || Boolean(busyId)} onClick={() => startEditing(ticket)} className="inline-flex items-center gap-2 rounded-xl border border-[#b6dce4] bg-white px-4 py-2 text-sm font-bold text-[#376579] hover:bg-slate-50 disabled:opacity-50">
+                                            <Edit3 size={16} /> Edit ticket
+                                        </button>
+                                    </div>
 
                                     {ticket.status === "Pending" && (
                                         <div className="mt-4 flex flex-wrap gap-2">

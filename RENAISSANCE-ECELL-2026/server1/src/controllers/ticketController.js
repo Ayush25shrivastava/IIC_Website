@@ -209,6 +209,58 @@ export const verifyTicket = async (req, res) => {
   }
 };
 
+export const updateTicket = async (req, res) => {
+  try {
+    const ticket = await Ticket.findById(req.params.id);
+    if (!ticket) return res.status(404).json({ success: false, message: 'Ticket not found' });
+
+    const {
+      name, email, phone, college, city, teamName, ticketType, tshirtSize,
+      accommodationDays, checkInDate, checkOutDate, accommodationPreferences,
+      transactionId, amountPaid,
+    } = req.body;
+    const requiredText = [name, email, phone, college, city, ticketType, transactionId];
+    if (!requiredText.every((value) => typeof value === 'string' && value.trim())) {
+      return res.status(400).json({ success: false, message: 'Name, email, phone, college, city, pass type, and transaction ID are required' });
+    }
+
+    const baseAmount = ticketPrices[ticketType];
+    if (!baseAmount) return res.status(400).json({ success: false, message: 'Invalid ticket type' });
+    const isAccommodation = ticketType.startsWith('accom-');
+    const days = Number(accommodationDays);
+    if (!Number.isInteger(days) || (isAccommodation ? days < 1 || days > 4 : days !== 0)) {
+      return res.status(400).json({ success: false, message: 'Invalid accommodation duration' });
+    }
+    const amount = baseAmount + (isAccommodation ? (days - 1) * 500 : 0);
+    const paid = Number(amountPaid);
+    if (!Number.isFinite(paid) || paid < 0) return res.status(400).json({ success: false, message: 'Amount paid must be a valid non-negative number' });
+
+    ticket.name = name.trim();
+    ticket.email = email.trim().toLowerCase();
+    ticket.phone = phone.trim();
+    ticket.college = college.trim();
+    ticket.city = city.trim();
+    ticket.teamName = typeof teamName === 'string' ? teamName.trim() : '';
+    ticket.ticketType = ticketType;
+    ticket.tshirtSize = tshirtSize || null;
+    ticket.accommodationDays = days;
+    ticket.checkInDate = checkInDate || null;
+    ticket.checkOutDate = checkOutDate || null;
+    ticket.accommodationPreferences = typeof accommodationPreferences === 'string' ? accommodationPreferences.trim() : '';
+    ticket.transactionId = transactionId.trim().toUpperCase();
+    ticket.amount = amount;
+    ticket.amountPaid = paid;
+    ticket.editedAt = new Date();
+    ticket.editedBy = req.admin._id;
+
+    await ticket.save();
+    res.status(200).json({ success: true, message: 'Ticket updated', ticket });
+  } catch (error) {
+    if (error.name === 'ValidationError') return res.status(400).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const getTicketStatus = async (req, res) => {
   try {
     const { ticketId } = req.params;

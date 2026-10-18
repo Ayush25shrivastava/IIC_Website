@@ -1,7 +1,7 @@
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import {
-    purchaseTicket, getAllTickets, verifyTicket, getTicketStatus, scanTicket,
+    purchaseTicket, getAllTickets, verifyTicket, updateTicket, getTicketStatus, scanTicket,
     getTicketStageConfigs, addTicketStage, deleteTicketStage,
 } from '../controllers/ticketController.js';
 import { requireAdminAuth } from '../middleware/admin-auth.js';
@@ -44,6 +44,7 @@ router.post('/admin/stages/:ticketType', requireAdminAuth, requireTrustedOrigin,
 router.delete('/admin/stages/:ticketType/:stageId', requireAdminAuth, requireTrustedOrigin, deleteTicketStage);
 router.get('/admin', requireAdminAuth, getAllTickets);
 
+router.patch('/admin/:id', requireAdminAuth, requireTrustedOrigin, updateTicket);
 router.patch('/admin/:id/verify', requireAdminAuth, requireTrustedOrigin, verifyTicket);
 router.post('/admin/scan', requireAdminAuth, requireTrustedOrigin, scanTicket);
 
