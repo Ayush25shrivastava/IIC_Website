@@ -13,6 +13,7 @@ const PASS_TYPES = [
     ["accom-standard", "Standard Pass + Stay"], ["accom-premium", "Premium Pass + Stay"], ["accom-elite", "Elite Pass + Stay"],
 ];
 const PASS_NAMES = Object.fromEntries(PASS_TYPES);
+const TICKETS_PER_PAGE = 20;
 
 const statusColors = {
     Pending: "border-amber-300 bg-amber-100 text-amber-800",
@@ -70,6 +71,7 @@ export default function TicketsAdmin() {
     const [notice, setNotice] = useState("");
     const [filter, setFilter] = useState("Pending");
     const [search, setSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
     const [stageConfigs, setStageConfigs] = useState({});
     const [passType, setPassType] = useState("event-standard");
     const [stageId, setStageId] = useState("");
@@ -181,6 +183,12 @@ export default function TicketsAdmin() {
             .some((value) => String(value || "").toLowerCase().includes(term));
         return matchesFilter && matchesSearch;
     });
+    const totalPages = Math.max(1, Math.ceil(visibleTickets.length / TICKETS_PER_PAGE));
+    const pageTickets = visibleTickets.slice((currentPage - 1) * TICKETS_PER_PAGE, currentPage * TICKETS_PER_PAGE);
+
+    useEffect(() => {
+        if (currentPage > totalPages) setCurrentPage(totalPages);
+    }, [currentPage, totalPages]);
 
     const counts = {
         Pending: tickets.filter((item) => item.status === "Pending").length,
@@ -210,10 +218,10 @@ export default function TicketsAdmin() {
             <div className="overflow-hidden rounded-2xl border border-white/40 bg-[#e5f5f8] shadow-xl">
                 <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#b6dce4] p-5">
                     <div><p className="text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">Payment reconciliation</p><h2 className="mt-1 font-cinzel text-xl font-bold text-[#173f52]">Submissions <span className="font-sans text-sm text-[#527e8e]">({visibleTickets.length})</span></h2></div>
-                    <div className="flex flex-wrap gap-2"><label className="relative"><Search size={16} className="absolute left-3 top-3 text-[#6396aa]" /><input aria-label="Search tickets" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Name, ID, UTR…" className="w-48 rounded-xl border border-[#afd6e1] bg-white py-2 pl-9 pr-3 text-sm text-[#173f52]" /></label><select aria-label="Filter ticket status" value={filter} onChange={(event) => setFilter(event.target.value)} className="rounded-xl border border-[#afd6e1] bg-white px-3 py-2 text-sm text-[#173f52]"><option>Pending</option><option>Verified</option><option>Rejected</option><option>All</option></select></div>
+                    <div className="flex flex-wrap gap-2"><label className="relative"><Search size={16} className="absolute left-3 top-3 text-[#6396aa]" /><input aria-label="Search tickets" value={search} onChange={(event) => { setSearch(event.target.value); setCurrentPage(1); }} placeholder="Name, ID, UTR…" className="w-48 rounded-xl border border-[#afd6e1] bg-white py-2 pl-9 pr-3 text-sm text-[#173f52]" /></label><select aria-label="Filter ticket status" value={filter} onChange={(event) => { setFilter(event.target.value); setCurrentPage(1); }} className="rounded-xl border border-[#afd6e1] bg-white px-3 py-2 text-sm text-[#173f52]"><option>Pending</option><option>Verified</option><option>Rejected</option><option>All</option></select></div>
                 </div>
                 {loading ? <div role="status" className="flex items-center justify-center gap-2 p-12 text-[#527e8e]"><LoaderCircle className="animate-spin" /> Loading ticket submissions…</div> : visibleTickets.length === 0 ? <p className="p-12 text-center text-sm font-semibold text-[#527e8e]">No tickets match this view.</p> : <div className="divide-y divide-[#b6dce4]">
-                    {visibleTickets.map((ticket) => <article key={ticket._id} className="p-5">
+                    {pageTickets.map((ticket) => <article key={ticket._id} className="p-5">
                         <div className="flex flex-wrap items-start justify-between gap-3"><div><div className="flex flex-wrap items-center gap-2"><h3 className="font-cinzel text-lg font-black text-[#173f52]">{ticket.name}</h3><span className={`rounded-full border px-2.5 py-1 text-[10px] font-extrabold uppercase ${statusColors[ticket.status]}`}>{ticket.status}</span></div><p className="mt-1 text-sm text-[#527e8e]">{ticket.email} · {ticket.phone}</p></div><span className="rounded-lg bg-white px-2.5 py-1 font-mono text-xs font-black text-[#986e24]">{ticket.ticketId}</span></div>
                         <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-3"><div><dt className="text-[#527e8e]">Pass</dt><dd className="font-bold text-[#173f52]">{ticket.ticketType}</dd></div><div><dt className="text-[#527e8e]">Team</dt><dd className="font-bold text-[#173f52]">{ticket.teamName || "—"}</dd></div><div><dt className="text-[#527e8e]">Paid / expected</dt><dd className="font-bold text-[#173f52]">₹{ticket.amountPaid} / ₹{ticket.amount}</dd></div><div><dt className="text-[#527e8e]">Transaction / UTR</dt><dd className="break-all font-mono font-bold text-[#173f52]">{ticket.transactionId}</dd></div><div><dt className="text-[#527e8e]">College · city</dt><dd className="font-semibold text-[#173f52]">{ticket.college} · {ticket.city}</dd></div><div><dt className="text-[#527e8e]">Submitted</dt><dd className="font-semibold text-[#173f52]">{new Date(ticket.createdAt).toLocaleString()}</dd></div></dl>
                         {ticket.verificationRemarks && <p className="mt-3 rounded-lg bg-white/70 p-3 text-xs text-[#527e8e]">Admin note: {ticket.verificationRemarks}</p>}
@@ -221,6 +229,14 @@ export default function TicketsAdmin() {
                         {ticket.status === "Verified" && <div className="mt-4 space-y-3"><p className="text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">Entry by stage</p><StageBadges scans={ticket.stageScans} stages={stageConfigs[ticket.ticketType] || []} /><div className="flex flex-wrap gap-2 pt-1"><button type="button" disabled={Boolean(busyId)} onClick={() => verify(ticket, "Pending")} className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-800 hover:bg-amber-100 disabled:opacity-50"><XCircle size={16} /> Unverify</button><button type="button" disabled={Boolean(busyId)} onClick={() => verify(ticket, "Rejected")} className="rounded-xl border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-bold text-rose-800 hover:bg-rose-100 disabled:opacity-50"><XCircle size={16} /> Reject</button></div></div>}
                         {ticket.status === "Rejected" && <div className="mt-4 flex flex-wrap gap-2"><button type="button" disabled={Boolean(busyId)} onClick={() => verify(ticket, "Pending")} className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-800 hover:bg-amber-100 disabled:opacity-50"><XCircle size={16} /> Undo Reject</button><button type="button" disabled={Boolean(busyId)} onClick={() => verify(ticket, "Verified")} className="rounded-xl bg-emerald-700 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-800 disabled:opacity-50"><Check size={16} /> Verify</button></div>}
                     </article>)}
+                    {visibleTickets.length > TICKETS_PER_PAGE && <nav aria-label="Ticket pages" className="flex flex-wrap items-center justify-between gap-3 border-t border-[#b6dce4] px-5 py-4">
+                        <p className="text-xs font-semibold text-[#527e8e]">Showing {(currentPage - 1) * TICKETS_PER_PAGE + 1}–{Math.min(currentPage * TICKETS_PER_PAGE, visibleTickets.length)} of {visibleTickets.length}</p>
+                        <div className="flex items-center gap-2">
+                            <button type="button" onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} disabled={currentPage === 1} className="rounded-lg border border-[#afd6e1] bg-white px-3 py-2 text-sm font-bold text-[#376579] disabled:cursor-not-allowed disabled:opacity-50">Previous</button>
+                            <span aria-live="polite" className="px-2 text-xs font-bold text-[#527e8e]">Page {currentPage} of {totalPages}</span>
+                            <button type="button" onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))} disabled={currentPage === totalPages} className="rounded-lg border border-[#afd6e1] bg-white px-3 py-2 text-sm font-bold text-[#376579] disabled:cursor-not-allowed disabled:opacity-50">Next</button>
+                        </div>
+                    </nav>}
                 </div>}
             </div>
 
