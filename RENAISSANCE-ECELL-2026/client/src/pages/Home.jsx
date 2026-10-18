@@ -109,62 +109,62 @@ const EVENTS = [
 const CURRENT_SPONSORS =
   SPONSOR_TIERS && SPONSOR_TIERS.length > 0
     ? SPONSOR_TIERS.flatMap((tier) =>
-        tier.sponsors.map((s) => ({
-          ...s,
-          category: s.category || tier.title,
-        }))
-      )
+      tier.sponsors.map((s) => ({
+        ...s,
+        category: s.category || tier.title,
+      }))
+    )
     : [
-        {
-          name: "Formcept",
-          category: "Executive Partner",
-          image: CLOUDINARY_SPONSORS.formcept || "/sponsors/formcept.png",
-          fallbackImage: "/sponsors/formcept.png",
-          description: "Official Executive Partner for Renaissance 2026.",
-        },
-        {
-          name: "Max Protein",
-          category: "Nutrition Partner",
-          image: CLOUDINARY_SPONSORS.maxProtein || "/sponsors/maxprotein.png",
-          fallbackImage: "/sponsors/maxprotein.png",
-          description: "Official Nutrition Partner for Renaissance 2026.",
-        },
-        {
-          name: "Oatey",
-          category: "Refreshment Partner",
-          image: CLOUDINARY_SPONSORS.oatey || "/sponsors/oatey.png",
-          fallbackImage: "/sponsors/oatey.png",
-          description: "Official Refreshment Partner for Renaissance 2026.",
-        },
-        {
-          name: "Safe Express",
-          category: "Supply Chain Partner",
-          image: CLOUDINARY_SPONSORS.safexpress || "/sponsors/safexpress.png",
-          fallbackImage: "/sponsors/safexpress.png",
-          description: "Official Supply Chain Partner for Renaissance 2026.",
-        },
-        {
-          name: "Lotte",
-          category: "Confectionery Partner",
-          image: CLOUDINARY_SPONSORS.lotte || "/sponsors/lotte.png",
-          fallbackImage: "/sponsors/lotte.png",
-          description: "Official Confectionery Partner for Renaissance 2026.",
-        },
-        {
-          name: "Unstop",
-          category: "Platform Partner",
-          image: CLOUDINARY_SPONSORS.unstop || "/sponsors/unstop.png",
-          fallbackImage: "/sponsors/unstop.png",
-          description: "Official Platform Partner for Renaissance 2026.",
-        },
-        {
-          name: "AbhiBus",
-          category: "Travel Partner",
-          image: CLOUDINARY_SPONSORS.abhibus || "/sponsors/abhibus.png",
-          fallbackImage: "/sponsors/abhibus.png",
-          description: "Official Travel Partner for Renaissance 2026.",
-        },
-      ];
+      {
+        name: "Formcept",
+        category: "Executive Partner",
+        image: CLOUDINARY_SPONSORS.formcept || "/sponsors/formcept.png",
+        fallbackImage: "/sponsors/formcept.png",
+        description: "Official Executive Partner for Renaissance 2026.",
+      },
+      {
+        name: "Max Protein",
+        category: "Nutrition Partner",
+        image: CLOUDINARY_SPONSORS.maxProtein || "/sponsors/maxprotein.png",
+        fallbackImage: "/sponsors/maxprotein.png",
+        description: "Official Nutrition Partner for Renaissance 2026.",
+      },
+      {
+        name: "Oatey",
+        category: "Refreshment Partner",
+        image: CLOUDINARY_SPONSORS.oatey || "/sponsors/oatey.png",
+        fallbackImage: "/sponsors/oatey.png",
+        description: "Official Refreshment Partner for Renaissance 2026.",
+      },
+      {
+        name: "Safe Express",
+        category: "Supply Chain Partner",
+        image: CLOUDINARY_SPONSORS.safexpress || "/sponsors/safexpress.png",
+        fallbackImage: "/sponsors/safexpress.png",
+        description: "Official Supply Chain Partner for Renaissance 2026.",
+      },
+      {
+        name: "Lotte",
+        category: "Confectionery Partner",
+        image: CLOUDINARY_SPONSORS.lotte || "/sponsors/lotte.png",
+        fallbackImage: "/sponsors/lotte.png",
+        description: "Official Confectionery Partner for Renaissance 2026.",
+      },
+      {
+        name: "Unstop",
+        category: "Platform Partner",
+        image: CLOUDINARY_SPONSORS.unstop || "/sponsors/unstop.png",
+        fallbackImage: "/sponsors/unstop.png",
+        description: "Official Platform Partner for Renaissance 2026.",
+      },
+      {
+        name: "AbhiBus",
+        category: "Travel Partner",
+        image: CLOUDINARY_SPONSORS.abhibus || "/sponsors/abhibus.png",
+        fallbackImage: "/sponsors/abhibus.png",
+        description: "Official Travel Partner for Renaissance 2026.",
+      },
+    ];
 
 const PAST_SPONSORS = [
   { name: "Paytm Build for India", image: "/sponsors/paytm-build-for-india.png" },
@@ -396,15 +396,15 @@ function FeaturedSpeakersGrid({ speakers }) {
 
 function PremiumSponsorCard({ sponsor }) {
   return (
-    <div className="premium-sponsor-item flex flex-col items-center group w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-      <div className="relative flex h-[180px] sm:h-[200px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-2xl shadow-[0_8px_30px_rgba(12,43,61,0.2)] overflow-hidden">
+    <div className="premium-sponsor-item flex flex-col items-center group w-full max-w-[260px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+      <div className="relative flex h-[135px] sm:h-[150px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-xl shadow-[0_6px_22px_rgba(12,43,61,0.18)] overflow-hidden">
         {/* Subtle glow / oceanic depth */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[180px] h-[180px] bg-white/40 rounded-full blur-[40px]" />
+          <div className="w-[130px] h-[130px] bg-white/40 rounded-full blur-[30px]" />
         </div>
-        
+
         {/* Logo Central Area */}
-        <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105 z-10 p-6">
+        <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105 z-10 p-4">
           {sponsor.image ? (
             <img
               src={getAssetUrl(sponsor.image)}
@@ -416,22 +416,22 @@ function PremiumSponsorCard({ sponsor }) {
                   e.currentTarget.src = fallback;
                 }
               }}
-              className="relative z-10 max-h-[120px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
+              className="relative z-10 max-h-[85px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
             />
           ) : (
-            <span className="text-[#0C2B3D] font-cinzel text-xl font-bold">{sponsor.name}</span>
+            <span className="text-[#0C2B3D] font-cinzel text-base font-bold text-center">{sponsor.name}</span>
           )}
         </div>
       </div>
 
       {/* Sponsor Info Below Card */}
-      <div className="mt-4 text-center">
+      <div className="mt-3 text-center px-1">
         {sponsor.category && (
-          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#C5A25F] font-bold block mb-1">
+          <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#C5A25F] font-bold block mb-1">
             {sponsor.category}
           </span>
         )}
-        <h3 className="font-cinzel text-xl sm:text-2xl font-bold text-[#F4EBD9] tracking-wider transition-colors duration-300 group-hover:text-[#D4AF37]">
+        <h3 className="font-cinzel text-sm sm:text-base font-bold text-[#F4EBD9] tracking-wide transition-colors duration-300 group-hover:text-[#D4AF37] line-clamp-2">
           {sponsor.name}
         </h3>
       </div>
@@ -494,9 +494,9 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
         </h2>
       </div>
 
-      <div 
+      <div
         ref={gridRef}
-        className="mx-auto mt-2 max-w-6xl space-y-6 sm:space-y-8 w-full"
+        className="mx-auto mt-2 max-w-6xl space-y-8 sm:space-y-10 w-full"
       >
         {sponsors.length === 0 ? (
           <div className="flex justify-center w-full">
@@ -507,32 +507,40 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
             </div>
           </div>
         ) : (
-          <>
-            {/* Row 1: 3 sponsors in the first row */}
-            <div className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full">
-              {sponsors.slice(0, 3).map((sponsor, idx) => (
-                <PremiumSponsorCard key={idx} sponsor={sponsor} />
-              ))}
-            </div>
+          (() => {
+            const titleSponsors = sponsors.filter(
+              (s) =>
+                s.category?.toLowerCase().includes("title") ||
+                s.name?.toLowerCase().includes("civil services")
+            );
+            const otherSponsors = sponsors.filter(
+              (s) => !titleSponsors.includes(s)
+            );
 
-            {/* Row 2: 2 sponsors in the second row */}
-            {sponsors.length > 3 && (
-              <div className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full">
-                {sponsors.slice(3, 5).map((sponsor, idx) => (
-                  <PremiumSponsorCard key={idx + 3} sponsor={sponsor} />
-                ))}
-              </div>
-            )}
+            return (
+              <>
+                {/* Title Sponsor on top row alone with same card dimension */}
+                {titleSponsors.length > 0 && (
+                  <div className="flex flex-col items-center w-full">
+                    <div className="flex justify-center w-full max-w-[260px]">
+                      {titleSponsors.map((sponsor, idx) => (
+                        <PremiumSponsorCard key={`title-${idx}`} sponsor={sponsor} />
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            {/* Row 3: Additional sponsors (Unstop & AbhiBus) */}
-            {sponsors.length > 5 && (
-              <div className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full">
-                {sponsors.slice(5).map((sponsor, idx) => (
-                  <PremiumSponsorCard key={idx + 5} sponsor={sponsor} />
-                ))}
-              </div>
-            )}
-          </>
+                {/* Grid of 4 sponsors per row */}
+                {otherSponsors.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 justify-items-center w-full">
+                    {otherSponsors.map((sponsor, idx) => (
+                      <PremiumSponsorCard key={`other-${idx}`} sponsor={sponsor} />
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+          })()
         )}
       </div>
     </section>
@@ -623,7 +631,7 @@ function AccommodationSection() {
     <section className="relative w-full py-20 sm:py-28 px-4 bg-transparent flex flex-col items-center justify-center z-20 select-none overflow-hidden">
       {/* Decorative ambient light */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[200px] bg-[#38BDF8]/10 blur-[100px] pointer-events-none" />
-      
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10 flex flex-col items-center">
         <span className="text-xs sm:text-sm font-mono text-[#E6DFD3] uppercase tracking-[0.25em] font-bold block mb-3 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]">
           Stay With Us

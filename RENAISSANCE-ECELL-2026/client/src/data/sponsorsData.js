@@ -5,6 +5,19 @@ export const SPONSOR_STREAM_ITEMS = [];
 
 export const SPONSOR_TIERS = [
   {
+    id: "title",
+    title: "Title Partner",
+    sponsors: [
+      {
+        name: "Study of Civil Services by Gyan Sir",
+        category: "Title Partner",
+        image: CLOUDINARY_SPONSORS.title || getAssetUrl("/sponsors/studyForCivilServicesByGyanSir.jpeg"),
+        fallbackImage: getAssetUrl("/sponsors/studyForCivilServicesByGyanSir.jpeg"),
+        description: "Official Title Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
     id: "technology",
     title: "Technology Partner",
     sponsors: [
@@ -14,6 +27,19 @@ export const SPONSOR_TIERS = [
         image: CLOUDINARY_SPONSORS.formcept || getAssetUrl("/sponsors/formcept.png"),
         fallbackImage: getAssetUrl("/sponsors/formcept.png"),
         description: "Official Executive Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "ai",
+    title: "AI Partner",
+    sponsors: [
+      {
+        name: "Wayam AI",
+        category: "AI Partner",
+        image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
+        fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
+        description: "Official AI Partner for Renaissance 2026.",
       }
     ],
   },
