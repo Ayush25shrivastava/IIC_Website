@@ -19,7 +19,7 @@ const ticketSchema = new Schema({
   phone: { type: String, required: true },
   college: { type: String, required: true },
   city: { type: String, required: true },
-  teamName: { type: String, required: true, trim: true },
+  teamName: { type: String, trim: true },
 
   ticketType: {
     type: String,

@@ -339,29 +339,22 @@ export default function TicketsAccommodation() {
       if (!formData.checkOutDate.trim()) newErrors.checkOutDate = "Check-out Date is required";
     }
 
-    if (!formData.teamName.trim()) {
-      newErrors.teamName = "Team Name is required";
-    }
+    // Team Name is optional; no validation needed
 
     if (!formData.transactionId.trim()) {
       newErrors.transactionId = "Transaction ID / UTR is required";
     }
 
-    if (!formData.amountPaid.toString().trim()) {
-      newErrors.amountPaid = "Amount Paid is required";
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      if (!formData.teamName.trim()) {
-        alert("Please enter your Team Name");
-      } else if (!formData.transactionId.trim()) {
+      if (!formData.transactionId.trim()) {
         alert("Please enter the Transaction ID / UTR Number");
       } else if (!formData.amountPaid.toString().trim()) {
         alert("Please enter the Amount Paid");
       }
       return;
     }
+
 
     setIsSubmitting(true);
     try {
@@ -1284,7 +1277,7 @@ export default function TicketsAccommodation() {
 
                             <div>
                               <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                                Team Name *
+                                Team Name <span className="normal-case font-normal text-[#2C5263]/70">(optional)</span>
                               </label>
                               <div className="relative">
                                 <Users className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
