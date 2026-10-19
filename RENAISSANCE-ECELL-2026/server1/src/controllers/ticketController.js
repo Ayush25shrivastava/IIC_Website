@@ -39,6 +39,7 @@ function publicTicket(ticket) {
     college: ticket.college,
     city: ticket.city,
     ticketType: ticket.ticketType,
+    tshirtSize: ticket.tshirtSize || null,
     accommodationDays: ticket.accommodationDays,
     amountPaid: ticket.amountPaid,
     status: ticket.status,
@@ -49,7 +50,7 @@ function publicTicket(ticket) {
 export const purchaseTicket = async (req, res) => {
   try {
     const {
-      name, email, phone, college, city, ticketType,
+      name, email, phone, college, city, ticketType, tshirtSize,
       checkInDate, checkOutDate, accommodationPreferences, transactionId, amountPaid,
       accommodationDays = 0,
       teamName,
@@ -82,6 +83,12 @@ export const purchaseTicket = async (req, res) => {
       return res.status(400).json({ success: false, message: `Amount paid must match the selected pass total of ₹${amount}` });
     }
 
+    const isElite = ticketType === 'event-elite' || ticketType === 'accom-elite';
+    const allowedSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    const normalizedTshirtSize = isElite && typeof tshirtSize === 'string' && allowedSizes.includes(tshirtSize.trim().toUpperCase())
+      ? tshirtSize.trim().toUpperCase()
+      : null;
+
     // Duplicate transaction ID check disabled to allow reuse of UTRs
 
     const ticket = new Ticket({
@@ -90,8 +97,9 @@ export const purchaseTicket = async (req, res) => {
       phone: phone.trim(),
       college: college.trim(),
       city: city.trim(),
-      teamName: teamName.trim(),
+      teamName: typeof teamName === 'string' ? teamName.trim() : (teamName || ''),
       ticketType,
+      tshirtSize: normalizedTshirtSize,
       accommodationDays: days,
       checkInDate: checkInDate || null,
       checkOutDate: checkOutDate || null,
@@ -305,6 +313,7 @@ export const getTicketStatus = async (req, res) => {
         college: ticket.college,
         city: ticket.city,
         ticketType: ticket.ticketType,
+        tshirtSize: ticket.tshirtSize || null,
         accommodationDays: ticket.accommodationDays,
         amountPaid: ticket.amountPaid,
         stageScans: ticket.stageScans.map(({ stageId, stageName, stage, scannedAt }) => ({ stageId, stageName, stage, scannedAt })),
