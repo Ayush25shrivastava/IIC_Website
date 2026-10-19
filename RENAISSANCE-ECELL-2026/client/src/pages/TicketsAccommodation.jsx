@@ -187,6 +187,8 @@ const TICKET_OPTIONS = [
 export default function TicketsAccommodation() {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [soldOutPasses, setSoldOutPasses] = useState({});
+  const [availabilityMessage, setAvailabilityMessage] = useState("");
   const [accommodationDays, setAccommodationDays] = useState(1);
   const [showForm, setShowForm] = useState(false);
 
@@ -218,6 +220,17 @@ export default function TicketsAccommodation() {
   const [downloadError, setDownloadError] = useState("");
   const prefersReducedMotion = useReducedMotion();
   const heroRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    ticketApi.availability()
+      .then((data) => {
+        if (!active) return;
+        setSoldOutPasses(Object.fromEntries((data.configs || []).map((config) => [config.ticketType, Boolean(config.soldOut)])));
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
 
   const { scrollYProgress: heroScrollProgress } = useScroll({
     target: heroRef,
@@ -258,6 +271,7 @@ export default function TicketsAccommodation() {
     : 0;
 
   const handleSelectTicket = (id) => {
+    setAvailabilityMessage("");
     if (selectedTicket === id) {
       setSelectedTicket(null);
       setFormData((prev) => ({ ...prev, amountPaid: "" }));
@@ -303,6 +317,11 @@ export default function TicketsAccommodation() {
 
   const handleContinue = () => {
     if (selectedTicket) {
+      if (soldOutPasses[selectedTicket]) {
+        setAvailabilityMessage("This pass is sold out. Please try another pass.");
+        return;
+      }
+      setAvailabilityMessage("");
       const option = TICKET_OPTIONS.find((t) => t.id === selectedTicket);
       if (option) {
         const days = option.includesAccommodation ? accommodationDays : 1;
@@ -338,6 +357,12 @@ export default function TicketsAccommodation() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    if (soldOutPasses[selectedTicket]) {
+      setShowForm(false);
+      setAvailabilityMessage("This pass is sold out. Please try another pass.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Full Name is required";
     if (!formData.email.trim() || !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "Valid Email is required";
@@ -393,7 +418,13 @@ export default function TicketsAccommodation() {
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
-      alert(error.message || "An error occurred");
+      if (error.code === "PASS_SOLD_OUT" || error.message?.toLowerCase().includes("sold out")) {
+        setShowForm(false);
+        setAvailabilityMessage(error.message || "This pass is sold out. Please try another pass.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        alert(error.message || "An error occurred");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -571,6 +602,11 @@ export default function TicketsAccommodation() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
+              {availabilityMessage && (
+                <p role="alert" className="mb-6 rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-center text-sm font-bold text-rose-800">
+                  {availabilityMessage}
+                </p>
+              )}
               {submittedTicketId && (
                 <div className="mb-10 p-6 bg-[#E8F5E9] border-2 border-[#4CAF50] rounded-2xl flex flex-col items-center text-center shadow-lg">
                   <CheckCircle2 className="w-12 h-12 text-[#4CAF50] mb-3" />
@@ -872,6 +908,7 @@ export default function TicketsAccommodation() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
                 {filteredOptions.map((option, idx) => {
                   const isSelected = selectedTicket === option.id;
+                  const isSoldOut = soldOutPasses[option.id];
 
                   return (
                     <motion.div
@@ -900,6 +937,7 @@ export default function TicketsAccommodation() {
                           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-wider bg-[#0C2B3D] text-[#E5C378]">
                             {option.badge}
                           </span>
+                          {isSoldOut && <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-wider bg-rose-700 text-white">Sold Out</span>}
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-wider bg-[#9E6D1F]/20 text-[#8A5F1C] border border-[#9E6D1F]/30">
                             Early Bird · ₹{option.discount} OFF
                           </span>

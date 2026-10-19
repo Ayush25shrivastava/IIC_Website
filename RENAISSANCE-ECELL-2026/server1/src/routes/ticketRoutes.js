@@ -3,6 +3,7 @@ import { rateLimit } from 'express-rate-limit';
 import {
     purchaseTicket, getAllTickets, verifyTicket, updateTicket, getTicketStatus, scanTicket,
     getTicketStageConfigs, addTicketStage, deleteTicketStage,
+    setTicketSoldOut,
 } from '../controllers/ticketController.js';
 import { requireAdminAuth } from '../middleware/admin-auth.js';
 import { requireTrustedOrigin } from '../middleware/trusted-origin.js';
@@ -27,6 +28,7 @@ const router = express.Router();
 
 // Public route to purchase a ticket
 router.post('/purchase', purchaseTicket);
+router.get('/availability', getTicketStageConfigs);
 
 // Public route to get ticket status
 router.get('/status/:ticketId', getTicketStatus);
@@ -40,6 +42,7 @@ router.post('/volunteer/scan', requireVolunteerScanner, requireTrustedOrigin, sc
 
 // Admin routes use the same cookie-backed session as the current command center.
 router.get('/admin/stages', requireAdminAuth, getTicketStageConfigs);
+router.patch('/admin/availability/:ticketType', requireAdminAuth, requireTrustedOrigin, setTicketSoldOut);
 router.post('/admin/stages/:ticketType', requireAdminAuth, requireTrustedOrigin, addTicketStage);
 router.delete('/admin/stages/:ticketType/:stageId', requireAdminAuth, requireTrustedOrigin, deleteTicketStage);
 router.get('/admin', requireAdminAuth, getAllTickets);

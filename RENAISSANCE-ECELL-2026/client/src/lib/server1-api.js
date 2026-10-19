@@ -301,9 +301,11 @@ export const adminApi = {
 
 export const ticketApi = {
   purchase: (body) => request("/tickets/purchase", { method: "POST", body }, null, false, API_ROOT_URL),
+  availability: () => request("/tickets/availability", {}, null, false, API_ROOT_URL),
   status: (ticketId) => request(`/tickets/status/${encodeURIComponent(ticketId)}`, {}, null, false, API_ROOT_URL),
   adminList: () => request("/tickets/admin", {}, "admin", true, API_ROOT_URL),
   stageConfigs: () => request("/tickets/admin/stages", {}, "admin", true, API_ROOT_URL),
+  setSoldOut: (ticketType, soldOut) => request(`/tickets/admin/availability/${encodeURIComponent(ticketType)}`, { method: "PATCH", body: { soldOut } }, "admin", true, API_ROOT_URL),
   addStage: (ticketType, name) => request(`/tickets/admin/stages/${encodeURIComponent(ticketType)}`, { method: "POST", body: { name } }, "admin", true, API_ROOT_URL),
   deleteStage: (ticketType, stageId) => request(`/tickets/admin/stages/${encodeURIComponent(ticketType)}/${encodeURIComponent(stageId)}`, { method: "DELETE" }, "admin", true, API_ROOT_URL),
   verify: (id, body) => request(`/tickets/admin/${encodeURIComponent(id)}/verify`, { method: "PATCH", body }, "admin", true, API_ROOT_URL),
