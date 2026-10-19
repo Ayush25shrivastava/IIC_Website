@@ -109,62 +109,62 @@ const EVENTS = [
 const CURRENT_SPONSORS =
   SPONSOR_TIERS && SPONSOR_TIERS.length > 0
     ? SPONSOR_TIERS.flatMap((tier) =>
-        tier.sponsors.map((s) => ({
-          ...s,
-          category: s.category || tier.title,
-        }))
-      )
+      tier.sponsors.map((s) => ({
+        ...s,
+        category: s.category || tier.title,
+      }))
+    )
     : [
-        {
-          name: "Formcept",
-          category: "Technology Partner",
-          image: CLOUDINARY_SPONSORS.formcept || "/sponsors/formcept.png",
-          fallbackImage: "/sponsors/formcept.png",
-          description: "Official Technology Partner for Renaissance 2026.",
-        },
-        {
-          name: "Max Protein",
-          category: "Nutrition Partner",
-          image: CLOUDINARY_SPONSORS.maxProtein || "/sponsors/maxprotein.png",
-          fallbackImage: "/sponsors/maxprotein.png",
-          description: "Official Nutrition Partner for Renaissance 2026.",
-        },
-        {
-          name: "Oatey",
-          category: "Refreshment Partner",
-          image: CLOUDINARY_SPONSORS.oatey || "/sponsors/oatey.png",
-          fallbackImage: "/sponsors/oatey.png",
-          description: "Official Refreshment Partner for Renaissance 2026.",
-        },
-        {
-          name: "Safe Express",
-          category: "Supply Chain Partner",
-          image: CLOUDINARY_SPONSORS.safexpress || "/sponsors/safexpress.png",
-          fallbackImage: "/sponsors/safexpress.png",
-          description: "Official Supply Chain Partner for Renaissance 2026.",
-        },
-        {
-          name: "Lotte",
-          category: "Confectionery Partner",
-          image: CLOUDINARY_SPONSORS.lotte || "/sponsors/lotte.png",
-          fallbackImage: "/sponsors/lotte.png",
-          description: "Official Confectionery Partner for Renaissance 2026.",
-        },
-        {
-          name: "Unstop",
-          category: "Platform Partner",
-          image: CLOUDINARY_SPONSORS.unstop || "/sponsors/unstop.png",
-          fallbackImage: "/sponsors/unstop.png",
-          description: "Official Platform Partner for Renaissance 2026.",
-        },
-        {
-          name: "AbhiBus",
-          category: "Travel Partner",
-          image: CLOUDINARY_SPONSORS.abhibus || "/sponsors/abhibus.png",
-          fallbackImage: "/sponsors/abhibus.png",
-          description: "Official Travel Partner for Renaissance 2026.",
-        },
-      ];
+      {
+        name: "Formcept",
+        category: "Executive Partner",
+        image: CLOUDINARY_SPONSORS.formcept || "/sponsors/formcept.png",
+        fallbackImage: "/sponsors/formcept.png",
+        description: "Official Executive Partner for Renaissance 2026.",
+      },
+      {
+        name: "Max Protein",
+        category: "Nutrition Partner",
+        image: CLOUDINARY_SPONSORS.maxProtein || "/sponsors/maxprotein.png",
+        fallbackImage: "/sponsors/maxprotein.png",
+        description: "Official Nutrition Partner for Renaissance 2026.",
+      },
+      {
+        name: "Oatey",
+        category: "Refreshment Partner",
+        image: CLOUDINARY_SPONSORS.oatey || "/sponsors/oatey.png",
+        fallbackImage: "/sponsors/oatey.png",
+        description: "Official Refreshment Partner for Renaissance 2026.",
+      },
+      {
+        name: "Safe Express",
+        category: "Supply Chain Partner",
+        image: CLOUDINARY_SPONSORS.safexpress || "/sponsors/safexpress.png",
+        fallbackImage: "/sponsors/safexpress.png",
+        description: "Official Supply Chain Partner for Renaissance 2026.",
+      },
+      {
+        name: "Lotte",
+        category: "Confectionery Partner",
+        image: CLOUDINARY_SPONSORS.lotte || "/sponsors/lotte.png",
+        fallbackImage: "/sponsors/lotte.png",
+        description: "Official Confectionery Partner for Renaissance 2026.",
+      },
+      {
+        name: "Unstop",
+        category: "Platform Partner",
+        image: CLOUDINARY_SPONSORS.unstop || "/sponsors/unstop.png",
+        fallbackImage: "/sponsors/unstop.png",
+        description: "Official Platform Partner for Renaissance 2026.",
+      },
+      {
+        name: "AbhiBus",
+        category: "Travel Partner",
+        image: CLOUDINARY_SPONSORS.abhibus || "/sponsors/abhibus.png",
+        fallbackImage: "/sponsors/abhibus.png",
+        description: "Official Travel Partner for Renaissance 2026.",
+      },
+    ];
 
 const PAST_SPONSORS = [
   { name: "Paytm Build for India", image: "/sponsors/paytm-build-for-india.png" },
@@ -207,7 +207,8 @@ function FeaturedSpeakersGrid({ speakers }) {
 
     let animationFrameId;
     let lastTime = performance.now();
-    const speed = 85; // Faster, responsive glide
+    // Smooth continuous glide speed (pixels per second)
+    const speed = 75;
     let direction = 1;
     let pauseUntil = 0;
 
@@ -219,15 +220,15 @@ function FeaturedSpeakersGrid({ speakers }) {
         if (currentTime >= pauseUntil) {
           const maxScroll = container.scrollWidth - container.clientWidth;
 
-          if (maxScroll > 10) {
+          if (maxScroll > 5) {
             container.scrollLeft += speed * deltaTime * direction;
 
-            if (container.scrollLeft >= maxScroll - 4 && direction === 1) {
+            if (container.scrollLeft >= maxScroll - 2 && direction === 1) {
               direction = -1;
-              pauseUntil = currentTime + 1200; // Pause briefly at the right boundary
-            } else if (container.scrollLeft <= 4 && direction === -1) {
+              pauseUntil = currentTime + 800; // brief natural pause at right edge
+            } else if (container.scrollLeft <= 2 && direction === -1) {
               direction = 1;
-              pauseUntil = currentTime + 1200; // Pause briefly at the left boundary
+              pauseUntil = currentTime + 800; // brief natural pause at left edge
             }
           }
         }
@@ -239,6 +240,24 @@ function FeaturedSpeakersGrid({ speakers }) {
     animationFrameId = requestAnimationFrame(scrollStep);
     return () => cancelAnimationFrame(animationFrameId);
   }, [speakers]);
+
+  // Horizontal mouse wheel support for smooth manual scrolling
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const onWheel = (e) => {
+      // If user scrolls horizontally or vertically inside speaker section, allow manual horizontal scrolling
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && Math.abs(e.deltaY) > 5) {
+        container.scrollLeft += e.deltaY;
+      } else if (Math.abs(e.deltaX) > 0) {
+        container.scrollLeft += e.deltaX;
+      }
+    };
+
+    container.addEventListener("wheel", onWheel, { passive: true });
+    return () => container.removeEventListener("wheel", onWheel);
+  }, []);
 
   const handleMouseDown = (e) => {
     if (!scrollRef.current) return;
@@ -288,7 +307,7 @@ function FeaturedSpeakersGrid({ speakers }) {
 
       {/* Seamless Edge-Feathered Container Mask */}
       <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)]">
-        {/* Horizontal Carousel (Faster auto-scroll, pauses on hover / drag, no duplicates) */}
+        {/* Horizontal Carousel (Smooth auto-scroll, pauses on hover / drag / wheel, full manual scroll support) */}
         <div
           ref={scrollRef}
           onMouseEnter={() => {
@@ -304,13 +323,13 @@ function FeaturedSpeakersGrid({ speakers }) {
           onTouchEnd={() => {
             isPausedRef.current = false;
           }}
-          className="flex overflow-x-auto overflow-y-hidden gap-6 sm:gap-8 px-8 sm:px-16 lg:px-24 py-8 cursor-grab active:cursor-grabbing no-scrollbar scroll-smooth"
+          className="flex overflow-x-auto overflow-y-hidden gap-6 sm:gap-8 px-8 sm:px-16 lg:px-24 py-8 cursor-grab active:cursor-grabbing no-scrollbar"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {speakers.map((speaker, idx) => (
             <div
               key={speaker.id || idx}
-              className="flex-shrink-0 w-[285px] sm:w-[305px] md:w-[325px] h-[475px] snap-center select-none group relative"
+              className="flex-shrink-0 w-[285px] sm:w-[305px] md:w-[325px] h-[455px] snap-center select-none group relative"
             >
               {/* Small Ship's Wheel Emblem at Top Middle of the Box */}
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
@@ -324,7 +343,7 @@ function FeaturedSpeakersGrid({ speakers }) {
               <div className="w-full h-full bg-[#020b14]/85 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/15 hover:border-[#D4AF37] transition-all duration-300 shadow-[0_20px_45px_rgba(0,0,0,0.85)] hover:shadow-[0_0_35px_rgba(212,175,55,0.4)] hover:-translate-y-2 flex flex-col justify-between relative">
                 <div className="flex flex-col flex-1">
                   {/* Speaker Portrait */}
-                  <div className="w-full h-56 sm:h-60 rounded-xl overflow-hidden relative shadow-[0_12px_28px_rgba(0,0,0,0.8)] border border-white/10 group-hover:border-[#D4AF37]/50 bg-[#020b14] mb-3 shrink-0">
+                  <div className="w-full h-56 sm:h-60 rounded-xl overflow-hidden relative shadow-[0_12px_28px_rgba(0,0,0,0.8)] border border-white/10 group-hover:border-[#D4AF37]/50 bg-[#020b14] mb-4 shrink-0">
                     <img
                       src={speaker.image}
                       alt={speaker.name}
@@ -335,21 +354,8 @@ function FeaturedSpeakersGrid({ speakers }) {
                     <div className="absolute inset-0 bg-gradient-to-t from-[#020b14]/90 via-transparent to-transparent pointer-events-none" />
                   </div>
 
-                  {/* Alumni / Speaker Category Slot (Strictly Fixed Height) */}
-                  <div className="h-5 flex items-center mb-1">
-                    {speaker.alumni ? (
-                      <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.2em] text-[#D4AF37] uppercase drop-shadow-sm truncate">
-                        {speaker.alumni}
-                      </span>
-                    ) : (
-                      <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.2em] text-[#D4AF37]/80 uppercase drop-shadow-sm truncate">
-                        Keynote Speaker
-                      </span>
-                    )}
-                  </div>
-
                   {/* Speaker Name (Strictly Fixed Height) */}
-                  <div className="h-7 flex items-center mb-1">
+                  <div className="h-7 flex items-center mb-1.5">
                     <h3 className="font-cinzel text-lg sm:text-xl font-bold text-white tracking-tight leading-tight group-hover:text-[#D4AF37] transition-colors line-clamp-1 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
                       {speaker.name}
                     </h3>
@@ -390,15 +396,15 @@ function FeaturedSpeakersGrid({ speakers }) {
 
 function PremiumSponsorCard({ sponsor }) {
   return (
-    <div className="premium-sponsor-item flex flex-col items-center group w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-      <div className="relative flex h-[180px] sm:h-[200px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-2xl shadow-[0_8px_30px_rgba(12,43,61,0.2)] overflow-hidden">
+    <div className="premium-sponsor-item flex flex-col items-center group w-full max-w-[260px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+      <div className="relative flex h-[135px] sm:h-[150px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-xl shadow-[0_6px_22px_rgba(12,43,61,0.18)] overflow-hidden">
         {/* Subtle glow / oceanic depth */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[180px] h-[180px] bg-white/40 rounded-full blur-[40px]" />
+          <div className="w-[130px] h-[130px] bg-white/40 rounded-full blur-[30px]" />
         </div>
-        
+
         {/* Logo Central Area */}
-        <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105 z-10 p-6">
+        <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105 z-10 p-4">
           {sponsor.image ? (
             <img
               src={getAssetUrl(sponsor.image)}
@@ -410,22 +416,22 @@ function PremiumSponsorCard({ sponsor }) {
                   e.currentTarget.src = fallback;
                 }
               }}
-              className="relative z-10 max-h-[120px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
+              className="relative z-10 max-h-[85px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
             />
           ) : (
-            <span className="text-[#0C2B3D] font-cinzel text-xl font-bold">{sponsor.name}</span>
+            <span className="text-[#0C2B3D] font-cinzel text-base font-bold text-center">{sponsor.name}</span>
           )}
         </div>
       </div>
 
       {/* Sponsor Info Below Card */}
-      <div className="mt-4 text-center">
+      <div className="mt-3 text-center px-1">
         {sponsor.category && (
-          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#C5A25F] font-bold block mb-1">
+          <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#C5A25F] font-bold block mb-1">
             {sponsor.category}
           </span>
         )}
-        <h3 className="font-cinzel text-xl sm:text-2xl font-bold text-[#F4EBD9] tracking-wider transition-colors duration-300 group-hover:text-[#D4AF37]">
+        <h3 className="font-cinzel text-sm sm:text-base font-bold text-[#F4EBD9] tracking-wide transition-colors duration-300 group-hover:text-[#D4AF37] line-clamp-2">
           {sponsor.name}
         </h3>
       </div>
@@ -488,9 +494,9 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
         </h2>
       </div>
 
-      <div 
+      <div
         ref={gridRef}
-        className="mx-auto mt-2 max-w-6xl space-y-6 sm:space-y-8 w-full"
+        className="mx-auto mt-2 max-w-6xl space-y-8 sm:space-y-10 w-full"
       >
         {sponsors.length === 0 ? (
           <div className="flex justify-center w-full">
@@ -501,32 +507,40 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
             </div>
           </div>
         ) : (
-          <>
-            {/* Row 1: 3 sponsors in the first row */}
-            <div className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full">
-              {sponsors.slice(0, 3).map((sponsor, idx) => (
-                <PremiumSponsorCard key={idx} sponsor={sponsor} />
-              ))}
-            </div>
+          (() => {
+            const titleSponsors = sponsors.filter(
+              (s) =>
+                s.category?.toLowerCase().includes("title") ||
+                s.name?.toLowerCase().includes("civil services")
+            );
+            const otherSponsors = sponsors.filter(
+              (s) => !titleSponsors.includes(s)
+            );
 
-            {/* Row 2: 2 sponsors in the second row */}
-            {sponsors.length > 3 && (
-              <div className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full">
-                {sponsors.slice(3, 5).map((sponsor, idx) => (
-                  <PremiumSponsorCard key={idx + 3} sponsor={sponsor} />
-                ))}
-              </div>
-            )}
+            return (
+              <>
+                {/* Title Sponsor on top row alone with same card dimension */}
+                {titleSponsors.length > 0 && (
+                  <div className="flex flex-col items-center w-full">
+                    <div className="flex justify-center w-full max-w-[260px]">
+                      {titleSponsors.map((sponsor, idx) => (
+                        <PremiumSponsorCard key={`title-${idx}`} sponsor={sponsor} />
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            {/* Row 3: Additional sponsors (Unstop & AbhiBus) */}
-            {sponsors.length > 5 && (
-              <div className="flex flex-wrap items-stretch justify-center gap-6 sm:gap-8 w-full">
-                {sponsors.slice(5).map((sponsor, idx) => (
-                  <PremiumSponsorCard key={idx + 5} sponsor={sponsor} />
-                ))}
-              </div>
-            )}
-          </>
+                {/* Grid of 4 sponsors per row */}
+                {otherSponsors.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 justify-items-center w-full">
+                    {otherSponsors.map((sponsor, idx) => (
+                      <PremiumSponsorCard key={`other-${idx}`} sponsor={sponsor} />
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+          })()
         )}
       </div>
     </section>
@@ -617,7 +631,7 @@ function AccommodationSection() {
     <section className="relative w-full py-20 sm:py-28 px-4 bg-transparent flex flex-col items-center justify-center z-20 select-none overflow-hidden">
       {/* Decorative ambient light */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[200px] bg-[#38BDF8]/10 blur-[100px] pointer-events-none" />
-      
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10 flex flex-col items-center">
         <span className="text-xs sm:text-sm font-mono text-[#E6DFD3] uppercase tracking-[0.25em] font-bold block mb-3 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]">
           Stay With Us
@@ -1047,7 +1061,26 @@ export default function Home() {
       </section>
 
       {/* ============================================================ */}
-      {/* 3. FEATURED EVENTS SECTION                                  */}
+      {/* 3. CURRENT SPONSORS SECTION                                  */}
+      {/* ============================================================ */}
+      <PremiumSponsorsGrid
+        title="Current Sponsors"
+        subtitle="Industry & Innovation Partners"
+        sponsors={CURRENT_SPONSORS}
+      />
+
+      {/* ============================================================ */}
+      {/* 4. KEYNOTE SPEAKERS SECTION                                  */}
+      {/* ============================================================ */}
+      <FeaturedSpeakersGrid speakers={SPEAKERS} />
+
+      {/* ============================================================ */}
+      {/* 5. ACCOMMODATION SECTION                                     */}
+      {/* ============================================================ */}
+      <AccommodationSection />
+
+      {/* ============================================================ */}
+      {/* 6. FEATURED EVENTS SECTION                                   */}
       {/* ============================================================ */}
       <section
         id="events"
@@ -1175,24 +1208,8 @@ export default function Home() {
       </section>
 
       {/* ============================================================ */}
-      {/* 6. KEYNOTE SPEAKERS SECTION (FULL SCREEN UNPINNED SCRUB GRID)*/}
+      {/* 7. PAST SPONSORS SECTION                                     */}
       {/* ============================================================ */}
-      {/* ============================================================ */}
-      {/* 6. KEYNOTE SPEAKERS SECTION */}
-      <FeaturedSpeakersGrid speakers={SPEAKERS} />
-
-      {/* ============================================================ */}
-      {/* 6.5. ACCOMMODATION SECTION                                   */}
-      {/* ============================================================ */}
-      <AccommodationSection />
-
-      {/* ============================================================ */}
-      {/* 7. SPONSORS SECTION                                          */}
-      <PremiumSponsorsGrid
-        title="Current Sponsors"
-        subtitle="Industry & Innovation Partners"
-        sponsors={CURRENT_SPONSORS}
-      />
       <StaggeredSponsorsGrid
         title="Past Sponsors"
         subtitle="Pioneers & Legacy Partners"

@@ -76,6 +76,7 @@ html.lenis body {
     0% {
         transform: translateX(-50%);
     }
+
     100% {
         transform: translateX(0);
     }
@@ -85,7 +86,8 @@ html.lenis body {
     animation: scroll-reverse 15s linear infinite;
 }
 
-.animate-scroll:hover, .animate-scroll-reverse:hover {
+.animate-scroll:hover,
+.animate-scroll-reverse:hover {
     animation-play-state: paused;
 }
 
@@ -97,10 +99,15 @@ html.lenis body {
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
+    0% {
+        transform: translateX(0%);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
 .animate-marquee {
-  animation: marquee 14s linear infinite;
+    animation: marquee 14s linear infinite;
 }

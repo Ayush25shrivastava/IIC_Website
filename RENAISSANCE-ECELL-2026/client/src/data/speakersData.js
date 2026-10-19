@@ -2,25 +2,50 @@ import { getAssetUrl } from "../utils/assetUrl";
 
 export const SPEAKERS_DATA = [
   {
+    id: "gyan-prakash-mishra",
+    name: "Gyan Prakash Mishra",
+    title: "Founder of study for civil services & Gyan's Podcast",
+    image: getAssetUrl("/speakers/gyan-prakash-mishra.jpg"),
+    linkedin: "https://www.linkedin.com/in/gyan-prakash-mishra-27bb6633/",
+  },
+  {
+    id: "rhitiman-majumder",
+    name: "Rhitiman Majumder",
+    title: "Business Professional, ISB I-Venture | Entrepreneurship & Innovation Expert",
+    image: getAssetUrl("/speakers/rhitiman-majumder.png"),
+    linkedin: "https://in.linkedin.com/in/rhitiman-majumder-5a0a3b21",
+  },
+  {
     id: "uday-nadiwade",
     name: "Uday Nadiwade",
-    alumni: "Alumni - 1990, ME",
     title: "Business & Management Professional | Global Trade Expert",
     image: getAssetUrl("/speakers/uday-nadiwade.png"),
     linkedin: "https://www.linkedin.com/in/udaynadiwade/",
   },
   {
+    id: "ajitesh-gupta",
+    name: "Ajitesh Gupta",
+    title: "Co-Founder & CEO, Crowwd | FinTech & Wealth-Tech Entrepreneur",
+    image: getAssetUrl("/speakers/ajitesh-gupta.png"),
+    linkedin: "https://www.linkedin.com/in/ajiteshgupta1",
+  },
+  {
     id: "shreya-krishnan",
     name: "Shreya Krishnan",
-    alumni: null,
     title: "MD – India, AnitaB.org | Marketing & Leadership Professional",
     image: getAssetUrl("/speakers/shreya-krishnan.jpg"),
     linkedin: "https://www.linkedin.com/in/shreya-krishnan-3190098/",
   },
   {
+    id: "vineet-shukla",
+    name: "Vineet Shukla",
+    title: "Co-founder, Wayyam ai",
+    image: getAssetUrl("/speakers/vineet-shukla.png"),
+    linkedin: "https://www.linkedin.com/in/shuklavineet/",
+  },
+  {
     id: "awantik-das",
     name: "Awantik Das",
-    alumni: "Alumni - 2007, CSE",
     title: "Founder, Ed Yoda",
     image: getAssetUrl("/speakers/awantik-das.jpg"),
     linkedin: "https://www.linkedin.com/in/awantik/",
@@ -28,33 +53,8 @@ export const SPEAKERS_DATA = [
   {
     id: "sasikanth-r",
     name: "Sasikanth R",
-    alumni: "Alumni - 1991, EEE",
     title: "Business Strategist | AI Consultant | Startup Mentor",
     image: getAssetUrl("/speakers/sasikanth-r.png"),
     linkedin: "https://www.linkedin.com/in/sasikanthr/",
-  },
-  {
-    id: "rhitiman-majumder",
-    name: "Rhitiman Majumder",
-    alumni: "Alumni - 2010, ECE",
-    title: "Business Professional, ISB I-Venture | Entrepreneurship & Innovation Expert",
-    image: getAssetUrl("/speakers/rhitiman-majumder.png"),
-    linkedin: "https://in.linkedin.com/in/rhitiman-majumder-5a0a3b21",
-  },
-  {
-    id: "vineet-shukla",
-    name: "Vineet Shukla",
-    alumni: "Alumni - 1999, ECE",
-    title: "Co-founder, Wayyam ai",
-    image: getAssetUrl("/speakers/vineet-shukla.png"),
-    linkedin: "https://www.linkedin.com/in/shuklavineet/",
-  },
-  {
-    id: "ajitesh-gupta",
-    name: "Ajitesh Gupta",
-    alumni: null,
-    title: "Co-Founder & CEO, Crowwd | FinTech & Wealth-Tech Entrepreneur",
-    image: getAssetUrl("/speakers/ajitesh-gupta.png"),
-    linkedin: "https://www.linkedin.com/in/ajiteshgupta1",
-  },
+  }
 ];

@@ -66,7 +66,7 @@ export default function Sponsors({ embedded = false }) {
                 Boat thing REMOVED
       ============================================================ */}
       {!embedded && (
-        <section className="relative z-10 min-h-[82vh] overflow-hidden">
+        <section className="relative z-10 min-h-[50vh] overflow-hidden">
           {/* Previous Ocean Background Image with animation kept */}
           <div className="absolute inset-0">
             <img
@@ -78,18 +78,19 @@ export default function Sponsors({ embedded = false }) {
             />
 
             {/* Subtle marine depth tint */}
-            <div className="absolute inset-0 bg-[#062538]/20 mix-blend-multiply" />            {/* Bright oceanic sea wash */}
+            <div className="absolute inset-0 bg-[#062538]/20 mix-blend-multiply" />
+            {/* Bright oceanic sea wash */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#D2E9ED]/30 via-transparent to-[#DFECEE]/95" />
 
             {/* Soft oceanic morning wash */}
             <div className="absolute left-0 top-0 h-full w-[72%] bg-gradient-to-r from-[#DFECEE]/92 via-[#DFECEE]/50 to-transparent" />
 
             {/* Bottom oceanic blend into the page */}
-            <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#DFECEE] via-[#DFECEE]/85 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#DFECEE] via-[#DFECEE]/85 to-transparent" />
           </div>
 
           {/* Decorative horizon line */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-[17%] z-[2]">
+          <div className="pointer-events-none absolute inset-x-0 bottom-[12%] z-[2]">
             <div className="h-px w-full bg-gradient-to-r from-transparent via-[#5FA5B5]/45 to-transparent" />
           </div>
 
@@ -102,19 +103,18 @@ export default function Sponsors({ embedded = false }) {
               z-10
               mx-auto
               flex
-              min-h-[82vh]
+              min-h-[50vh]
               max-w-[1500px]
               items-center
               px-6
-              pb-20
-              pt-32
+              py-16
               sm:px-10
               lg:px-16
             "
           >
             <div className="max-w-3xl">
               {/* Eyebrow */}
-              <div className="mb-7 flex items-center gap-4">
+              <div className="mb-4 flex items-center gap-4">
                 <span className="h-px w-12 bg-[#125D73]" />
                 <span
                   className="
@@ -139,14 +139,13 @@ export default function Sponsors({ embedded = false }) {
               <h1
                 className="
                   font-cinzel
-                  text-5xl
+                  text-3xl
                   font-extrabold
                   leading-[1.1]
                   tracking-wider
                   text-[#0C2B3D]
-                  sm:text-6xl
-                  lg:text-7xl
-                  xl:text-[80px]
+                  sm:text-5xl
+                  lg:text-6xl
                 "
               >
                 THE ALLIES
@@ -158,13 +157,13 @@ export default function Sponsors({ embedded = false }) {
 
               <p
                 className="
-                  mt-8
+                  mt-4
                   max-w-xl
                   font-montserrat
-                  text-sm
+                  text-xs
                   leading-relaxed
                   text-[#1D4A5E]
-                  sm:text-base
+                  sm:text-sm
                 "
               >
                 Great journeys are never sailed alone. Meet the organizations,
@@ -173,7 +172,7 @@ export default function Sponsors({ embedded = false }) {
               </p>
 
               {/* Aesthetic secondary line */}
-              <div className="mt-12 flex items-center gap-5 opacity-70">
+              <div className="mt-6 flex items-center gap-5 opacity-70">
                 <div className="h-px w-24 bg-gradient-to-r from-transparent to-[#125D73]" />
                 <span
                   className="
@@ -197,7 +196,7 @@ export default function Sponsors({ embedded = false }) {
               sponsor-compass-slow
               pointer-events-none
               absolute
-              bottom-[13%]
+              bottom-[10%]
               right-[7%]
               z-[3]
               hidden
@@ -206,7 +205,7 @@ export default function Sponsors({ embedded = false }) {
             "
           >
             <Compass
-              className="h-48 w-48 text-[#144F63]"
+              className="h-36 w-36 text-[#144F63]"
               strokeWidth={0.7}
             />
           </div>
@@ -216,7 +215,7 @@ export default function Sponsors({ embedded = false }) {
             className="
               pointer-events-none
               absolute
-              bottom-[8%]
+              bottom-[6%]
               right-[8%]
               z-[5]
               hidden
@@ -236,14 +235,14 @@ export default function Sponsors({ embedded = false }) {
 
 
       {/* ============================================================
-          SPONSORS SECTION (3 in the same row, 2 in the down row)
+          SPONSORS SECTION (Title Sponsor at top, then grid of 3 per row)
       ============================================================ */}
       <section
         id="sponsors-grid"
         className="relative z-10"
         style={{ contentVisibility: "auto", containIntrinsicSize: "600px" }}
       >
-        <div className="mx-auto max-w-[1300px] px-5 py-20 sm:px-8 lg:py-24">
+        <div className="mx-auto max-w-[1300px] px-5 py-16 sm:px-8 lg:py-20">
           <SectionHeading
             icon={<Compass className="h-5 w-5" />}
             eyebrow="Voyage Allies"
@@ -251,45 +250,56 @@ export default function Sponsors({ embedded = false }) {
             subtitle="The pioneering organizations and brands empowering the Renaissance 2026 expedition."
           />
 
-          <div className="mx-auto mt-14 max-w-6xl space-y-8 sm:space-y-10">
-            {/* Row 1: 3 sponsors in the same row */}
-            <div className="flex flex-wrap items-stretch justify-center gap-7 sm:gap-8 w-full">
-              {allSponsors.slice(0, 3).map((sponsor, index) => (
-                <div
-                  key={`${sponsor.name}-${index}`}
-                  className="flex justify-center w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px]"
-                >
-                  <SponsorCard sponsor={sponsor} size="medium" />
-                </div>
-              ))}
-            </div>
+          {(() => {
+            const titleSponsors = allSponsors.filter(
+              (s) =>
+                s.category?.toLowerCase().includes("title") ||
+                s.name?.toLowerCase().includes("civil services")
+            );
+            const otherSponsors = allSponsors.filter(
+              (s) => !titleSponsors.includes(s)
+            );
 
-            {/* Row 2: 2 sponsors in the down row */}
-            <div className="flex flex-wrap items-stretch justify-center gap-7 sm:gap-8 w-full">
-              {allSponsors.slice(3, 5).map((sponsor, index) => (
-                <div
-                  key={`${sponsor.name}-${index}`}
-                  className="flex justify-center w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px]"
-                >
-                  <SponsorCard sponsor={sponsor} size="medium" />
-                </div>
-              ))}
-            </div>
-
-            {/* Row 3: Additional sponsors (Unstop & AbhiBus) */}
-            {allSponsors.length > 5 && (
-              <div className="flex flex-wrap items-stretch justify-center gap-7 sm:gap-8 w-full">
-                {allSponsors.slice(5).map((sponsor, index) => (
-                  <div
-                    key={`${sponsor.name}-${index}`}
-                    className="flex justify-center w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[360px]"
-                  >
-                    <SponsorCard sponsor={sponsor} size="medium" />
+            return (
+              <div className="mx-auto mt-14 max-w-6xl space-y-12">
+                {/* Title Sponsor on Top */}
+                {titleSponsors.length > 0 && (
+                  <div className="flex flex-col items-center">
+                    <div className="mb-4 flex items-center justify-center gap-3">
+                      <span className="h-px w-8 bg-[#B58B3E]/60" />
+                      <span className="font-mono text-[9px] font-bold uppercase tracking-[0.3em] text-[#8E6422]">
+                        Title Partner
+                      </span>
+                      <span className="h-px w-8 bg-[#B58B3E]/60" />
+                    </div>
+                    <div className="flex justify-center w-full max-w-[440px]">
+                      {titleSponsors.map((sponsor, index) => (
+                        <SponsorCard
+                          key={`title-${sponsor.name}-${index}`}
+                          sponsor={sponsor}
+                          size="large"
+                        />
+                      ))}
+                    </div>
                   </div>
-                ))}
+                )}
+
+                {/* Grid of 3 sponsors per row */}
+                {otherSponsors.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8 justify-items-center w-full">
+                    {otherSponsors.map((sponsor, index) => (
+                      <div
+                        key={`${sponsor.name}-${index}`}
+                        className="flex justify-center w-full max-w-[360px]"
+                      >
+                        <SponsorCard sponsor={sponsor} size="medium" />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            );
+          })()}
         </div>
       </section>
 

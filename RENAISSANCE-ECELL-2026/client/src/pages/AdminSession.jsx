@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import { adminApi } from "../lib/server1-api";
-import "./admin-dashboard.css";
+import { localAdminMode, LOCAL_ADMIN } from "../lib/local-admin";
+import { adminStyles } from "../lib/adminStyles";
 
 export default function AdminSession() {
   const [admin, setAdmin] = useState(null);
@@ -12,6 +13,7 @@ export default function AdminSession() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const loginPage = pathname.endsWith("/login");
+  const adminEntry = /^\/admin\/?$/.test(pathname);
   const handleError = useCallback((err) => {
     if (err.status === 401 || err.status === 403) {
       setAdmin(null);
@@ -35,14 +37,26 @@ export default function AdminSession() {
 
   useEffect(() => {
     let active = true;
-    adminApi.me().then((data) => { if (active) setAdmin(data.admin); })
-      .catch((err) => { if (active && err.status !== 401 && err.status !== 403) setError("We couldn't reach the admin service. Please try again."); })
+    adminApi.me().then((data) => {
+      if (active) setAdmin(data.admin);
+    })
+      .catch((err) => {
+        if (!active) return;
+        if (localAdminMode) {
+          // If on localhost and not authenticated, fallback to local admin for photo management
+          setAdmin((curr) => (curr && curr.id !== "local-admin" ? curr : LOCAL_ADMIN));
+          return;
+        }
+        if (err.status !== 401 && err.status !== 403) {
+          setError("We couldn't reach the admin service. Please try again.");
+        }
+      })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [attempt]);
 
   useEffect(() => {
-    if (!admin) return;
+    if (!admin || admin.id === "local-admin") return;
     const check = () => { if (document.visibilityState === "visible") adminApi.me().catch(handleError); };
     const interval = setInterval(check, 60000);
     window.addEventListener("focus", check);
@@ -50,14 +64,19 @@ export default function AdminSession() {
   }, [admin, handleError]);
 
   async function logout() {
-    await adminApi.logout(); // A failed revocation must not look like a successful logout.
+    try { await adminApi.logout(); } catch { /* Ignore network errors on logout */ }
     setAdmin(null);
     navigate("/admin/login", { replace: true });
   }
 
-  if (loading) return <div className="admin-app admin-gate" role="status"><LoaderCircle className="animate-spin" /> Checking admin session…</div>;
-  if (error) return <div className="admin-app admin-gate"><p role="alert">{error}</p><button onClick={() => { setError(""); setLoading(true); setAttempt((n) => n + 1); }}>Try again</button></div>;
+  // Navigation and the sign-in form must work even when the API is offline.
+  const isRealAdmin = admin && admin.id !== "local-admin";
+  const context = { admin, setAdmin, logout, handleError };
+  if (adminEntry) return <Navigate to={admin ? "/admin/campus-ambassadors" : "/admin/login"} replace />;
+  if (loginPage) return isRealAdmin ? <Navigate to="/admin/campus-ambassadors" replace /> : <Outlet context={context} />;
+  if (loading && !admin) return <div className={adminStyles.gate} role="status"><LoaderCircle className="animate-spin text-[#0d7892]" size={28} /> Checking admin session…</div>;
+  if (error && !admin) return <div className={adminStyles.gate}><p role="alert" className="text-[#933830] font-semibold">{error}</p><button className={adminStyles.btn} onClick={() => { setError(""); setLoading(true); setAttempt((n) => n + 1); }}>Try again</button><button className={adminStyles.btn} onClick={() => navigate("/admin/login")}>Go to admin sign-in</button></div>;
   if (!admin && !loginPage) return <Navigate to="/admin/login" replace />;
-  if (admin && loginPage) return <Navigate to="/admin/campus-ambassadors" replace />;
-  return <Outlet context={{ admin, setAdmin, logout, handleError }} />;
+  if (pathname.endsWith("/tickets") && !isRealAdmin) return <Navigate to="/admin/login" replace />;
+  return <Outlet context={context} />;
 }

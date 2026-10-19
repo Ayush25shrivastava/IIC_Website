@@ -27,6 +27,8 @@ import {
   Tag,
   Flame,
   Users,
+  Copy,
+  Shirt, 
 } from "lucide-react";
 import ContactFooter from "../components/ContactFooter";
 import PageTransitionShimmer from "../components/PageTransitionShimmer";
@@ -195,6 +197,7 @@ export default function TicketsAccommodation() {
     college: "",
     city: "",
     teamName: "",
+    tshirtSize: "",
     checkInDate: "",
     checkOutDate: "",
     accommodationPreferences: "",
@@ -204,6 +207,7 @@ export default function TicketsAccommodation() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedTicketId, setSubmittedTicketId] = useState("");
+  const [copiedTicketId, setCopiedTicketId] = useState("");
   const [savedTicketIds, setSavedTicketIds] = useState(getSavedTicketIds);
 
   const [searchTicketId, setSearchTicketId] = useState("");
@@ -231,8 +235,8 @@ export default function TicketsAccommodation() {
   const heroScale = useTransform(heroScrollProgress, [0, 1], [1.02, 1.06]);
 
   const activeTicketData = TICKET_OPTIONS.find(t => t.id === selectedTicket);
+  const includesTshirt = activeTicketData?.id.includes("elite"); 
 
-  // Price calculations with extra accommodation days (+₹500/day after 1 day)
   const getTicketPrice = (ticket, days = accommodationDays) => {
     if (!ticket) return 0;
     if (ticket.includesAccommodation && days > 1) {
@@ -268,16 +272,13 @@ export default function TicketsAccommodation() {
     }
   };
 
-  // Deselect ticket when clicking outside of the selected ticket card
   useEffect(() => {
     if (!selectedTicket || showForm) return;
 
     const handleClickOutside = (e) => {
-      // If clicking inside any ticket card, let the card handler take care of it
       if (e.target.closest("[data-ticket-card]")) {
         return;
       }
-      // If clicking inside the CTA proceed button section, don't unselect
       if (e.target.closest("[data-cta-section]")) {
         return;
       }
@@ -317,6 +318,16 @@ export default function TicketsAccommodation() {
     setShowForm(false);
   };
 
+  const handleCopyTicketId = async (ticketId) => {
+    try {
+      await navigator.clipboard.writeText(ticketId);
+      setCopiedTicketId(ticketId);
+      window.setTimeout(() => setCopiedTicketId((current) => current === ticketId ? "" : current), 1800);
+    } catch {
+      setSearchError("Could not copy the Ticket ID. Please select and copy it manually.");
+    }
+  };
+
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -334,28 +345,22 @@ export default function TicketsAccommodation() {
     if (!formData.college.trim()) newErrors.college = "College/Organization is required";
     if (!formData.city.trim()) newErrors.city = "City & State is required";
 
+    if (includesTshirt && !formData.tshirtSize) {
+      newErrors.tshirtSize = "T-Shirt Size is required for Elite Passes";
+    }
+
     if (activeTicketData?.includesAccommodation) {
       if (!formData.checkInDate.trim()) newErrors.checkInDate = "Check-in Date is required";
       if (!formData.checkOutDate.trim()) newErrors.checkOutDate = "Check-out Date is required";
-    }
-
-    if (!formData.teamName.trim()) {
-      newErrors.teamName = "Team Name is required";
     }
 
     if (!formData.transactionId.trim()) {
       newErrors.transactionId = "Transaction ID / UTR is required";
     }
 
-    if (!formData.amountPaid.toString().trim()) {
-      newErrors.amountPaid = "Amount Paid is required";
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      if (!formData.teamName.trim()) {
-        alert("Please enter your Team Name");
-      } else if (!formData.transactionId.trim()) {
+      if (!formData.transactionId.trim()) {
         alert("Please enter the Transaction ID / UTR Number");
       } else if (!formData.amountPaid.toString().trim()) {
         alert("Please enter the Amount Paid");
@@ -369,6 +374,7 @@ export default function TicketsAccommodation() {
         ...formData,
         teamName: formData.teamName.trim(),
         ticketType: selectedTicket,
+        tshirtSize: includesTshirt ? formData.tshirtSize : null,
         accommodationDays: activeTicketData?.includesAccommodation ? accommodationDays : 0,
         checkInDate: formData.checkInDate || null,
         checkOutDate: formData.checkOutDate || null,
@@ -377,13 +383,13 @@ export default function TicketsAccommodation() {
       setSubmittedTicketId(data.ticket.ticketId);
       const nextIds = [data.ticket.ticketId, ...savedTicketIds.filter((id) => id !== data.ticket.ticketId)].slice(0, 5);
       setSavedTicketIds(nextIds);
-      try { window.localStorage.setItem(TICKET_CACHE_KEY, JSON.stringify(nextIds)); } catch { /* The ID remains visible for this visit. */ }
+      try { window.localStorage.setItem(TICKET_CACHE_KEY, JSON.stringify(nextIds)); } catch { }
 
       setShowForm(false);
       setSelectedTicket(null);
       setAccommodationDays(1);
       setFormData({
-        name: "", email: "", phone: "", college: "", city: "", teamName: "", checkInDate: "", checkOutDate: "", accommodationPreferences: "", transactionId: "", amountPaid: "",
+        name: "", email: "", phone: "", college: "", city: "", teamName: "", tshirtSize: "", checkInDate: "", checkOutDate: "", accommodationPreferences: "", transactionId: "", amountPaid: "",
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
@@ -432,26 +438,48 @@ export default function TicketsAccommodation() {
       pdf.setDrawColor(197, 162, 95);
       pdf.line(14, 32, 117, 32);
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(16);
-      pdf.text(searchedTicket.name, 14, 44);
+      pdf.setFontSize(15);
+      pdf.text(searchedTicket.name, 14, 40);
+
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(10);
+      pdf.setTextColor(197, 162, 95);
+      pdf.text(passName, 14, 47);
+
+      pdf.setTextColor(242, 229, 212);
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(11);
-      pdf.text(passName, 14, 53);
+      pdf.setFontSize(9);
+
+      let currentY = 54;
       if (searchedTicket.teamName) {
-        pdf.text(`Team: ${searchedTicket.teamName}`, 14, 61);
-        pdf.text(`Ticket ID: ${searchedTicket.ticketId}`, 14, 69);
-        pdf.text(`Paid: INR ${searchedTicket.amountPaid}`, 14, 77);
-        if (searchedTicket.accommodationDays) pdf.text(`Accommodation: ${searchedTicket.accommodationDays} day(s)`, 14, 85);
-      } else {
-        pdf.text(`Ticket ID: ${searchedTicket.ticketId}`, 14, 63);
-        pdf.text(`Paid: INR ${searchedTicket.amountPaid}`, 14, 71);
-        if (searchedTicket.accommodationDays) pdf.text(`Accommodation: ${searchedTicket.accommodationDays} day(s)`, 14, 79);
+        pdf.text(`Team: ${searchedTicket.teamName}`, 14, currentY, { maxWidth: 104 });
+        currentY += 6;
       }
+      if (searchedTicket.college) {
+        const collegeLines = pdf.splitTextToSize(`College: ${searchedTicket.college}${searchedTicket.city ? ` (${searchedTicket.city})` : ""}`, 104);
+        pdf.text(collegeLines, 14, currentY);
+        currentY += collegeLines.length > 1 ? 4.5 * collegeLines.length : 6;
+      }
+      pdf.text(`Ticket ID: ${searchedTicket.ticketId}`, 14, currentY);
+      currentY += 6;
+      pdf.text(`Paid: INR ${searchedTicket.amountPaid}`, 14, currentY);
+      currentY += 6;
+      if (searchedTicket.accommodationDays) {
+        pdf.text(`Accommodation: ${searchedTicket.accommodationDays} day(s)`, 14, currentY);
+        currentY += 6;
+      }
+      if (searchedTicket.tshirtSize) {
+        pdf.text(`T-Shirt Size: ${searchedTicket.tshirtSize}`, 14, currentY);
+        currentY += 6;
+      }
+
       pdf.setFontSize(8);
+      pdf.setTextColor(180, 205, 216);
       pdf.text("Present this QR at each event stage. Each stage admits you once.", 14, 91);
       pdf.addImage(qrData, "PNG", 124, 24, 43, 43);
       pdf.setFontSize(8);
-      pdf.text("Keep this ticket safe · Do not share the QR", 124, 74, { maxWidth: 44, align: "center" });
+      pdf.setTextColor(197, 162, 95);
+      pdf.text("Keep this ticket safe · Do not share the QR", 145.5, 74, { maxWidth: 44, align: "center" });
       pdf.save(`${searchedTicket.ticketId}-ticket.pdf`);
     } catch {
       setDownloadError("Could not create the ticket PDF. Please try again.");
@@ -473,7 +501,6 @@ export default function TicketsAccommodation() {
     >
       <PageTransitionShimmer />
 
-      {/* Fine sand parchment grain texture */}
       <div
         className="pointer-events-none fixed inset-0 opacity-[0.05] z-0"
         style={{
@@ -485,7 +512,6 @@ export default function TicketsAccommodation() {
         }}
       />
 
-      {/* Hero Section */}
       <motion.div
         ref={heroRef}
         className="pointer-events-none absolute inset-x-0 top-0 h-[360px] overflow-hidden sm:h-[400px] lg:h-[420px]"
@@ -511,12 +537,10 @@ export default function TicketsAccommodation() {
           />
         </motion.div>
 
-        {/* Smooth Fade from Hero Art to Light Oceanic Canvas */}
         <div className="absolute inset-0 bg-[#062538]/10 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#D2E9ED]/30 via-[#DFECEE]/60 to-[#DFECEE]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#DFECEE] via-[#DFECEE]/85 to-transparent" />
 
-        {/* Hero Typography */}
         <motion.div
           className="absolute left-5 top-[110px] max-w-[85vw] sm:left-14 sm:top-[140px] lg:left-[8.5vw] lg:top-[150px]"
           initial={prefersReducedMotion ? false : { opacity: 0, x: -24, y: 8 }}
@@ -536,7 +560,6 @@ export default function TicketsAccommodation() {
         </motion.div>
       </motion.div>
 
-      {/* Main Content Section */}
       <section className="relative z-10 mx-auto w-full max-w-[1400px] px-4 pb-24 pt-[240px] sm:px-6 sm:pt-[290px] lg:px-8 lg:pt-[330px]">
 
         <AnimatePresence mode="wait">
@@ -548,7 +571,6 @@ export default function TicketsAccommodation() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Success Message / Ticket ID Display */}
               {submittedTicketId && (
                 <div className="mb-10 p-6 bg-[#E8F5E9] border-2 border-[#4CAF50] rounded-2xl flex flex-col items-center text-center shadow-lg">
                   <CheckCircle2 className="w-12 h-12 text-[#4CAF50] mb-3" />
@@ -556,8 +578,14 @@ export default function TicketsAccommodation() {
                   <p className="font-montserrat text-[#1B5E20] font-bold mb-4">
                     This is your one-time Ticket ID. Save it now or write it down; it is also remembered in this browser.
                   </p>
-                  <div className="px-6 py-3 bg-white border-2 border-[#4CAF50]/40 rounded-xl font-mono text-xl font-black text-[#2E7D32] tracking-widest shadow-inner">
-                    {submittedTicketId}
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <div className="px-6 py-3 bg-white border-2 border-[#4CAF50]/40 rounded-xl font-mono text-xl font-black text-[#2E7D32] tracking-widest shadow-inner">
+                      {submittedTicketId}
+                    </div>
+                    <button type="button" onClick={() => handleCopyTicketId(submittedTicketId)} className="inline-flex items-center gap-2 rounded-xl border border-[#4CAF50]/50 bg-white px-4 py-3 text-sm font-bold text-[#2E7D32] hover:bg-[#F1F8E9]" aria-label="Copy ticket ID">
+                      {copiedTicketId === submittedTicketId ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                      {copiedTicketId === submittedTicketId ? "Copied" : "Copy ID"}
+                    </button>
                   </div>
                   <p className="mt-3 max-w-xl text-xs font-bold text-[#8B5E20]">Your payment is pending admin verification. The QR ticket becomes available only after your payment is verified.</p>
                   <button
@@ -569,7 +597,6 @@ export default function TicketsAccommodation() {
                 </div>
               )}
 
-              {/* Ticket Status Search Section */}
               <div className="mb-16 sm:mb-20">
                 <div className="bg-gradient-to-br from-[#E8D4B4]/40 to-[#DCECEE]/40 border-2 border-[#C5A25F]/30 p-6 sm:p-8 rounded-[28px] max-w-4xl mx-auto shadow-sm">
                   <h3 className="font-cinzel text-2xl font-black text-[#0C2B3D] text-center mb-6">
@@ -624,9 +651,20 @@ export default function TicketsAccommodation() {
                         </div>
                         <div className="text-right">
                           <p className="text-[10px] font-mono text-[#8A5F1C] uppercase font-bold tracking-widest mb-1">Ticket ID</p>
-                          <p className="font-mono text-sm font-black text-[#9E6D1F]">{searchedTicket.ticketId}</p>
+                          <div className="flex items-center justify-end gap-2">
+                            <p className="font-mono text-sm font-black text-[#9E6D1F]">{searchedTicket.ticketId}</p>
+                            <button type="button" onClick={() => handleCopyTicketId(searchedTicket.ticketId)} className="inline-flex items-center gap-1 rounded-lg border border-[#C5A25F]/40 bg-white px-2 py-1 text-[10px] font-bold text-[#8A5F1C] hover:bg-[#F8F3EA]" aria-label="Copy ticket ID">
+                              {copiedTicketId === searchedTicket.ticketId ? "Copied" : <Copy className="h-3.5 w-3.5" />}
+                            </button>
+                          </div>
                         </div>
                       </div>
+                      {searchedTicket.college && (
+                        <div className="mb-2 flex items-center justify-between border-t border-[#0C2B3D]/10 pt-3">
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#2C5263]">College / Org</span>
+                          <strong className="font-montserrat text-sm font-semibold text-[#0C2B3D] text-right">{searchedTicket.college}{searchedTicket.city ? ` (${searchedTicket.city})` : ""}</strong>
+                        </div>
+                      )}
                       {searchedTicket.teamName && (
                         <div className="mb-2 flex items-center justify-between border-t border-[#0C2B3D]/10 pt-3">
                           <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#2C5263]">Team Name</span>
@@ -657,10 +695,8 @@ export default function TicketsAccommodation() {
                 </div>
               </div>
 
-              {/* Event & Accommodation Details Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-16 sm:mb-20">
 
-                {/* Event Details Card */}
                 <motion.div
                   initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -668,7 +704,6 @@ export default function TicketsAccommodation() {
                   transition={{ duration: 0.5 }}
                   className="group relative flex flex-col p-6 sm:p-8 rounded-2xl sm:rounded-[28px] border-2 border-[#C5A25F]/70 bg-gradient-to-br from-[#EEDFCA] via-[#E6D6C0] to-[#DCECEE] shadow-[0_22px_70px_rgba(20,55,70,0.15)] transition-all duration-500 hover:border-[#B58B3E] overflow-hidden"
                 >
-                  {/* Inner navigation frame */}
                   <div className="pointer-events-none absolute inset-3 sm:inset-4 rounded-xl border border-[#A87E35]/35 transition-colors duration-500 group-hover:border-[#9E6D1F]/50" />
                   <div className="pointer-events-none absolute left-3 sm:left-4 top-3 sm:top-4 h-5 w-5 sm:h-6 sm:w-6 border-l border-t border-[#9E6D1F]/55" />
                   <div className="pointer-events-none absolute bottom-3 sm:bottom-4 right-3 sm:right-4 h-5 w-5 sm:h-6 sm:w-6 border-b border-r border-[#9E6D1F]/55" />
@@ -705,7 +740,6 @@ export default function TicketsAccommodation() {
                   </div>
                 </motion.div>
 
-                {/* Accommodation Benefits Card */}
                 <motion.div
                   initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -713,7 +747,6 @@ export default function TicketsAccommodation() {
                   transition={{ duration: 0.5, delay: 0.1 }}
                   className="group relative flex flex-col p-6 sm:p-8 rounded-2xl sm:rounded-[28px] border-2 border-[#C5A25F]/70 bg-gradient-to-br from-[#EEDFCA] via-[#E6D6C0] to-[#DCECEE] shadow-[0_22px_70px_rgba(20,55,70,0.15)] transition-all duration-500 hover:border-[#B58B3E] overflow-hidden"
                 >
-                  {/* Inner navigation frame */}
                   <div className="pointer-events-none absolute inset-3 sm:inset-4 rounded-xl border border-[#A87E35]/35 transition-colors duration-500 group-hover:border-[#9E6D1F]/50" />
                   <div className="pointer-events-none absolute left-3 sm:left-4 top-3 sm:top-4 h-5 w-5 sm:h-6 sm:w-6 border-l border-t border-[#9E6D1F]/55" />
                   <div className="pointer-events-none absolute bottom-3 sm:bottom-4 right-3 sm:right-4 h-5 w-5 sm:h-6 sm:w-6 border-b border-r border-[#9E6D1F]/55" />
@@ -757,7 +790,6 @@ export default function TicketsAccommodation() {
                 </motion.div>
               </div>
 
-              {/* Early Bird Special Banner */}
               <motion.div
                 initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.98 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -791,7 +823,6 @@ export default function TicketsAccommodation() {
                 </div>
               </motion.div>
 
-              {/* Tickets Selection Section */}
               <div className="flex flex-col items-center mb-8 text-center">
                 <span className="text-[11px] sm:text-xs font-mono text-[#8A5F1C] uppercase tracking-[0.25em] font-extrabold flex items-center justify-center gap-2 mb-3">
                   <Ticket className="w-4 h-4 text-[#8A5F1C]" />
@@ -804,7 +835,6 @@ export default function TicketsAccommodation() {
                   Every pass includes 3-day event access and event participation. Stay packages also include 1 day of accommodation, 3 meals, a bed, pillow and blanket.
                 </p>
 
-                {/* Category Filter Switcher */}
                 <div className="mt-8 inline-flex flex-wrap justify-center gap-1 p-1.5 rounded-2xl bg-[#0C2B3D]/10 border border-[#C5A25F]/40 backdrop-blur-md">
                   <button
                     type="button"
@@ -839,7 +869,6 @@ export default function TicketsAccommodation() {
                 </div>
               </div>
 
-              {/* Purchase Options Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
                 {filteredOptions.map((option, idx) => {
                   const isSelected = selectedTicket === option.id;
@@ -858,7 +887,6 @@ export default function TicketsAccommodation() {
                         : "bg-gradient-to-br from-[#EEDFCA] via-[#E6D6C0] to-[#DCECEE] border-[#C5A25F]/70 hover:border-[#B58B3E] shadow-[0_14px_38px_rgba(12,38,50,0.15)] hover:-translate-y-1"
                         }`}
                     >
-                      {/* Active Inner Frame */}
                       <div
                         className={`pointer-events-none absolute inset-3 sm:inset-4 rounded-xl border transition-colors duration-400 ${isSelected ? "border-[#9E6D1F]/50" : "border-[#A87E35]/35 group-hover:border-[#9E6D1F]/50"
                           }`}
@@ -867,7 +895,6 @@ export default function TicketsAccommodation() {
                       <div className={`pointer-events-none absolute left-3 sm:left-4 top-3 sm:top-4 h-5 w-5 sm:h-6 sm:w-6 border-l border-t transition-colors ${isSelected ? "border-[#9E6D1F]/80" : "border-[#9E6D1F]/55"}`} />
                       <div className={`pointer-events-none absolute bottom-3 sm:bottom-4 right-3 sm:right-4 h-5 w-5 sm:h-6 sm:w-6 border-b border-r transition-colors ${isSelected ? "border-[#9E6D1F]/80" : "border-[#9E6D1F]/55"}`} />
 
-                      {/* Header with Badges & Radio Indicator */}
                       <div className="flex items-start justify-between gap-2 mb-4 relative z-10 pl-1 pr-1">
                         <div className="flex flex-wrap items-center gap-1.5">
                           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-wider bg-[#0C2B3D] text-[#E5C378]">
@@ -878,14 +905,12 @@ export default function TicketsAccommodation() {
                           </span>
                         </div>
 
-                        {/* Selection Indicator */}
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${isSelected ? "border-[#9E6D1F] bg-[#9E6D1F]" : "border-[#A87E35]/40 bg-white/50"
                           }`}>
                           {isSelected && <CheckCircle2 className="w-4 h-4 text-[#F2E5D4]" />}
                         </div>
                       </div>
 
-                      {/* Ticket Title & Duration */}
                       <div className="mb-4 relative z-10 pl-1">
                         <h3 className="font-cinzel text-xl sm:text-2xl font-black text-[#0C2B3D] mb-1 drop-shadow-sm">
                           {option.name}
@@ -895,7 +920,6 @@ export default function TicketsAccommodation() {
                         </div>
                       </div>
 
-                      {/* Pricing Display */}
                       <div className="mb-6 relative z-10 pl-1">
                         <p className="mb-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#2C5263]">Early-bird price per person</p>
                         <div className="flex flex-wrap items-baseline gap-3">
@@ -919,7 +943,6 @@ export default function TicketsAccommodation() {
                         </div>
                       </div>
 
-                      {/* Benefits List */}
                       <div className="flex-grow space-y-3 border-t border-[#0C2B3D]/15 pt-5 relative z-10 pl-1">
                         {option.benefits.map((benefit, i) => (
                           <div key={i} className={`flex items-start gap-2.5 p-2 rounded-lg border transition-colors ${isSelected ? "bg-[#EEDFCA]/80 border-[#BFA275]/50" : "bg-[#EEDFCA]/45 border-[#BFA275]/25"}`}>
@@ -944,7 +967,6 @@ export default function TicketsAccommodation() {
                 })}
               </div>
 
-              {/* CTA Section */}
               <div
                 data-cta-section="true"
                 className="mt-16 flex flex-col items-center justify-center max-w-6xl mx-auto border-t border-[#0C2B3D]/10 pt-10"
@@ -980,7 +1002,6 @@ export default function TicketsAccommodation() {
               transition={{ duration: 0.3 }}
               className="max-w-5xl mx-auto"
             >
-              {/* Back Button */}
               <button
                 type="button"
                 onClick={handleBackToSelection}
@@ -990,15 +1011,12 @@ export default function TicketsAccommodation() {
                 Change Selection
               </button>
 
-              {/* Registration Form Card */}
               <div className="rounded-[28px] border-2 border-[#C5A25F]/70 bg-gradient-to-br from-[#EEDFCA] via-[#E6D6C0] to-[#DCECEE] shadow-[0_22px_70px_rgba(20,55,70,0.15)] overflow-hidden relative group">
-                {/* Inner navigation frame */}
                 <div className="pointer-events-none absolute inset-3 sm:inset-4 rounded-xl border border-[#A87E35]/35" />
                 <div className="pointer-events-none absolute left-3 sm:left-4 top-3 sm:top-4 h-5 w-5 sm:h-6 sm:w-6 border-l border-t border-[#9E6D1F]/55" />
                 <div className="pointer-events-none absolute bottom-3 sm:bottom-4 right-3 sm:right-4 h-5 w-5 sm:h-6 sm:w-6 border-b border-r border-[#9E6D1F]/55" />
 
                 <div className="p-6 sm:p-10 relative z-10">
-                  {/* Selected Option Summary */}
                   <div className="flex flex-col gap-5 p-5 sm:p-6 rounded-2xl bg-[#E8D4B4]/60 border border-[#BFA275]/40 mb-8">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#0C2B3D]/15 pb-4">
                       <div>
@@ -1040,7 +1058,6 @@ export default function TicketsAccommodation() {
                       </div>
                     </div>
 
-                    {/* Accommodation Duration Extension Selector */}
                     {activeTicketData?.includesAccommodation && (
                       <div className="pt-1">
                         <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
@@ -1094,7 +1111,6 @@ export default function TicketsAccommodation() {
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-                    {/* Left Column: QR Code & Payment Info */}
                     <div className="lg:col-span-5 flex flex-col items-center text-center bg-white/40 p-6 rounded-2xl border border-[#C5A25F]/30 h-fit">
                       <h4 className="font-cinzel text-xl font-black text-[#0C2B3D] mb-2">Make Payment</h4>
                       <p className="font-montserrat text-sm text-[#1A3B4D] mb-5 font-semibold">
@@ -1158,7 +1174,6 @@ export default function TicketsAccommodation() {
                       </div>
                     </div>
 
-                    {/* Right Column: Participant Details Form */}
                     <div className="lg:col-span-7">
                       <form onSubmit={handleFormSubmit} className="space-y-8">
                         <div className="space-y-5">
@@ -1260,7 +1275,7 @@ export default function TicketsAccommodation() {
 
                             <div>
                               <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
-                                Team Name *
+                                Team Name <span className="normal-case font-normal text-[#2C5263]/70">(optional)</span>
                               </label>
                               <div className="relative">
                                 <Users className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
@@ -1278,7 +1293,51 @@ export default function TicketsAccommodation() {
                           </div>
                         </div>
 
-                        {/* Dynamic Accommodation Section */}
+                        {includesTshirt && (
+                          <div className="space-y-5 pt-8 border-t border-[#0C2B3D]/15">
+                            <div className="flex items-center gap-2 mb-4 border-b border-[#0C2B3D]/15 pb-4">
+                              <Shirt className="w-5 h-5 text-[#9E6D1F]" />
+                              <h4 className="font-cinzel text-lg font-black text-[#0C2B3D] uppercase tracking-wider">T-Shirt Selection</h4>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+                              <div className="rounded-xl overflow-hidden border-2 border-[#C5A25F]/40 shadow-sm bg-black flex items-center justify-center">
+                                <img src={getAssetUrl("/WhatsApp Image 2026-10-18 at 3.30.03 PM.jpeg")} alt="T-Shirt Mockup" className="w-full h-auto object-cover" />
+                              </div>
+                              <div className="rounded-xl overflow-hidden border-2 border-[#C5A25F]/40 shadow-sm bg-white flex items-center justify-center">
+                                <img src={getAssetUrl("/WhatsApp Image 2026-10-18 at 3.30.02 PM.jpeg")} alt="Size Chart" className="w-full h-auto object-contain" />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
+                                Select T-Shirt Size *
+                              </label>
+                              <div className="relative">
+                                <Shirt className="absolute left-4 top-3.5 w-4 h-4 text-[#8A5F1C]" />
+                                <select
+                                  name="tshirtSize"
+                                  value={formData.tshirtSize}
+                                  onChange={handleFormChange}
+                                  className={`w-full pl-11 pr-10 py-3 rounded-xl bg-[#F4EBD9]/80 border-2 ${errors.tshirtSize ? 'border-[#D9534F]' : 'border-[#C5A25F]/40'} text-sm text-[#0C2B3D] font-semibold focus:outline-none focus:border-[#9E6D1F] focus:bg-[#F2E5D4] transition-colors appearance-none cursor-pointer`}
+                                >
+                                  <option value="" disabled>Select a size...</option>
+                                  <option value="XS">XS (Chest 34")</option>
+                                  <option value="S">S (Chest 36")</option>
+                                  <option value="M">M (Chest 38")</option>
+                                  <option value="L">L (Chest 40")</option>
+                                  <option value="XL">XL (Chest 42")</option>
+                                  <option value="XXL">XXL (Chest 44")</option>
+                                </select>
+                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#8A5F1C]">
+                                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                                </div>
+                              </div>
+                              {errors.tshirtSize && <p className="mt-1.5 text-xs text-[#D9534F] font-mono font-bold">{errors.tshirtSize}</p>}
+                            </div>
+                          </div>
+                        )}
+
                         {activeTicketData?.includesAccommodation && (
                           <div className="space-y-5 pt-8 border-t border-[#0C2B3D]/15">
                             <div className="flex items-center justify-between flex-wrap gap-2 mb-4 border-b border-[#0C2B3D]/15 pb-4">
@@ -1291,7 +1350,6 @@ export default function TicketsAccommodation() {
                               </span>
                             </div>
 
-                            {/* Accommodation inclusions banner */}
                             <div className="p-3.5 rounded-xl bg-white/70 border border-[#C5A25F]/30 text-xs font-montserrat text-[#1A3B4D] space-y-1">
                               <p className="font-bold flex items-center gap-1.5 text-[#0C2B3D]">
                                 <CheckCircle2 className="w-4 h-4 text-[#219653]" />
@@ -1348,7 +1406,6 @@ export default function TicketsAccommodation() {
                           </div>
                         )}
 
-                        {/* Submit Section */}
                         <div className="pt-8 flex justify-end">
                           <button
                             type="submit"

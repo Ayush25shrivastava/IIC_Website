@@ -52,7 +52,7 @@ npm start
 Default local URL:
 
 ```text
-http://localhost:5001/api/v1/health
+http://localhost:5008/api/v1/health
 ```
 
 ## Environment variables
@@ -60,7 +60,7 @@ http://localhost:5001/api/v1/health
 | Variable | Purpose |
 | --- | --- |
 | `NODE_ENV` | `development`, `test`, or `production` |
-| `PORT` | HTTP port, defaults to `5001` |
+| `PORT` | HTTP port, defaults to `5008` |
 | `CLIENT_ORIGIN` | Allowed frontend origin(s), comma separated |
 | `MONGODB_URI` | MongoDB/Atlas connection string |
 | `JWT_ACCESS_SECRET` | Access-token signing secret reserved for auth implementation |
@@ -191,13 +191,15 @@ Use the existing variables from `.env.example`:
 
 - Backend: `MONGODB_URI`, `CLIENT_ORIGIN`, distinct `JWT_ACCESS_SECRET` and
   `JWT_REFRESH_SECRET` (at least 32 characters each).
-- Client: `VITE_SERVER1_API_URL`, including `/api/v1`. Rebuild the client after changing it.
-- HTTPS production: `NODE_ENV=production` forces secure cookies. Set
-  `AUTH_COOKIE_SAME_SITE=none` when the frontend and API are on different sites;
-  configure the exact frontend origin in `CLIENT_ORIGIN`. Browser third-party cookie
-  restrictions can require hosting the API on the same site.
-- The existing Vercel SPA rewrite supports direct dashboard URLs. Other hosts must
-  similarly serve `index.html` for client routes.
+- Client development: `VITE_SERVER1_API_URL` can point to the local server and must
+  include `/api/v1`. Production Vercel builds use same-origin rewrites for `/api/v1/*`
+  and `/tickets/*` to this service so browser auth cookies are first-party.
+- HTTPS production: `NODE_ENV=production` forces secure cookies. Leave
+  `AUTH_COOKIE_DOMAIN` unset when using the Vercel proxy; cookies must be host-only
+  for the Vercel site, not scoped to `onrender.com`. `CLIENT_ORIGIN` must include the
+  exact Vercel origin. `SameSite=Lax` is suitable for the same-origin proxy.
+- The Vercel SPA rewrite supports direct dashboard URLs. Other hosts must similarly
+  serve `index.html` for client routes.
 
 No new secret is required. Before enabling the new admin dashboard on an existing database, run the dry-run migration documented below. Existing ambassador
 records receive the role default when hydrated; old tasks return `dueAt: null`.
@@ -323,3 +325,39 @@ storage and reset, legacy hash conversion, duplicate-code rollback, bulk assignm
 registration attribution, session expiry and revocation, direct first-login access,
 legacy session compatibility, and optional password changes. Without
 `MONGODB_TEST_URI`, database integration suites are skipped.
+
+## Team photos in Cloudinary
+
+Team-photo management stores images and member details in Cloudinary cloud
+`zs9y1gjj`. New photos are no longer written to MongoDB or browser storage. Each
+admin or public team-page load requests a fresh asset list through the API;
+images render from the versioned Cloudinary HTTPS URLs returned by that list.
+
+Set these values in `server1/.env`, then restart the API:
+
+```dotenv
+CLOUDINARY_CLOUD_NAME=zs9y1gjj
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+LOCAL_TEAM_PHOTO_ADMIN=true
+```
+
+The key and secret must remain on the server, never in `VITE_` variables. Local
+photo management requires `NODE_ENV=development`, an actual loopback connection,
+a localhost host, and a trusted localhost Origin. Production writes still use
+admin authentication. The public photo list does not require MongoDB.
+
+Open `/admin/campus-ambassadors` and choose Management. Use **Import existing
+photos** to copy photos from this browser (or the original faculty photos) into
+Cloudinary. Original browser data remains as a backup. Interrupted imports can
+be retried; existing Cloudinary records are not overwritten by old browser
+copies. New uploads, replacement crops, edits, and removals go to Cloudinary.
+An empty cloud collection remains empty until photos are added or imported.
+
+Assets use the `renaissance/team/` public-ID prefix and the
+`renaissance_team_photos` tag. Name, category, position, team, and LinkedIn link
+are stored as contextual metadata on each image. This uses Cloudinary's
+[signed Upload API](https://cloudinary.com/documentation/image_upload_api_reference)
+and [Admin API asset listing](https://cloudinary.com/documentation/admin_api#get_resources_by_tag).
+Missing credentials, upload errors, and Cloudinary rate limits are reported
+rather than falling back to browser-only saves.

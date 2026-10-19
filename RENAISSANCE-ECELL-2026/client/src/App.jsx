@@ -15,6 +15,7 @@ import AdisyonShader from "./components/ui/adisyon-shader";
 import SmoothScroll from "./components/SmoothScroll";
 import PageTransitionShimmer from "./components/PageTransitionShimmer";
 import { useSmoothScroll } from "./lib/smoothScroll";
+import { prefetchTeamPhotos } from "./lib/server1-api";
 
 // Home page is eagerly loaded for instant interactive entry
 import Home from "./pages/Home";
@@ -65,6 +66,11 @@ function PublicChrome({ showIntro, onIntroComplete }) {
 
 export default function App() {
   const [showIntro, setShowIntro] = useState(() => !/^\/(?:admin|volunteer)(?:\/|$)/.test(window.location.pathname));
+
+  useEffect(() => {
+    // Start prefetching team photos and images immediately upon website entrance
+    prefetchTeamPhotos();
+  }, []);
 
   const handleIntroComplete = () => {
     setShowIntro(false);

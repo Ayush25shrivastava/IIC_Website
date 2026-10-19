@@ -9,24 +9,33 @@ const PASS_TYPES = [
 ];
 const PASS_NAMES = Object.fromEntries(PASS_TYPES);
 
+let scannerLifecycle = Promise.resolve();
+
 function CameraReader({ onDecoded, onError }) {
     useEffect(() => {
         const scanner = new Html5Qrcode("volunteer-qr-reader");
         let active = true;
-        let disposed = false;
-        const stopScanner = () => {
-            const clear = () => { try { scanner.clear(); } catch { /* The scanner host is unmounted. */ } };
-            if (scanner.isScanning) scanner.stop().then(clear).catch(clear);
-            else clear();
+        const startTask = scannerLifecycle.then(async () => {
+            if (!active) return;
+            await scanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1 },
+                (decoded) => { if (active) { active = false; onDecoded(decoded); } },
+                () => { },
+            );
+        });
+        scannerLifecycle = startTask.catch(() => { });
+        startTask.catch((error) => {
+            if (active) onError(error?.message || "Camera could not start. Check its browser permission.");
+        });
+
+        return () => {
+            active = false;
+            scannerLifecycle = scannerLifecycle.then(async () => {
+                if (scanner.isScanning) await scanner.stop().catch(() => { });
+                try { scanner.clear(); } catch { /* The scanner host is unmounted. */ }
+            }).catch(() => { });
         };
-        scanner.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1 },
-            (decoded) => { if (active) { active = false; onDecoded(decoded); } },
-            () => { },
-        ).then(() => { if (disposed) stopScanner(); })
-            .catch((error) => { if (active) onError(error?.message || "Camera could not start. Check its browser permission."); });
-        return () => { active = false; disposed = true; stopScanner(); };
     }, [onDecoded, onError]);
     return <div id="volunteer-qr-reader" className="mx-auto min-h-64 w-full max-w-lg overflow-hidden rounded-2xl bg-slate-950 [&_video]:w-full [&_video]:rounded-xl [&_button]:m-2 [&_button]:rounded-lg [&_button]:bg-white [&_button]:px-3 [&_button]:py-2 [&_button]:text-slate-900 [&_select]:rounded-lg" />;
 }
@@ -50,7 +59,6 @@ export default function VolunteerScanner() {
     const [configs, setConfigs] = useState({});
     const [passType, setPassType] = useState("event-standard");
     const [stageId, setStageId] = useState("");
-    const [manualId, setManualId] = useState("");
     const [cameraOn, setCameraOn] = useState(false);
     const [scanBusy, setScanBusy] = useState(false);
     const [result, setResult] = useState(null);
@@ -108,7 +116,6 @@ export default function VolunteerScanner() {
         try {
             const data = await ticketApi.volunteerScan({ ticketId, ticketType: passType, stageId });
             setResult({ ...data, selectedStage: data.selectedStage?.name || "Selected stage" });
-            setManualId("");
         } catch (err) {
             if (err.status === 401) {
                 setSignedIn(false);
@@ -154,8 +161,6 @@ export default function VolunteerScanner() {
                 </div>
                 {!stages.length && <p className="mt-3 text-sm font-semibold text-amber-800">No stages are configured for this pass. Ask an admin to add stages.</p>}
                 {cameraOn ? <div className="mt-5"><CameraReader onDecoded={scan} onError={cameraError} /><button type="button" onClick={() => setCameraOn(false)} className="mt-3 w-full rounded-xl border border-[#b6dce4] bg-white px-4 py-2 text-sm font-bold text-[#376579]">Stop camera</button></div> : <button type="button" disabled={!stageId || scanBusy} onClick={() => { setError(""); setCameraOn(true); }} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#123e50] px-4 py-4 font-bold text-white transition hover:bg-[#1c5b70] disabled:cursor-not-allowed disabled:opacity-50"><Camera size={19} /> Scan ticket QR</button>}
-                <div className="my-5 flex items-center gap-3 font-mono text-[9px] font-black uppercase tracking-widest text-[#7a99a2]"><span className="h-px flex-1 bg-[#b6dce4]" />or enter ticket ID<span className="h-px flex-1 bg-[#b6dce4]" /></div>
-                <form onSubmit={(event) => { event.preventDefault(); scan(manualId); }} className="flex gap-2"><input aria-label="Ticket ID" value={manualId} onChange={(event) => setManualId(event.target.value)} placeholder="REN-XXXXXXXXXXXX" className="min-w-0 flex-1 rounded-xl border border-[#afd6e1] bg-white px-4 py-3 font-mono text-sm uppercase text-[#173f52] outline-none focus:border-[#0d7892]" /><button disabled={!stageId || scanBusy || !manualId.trim()} className="rounded-xl bg-[#b17e2e] px-5 py-3 font-bold text-white disabled:opacity-50">{scanBusy ? <LoaderCircle size={18} className="animate-spin" /> : "Check in"}</button></form>
                 {result && <div role={result.error ? "alert" : "status"} className={`mt-5 rounded-2xl border p-4 ${result.error ? "border-rose-300 bg-rose-50 text-rose-900" : result.alreadyScanned ? "border-amber-300 bg-amber-100 text-amber-950" : "border-emerald-300 bg-emerald-50 text-emerald-950"}`}>
                     <div className="flex items-center gap-2 font-black">{result.error ? <XCircle size={21} /> : result.alreadyScanned ? <Ticket size={21} /> : <CheckCircle2 size={21} />}{result.error ? "Scan blocked" : result.alreadyScanned ? `Already scanned · ${result.selectedStage}` : `Admitted · ${result.selectedStage}`}</div>
                     {result.error ? <p className="mt-2 text-sm">{result.error}</p> : <><p className="mt-2 font-cinzel text-lg font-black">{result.ticket?.name}{result.ticket?.teamName ? ` · Team: ${result.ticket.teamName}` : ""}</p><p className="font-mono text-xs">{result.ticket?.ticketId}</p><ScanHistory scans={result.ticket?.stageScans} stages={configs[result.ticket?.ticketType] || []} /></>}

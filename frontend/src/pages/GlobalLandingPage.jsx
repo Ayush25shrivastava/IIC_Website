@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import udbhav from '../assets/udbhav image.png';
 import tedx from "../assets/WhatsApp Image 2026-03-21 at 1.09.44 AM.png";
-import renaissance from "../assets/WhatsApp Image 2026-03-21 at 1.08.30 AM.jpeg";
-import iicLogo from "../assets/iic-logo.png"; 
-import mnnitLogo from "../assets/mnnit-logo.png";  
+import renaissance from "../assets/renaissance-logo.png";
+import iicLogo from "../assets/iic-logo.png";
+import mnnitLogo from "../assets/mnnit-logo.png";
 import heroImg1 from '../assets/hero-section/academic building image.jpg';
 import heroImg2 from '../assets/hero-section/front image.jpeg';
 import heroImg3 from '../assets/hero-section/hostels.png';
@@ -36,32 +36,31 @@ const IICPage = () => {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background Images Slider */}
         {images.map((img, idx) => (
-          <img 
+          <img
             key={idx}
             src={img}
             alt={`Slide ${idx}`}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${
-              idx === currentImg ? 'opacity-100 z-0' : 'opacity-0 -z-10'
-            }`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${idx === currentImg ? 'opacity-100 z-0' : 'opacity-0 -z-10'
+              }`}
           />
         ))}
 
-{/* Overlay */}
-<div className="absolute inset-0 bg-black/60 z-0"></div>
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/60 z-0"></div>
 
         {/* Fixed Top Corner Logos */}
         <div className="absolute top-6 left-6 z-20 md:top-8 md:left-8">
-          <img 
-            src={mnnitLogo} 
-            alt="MNNIT Logo" 
+          <img
+            src={mnnitLogo}
+            alt="MNNIT Logo"
             className="h-24 md:h-36 w-auto object-contain]"
           />
         </div>
 
         <div className="absolute top-0 right-6 z-20 md:top-0 md:right-4">
-          <img 
-            src={iicLogo} 
-            alt="IIC Logo" 
+          <img
+            src={iicLogo}
+            alt="IIC Logo"
             className="h-36 md:h-54 w-auto object-contain]"
           />
         </div>
@@ -85,8 +84,36 @@ const IICPage = () => {
         </div>
       </section>
 
-      {/* ABOUT CARD */}
-      <section id="aboutus" className="py-20 px-6 flex justify-center">
+      {/* EVENT CARDS */}
+      <section className="pb-12 px-6 mt-4">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
+
+          <EventCard
+            image={tedx}
+            title="TEDx MNNIT"
+            description="Experience world-class speakers and ideas worth spreading."
+            link="https://www.ted.com/tedx/events/63792"
+          />
+
+          <EventCard
+            image={udbhav}
+            title="Udbhav"
+            description="The flagship entrepreneurship and financial literacy summit of the Institute."
+            link="/udbhav"
+          />
+
+          <EventCard
+            image={renaissance}
+            title="Renaissance"
+            description="The annual entrepreneurship summit fostering business acumen."
+            link="/renaissance"
+          />
+
+        </div>
+      </section>
+
+      {/* ABOUT CARDS */}
+      <section id="aboutus" className="py-12 px-6 flex flex-col items-center gap-10">
         <div className="max-w-5xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -100,6 +127,36 @@ const IICPage = () => {
             </p>
           </motion.div>
         </div>
+
+        <div className="max-w-5xl w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="p-10 md:p-16 rounded-[2rem] bg-white border border-[#d1ccc0] shadow-[15px_15px_40px_rgba(0,0,0,0.08)]"
+          >
+            <h2 className="text-4xl md:text-5xl font-playfair font-black mb-8 text-center text-[#0E0E0E]">About Entrepreneurship Cell</h2>
+            <p className="text-[#0E0E0E]/80 leading-loose text-lg md:text-xl text-center md:text-left">
+              Entrepreneurship Cell started its functioning in October 2014 to inculcate the passion and spirit among students to pursue entrepreneurship and bring together the hustling minds having innovative solutions to common societal problems.
+              <br /> <br />
+              To encourage the entrepreneurial journey of translating thoughts into action, the flagship event of E-Cell, Renaissance, is held annually, bringing together the academic community, new age entrepreneurs and fanatics who are passionate about ideating and innovating from all over the country.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* <div className="max-w-5xl w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="p-10 md:p-16 rounded-[2rem] bg-white border border-[#d1ccc0] shadow-[15px_15px_40px_rgba(0,0,0,0.08)]"
+          >
+            <h2 className="text-4xl md:text-5xl font-playfair font-black mb-8 text-center text-[#0E0E0E]">About Renaissance</h2>
+            <p className="text-[#0E0E0E]/80 leading-loose text-lg md:text-xl text-center md:text-left">
+              To encourage the entrepreneurial journey of translating thoughts into action, the flagship event of E-Cell is held annually, bringing together the academic community, new age entrepreneurs and fanatics who are passionate about ideating and innovating from all over the country. Renaissance 2026 will include a gamut of activities all of which provide an avenue to harbor entrepreneurial skills and stimulate discussion on ideas that possess the potential to turn the issues that plague us into opportunities to revolutionize the world.
+            </p>
+          </motion.div>
+        </div> */}
       </section>
 
       {/* FUNCTION + FOCUS */}
@@ -119,39 +176,15 @@ const IICPage = () => {
 
 Flagship Initiatives:
 - Udbhav (Annual Entrepreneurship & Financial Literacy Summit) is MNNIT’s premier event designed to bridge the gap between technical education and business acumen
+- Renaissance (Annual Entrepreneurship Summit) is an event organised by IIC to foster the culture of innovation and entrepreneurship among students and faculty.
+- TEDx MNNIT is a platform for sharing ideas worth spreading. It brings together inspiring speakers from various fields to share their ideas with the MNNIT community.
 - Startup Sangam (The Startup Conclave) is an exclusive platform aimed at fostering Industry-Academia collaboration. It brings together investors, industry leaders, and budding entrepreneurs to explore funding opportunities, strategic partnerships, and market access for incubated startups.
           `} />
 
         </div>
       </section>
 
-      {/* EVENT CARDS */}
-      <section className="pb-32 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
 
-          <EventCard 
-            image={tedx} 
-            title="TEDx MNNIT"
-            description="Experience world-class speakers and ideas worth spreading."
-            link="https://www.ted.com/tedx/events/63792" 
-          />
-
-          <EventCard 
-            image={udbhav} 
-            title="Udbhav"
-            description="The flagship entrepreneurship and financial literacy summit of the Institute."
-            link="/udbhav" 
-          />
-          
-          <EventCard 
-            image={renaissance} 
-            title="Renaissance"
-            description="The annual entrepreneurship summit fostering business acumen."
-            link="/renaissance"
-          />
-
-        </div>
-      </section>
 
       {/* <div className="pb-24">
         <LiveBar />
@@ -169,7 +202,7 @@ const LiveBar = () => (
 
       {[...Array(2)].map((_, idx) => (
         <div key={idx} className="flex">
-          {[1,2,3,4].map(i => (
+          {[1, 2, 3, 4].map(i => (
             <a
               key={i}
               href="/renaissance"
@@ -225,7 +258,7 @@ const EventCard = ({ image, title, description, link }) => (
         <img
           src={image}
           alt={title}
-          className="w-full h-48 object-fill transform group-hover:scale-110 transition-transform duration-700"
+          className="w-full h-48 object-contain transform group-hover:scale-110 transition-transform duration-700"
         />
       </a>
 

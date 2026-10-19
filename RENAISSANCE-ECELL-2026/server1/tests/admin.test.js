@@ -29,9 +29,29 @@ test("admin management routes require admin authentication", async () => {
     "/api/v1/admin/promo-codes",
     "/api/v1/admin/tasks",
     "/api/v1/admin/referrals",
+    "/api/v1/admin/team-photos",
   ]) {
     const response = await request(app).get(path).expect(401);
     assert.equal(response.body.error.code, "ADMIN_AUTH_REQUIRED");
+  }
+});
+
+test("team photo writes require admin authentication", async () => {
+  for (const method of ["post", "put", "delete"]) {
+    await request(app)[method](`/api/v1/admin/team-photos${method === "post" ? "" : "/faculty-mukul-shukla"}`)
+      .set("Origin", "http://localhost:5173").send({}).expect(401);
+  }
+});
+
+test("admin entry redirects to sign-in without database access, including with an existing cookie", async () => {
+  const admin = new Admin({ _id: "507f1f77bcf86cd799439011", authVersion: 0 });
+  const token = signAdminAccessToken(admin, "offline-admin-session");
+  for (const prefix of ["/admin", "/renaissance/admin"]) {
+    for (const suffix of ["", "/"]) {
+      const response = await request(app).get(`${prefix}${suffix}`)
+        .set("Cookie", `rn_admin_access=${token}`).expect(302);
+      assert.equal(response.headers.location, `${prefix}/login`);
+    }
   }
 });
 

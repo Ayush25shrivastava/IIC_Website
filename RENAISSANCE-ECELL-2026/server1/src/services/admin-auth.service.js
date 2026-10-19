@@ -67,6 +67,7 @@ export async function createAdminAuthSession({ admin, req, res }) {
   });
 
   setAdminAuthCookies(res, accessToken, refreshToken);
+  return { accessToken, refreshToken, sessionId };
 }
 
 export async function rotateAdminAuthSession({ session, admin, token, req, res }) {
@@ -96,7 +97,7 @@ export async function rotateAdminAuthSession({ session, admin, token, req, res }
 
   if (!rotated) return false;
   setAdminAuthCookies(res, accessToken, refreshToken);
-  return true;
+  return { accessToken, refreshToken };
 }
 
 export function revokeAdminSessions(adminId, reason) {
