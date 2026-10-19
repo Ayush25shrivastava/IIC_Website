@@ -18,8 +18,8 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id: "technology",
-    title: "Technology Partner",
+    id: "executive",
+    title: "Executive Partner",
     sponsors: [
       {
         name: "Formcept",
@@ -44,54 +44,54 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id: "nutrition",
-    title: "Nutrition Partner",
+    id: "protein",
+    title: "Protein Partner",
     sponsors: [
       {
         name: "Max Protein",
-        category: "Nutrition Partner",
+        category: "Protein Partner",
         image: CLOUDINARY_SPONSORS.maxProtein || getAssetUrl("/sponsors/maxprotein.png"),
         fallbackImage: getAssetUrl("/sponsors/maxprotein.png"),
-        description: "Official Nutrition Partner for Renaissance 2026.",
+        description: "Official Protein Partner for Renaissance 2026.",
       }
     ],
   },
   {
-    id: "refreshment",
-    title: "Refreshment Partner",
+    id: "beverage",
+    title: "Beverage Partner",
     sponsors: [
       {
         name: "Oatey",
-        category: "Refreshment Partner",
+        category: "Beverage Partner",
         image: CLOUDINARY_SPONSORS.oatey || getAssetUrl("/sponsors/oatey.png"),
         fallbackImage: getAssetUrl("/sponsors/oatey.png"),
-        description: "Official Refreshment Partner for Renaissance 2026.",
+        description: "Official Beverage Partner for Renaissance 2026.",
       }
     ],
   },
   {
-    id: "supply-chain",
-    title: "Supply Chain Partner",
+    id: "logistics",
+    title: "Logistics Partner",
     sponsors: [
       {
         name: "Safe Express",
-        category: "Supply Chain Partner",
+        category: "Logistics Partner",
         image: CLOUDINARY_SPONSORS.safexpress || getAssetUrl("/sponsors/safexpress.png"),
         fallbackImage: getAssetUrl("/sponsors/safexpress.png"),
-        description: "Official Supply Chain Partner for Renaissance 2026.",
+        description: "Official Logistics Partner for Renaissance 2026.",
       }
     ],
   },
   {
-    id: "confectionery",
-    title: "Confectionery Partner",
+    id: "snacking",
+    title: "Snacking Partner",
     sponsors: [
       {
         name: "Lotte",
-        category: "Confectionery Partner",
+        category: "Snacking Partner",
         image: CLOUDINARY_SPONSORS.lotte || getAssetUrl("/sponsors/lotte.png"),
         fallbackImage: getAssetUrl("/sponsors/lotte.png"),
-        description: "Official Confectionery Partner for Renaissance 2026.",
+        description: "Official Snacking Partner for Renaissance 2026.",
       }
     ],
   },
