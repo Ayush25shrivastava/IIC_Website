@@ -1061,7 +1061,26 @@ export default function Home() {
       </section>
 
       {/* ============================================================ */}
-      {/* 3. FEATURED EVENTS SECTION                                  */}
+      {/* 3. CURRENT SPONSORS SECTION                                  */}
+      {/* ============================================================ */}
+      <PremiumSponsorsGrid
+        title="Current Sponsors"
+        subtitle="Industry & Innovation Partners"
+        sponsors={CURRENT_SPONSORS}
+      />
+
+      {/* ============================================================ */}
+      {/* 4. KEYNOTE SPEAKERS SECTION                                  */}
+      {/* ============================================================ */}
+      <FeaturedSpeakersGrid speakers={SPEAKERS} />
+
+      {/* ============================================================ */}
+      {/* 5. ACCOMMODATION SECTION                                     */}
+      {/* ============================================================ */}
+      <AccommodationSection />
+
+      {/* ============================================================ */}
+      {/* 6. FEATURED EVENTS SECTION                                   */}
       {/* ============================================================ */}
       <section
         id="events"
@@ -1189,24 +1208,8 @@ export default function Home() {
       </section>
 
       {/* ============================================================ */}
-      {/* 6. KEYNOTE SPEAKERS SECTION (FULL SCREEN UNPINNED SCRUB GRID)*/}
+      {/* 7. PAST SPONSORS SECTION                                     */}
       {/* ============================================================ */}
-      {/* ============================================================ */}
-      {/* 6. KEYNOTE SPEAKERS SECTION */}
-      <FeaturedSpeakersGrid speakers={SPEAKERS} />
-
-      {/* ============================================================ */}
-      {/* 6.5. ACCOMMODATION SECTION                                   */}
-      {/* ============================================================ */}
-      <AccommodationSection />
-
-      {/* ============================================================ */}
-      {/* 7. SPONSORS SECTION                                          */}
-      <PremiumSponsorsGrid
-        title="Current Sponsors"
-        subtitle="Industry & Innovation Partners"
-        sponsors={CURRENT_SPONSORS}
-      />
       <StaggeredSponsorsGrid
         title="Past Sponsors"
         subtitle="Pioneers & Legacy Partners"

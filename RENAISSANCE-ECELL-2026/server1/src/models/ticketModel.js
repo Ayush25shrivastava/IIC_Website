@@ -26,6 +26,13 @@ const ticketSchema = new Schema({
     enum: ['event-standard', 'event-premium', 'event-elite', 'accom-standard', 'accom-premium', 'accom-elite'],
     required: true
   },
+  
+  tshirtSize: {
+    type: String,
+    enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', null],
+    default: null
+  },
+  
   accommodationDays: { type: Number, min: 0, max: 4, default: 0 },
 
   checkInDate: { type: Date },
@@ -55,6 +62,8 @@ const ticketSchema = new Schema({
 
   verifiedBy: { type: Schema.Types.ObjectId, ref: 'Admin' },
   verificationRemarks: { type: String },
+  editedAt: { type: Date },
+  editedBy: { type: Schema.Types.ObjectId, ref: 'Admin' },
   stageScans: { type: [ticketScanSchema], default: [] }
 
 }, { timestamps: true });
