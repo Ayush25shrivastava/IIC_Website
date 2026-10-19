@@ -38,7 +38,11 @@ export default function EventSection() {
               </div>
 
               <WaterButton
-                onClick={() => navigate(`/events/${event.id}/register`)}
+                onClick={() =>
+                  event.registrationUrl
+                    ? window.open(event.registrationUrl, "_blank", "noopener,noreferrer")
+                    : navigate(`/events/${event.id}/register`)
+                }
                 variant="primary"
                 className="w-full !px-4 !py-2.5 text-[11px]"
               >
