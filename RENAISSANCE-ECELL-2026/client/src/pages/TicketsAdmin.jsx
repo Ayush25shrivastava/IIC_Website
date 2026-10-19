@@ -172,6 +172,7 @@ export default function TicketsAdmin() {
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [stageConfigs, setStageConfigs] = useState({});
+    const [soldOutPasses, setSoldOutPasses] = useState({});
     const [passType, setPassType] = useState("event-standard");
     const [stageId, setStageId] = useState("");
     const [stageName, setStageName] = useState("");
@@ -200,6 +201,7 @@ export default function TicketsAdmin() {
         );
 
         setStageConfigs(configs);
+        setSoldOutPasses(Object.fromEntries((data.configs || []).map((config) => [config.ticketType, Boolean(config.soldOut)])));
         return configs;
     }, []);
 
@@ -223,6 +225,7 @@ export default function TicketsAdmin() {
                 );
 
                 setStageConfigs(configs);
+                setSoldOutPasses(Object.fromEntries((stageData.configs || []).map((config) => [config.ticketType, Boolean(config.soldOut)])));
                 setStageId((configs[passType] || [])[0]?.stageId || "");
             })
             .catch((err) => {
@@ -330,6 +333,22 @@ export default function TicketsAdmin() {
             if (!handleError(err)) {
                 setError(err.message || "Could not remove stage.");
             }
+        } finally {
+            setStageConfigBusy(false);
+        }
+    }
+
+    async function toggleSoldOut() {
+        const soldOut = !soldOutPasses[passType];
+        setStageConfigBusy(true);
+        setError("");
+        setNotice("");
+        try {
+            const result = await ticketApi.setSoldOut(passType, soldOut);
+            setSoldOutPasses((current) => ({ ...current, [passType]: result.soldOut }));
+            setNotice(`${PASS_TYPES.find(([id]) => id === passType)?.[1]} marked ${result.soldOut ? "sold out" : "available"}.`);
+        } catch (err) {
+            if (!handleError(err)) setError(err.message || "Pass availability could not be updated.");
         } finally {
             setStageConfigBusy(false);
         }
@@ -973,6 +992,11 @@ export default function TicketsAdmin() {
                             ))}
                         </select>
                     </label>
+
+                    <div className={`mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4 ${soldOutPasses[passType] ? "border-rose-200 bg-rose-50" : "border-emerald-200 bg-emerald-50"}`}>
+                        <div><p className="text-xs font-black uppercase tracking-wider text-[#173f52]">Pass availability</p><p className={`mt-1 text-xs font-bold ${soldOutPasses[passType] ? "text-rose-700" : "text-emerald-700"}`}>{soldOutPasses[passType] ? "Sold out · registration is blocked" : "Available for registration"}</p></div>
+                        <button type="button" disabled={stageConfigBusy} onClick={toggleSoldOut} className={`rounded-lg px-3 py-2 text-xs font-bold text-white disabled:opacity-50 ${soldOutPasses[passType] ? "bg-emerald-700 hover:bg-emerald-800" : "bg-rose-700 hover:bg-rose-800"}`}>{stageConfigBusy ? "Saving…" : soldOutPasses[passType] ? "Reopen pass" : "Mark sold out"}</button>
+                    </div>
 
                     <div className="mt-4 rounded-xl border border-[#b6dce4] bg-white/75 p-4">
                         <div className="flex items-center justify-between gap-3">

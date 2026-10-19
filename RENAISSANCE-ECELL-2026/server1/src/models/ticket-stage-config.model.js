@@ -18,6 +18,7 @@ const ticketStageConfigSchema = new Schema({
         type: [ticketStageSchema],
         default: [],
     },
+    soldOut: { type: Boolean, default: false },
 }, { timestamps: true, collection: "ticket_stage_configs" });
 
 ticketStageConfigSchema.index({ ticketType: 1 }, { unique: true });

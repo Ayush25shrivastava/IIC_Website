@@ -67,6 +67,11 @@ export const purchaseTicket = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid ticket type' });
     }
 
+    const availability = await getOrCreateStageConfig(ticketType);
+    if (availability?.soldOut) {
+      return res.status(409).json({ success: false, code: 'PASS_SOLD_OUT', message: 'This pass is sold out. Please try another pass.' });
+    }
+
     const isAccommodation = ticketType.startsWith('accom-');
     const days = Number(accommodationDays);
     if (!Number.isInteger(days) || (isAccommodation ? days < 1 || days > 4 : days !== 0)) {
@@ -126,8 +131,23 @@ export const getTicketStageConfigs = async (_req, res) => {
     const configs = await Promise.all(ticketTypes.map((ticketType) => getOrCreateStageConfig(ticketType)));
     res.status(200).json({
       success: true,
-      configs: configs.map(({ ticketType, stages }) => ({ ticketType, stages })),
+      configs: configs.map(({ ticketType, stages, soldOut }) => ({ ticketType, stages, soldOut: Boolean(soldOut) })),
     });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const setTicketSoldOut = async (req, res) => {
+  try {
+    const { ticketType } = req.params;
+    const { soldOut } = req.body;
+    if (!ticketTypes.includes(ticketType)) return res.status(400).json({ success: false, message: 'Invalid pass type' });
+    if (typeof soldOut !== 'boolean') return res.status(400).json({ success: false, message: 'soldOut must be true or false' });
+    const config = await getOrCreateStageConfig(ticketType);
+    config.soldOut = soldOut;
+    await config.save();
+    res.status(200).json({ success: true, ticketType, soldOut: config.soldOut });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
