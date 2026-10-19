@@ -33,7 +33,7 @@ import {
 import ContactFooter from "../components/ContactFooter";
 import PageTransitionShimmer from "../components/PageTransitionShimmer";
 import { getAssetUrl } from "../utils/assetUrl";
-import { CLOUDINARY_QR } from "../constants/cloudinaryAssets";
+import { CLOUDINARY_QR, CLOUDINARY_TSHIRT } from "../constants/cloudinaryAssets";
 import QRCode from "qrcode";
 import { jsPDF } from "jspdf";
 import { ticketApi } from "../lib/server1-api";
@@ -1302,10 +1302,10 @@ export default function TicketsAccommodation() {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                               <div className="rounded-xl overflow-hidden border-2 border-[#C5A25F]/40 shadow-sm bg-black flex items-center justify-center">
-                                <img src={getAssetUrl("/WhatsApp Image 2026-10-18 at 3.30.03 PM.jpeg")} alt="T-Shirt Mockup" className="w-full h-auto object-cover" />
+                                <img src={CLOUDINARY_TSHIRT.mockup || getAssetUrl("/tshirt-mock.jpeg")} alt="T-Shirt Mockup" className="w-full h-auto object-cover" />
                               </div>
                               <div className="rounded-xl overflow-hidden border-2 border-[#C5A25F]/40 shadow-sm bg-white flex items-center justify-center">
-                                <img src={getAssetUrl("/WhatsApp Image 2026-10-18 at 3.30.02 PM.jpeg")} alt="Size Chart" className="w-full h-auto object-contain" />
+                                <img src={CLOUDINARY_TSHIRT.sizeChart || getAssetUrl("/tshirt-size-chart.jpeg")} alt="Size Chart" className="w-full h-auto object-contain" />
                               </div>
                             </div>
 
