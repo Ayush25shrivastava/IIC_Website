@@ -34,6 +34,7 @@ const EVENTS = [
     tagline: "Pitch ideas. Solve real-world problems.",
     desc: "B-Plan is the flagship business-plan showdown of Renaissance - India’s premier student entrepreneurship summit. Pitch your venture idea before seasoned angel investors and founders to secure mentorship and funding.\n\nAll you need to know about B-Plan (Fish Tank - Business Plan) : Flagship pitching challenge at Renaissance 10.0.",
     prize: "₹1,00,000 Worth Prizes",
+    registrationClosed: true,
     registrationUrl:
       "http://unstop.com/o/UL8OJ4R?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
   },
@@ -44,6 +45,7 @@ const EVENTS = [
     tagline: "Think strategic. Build market winners.",
     desc: "A great product can fail; a legendary launch builds an empire. The product is ready, the market is waiting. Do you have the masterplan to make it iconic?\n\nStrategy-Wiz challenges teams to craft the blueprint for market domination: analyse markets, design innovative launch plans, and compete to showcase the most impactful marketing strategy.",
     prize: "₹50,000 Worth Prizes",
+    registrationClosed: true,
     registrationUrl:
       "https://unstop.com/competitions/strategy-wiz-renaissance-100-motilal-nehru-national-institute-of-technology-1755423?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
   },
@@ -54,6 +56,7 @@ const EVENTS = [
     tagline: "Compete. Analyse. Make real decisions.",
     desc: "In business, having a good idea is only the beginning. The real challenge is making the right decisions when the stakes are high and your competitors are waiting for you to slip.\n\nBusiness Wars is a high-pressure corporate strategy simulation where teams step into the shoes of competing enterprises and battle through real-world market scenarios.",
     prize: "₹30,000 Worth Prizes",
+    registrationClosed: true,
     registrationUrl:
       "https://unstop.com/competitions/biz-wars-renaissance-100-motilal-nehru-national-institute-of-technology-1756444?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
   },
@@ -64,7 +67,9 @@ const EVENTS = [
     tagline: "Capture. Create. Tell the story.",
     desc: "Unleash your creative flair through visual storytelling, cinematography, and brand content creation in Renaissance 10.0's flagship creative docket.\n\nTake on thematic briefs to shoot, edit, and craft compelling visual reels, short narratives, and media campaigns across campus.",
     prize: "₹10,000 Worth Prizes",
-    registrationUrl: null,
+    registrationLabel: "Register Now",
+    registrationUrl:
+      "https://docs.google.com/forms/d/e/1FAIpQLSelyJacFlt1BwWz--_SNvLlNCdt0im49JoBGybHnHHkwyr3pA/viewform",
   },
   {
     id: "05",
@@ -93,7 +98,8 @@ const EVENTS = [
     tagline: "Solve. Explore. Discover.",
     desc: "Treasure Hunt challenges participants to crack cryptographic clues, explore hidden waypoints across the MNNIT Allahabad campus, and race against the clock to unearth the grand prize bounty.",
     prize: "Exciting Rewards + Certificates",
-    registrationUrl: null,
+    registrationUrl:
+      "https://unstop.com/p/treasure-hunt-renaissance-100-motilal-nehru-national-institute-of-technology-1764640",
   },
   {
     id: "08",
@@ -102,7 +108,9 @@ const EVENTS = [
     tagline: "Girls only, quiz, play & win!",
     desc: "An exciting, high-energy quiz mania exclusively for girls testing your knowledge of skincare, wellness, beauty science, and trends. Quiz, play, and win exclusive gift hampers and goodies!",
     prize: "Exclusive Gift Hampers",
-    registrationUrl: null,
+    registrationLabel: "Register Now",
+    registrationUrl:
+      "https://docs.google.com/forms/d/e/1FAIpQLSeQbNNk7K7oO1EwPrjCcmQQs61NWGzAVtpUXU0dz4B4YpouSQ/viewform",
   },
 ];
 
@@ -1165,7 +1173,11 @@ export default function Home() {
                     </p>
 
                     <div className="pt-2 sm:pt-3 mt-auto border-t border-[#0C2B3D]/10 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 w-full">
-                      {event.registrationUrl ? (
+                      {event.registrationClosed ? (
+                        <div className="w-full sm:w-auto px-4 sm:px-7 py-2 sm:py-3 rounded-full bg-red-600 text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase flex items-center justify-center select-none">
+                          Registration Closed
+                        </div>
+                      ) : event.registrationUrl ? (
                         <a
                           href={event.registrationUrl}
                           target="_blank"
@@ -1173,7 +1185,7 @@ export default function Home() {
                           className="w-full sm:w-auto px-4 sm:px-7 py-2 sm:py-3 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.03] transition-all flex items-center justify-center gap-2 group cursor-pointer"
                         >
                           <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#38BDF8] animate-pulse" />
-                          <span>Register on Unstop</span>
+                          <span>{event.registrationLabel ?? "Register on Unstop"}</span>
                           <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#38BDF8] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                         </a>
                       ) : (

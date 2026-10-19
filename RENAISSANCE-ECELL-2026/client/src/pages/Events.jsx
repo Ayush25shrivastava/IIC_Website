@@ -75,6 +75,7 @@ export default function Events({ embedded = false }) {
       location: "MNNIT Allahabad",
       cardImage: "/b-plan-card.jpeg",
       cardImagePosition: "center",
+      registrationClosed: true,
       registrationUrl:
         "http://unstop.com/o/UL8OJ4R?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
       description:
@@ -97,6 +98,7 @@ export default function Events({ embedded = false }) {
       location: "MNNIT Allahabad",
       cardImage: "/strategy-wiz-card.jpeg",
       cardImagePosition: "center",
+      registrationClosed: true,
       registrationUrl:
         "https://unstop.com/competitions/strategy-wiz-renaissance-100-motilal-nehru-national-institute-of-technology-1755423?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
       description:
@@ -119,6 +121,7 @@ export default function Events({ embedded = false }) {
       location: "MNNIT Allahabad",
       cardImage: "/biz-war-card.jpeg",
       cardImagePosition: "right center",
+      registrationClosed: true,
       registrationUrl:
         "https://unstop.com/competitions/biz-wars-renaissance-100-motilal-nehru-national-institute-of-technology-1756444?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
       description:
@@ -140,7 +143,9 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationLabel: "Register Now",
+      registrationUrl:
+        "https://docs.google.com/forms/d/e/1FAIpQLSelyJacFlt1BwWz--_SNvLlNCdt0im49JoBGybHnHHkwyr3pA/viewform",
       description:
         "Capture narratives that move audiences and ignite brand engagement through visual storytelling, cinematography, and creative media.",
       detailDescription: [
@@ -202,7 +207,8 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationUrl:
+        "https://unstop.com/p/treasure-hunt-renaissance-100-motilal-nehru-national-institute-of-technology-1764640",
       description:
         "An adventurous campus-wide quest. Decode cryptic clues, navigate hidden waypoints across MNNIT, and race against the clock.",
       detailDescription: [
@@ -222,7 +228,9 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationLabel: "Register Now",
+      registrationUrl:
+        "https://docs.google.com/forms/d/e/1FAIpQLSeQbNNk7K7oO1EwPrjCcmQQs61NWGzAVtpUXU0dz4B4YpouSQ/viewform",
       description:
         "An exciting, interactive skincare, wellness, and self-care trivia mania designed exclusively for girls. Quiz, play, and win exclusive gift hampers!",
       detailDescription: [
@@ -408,18 +416,24 @@ export default function Events({ embedded = false }) {
 
                   {/* Action Button: Matched with Home.jsx Wheel Card */}
                   <div className="pt-3 sm:pt-4 mt-auto">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openStandaloneEvent(event);
-                      }}
-                      className="w-full py-2.5 sm:py-3 px-4 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group/btn cursor-pointer"
-                    >
-                      <span className="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse" />
-                      <span>View Details</span>
-                      <ExternalLink className="w-3.5 h-3.5 text-[#38BDF8] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                    </button>
+                    {event.registrationClosed ? (
+                      <div className="w-full py-2.5 sm:py-3 px-4 rounded-full bg-red-600 text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase flex items-center justify-center select-none">
+                        Registration Closed
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openStandaloneEvent(event);
+                        }}
+                        className="w-full py-2.5 sm:py-3 px-4 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group/btn cursor-pointer"
+                      >
+                        <span className="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse" />
+                        <span>View Details</span>
+                        <ExternalLink className="w-3.5 h-3.5 text-[#38BDF8] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                      </button>
+                    )}
                   </div>
                 </article>
               ))}
@@ -590,14 +604,20 @@ export default function Events({ embedded = false }) {
 
                     {/* Bottom Action Buttons: Identically Sized Register & WhatsApp Buttons in Equal Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full mt-6">
-                      {selectedEventModal.registrationUrl ? (
+                      {selectedEventModal.registrationClosed ? (
+                        <div className="h-[50px] w-full px-4 rounded-xl bg-red-600 text-white font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center flex items-center justify-center select-none">
+                          Registration Closed
+                        </div>
+                      ) : selectedEventModal.registrationUrl ? (
                         <a
                           href={selectedEventModal.registrationUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="h-[50px] w-full px-4 rounded-xl bg-[#F3C7AD] hover:bg-[#EDB696] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.1)] hover:shadow-[0_8px_25px_rgba(220,169,137,0.3)] flex items-center justify-center gap-2 cursor-pointer"
                         >
-                          <span>Register on Unstop</span>
+                          <span>
+                            {selectedEventModal.registrationLabel ?? "Register on Unstop"}
+                          </span>
                           <ExternalLink className="w-4 h-4 shrink-0" />
                         </a>
                       ) : (
