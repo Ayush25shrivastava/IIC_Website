@@ -104,6 +104,33 @@ const EVENTS = [
     prize: "Exclusive Gift Hampers",
     registrationUrl: null,
   },
+  {
+    id: "09",
+    name: "TTT: Ten Minute Turnaround",
+    category: "Corporate Crisis Simulation",
+    tagline: "600 Seconds to Save a Unicorn.",
+    desc: "Forget basic pitch decks. Step into the shoes of C-suite executives handling an active corporate crisis. Analyse real unit economics, salvage market share, and defend your 5-slide blueprint live in front of a board of directors.\n\n• Team Size: 2–4 members\n• Format: Case Analysis & Live Boardroom Pitch",
+    prize: "Exciting Rewards + Certificates",
+    registrationUrl: null,
+  },
+  {
+    id: "10",
+    name: "B-Plan Junior",
+    category: "Early-Stage Startup Pitch",
+    tagline: "Got an early-stage startup idea or business plan?",
+    desc: "Got an early-stage startup idea or business plan? Compete in B-Plan Junior! The top-performing teams get direct fast-track qualification to the flagship B-Plan presentation round.",
+    prize: "Fast-Track to Flagship B-Plan Finale",
+    registrationUrl: null,
+  },
+  {
+    id: "11",
+    name: "Model United Nations (MUN)",
+    category: "Diplomacy & Global Policy",
+    tagline: "Represent your nation. Dominate the floor.",
+    desc: "High-stakes diplomacy, intense committee debates, and global policy strategy. Step up, represent your nation, and dominate the floor!\n\nMore Than Just Competitions.",
+    prize: "Exclusive Citations + Certificates",
+    registrationUrl: null,
+  },
 ];
 
 const CURRENT_SPONSORS =

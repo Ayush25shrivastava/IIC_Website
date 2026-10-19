@@ -230,6 +230,67 @@ export default function Events({ embedded = false }) {
         "Gather your friends, test your skincare IQ through lively interactive trivia rounds, and compete to take home exclusive luxury gift hampers and goodies. It's time to glow up your knowledge and celebrate wellness in style!",
       ],
     },
+    {
+      id: "ttt",
+      title: "TTT: Ten Minute Turnaround",
+      eventNo: "09",
+      category: "Corporate Crisis Simulation",
+      categories: ["All Events", "Strategy & Planning", "Business Development", "Finance"],
+      tagline: "600 Seconds to Save a Unicorn.",
+      prize: "Exciting Rewards + Certificates",
+      capacity: "2-4 Members",
+      time: "25 - 27 Oct 2026",
+      location: "MNNIT Allahabad",
+      cardImage: null,
+      registrationUrl: null,
+      description:
+        "Step into the shoes of C-suite executives handling an active corporate crisis. Analyse real unit economics, salvage market share, and defend your 5-slide blueprint live.",
+      detailDescription: [
+        "600 Seconds to Save a Unicorn. Forget basic pitch decks. Step into the shoes of C-suite executives handling an active corporate crisis.",
+        "Analyse real unit economics, salvage market share, and defend your 5-slide blueprint live in front of a board of directors.",
+        "• Team Size: 2–4 members\n• Format: Case Analysis & Live Boardroom Pitch",
+      ],
+    },
+    {
+      id: "b-plan-junior",
+      title: "B-Plan Junior",
+      eventNo: "10",
+      category: "Early-Stage Startup Pitch",
+      categories: ["All Events", "Strategy & Planning", "Business Development"],
+      tagline: "Got an early-stage startup idea or business plan?",
+      prize: "Fast-Track to Flagship B-Plan Finale",
+      capacity: "1-4 Members",
+      time: "25 - 27 Oct 2026",
+      location: "MNNIT Allahabad",
+      cardImage: null,
+      registrationUrl: null,
+      description:
+        "Got an early-stage startup idea or business plan? Compete in B-Plan Junior! The top-performing teams get direct fast-track qualification to the flagship B-Plan round.",
+      detailDescription: [
+        "Got an early-stage startup idea or business plan? Compete in B-Plan Junior!",
+        "The top-performing teams get direct fast-track qualification to the flagship B-Plan presentation round.",
+      ],
+    },
+    {
+      id: "mun",
+      title: "Model United Nations (MUN)",
+      eventNo: "11",
+      category: "Diplomacy & Global Policy",
+      categories: ["All Events", "Strategy & Planning"],
+      tagline: "Represent your nation. Dominate the floor.",
+      prize: "Exclusive Citations + Certificates",
+      capacity: "Individual Delegate",
+      time: "25 - 27 Oct 2026",
+      location: "MNNIT Allahabad",
+      cardImage: null,
+      registrationUrl: null,
+      description:
+        "High-stakes diplomacy, intense committee debates, and global policy strategy. Step up, represent your nation, and dominate the floor!",
+      detailDescription: [
+        "High-stakes diplomacy, intense committee debates, and global policy strategy. Step up, represent your nation, and dominate the floor!",
+        "More Than Just Competitions: engage in international diplomacy, crisis committee dynamics, draft resolutions, and shape global discourse.",
+      ],
+    },
   ];
 
   if (!embedded) {
