@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
@@ -46,10 +46,22 @@ export default function Events({ embedded = false }) {
 
   const [eventFilter, setEventFilter] = useState("All Events");
 
+  useEffect(() => {
+    if (!selectedEventModal) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [selectedEventModal]);
+
   // Standalone /events catalogue. The embedded homepage timeline below stays untouched.
   const standaloneCategories = [
     "All Events",
     "Strategy & Planning",
+    "Diplomacy & Global Affairs",
     "Quizzes & Treasure Hunt",
     "Creative & Media",
     "Finance",
@@ -75,6 +87,7 @@ export default function Events({ embedded = false }) {
       location: "MNNIT Allahabad",
       cardImage: "/b-plan-card.jpeg",
       cardImagePosition: "center",
+      registrationClosed: true,
       registrationUrl:
         "http://unstop.com/o/UL8OJ4R?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
       description:
@@ -97,6 +110,7 @@ export default function Events({ embedded = false }) {
       location: "MNNIT Allahabad",
       cardImage: "/strategy-wiz-card.jpeg",
       cardImagePosition: "center",
+      registrationClosed: true,
       registrationUrl:
         "https://unstop.com/competitions/strategy-wiz-renaissance-100-motilal-nehru-national-institute-of-technology-1755423?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
       description:
@@ -119,6 +133,7 @@ export default function Events({ embedded = false }) {
       location: "MNNIT Allahabad",
       cardImage: "/biz-war-card.jpeg",
       cardImagePosition: "right center",
+      registrationClosed: true,
       registrationUrl:
         "https://unstop.com/competitions/biz-wars-renaissance-100-motilal-nehru-national-institute-of-technology-1756444?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
       description:
@@ -237,7 +252,7 @@ export default function Events({ embedded = false }) {
       id: "ttt",
       title: "TTT: Ten Minute Turnaround",
       eventNo: "09",
-      category: "Corporate Crisis Simulation",
+      category: "Crisis Strategy Simulation",
       categories: ["All Events", "Strategy & Planning", "Business Development", "Finance"],
       tagline: "600 Seconds to Save a Unicorn.",
       prize: "Exciting Rewards + Certificates",
@@ -246,34 +261,32 @@ export default function Events({ embedded = false }) {
       location: "MNNIT Allahabad",
       cardImage: null,
       registrationUrl:
-        "https://docs.google.com/forms/d/e/1FAIpQLSdVM7d6SgP70JEj9gE-90XscLjGzNKAqAM7m7ifox6J63AIJg/viewform?usp=publish-editor",
+        "https://docs.google.com/forms/d/e/1FAIpQLSdVM7d6SgP70JEj9gE-90XscLjGzNKAqAM7m7ifox6J63AIJg/viewform",
       description:
-        "Step into the shoes of C-suite executives handling an active corporate crisis. Analyse real unit economics, salvage market share, and defend your 5-slide blueprint live.",
+        "A 10-minute corporate crisis simulation. Analyse unit economics, protect market share, and defend your turnaround strategy before a board of directors.",
       detailDescription: [
-        "600 Seconds to Save a Unicorn. Forget basic pitch decks. Step into the shoes of C-suite executives handling an active corporate crisis.",
-        "Analyse real unit economics, salvage market share, and defend your 5-slide blueprint live in front of a board of directors.",
-        "• Team Size: 2–4 members\n• Format: Case Analysis & Live Boardroom Pitch",
+        "TTT (Ten Minute Turnaround) is a high-pressure corporate crisis simulation where teams act as interim CEOs and Chief Strategy Officers to rescue an established company facing a sudden market crisis. With just 10 minutes to develop a data-driven turnaround strategy, teams present their decisions and defend them before a board of directors.",
+        "Forget basic pitch decks. Analyse real unit economics, salvage market share, and defend your five-slide blueprint live in the boardroom. The format is case analysis followed by a live boardroom pitch. Open to MNNIT students; teams must have 2-4 members.",
       ],
     },
     {
       id: "b-plan-junior",
       title: "B-Plan Junior",
       eventNo: "10",
-      category: "Early-Stage Startup Pitch",
-      categories: ["All Events", "Strategy & Planning", "Business Development"],
+      category: "Startup & Business Plan",
+      categories: ["All Events", "Strategy & Planning", "Business Development", "Finance"],
       tagline: "Got an early-stage startup idea or business plan?",
-      prize: "Fast-Track to Flagship B-Plan Finale",
+      prize: "Fast-track to the flagship B-Plan presentation round",
       capacity: "1-4 Members",
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
       registrationUrl:
-        "https://docs.google.com/forms/d/e/1FAIpQLScMsj-9CoI368_dbNIkOc9QsNPtp_Z_Uj0uwk55Az8RPoTabQ/viewform?usp=header",
+        "https://docs.google.com/forms/d/e/1FAIpQLScMsj-9CoI368_dbNIkOc9QsNPtp_Z_Uj0uwk55Az8RPoTabQ/viewform",
       description:
-        "Got an early-stage startup idea or business plan? Compete in B-Plan Junior! The top-performing teams get direct fast-track qualification to the flagship B-Plan round.",
+        "Got an early-stage startup idea or business plan? Take your entrepreneurial vision to the next level with B-Plan Junior, a platform designed to identify, nurture, and accelerate promising young innovators. Present your ideas, showcase your business strategies, and compete with talented teams to demonstrate your creativity, problem-solving abilities, and entrepreneurial potential. The top-performing teams earn the opportunity to skip the queue and secure direct fast-track qualification to the flagship B-Plan presentation round, bringing them one step closer to turning their innovative ideas into reality. Seize this opportunity to gain recognition, challenge conventional thinking, and transform your business vision into a compelling venture.",
       detailDescription: [
-        "Got an early-stage startup idea or business plan? Compete in B-Plan Junior!",
-        "The top-performing teams get direct fast-track qualification to the flagship B-Plan presentation round.",
+        "Got an early-stage startup idea or business plan? Take your entrepreneurial vision to the next level with B-Plan Junior, a platform designed to identify, nurture, and accelerate promising young innovators. Present your ideas, showcase your business strategies, and compete with talented teams to demonstrate your creativity, problem-solving abilities, and entrepreneurial potential. The top-performing teams earn the opportunity to skip the queue and secure direct fast-track qualification to the flagship B-Plan presentation round, bringing them one step closer to turning their innovative ideas into reality. Seize this opportunity to gain recognition, challenge conventional thinking, and transform your business vision into a compelling venture.",
       ],
     },
     {
@@ -281,20 +294,46 @@ export default function Events({ embedded = false }) {
       title: "Model United Nations (MUN)",
       eventNo: "11",
       category: "Diplomacy & Global Policy",
-      categories: ["All Events", "Strategy & Planning"],
+      categories: ["All Events", "Diplomacy & Global Affairs", "Strategy & Planning"],
       tagline: "Represent your nation. Dominate the floor.",
       prize: "Exclusive Citations + Certificates",
-      capacity: "Individual Delegate",
+      capacity: "Individual (1 Delegate)",
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
       registrationUrl:
-        "https://docs.google.com/forms/d/e/1FAIpQLSeM1d3obsXb9Dx20wkoLDw2hA6AnbS36HVthLtvRzTPW_g12g/viewform?usp=publish-editor",
+        "https://docs.google.com/forms/d/e/1FAIpQLSeM1d3obsXb9Dx20wkoLDw2hA6AnbS36HVthLtvRzTPW_g12g/viewform",
       description:
         "High-stakes diplomacy, intense committee debates, and global policy strategy. Step up, represent your nation, and dominate the floor!",
-      detailDescription: [
-        "High-stakes diplomacy, intense committee debates, and global policy strategy. Step up, represent your nation, and dominate the floor!",
-        "More Than Just Competitions: engage in international diplomacy, crisis committee dynamics, draft resolutions, and shape global discourse.",
+      detailSections: [
+        {
+          heading: "About MUN",
+          paragraphs: [
+            "Model United Nations (MUN) simulates the United Nations. Represent a country, debate global challenges, negotiate solutions, and draft impactful resolutions. Showcase your diplomacy, public speaking, and strategic thinking.",
+            "Team size: 1 delegate.",
+          ],
+        },
+        {
+          heading: "More Than Just Competitions",
+          items: [
+            {
+              title: "Speaker Sessions",
+              description: "Learn directly from industry leaders, startup founders, and top decision-makers.",
+            },
+            {
+              title: "Unmatched Networking Opportunities",
+              description: "Connect with venture capitalists, founders, industry mentors, and talented students from DU, IITs, NITs, and IIMs.",
+            },
+            {
+              title: "Bhajan Jamming Session",
+              description: "Unplug, vibe, and kick off the fest with a unique cultural jamming experience.",
+            },
+            {
+              title: "Day 2 Star Artist Performance",
+              description: "Get ready for a massive headliner night! The artist reveal is coming soon.",
+            },
+          ],
+        },
       ],
     },
   ];
@@ -475,18 +514,24 @@ export default function Events({ embedded = false }) {
 
                   {/* Action Button: Matched with Home.jsx Wheel Card */}
                   <div className="pt-3 sm:pt-4 mt-auto">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openStandaloneEvent(event);
-                      }}
-                      className="w-full py-2.5 sm:py-3 px-4 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group/btn cursor-pointer"
-                    >
-                      <span className="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse" />
-                      <span>View Details</span>
-                      <ExternalLink className="w-3.5 h-3.5 text-[#38BDF8] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                    </button>
+                    {event.registrationClosed ? (
+                      <div className="w-full py-2.5 sm:py-3 px-4 rounded-full bg-red-600 text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase flex items-center justify-center select-none">
+                        Registration Closed
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openStandaloneEvent(event);
+                        }}
+                        className="w-full py-2.5 sm:py-3 px-4 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group/btn cursor-pointer"
+                      >
+                        <span className="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse" />
+                        <span>View Details</span>
+                        <ExternalLink className="w-3.5 h-3.5 text-[#38BDF8] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                      </button>
+                    )}
                   </div>
                 </article>
               ))}
@@ -538,7 +583,7 @@ export default function Events({ embedded = false }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0C2B3D]/75 backdrop-blur-md p-3 sm:p-5 md:p-8 overflow-y-auto"
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0C2B3D]/75 backdrop-blur-md p-3 sm:p-5 md:p-8 overflow-y-auto overscroll-contain"
               onClick={() => setSelectedEventModal(null)}
             >
               <motion.div
@@ -550,7 +595,7 @@ export default function Events({ embedded = false }) {
                   prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 12 }
                 }
                 transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className="relative w-full max-w-4xl overflow-hidden rounded-2xl sm:rounded-3xl border border-[#7FB6C7]/60 bg-gradient-to-br from-[#ECF6F5] via-[#E0F1F7] to-[#FBE5D6] text-[#416678] shadow-[0_25px_90px_rgba(12,43,61,0.45)] max-h-[92vh] flex flex-col my-auto"
+                className="relative w-full max-w-4xl overflow-hidden rounded-2xl sm:rounded-3xl border border-[#7FB6C7]/60 bg-gradient-to-br from-[#ECF6F5] via-[#E0F1F7] to-[#FBE5D6] text-[#416678] shadow-[0_25px_90px_rgba(12,43,61,0.45)] max-h-[92vh] max-h-[92dvh] flex flex-col my-auto"
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -566,7 +611,10 @@ export default function Events({ embedded = false }) {
                   <X className="w-4 h-4" />
                 </button>
 
-                <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-4 sm:gap-6 items-stretch p-4 sm:p-6 md:p-7 overflow-y-auto">
+                <div
+                  className="min-h-0 flex-1 grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-4 sm:gap-6 items-stretch p-4 sm:p-6 md:p-7 overflow-y-auto overscroll-contain"
+                  style={{ WebkitOverflowScrolling: "touch" }}
+                >
                   {/* Left Column: Event Poster (Clean Poster Image, No AI Slop) */}
                   <div className="relative rounded-xl sm:rounded-2xl border border-[#7FB6C7]/45 bg-[#D7EBEE] overflow-hidden flex items-center justify-center h-48 sm:h-60 md:h-full min-h-[190px] md:min-h-[440px]">
                     {selectedEventModal.cardImage ? (
@@ -643,8 +691,27 @@ export default function Events({ embedded = false }) {
                         <span className="block font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#0C2B3D]">
                           EVENT OVERVIEW
                         </span>
-                        <div className="mt-2.5 border-l-2 border-[#DCA989] pl-3.5 space-y-2.5 font-montserrat text-xs sm:text-sm leading-relaxed text-[#416678]">
-                          {Array.isArray(selectedEventModal.detailDescription) ? (
+                        <div className="mt-2.5 border-l-2 border-[#DCA989] pl-3.5 space-y-3 font-montserrat text-xs sm:text-sm leading-relaxed text-[#416678]">
+                          {Array.isArray(selectedEventModal.detailSections) ? (
+                            selectedEventModal.detailSections.map((section) => (
+                              <section key={section.heading}>
+                                <h3 className="font-bold text-[#0C2B3D]">{section.heading}</h3>
+                                {section.paragraphs?.map((paragraph) => (
+                                  <p key={paragraph} className="mt-1.5">{paragraph}</p>
+                                ))}
+                                {section.items && (
+                                  <ul className="mt-1.5 list-disc space-y-1.5 pl-5">
+                                    {section.items.map((item) => (
+                                      <li key={item.title}>
+                                        <strong className="text-[#0C2B3D]">{item.title}:</strong>{" "}
+                                        {item.description}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </section>
+                            ))
+                          ) : Array.isArray(selectedEventModal.detailDescription) ? (
                             selectedEventModal.detailDescription.map((p, i) => (
                               <p key={i}>{p}</p>
                             ))
@@ -657,7 +724,11 @@ export default function Events({ embedded = false }) {
 
                     {/* Bottom Action Buttons: Identically Sized Register & WhatsApp Buttons in Equal Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full mt-6">
-                      {selectedEventModal.registrationUrl ? (
+                      {selectedEventModal.registrationClosed ? (
+                        <div className="h-[50px] w-full px-4 rounded-xl bg-red-600 text-white font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center flex items-center justify-center select-none">
+                          Registration Closed
+                        </div>
+                      ) : selectedEventModal.registrationUrl ? (
                         <a
                           href={selectedEventModal.registrationUrl}
                           target="_blank"

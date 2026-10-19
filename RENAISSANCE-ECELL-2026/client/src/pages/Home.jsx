@@ -34,6 +34,7 @@ const EVENTS = [
     tagline: "Pitch ideas. Solve real-world problems.",
     desc: "B-Plan is the flagship business-plan showdown of Renaissance - India’s premier student entrepreneurship summit. Pitch your venture idea before seasoned angel investors and founders to secure mentorship and funding.\n\nAll you need to know about B-Plan (Fish Tank - Business Plan) : Flagship pitching challenge at Renaissance 10.0.",
     prize: "₹1,00,000 Worth Prizes",
+    registrationClosed: true,
     registrationUrl:
       "http://unstop.com/o/UL8OJ4R?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
   },
@@ -44,6 +45,7 @@ const EVENTS = [
     tagline: "Think strategic. Build market winners.",
     desc: "A great product can fail; a legendary launch builds an empire. The product is ready, the market is waiting. Do you have the masterplan to make it iconic?\n\nStrategy-Wiz challenges teams to craft the blueprint for market domination: analyse markets, design innovative launch plans, and compete to showcase the most impactful marketing strategy.",
     prize: "₹50,000 Worth Prizes",
+    registrationClosed: true,
     registrationUrl:
       "https://unstop.com/competitions/strategy-wiz-renaissance-100-motilal-nehru-national-institute-of-technology-1755423?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
   },
@@ -54,6 +56,7 @@ const EVENTS = [
     tagline: "Compete. Analyse. Make real decisions.",
     desc: "In business, having a good idea is only the beginning. The real challenge is making the right decisions when the stakes are high and your competitors are waiting for you to slip.\n\nBusiness Wars is a high-pressure corporate strategy simulation where teams step into the shoes of competing enterprises and battle through real-world market scenarios.",
     prize: "₹30,000 Worth Prizes",
+    registrationClosed: true,
     registrationUrl:
       "https://unstop.com/competitions/biz-wars-renaissance-100-motilal-nehru-national-institute-of-technology-1756444?lb=useYavQm&utm_medium=Share&utm_source=competitions&utm_campaign=Divyaver74529",
   },
@@ -157,31 +160,31 @@ const CURRENT_SPONSORS =
       },
       {
         name: "Max Protein",
-        category: "Nutrition Partner",
+        category: "Protein Partner",
         image: CLOUDINARY_SPONSORS.maxProtein || "/sponsors/maxprotein.png",
         fallbackImage: "/sponsors/maxprotein.png",
-        description: "Official Nutrition Partner for Renaissance 2026.",
+        description: "Official Protein Partner for Renaissance 2026.",
       },
       {
         name: "Oatey",
-        category: "Refreshment Partner",
+        category: "Beverage Partner",
         image: CLOUDINARY_SPONSORS.oatey || "/sponsors/oatey.png",
         fallbackImage: "/sponsors/oatey.png",
-        description: "Official Refreshment Partner for Renaissance 2026.",
+        description: "Official Beverage Partner for Renaissance 2026.",
       },
       {
         name: "Safe Express",
-        category: "Supply Chain Partner",
+        category: "Logistics Partner",
         image: CLOUDINARY_SPONSORS.safexpress || "/sponsors/safexpress.png",
         fallbackImage: "/sponsors/safexpress.png",
-        description: "Official Supply Chain Partner for Renaissance 2026.",
+        description: "Official Logistics Partner for Renaissance 2026.",
       },
       {
         name: "Lotte",
-        category: "Confectionery Partner",
+        category: "Snacking Partner",
         image: CLOUDINARY_SPONSORS.lotte || "/sponsors/lotte.png",
         fallbackImage: "/sponsors/lotte.png",
-        description: "Official Confectionery Partner for Renaissance 2026.",
+        description: "Official Snacking Partner for Renaissance 2026.",
       },
       {
         name: "Unstop",
@@ -1198,7 +1201,11 @@ export default function Home() {
                     </p>
 
                     <div className="pt-2 sm:pt-3 mt-auto border-t border-[#0C2B3D]/10 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 w-full">
-                      {event.registrationUrl ? (
+                      {event.registrationClosed ? (
+                        <div className="w-full sm:w-auto px-4 sm:px-7 py-2 sm:py-3 rounded-full bg-red-600 text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase flex items-center justify-center select-none">
+                          Registration Closed
+                        </div>
+                      ) : event.registrationUrl ? (
                         <a
                           href={event.registrationUrl}
                           target="_blank"

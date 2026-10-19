@@ -118,5 +118,53 @@ export const EVENTS_DATA = [
     description: "An exciting, interactive skincare, wellness, and self-care trivia mania designed exclusively for girls. Quiz, play, and win exclusive gift hampers!",
     tagline: "Girls only, quiz, play & win!",
     rulebookUrl: "#"
+  },
+  {
+    id: "ttt",
+    name: "TTT: Ten Minute Turnaround",
+    category: "Crisis Strategy Simulation",
+    eventType: "Team (2-4)",
+    minTeamSize: 2,
+    maxTeamSize: 4,
+    prizePool: "Prize details announced soon",
+    date: "25 - 27 October 2026",
+    venue: "MNNIT Allahabad",
+    image: "",
+    description: "A 10-minute corporate crisis simulation. Analyse unit economics, protect market share, and defend your turnaround strategy before a board of directors.",
+    tagline: "600 Seconds to Save a Unicorn.",
+    registrationUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdVM7d6SgP70JEj9gE-90XscLjGzNKAqAM7m7ifox6J63AIJg/viewform",
+    rulebookUrl: "#"
+  },
+  {
+    id: "b-plan-junior",
+    name: "B-Plan Junior",
+    category: "Startup & Business Plan",
+    eventType: "Team (2-4)",
+    minTeamSize: 2,
+    maxTeamSize: 4,
+    prizePool: "Fast-track to the flagship B-Plan presentation round",
+    date: "25 - 27 October 2026",
+    venue: "MNNIT Allahabad",
+    image: "",
+    description: "Got an early-stage startup idea or business plan? Take your entrepreneurial vision to the next level with B-Plan Junior, a platform designed to identify, nurture, and accelerate promising young innovators. Present your ideas, showcase your business strategies, and compete with talented teams to demonstrate your creativity, problem-solving abilities, and entrepreneurial potential. The top-performing teams earn the opportunity to skip the queue and secure direct fast-track qualification to the flagship B-Plan presentation round, bringing them one step closer to turning their innovative ideas into reality. Seize this opportunity to gain recognition, challenge conventional thinking, and transform your business vision into a compelling venture.",
+    tagline: "Build your idea. Fast-track your pitch.",
+    registrationUrl: "https://docs.google.com/forms/d/e/1FAIpQLScMsj-9CoI368_dbNIkOc9QsNPtp_Z_Uj0uwk55Az8RPoTabQ/viewform",
+    rulebookUrl: "#"
+  },
+  {
+    id: "mun",
+    name: "Model United Nations (MUN)",
+    category: "Diplomacy & Global Affairs",
+    eventType: "Individual (1 Delegate)",
+    minTeamSize: 1,
+    maxTeamSize: 1,
+    prizePool: "Details announced soon",
+    date: "25 - 27 October 2026",
+    venue: "MNNIT Allahabad",
+    image: "",
+    description: "High-stakes diplomacy, intense committee debates, and global policy strategy. Step up, represent your nation, and dominate the floor!",
+    tagline: "Represent your nation. Make your voice heard.",
+    registrationUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeM1d3obsXb9Dx20wkoLDw2hA6AnbS36HVthLtvRzTPW_g12g/viewform",
+    rulebookUrl: "#"
   }
 ];

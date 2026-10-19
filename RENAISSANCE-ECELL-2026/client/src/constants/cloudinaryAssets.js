@@ -29,6 +29,14 @@ export const CLOUDINARY_SPONSORS = {
 };
 
 /**
+ * T-Shirt Mockup & Size Chart hosted on Cloudinary
+ */
+export const CLOUDINARY_TSHIRT = {
+  mockup: "https://res.cloudinary.com/fbf4uyoz/image/fetch/f_auto,q_auto/https://raw.githubusercontent.com/Ayush25shrivastava/IIC_Website/main/RENAISSANCE-ECELL-2026/client/public/tshirt-mock.jpeg",
+  sizeChart: "https://res.cloudinary.com/fbf4uyoz/image/fetch/f_auto,q_auto/https://raw.githubusercontent.com/Ayush25shrivastava/IIC_Website/main/RENAISSANCE-ECELL-2026/client/public/tshirt-size-chart.jpeg",
+};
+
+/**
  * Resolves a Cloudinary URL or falls back to local getAssetUrl
  * 
  * @param {string} cloudinaryUrl - The Cloudinary URL or key
