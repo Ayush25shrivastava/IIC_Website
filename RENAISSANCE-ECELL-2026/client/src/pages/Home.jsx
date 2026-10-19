@@ -64,7 +64,8 @@ const EVENTS = [
     tagline: "Capture. Create. Tell the story.",
     desc: "Unleash your creative flair through visual storytelling, cinematography, and brand content creation in Renaissance 10.0's flagship creative docket.\n\nTake on thematic briefs to shoot, edit, and craft compelling visual reels, short narratives, and media campaigns across campus.",
     prize: "₹10,000 Worth Prizes",
-    registrationUrl: null,
+    registrationUrl:
+      "https://docs.google.com/forms/d/e/1FAIpQLSelyJacFlt1BwWz--_SNvLlNCdt0im49JoBGybHnHHkwyr3pA/viewform",
   },
   {
     id: "05",
@@ -93,7 +94,8 @@ const EVENTS = [
     tagline: "Solve. Explore. Discover.",
     desc: "Treasure Hunt challenges participants to crack cryptographic clues, explore hidden waypoints across the MNNIT Allahabad campus, and race against the clock to unearth the grand prize bounty.",
     prize: "Exciting Rewards + Certificates",
-    registrationUrl: null,
+    registrationUrl:
+      "https://unstop.com/p/treasure-hunt-renaissance-100-motilal-nehru-national-institute-of-technology-1764640",
   },
   {
     id: "08",
@@ -102,7 +104,8 @@ const EVENTS = [
     tagline: "Girls only, quiz, play & win!",
     desc: "An exciting, high-energy quiz mania exclusively for girls testing your knowledge of skincare, wellness, beauty science, and trends. Quiz, play, and win exclusive gift hampers and goodies!",
     prize: "Exclusive Gift Hampers",
-    registrationUrl: null,
+    registrationUrl:
+      "https://docs.google.com/forms/d/e/1FAIpQLSeQbNNk7K7oO1EwPrjCcmQQs61NWGzAVtpUXU0dz4B4YpouSQ/viewform",
   },
   {
     id: "09",
@@ -111,7 +114,8 @@ const EVENTS = [
     tagline: "600 Seconds to Save a Unicorn.",
     desc: "Forget basic pitch decks. Step into the shoes of C-suite executives handling an active corporate crisis. Analyse real unit economics, salvage market share, and defend your 5-slide blueprint live in front of a board of directors.\n\n• Team Size: 2–4 members\n• Format: Case Analysis & Live Boardroom Pitch",
     prize: "Exciting Rewards + Certificates",
-    registrationUrl: null,
+    registrationUrl:
+      "https://docs.google.com/forms/d/e/1FAIpQLSdVM7d6SgP70JEj9gE-90XscLjGzNKAqAM7m7ifox6J63AIJg/viewform?usp=publish-editor",
   },
   {
     id: "10",
@@ -120,7 +124,8 @@ const EVENTS = [
     tagline: "Got an early-stage startup idea or business plan?",
     desc: "Got an early-stage startup idea or business plan? Compete in B-Plan Junior! The top-performing teams get direct fast-track qualification to the flagship B-Plan presentation round.",
     prize: "Fast-Track to Flagship B-Plan Finale",
-    registrationUrl: null,
+    registrationUrl:
+      "https://docs.google.com/forms/d/e/1FAIpQLScMsj-9CoI368_dbNIkOc9QsNPtp_Z_Uj0uwk55Az8RPoTabQ/viewform?usp=header",
   },
   {
     id: "11",
@@ -129,7 +134,8 @@ const EVENTS = [
     tagline: "Represent your nation. Dominate the floor.",
     desc: "High-stakes diplomacy, intense committee debates, and global policy strategy. Step up, represent your nation, and dominate the floor!\n\nMore Than Just Competitions.",
     prize: "Exclusive Citations + Certificates",
-    registrationUrl: null,
+    registrationUrl:
+      "https://docs.google.com/forms/d/e/1FAIpQLSeM1d3obsXb9Dx20wkoLDw2hA6AnbS36HVthLtvRzTPW_g12g/viewform?usp=publish-editor",
   },
 ];
 
@@ -1200,7 +1206,7 @@ export default function Home() {
                           className="w-full sm:w-auto px-4 sm:px-7 py-2 sm:py-3 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.03] transition-all flex items-center justify-center gap-2 group cursor-pointer"
                         >
                           <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#38BDF8] animate-pulse" />
-                          <span>Register on Unstop</span>
+                          <span>Register</span>
                           <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#38BDF8] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                         </a>
                       ) : (

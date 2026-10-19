@@ -140,7 +140,8 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationUrl:
+        "https://docs.google.com/forms/d/e/1FAIpQLSelyJacFlt1BwWz--_SNvLlNCdt0im49JoBGybHnHHkwyr3pA/viewform",
       description:
         "Capture narratives that move audiences and ignite brand engagement through visual storytelling, cinematography, and creative media.",
       detailDescription: [
@@ -202,7 +203,8 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationUrl:
+        "https://unstop.com/p/treasure-hunt-renaissance-100-motilal-nehru-national-institute-of-technology-1764640",
       description:
         "An adventurous campus-wide quest. Decode cryptic clues, navigate hidden waypoints across MNNIT, and race against the clock.",
       detailDescription: [
@@ -222,7 +224,8 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationUrl:
+        "https://docs.google.com/forms/d/e/1FAIpQLSeQbNNk7K7oO1EwPrjCcmQQs61NWGzAVtpUXU0dz4B4YpouSQ/viewform",
       description:
         "An exciting, interactive skincare, wellness, and self-care trivia mania designed exclusively for girls. Quiz, play, and win exclusive gift hampers!",
       detailDescription: [
@@ -242,7 +245,8 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationUrl:
+        "https://docs.google.com/forms/d/e/1FAIpQLSdVM7d6SgP70JEj9gE-90XscLjGzNKAqAM7m7ifox6J63AIJg/viewform?usp=publish-editor",
       description:
         "Step into the shoes of C-suite executives handling an active corporate crisis. Analyse real unit economics, salvage market share, and defend your 5-slide blueprint live.",
       detailDescription: [
@@ -263,7 +267,8 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationUrl:
+        "https://docs.google.com/forms/d/e/1FAIpQLScMsj-9CoI368_dbNIkOc9QsNPtp_Z_Uj0uwk55Az8RPoTabQ/viewform?usp=header",
       description:
         "Got an early-stage startup idea or business plan? Compete in B-Plan Junior! The top-performing teams get direct fast-track qualification to the flagship B-Plan round.",
       detailDescription: [
@@ -283,7 +288,8 @@ export default function Events({ embedded = false }) {
       time: "25 - 27 Oct 2026",
       location: "MNNIT Allahabad",
       cardImage: null,
-      registrationUrl: null,
+      registrationUrl:
+        "https://docs.google.com/forms/d/e/1FAIpQLSeM1d3obsXb9Dx20wkoLDw2hA6AnbS36HVthLtvRzTPW_g12g/viewform?usp=publish-editor",
       description:
         "High-stakes diplomacy, intense committee debates, and global policy strategy. Step up, represent your nation, and dominate the floor!",
       detailDescription: [
@@ -658,7 +664,7 @@ export default function Events({ embedded = false }) {
                           rel="noopener noreferrer"
                           className="h-[50px] w-full px-4 rounded-xl bg-[#F3C7AD] hover:bg-[#EDB696] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.1)] hover:shadow-[0_8px_25px_rgba(220,169,137,0.3)] flex items-center justify-center gap-2 cursor-pointer"
                         >
-                          <span>Register on Unstop</span>
+                          <span>Register</span>
                           <ExternalLink className="w-4 h-4 shrink-0" />
                         </a>
                       ) : (
@@ -670,7 +676,7 @@ export default function Events({ embedded = false }) {
                           }}
                           className="h-[50px] w-full px-4 rounded-xl bg-[#F3C7AD] hover:bg-[#EDB696] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.1)] hover:shadow-[0_8px_25px_rgba(220,169,137,0.3)] flex items-center justify-center gap-2 cursor-pointer"
                         >
-                          <span>Register Now</span>
+                          <span>Register</span>
                         </button>
                       )}
 
