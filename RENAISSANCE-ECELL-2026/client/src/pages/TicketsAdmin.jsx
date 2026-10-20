@@ -1,9 +1,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import { Html5Qrcode } from "html5-qrcode";
 import {
-    ArrowLeft, Camera, Check, CheckCircle2, Download, Edit3, Globe, LoaderCircle, Plus,
+    ArrowLeft, Check, Download, Edit3, Globe, LoaderCircle, Plus,
     RefreshCw, Search, ShieldCheck, Shirt, Ticket, Trash2, XCircle
 } from "lucide-react";
 import { ticketApi } from "../lib/server1-api";
@@ -82,8 +81,6 @@ function downloadTicketsCsv(tickets) {
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-let scannerLifecycle = Promise.resolve();
-
 function StageBadges({ scans = [], stages = [], ticketId = "", ticketName = "" }) {
     const visibleStages = stages.length
         ? stages
@@ -158,69 +155,6 @@ function StageBadges({ scans = [], stages = [], ticketId = "", ticketName = "" }
     );
 }
 
-function CameraReader({ onDecoded, onError }) {
-    useEffect(() => {
-        const scanner = new Html5Qrcode("admin-ticket-qr-reader");
-        let active = true;
-
-        const startTask = scannerLifecycle.then(async () => {
-            if (!active) return;
-
-            await scanner.start(
-                { facingMode: "environment" },
-                {
-                    fps: 10,
-                    qrbox: { width: 240, height: 240 },
-                    aspectRatio: 1,
-                },
-                (decoded) => {
-                    if (active) {
-                        active = false;
-                        onDecoded(decoded);
-                    }
-                },
-                () => {}
-            );
-        });
-
-        scannerLifecycle = startTask.catch(() => {});
-
-        startTask.catch((error) => {
-            if (active) {
-                onError(
-                    error?.message ||
-                        "Camera could not be started. Check browser permissions."
-                );
-            }
-        });
-
-        return () => {
-            active = false;
-
-            scannerLifecycle = scannerLifecycle
-                .then(async () => {
-                    if (scanner.isScanning) {
-                        await scanner.stop().catch(() => {});
-                    }
-
-                    try {
-                        scanner.clear();
-                    } catch {
-                        // Scanner already unmounted.
-                    }
-                })
-                .catch(() => {});
-        };
-    }, [onDecoded, onError]);
-
-    return (
-        <div
-            id="admin-ticket-qr-reader"
-            className="mx-auto min-h-64 w-full max-w-md overflow-hidden rounded-2xl bg-slate-950 [&_video]:w-full [&_video]:rounded-xl [&_button]:m-2 [&_button]:rounded-lg [&_button]:bg-white [&_button]:px-3 [&_button]:py-2 [&_button]:text-slate-900 [&_select]:rounded-lg"
-        />
-    );
-}
-
 export default function TicketsAdmin() {
     const { admin, handleError } = useOutletContext();
 
@@ -236,13 +170,8 @@ export default function TicketsAdmin() {
     const [stageConfigs, setStageConfigs] = useState({});
     const [soldOutPasses, setSoldOutPasses] = useState({});
     const [passType, setPassType] = useState("event-standard");
-    const [stageId, setStageId] = useState("");
     const [stageName, setStageName] = useState("");
     const [stageConfigBusy, setStageConfigBusy] = useState(false);
-    const [manualId, setManualId] = useState("");
-    const [cameraOn, setCameraOn] = useState(false);
-    const [scanResult, setScanResult] = useState(null);
-    const [scanBusy, setScanBusy] = useState(false);
     const [editingTicket, setEditingTicket] = useState(null);
     const [editForm, setEditForm] = useState(null);
     const [editBusy, setEditBusy] = useState(false);
@@ -288,7 +217,6 @@ export default function TicketsAdmin() {
 
                 setStageConfigs(configs);
                 setSoldOutPasses(Object.fromEntries((stageData.configs || []).map((config) => [config.ticketType, Boolean(config.soldOut)])));
-                setStageId((configs[passType] || [])[0]?.stageId || "");
             })
             .catch((err) => {
                 if (active && !handleError(err)) {
@@ -341,7 +269,6 @@ export default function TicketsAdmin() {
                 [passType]: data.stages,
             }));
 
-            setStageId(data.stages.at(-1)?.stageId || "");
             setStageName("");
 
             setNotice(
@@ -383,10 +310,6 @@ export default function TicketsAdmin() {
                 ...current,
                 [passType]: data.stages,
             }));
-
-            if (stageId === stage.stageId) {
-                setStageId(data.stages[0]?.stageId || "");
-            }
 
             setNotice(
                 `Removed ${stage.name}. Existing ticket scan history was preserved.`
@@ -478,68 +401,8 @@ export default function TicketsAdmin() {
         [passType, stageConfigs]
     );
 
-    const handleScan = useCallback(
-        async (rawValue) => {
-            const ticketId = String(rawValue || "").trim().toUpperCase();
-
-            if (!ticketId) return;
-
-            setCameraOn(false);
-            setScanBusy(true);
-            setScanResult(null);
-            setError("");
-
-            try {
-                const data = await ticketApi.scan({
-                    ticketId,
-                    ticketType: passType,
-                    stageId,
-                });
-
-                const result = {
-                    ...data,
-                    selectedStage:
-                        data.selectedStage?.name || "Selected stage",
-                };
-
-                setScanResult(result);
-                setManualId("");
-
-                await loadTickets();
-            } catch (err) {
-                if (handleError(err)) return;
-
-                setScanResult({
-                    error: err.message || "Ticket scan failed.",
-                    selectedStage:
-                        activeStages.find(
-                            (item) => item.stageId === stageId
-                        )?.name || "Selected stage",
-                });
-            } finally {
-                setScanBusy(false);
-            }
-        },
-        [
-            activeStages,
-            handleError,
-            loadTickets,
-            passType,
-            stageId,
-        ]
-    );
-
-    const cameraError = useCallback((message) => {
-        setCameraOn(false);
-        setError(message);
-    }, []);
-
     const changePassType = (nextType) => {
         setPassType(nextType);
-        setStageId(
-            (stageConfigs[nextType] || [])[0]?.stageId || ""
-        );
-        setScanResult(null);
     };
 
     const visibleTickets = tickets.filter((ticket) => {
@@ -1056,18 +919,16 @@ export default function TicketsAdmin() {
                         <ShieldCheck className="text-[#b17e2e]" />
                         <div>
                             <p className="text-[10px] font-bold uppercase tracking-widest text-[#527e8e]">
-                                Entry gate & stages
+                                Pass settings
                             </p>
                             <h2 className="font-cinzel text-xl font-bold text-[#173f52]">
-                                Stage QR scanner
+                                Pass availability & stages
                             </h2>
                         </div>
                     </div>
 
                     <p className="mt-3 text-sm text-[#527e8e]">
-                        Configure pass stages and scan attendee QR codes.
-                        Volunteers can also scan from{" "}
-                        <strong>/volunteer</strong>.
+                        Manage pass availability and configure the stages approved volunteers can scan at <strong>/volunteer</strong>.
                     </p>
 
                     <label className="mt-5 block text-xs font-bold uppercase tracking-wider text-[#527e8e]">
@@ -1134,8 +995,7 @@ export default function TicketsAdmin() {
                             </ul>
                         ) : (
                             <p className="mt-3 text-xs text-[#7b5b25]">
-                                No stages configured. Add stages below before
-                                scanning.
+                                No stages configured. Add stages below for volunteer scanning.
                             </p>
                         )}
 
@@ -1169,172 +1029,7 @@ export default function TicketsAdmin() {
                         </form>
                     </div>
 
-                    <label className="mt-4 block text-xs font-bold uppercase tracking-wider text-[#527e8e]">
-                        Current stage to scan
-                        <select
-                            value={stageId}
-                            onChange={(event) => {
-                                setStageId(event.target.value);
-                                setScanResult(null);
-                            }}
-                            disabled={!activeStages.length}
-                            className="mt-2 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 text-sm font-bold text-[#173f52]"
-                        >
-                            {activeStages.map((stage, index) => (
-                                <option
-                                    key={stage.stageId}
-                                    value={stage.stageId}
-                                >
-                                    {index + 1}. {stage.name}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-
-                    {cameraOn ? (
-                        <div className="mt-4">
-                            <CameraReader
-                                onDecoded={handleScan}
-                                onError={cameraError}
-                            />
-
-                            <button
-                                type="button"
-                                onClick={() => setCameraOn(false)}
-                                className="mt-3 w-full rounded-xl border border-[#b6dce4] bg-white px-4 py-2 font-bold text-[#376579]"
-                            >
-                                Stop camera
-                            </button>
-                        </div>
-                    ) : (
-                        <button
-                            type="button"
-                            disabled={!activeStages.length || scanBusy}
-                            onClick={() => {
-                                setError("");
-                                setCameraOn(true);
-                            }}
-                            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#173f52] px-4 py-3 font-bold text-white hover:bg-[#245970] disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            <Camera size={18} /> Scan with camera
-                        </button>
-                    )}
-
-                    <div className="my-5 flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-[#7a99a2]">
-                        <span className="h-px flex-1 bg-[#b6dce4]" />
-                        or enter ID manually
-                        <span className="h-px flex-1 bg-[#b6dce4]" />
-                    </div>
-
-                    <form
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            handleScan(manualId);
-                        }}
-                        className="flex gap-2"
-                    >
-                        <input
-                            aria-label="Ticket ID to scan"
-                            value={manualId}
-                            onChange={(event) =>
-                                setManualId(event.target.value)
-                            }
-                            placeholder="REN-XXXXXXXXXXXX"
-                            className="min-w-0 flex-1 rounded-xl border border-[#afd6e1] bg-white px-3 py-3 font-mono text-sm uppercase text-[#173f52]"
-                        />
-
-                        <button
-                            disabled={
-                                scanBusy || !manualId.trim() || !stageId
-                            }
-                            className="rounded-xl bg-[#b17e2e] px-4 py-3 font-bold text-white disabled:opacity-50"
-                        >
-                            {scanBusy ? (
-                                <LoaderCircle
-                                    size={18}
-                                    className="animate-spin"
-                                />
-                            ) : (
-                                "Check in"
-                            )}
-                        </button>
-                    </form>
-
-                    {scanResult && (
-                        <div
-                            role={scanResult.error ? "alert" : "status"}
-                            className={`mt-5 rounded-xl border p-4 ${
-                                scanResult.error
-                                    ? "border-rose-300 bg-rose-50 text-rose-800"
-                                    : scanResult.alreadyScanned
-                                      ? "border-amber-300 bg-amber-100 text-amber-900"
-                                      : "border-emerald-300 bg-emerald-50 text-emerald-900"
-                            }`}
-                        >
-                            <div className="flex items-center gap-2 font-black">
-                                {scanResult.error ? (
-                                    <XCircle size={20} />
-                                ) : scanResult.alreadyScanned ? (
-                                    <Ticket size={20} />
-                                ) : (
-                                    <CheckCircle2 size={20} />
-                                )}
-
-                                {scanResult.error
-                                    ? "Scan blocked"
-                                    : scanResult.alreadyScanned
-                                      ? `Already scanned · ${scanResult.selectedStage}`
-                                      : `Admitted · ${scanResult.selectedStage}`}
-                            </div>
-
-                            {scanResult.error ? (
-                                <p className="mt-2 text-sm">
-                                    {scanResult.error}
-                                </p>
-                            ) : (
-                                <>
-                                    <p className="mt-2 font-cinzel font-bold">
-                                        {scanResult.ticket?.name}
-                                        {scanResult.ticket?.teamName
-                                            ? ` · Team: ${scanResult.ticket.teamName}`
-                                            : ""}
-                                    </p>
-
-                                    <p className="font-mono text-xs">
-                                        {scanResult.ticket?.ticketId}
-                                        {scanResult.ticket?.ticketType
-                                            ? ` · ${
-                                                  PASS_NAMES[
-                                                      scanResult.ticket
-                                                          .ticketType
-                                                  ] ||
-                                                  scanResult.ticket.ticketType
-                                              }`
-                                            : ""}
-                                        {scanResult.ticket?.tshirtSize
-                                            ? ` · Size: ${scanResult.ticket.tshirtSize}`
-                                            : ""}
-                                    </p>
-
-                                    <div className="mt-3">
-                                        <StageBadges
-                                            scans={
-                                                scanResult.ticket?.stageScans
-                                            }
-                                            ticketId={scanResult.ticket?.ticketId}
-                                            ticketName={scanResult.ticket?.name}
-                                            stages={
-                                                stageConfigs[
-                                                    scanResult.ticket
-                                                        ?.ticketType
-                                                ] || []
-                                            }
-                                        />
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    )}
+                    <div className="mt-5 rounded-xl border border-[#b6dce4] bg-white p-4 text-sm leading-relaxed text-[#376579]"><strong>Ticket scanning is volunteer only.</strong> Approved volunteers can scan from <code>/volunteer</code>. This page is for ticket review and pass stage configuration.</div>
 
                     <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">
                         <strong>Color guide:</strong> yellow indicates a
