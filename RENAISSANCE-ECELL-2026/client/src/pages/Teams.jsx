@@ -85,7 +85,7 @@ function StudentTeamGroups({ members, category }) {
               <span className="mt-2 h-[2px] w-12 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-16" />
             </h3>
             <div className="teams-student-row rounded-xl" aria-labelledby={headingId}>
-              <div className="teams-faculty-cards grid grid-cols-2 items-stretch justify-items-center gap-3 px-1 pb-6 pt-2 sm:gap-5 lg:grid-cols-4">
+              <div className="teams-faculty-cards flex flex-wrap items-stretch justify-center gap-3 px-1 pb-6 pt-2 sm:gap-5">
                 {teamMembers.map((member) => <FacultyCard key={member.id} member={member} grouped />)}
               </div>
             </div>
@@ -111,7 +111,15 @@ export default function Teams({ embedded = false }) {
             setPhotoError(""); 
         } 
       })
-      .catch(() => { if (active) setPhotoError("Team photos are temporarily unavailable. Please try again shortly."); })
+      .catch((error) => {
+        if (active) {
+          setPhotoError(
+            error instanceof Error && error.message
+              ? error.message
+              : "Team photos are temporarily unavailable. Please try again shortly.",
+          );
+        }
+      })
       .finally(() => { if (active) setPhotosLoading(false); });
     };
     refresh();
@@ -152,6 +160,10 @@ export default function Teams({ embedded = false }) {
         .teams-student-row .teams-member-card {
           width: 100%;
           max-width: 280px;
+        }
+
+        .teams-student-row .teams-faculty-cards > .teams-member-card {
+          flex: 0 1 280px;
         }
 
         .teams-member-row {
