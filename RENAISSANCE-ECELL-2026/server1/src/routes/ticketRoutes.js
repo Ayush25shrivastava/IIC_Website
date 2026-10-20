@@ -64,6 +64,5 @@ router.get('/admin', requireAdminAuth, getAllTickets);
 
 router.patch('/admin/:id', requireAdminAuth, requireTrustedOrigin, updateTicket);
 router.patch('/admin/:id/verify', requireAdminAuth, requireTrustedOrigin, verifyTicket);
-router.post('/admin/scan', requireAdminAuth, requireTrustedOrigin, scanTicket);
 
 export default router;
