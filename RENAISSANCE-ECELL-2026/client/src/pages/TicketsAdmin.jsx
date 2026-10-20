@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import {
-    ArrowLeft, Camera, Check, CheckCircle2, Edit3, Globe, LoaderCircle, Plus,
+    ArrowLeft, Camera, Check, CheckCircle2, Download, Edit3, Globe, LoaderCircle, Plus,
     RefreshCw, Search, ShieldCheck, Shirt, Ticket, Trash2, XCircle
 } from "lucide-react";
 import { ticketApi } from "../lib/server1-api";
@@ -27,9 +27,64 @@ const statusColors = {
     Rejected: "border-rose-300 bg-rose-100 text-rose-800",
 };
 
+const CSV_COLUMNS = [
+    ["Ticket ID", "ticketId"],
+    ["Name", "name"],
+    ["Email", "email"],
+    ["Phone", "phone"],
+    ["College / organization", "college"],
+    ["City", "city"],
+    ["Team name", "teamName"],
+    ["Pass", "ticketType"],
+    ["T-shirt size", "tshirtSize"],
+    ["Accommodation days", "accommodationDays"],
+    ["Check-in date", "checkInDate"],
+    ["Check-out date", "checkOutDate"],
+    ["Accommodation preferences", "accommodationPreferences"],
+    ["Transaction ID / UTR", "transactionId"],
+    ["Amount", "amount"],
+    ["Amount paid", "amountPaid"],
+    ["Status", "status"],
+    ["Verification remarks", "verificationRemarks"],
+    ["Stage scans", "stageScans"],
+    ["Submitted at", "createdAt"],
+    ["Last edited at", "editedAt"],
+];
+
+function csvCell(value) {
+    const text = value == null ? "" : String(value);
+    const safeText = /^\s*[=+@-]/.test(text) ? `'${text}` : text;
+    return `"${safeText.replaceAll('"', '""')}"`;
+}
+
+function downloadTicketsCsv(tickets) {
+    const rows = [
+        CSV_COLUMNS.map(([label]) => label),
+        ...tickets.map((ticket) => CSV_COLUMNS.map(([, key]) => {
+            if (key === "ticketType") return PASS_NAMES[ticket.ticketType] || ticket.ticketType;
+            if (key === "stageScans") return (ticket.stageScans || []).map((scan) =>
+                `${scan.stageName || scan.stageId || `Stage ${scan.stage || ""}`} · ${scan.scannedByName || scan.scannedByEmail || (scan.scannedByRole === "ADMIN" ? "Admin" : "Volunteer scanner")} · ${scan.scannedAt ? new Date(scan.scannedAt).toLocaleString() : ""}`
+            ).join("; ");
+            if (["checkInDate", "checkOutDate", "createdAt", "editedAt"].includes(key) && ticket[key]) {
+                return new Date(ticket[key]).toISOString();
+            }
+            return ticket[key];
+        })),
+    ];
+    const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `renaissance-registrants-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 let scannerLifecycle = Promise.resolve();
 
-function StageBadges({ scans = [], stages = [] }) {
+function StageBadges({ scans = [], stages = [], ticketId = "", ticketName = "" }) {
     const visibleStages = stages.length
         ? stages
         : [1, 2, 3].map((stage) => ({
@@ -52,9 +107,7 @@ function StageBadges({ scans = [], stages = [] }) {
                         key={stage.stageId}
                         title={
                             scan
-                                ? `Scanned ${new Date(
-                                      scan.scannedAt
-                                  ).toLocaleString()}`
+                                ? `${ticketName || "Registrant"} (${ticketId || "ticket"}) · scanned by ${scan.scannedByName || scan.scannedByEmail || (scan.scannedByRole === "ADMIN" ? "admin" : "volunteer scanner")} at ${new Date(scan.scannedAt).toLocaleString()}`
                                 : `${stage.name} not scanned`
                         }
                         className={`rounded-full border px-2 py-1 text-[10px] font-bold ${
@@ -82,9 +135,7 @@ function StageBadges({ scans = [], stages = [] }) {
                 .map((scan) => (
                     <span
                         key={scan.stageId || `legacy-${scan.stage}`}
-                        title={`Scanned ${new Date(
-                            scan.scannedAt
-                        ).toLocaleString()}`}
+                        title={`${ticketName || "Registrant"} (${ticketId || "ticket"}) · scanned by ${scan.scannedByName || scan.scannedByEmail || (scan.scannedByRole === "ADMIN" ? "admin" : "volunteer scanner")} at ${new Date(scan.scannedAt).toLocaleString()}`}
                         className="rounded-full border border-amber-300 bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-800"
                     >
                         {scan.stageName ||
@@ -93,6 +144,16 @@ function StageBadges({ scans = [], stages = [] }) {
                         · scanned
                     </span>
                 ))}
+
+            {scans.length > 0 && (
+                <ul className="mt-2 w-full space-y-1 text-[11px] font-medium text-[#527e8e]">
+                    {scans.map((scan, index) => (
+                        <li key={`${scan.stageId || scan.stage}-${scan.scannedAt || index}`}>
+                            {ticketName || "Registrant"} · {ticketId || "Ticket ID unavailable"} · {scan.stageName || scan.stageId || `Stage ${scan.stage}`} · scanned by {scan.scannedByName || scan.scannedByEmail || (scan.scannedByRole === "ADMIN" ? "Admin" : "Volunteer scanner")} · {scan.scannedAt ? new Date(scan.scannedAt).toLocaleString() : "time unavailable"}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 }
@@ -523,7 +584,6 @@ export default function TicketsAdmin() {
             (item) => item.status === "Rejected"
         ).length,
     };
-
     return (
         <main className={`${adminStyles.app} px-4 py-5 sm:px-6 lg:px-10`}>
             <header className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/40 bg-[#e5f5f8] px-5 py-4 shadow-lg">
@@ -642,7 +702,16 @@ export default function TicketsAdmin() {
                             </h2>
                         </div>
 
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => downloadTicketsCsv(tickets)}
+                                disabled={loading || tickets.length === 0}
+                                title={`Download all ${tickets.length} registrants, regardless of the selected filters`}
+                                className="flex items-center gap-1.5 rounded-xl border border-[#b6dce4] bg-white px-3 py-2 text-sm font-bold text-[#376579] hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <Download size={16} /> Download all CSV ({tickets.length})
+                            </button>
                             <label className="relative">
                                 <Search
                                     size={16}
@@ -882,6 +951,8 @@ export default function TicketsAdmin() {
 
                                             <StageBadges
                                                 scans={ticket.stageScans}
+                                                ticketId={ticket.ticketId}
+                                                ticketName={ticket.name}
                                                 stages={
                                                     stageConfigs[
                                                         ticket.ticketType
@@ -1250,6 +1321,8 @@ export default function TicketsAdmin() {
                                             scans={
                                                 scanResult.ticket?.stageScans
                                             }
+                                            ticketId={scanResult.ticket?.ticketId}
+                                            ticketName={scanResult.ticket?.name}
                                             stages={
                                                 stageConfigs[
                                                     scanResult.ticket
@@ -1270,6 +1343,7 @@ export default function TicketsAdmin() {
                     </div>
                 </aside>
             </section>
+
         </main>
     );
 }

@@ -149,6 +149,10 @@ export default function CampusAmbassadorAdmin() {
           <Ticket size={20} />
           <span>Ticket management</span>
         </Link>
+        <Link to="/admin/volunteer" className={adminStyles.sidebarNavItem}>
+          <Users size={20} />
+          <span>Volunteer management</span>
+        </Link>
         <Link to="/" className={adminStyles.sidebarNavItem}>
           <Globe size={20} />
           <span>Return to website</span>

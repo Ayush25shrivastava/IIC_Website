@@ -77,6 +77,6 @@ export default function AdminSession() {
   if (loading && !admin) return <div className={adminStyles.gate} role="status"><LoaderCircle className="animate-spin text-[#0d7892]" size={28} /> Checking admin session…</div>;
   if (error && !admin) return <div className={adminStyles.gate}><p role="alert" className="text-[#933830] font-semibold">{error}</p><button className={adminStyles.btn} onClick={() => { setError(""); setLoading(true); setAttempt((n) => n + 1); }}>Try again</button><button className={adminStyles.btn} onClick={() => navigate("/admin/login")}>Go to admin sign-in</button></div>;
   if (!admin && !loginPage) return <Navigate to="/admin/login" replace />;
-  if (pathname.endsWith("/tickets") && !isRealAdmin) return <Navigate to="/admin/login" replace />;
+  if ((pathname.endsWith("/tickets") || pathname.endsWith("/volunteer")) && !isRealAdmin) return <Navigate to="/admin/login" replace />;
   return <Outlet context={context} />;
 }
