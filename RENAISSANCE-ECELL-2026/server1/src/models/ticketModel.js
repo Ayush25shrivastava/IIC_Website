@@ -10,6 +10,7 @@ const ticketScanSchema = new Schema({
   scannedAt: { type: Date, required: true, default: Date.now },
   scannedBy: { type: Schema.Types.ObjectId, ref: 'Admin' },
   scannedByRole: { type: String, enum: ['ADMIN', 'VOLUNTEER_SCANNER'] },
+  scannedByName: { type: String, trim: true, maxlength: 120 },
   scannedByEmail: { type: String, trim: true, lowercase: true, maxlength: 254 },
 }, { _id: false });
 
