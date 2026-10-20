@@ -120,7 +120,15 @@ export default function Teams({ embedded = false }) {
             setPhotoError(""); 
         } 
       })
-      .catch(() => { if (active) setPhotoError("Team photos are temporarily unavailable. Please try again shortly."); })
+      .catch((error) => {
+        if (active) {
+          setPhotoError(
+            error instanceof Error && error.message
+              ? error.message
+              : "Team photos are temporarily unavailable. Please try again shortly.",
+          );
+        }
+      })
       .finally(() => { if (active) setPhotosLoading(false); });
     };
     refresh();
@@ -154,8 +162,7 @@ export default function Teams({ embedded = false }) {
         }
 
         .teams-student-row {
-          overflow-x: auto;
-          overflow-y: hidden;
+          overscroll-behavior-x: contain;
           scrollbar-width: thin;
           scrollbar-color: #78C8ED transparent;
           scroll-snap-type: x proximity;
@@ -174,6 +181,10 @@ export default function Teams({ embedded = false }) {
             flex-basis: 232px;
             width: 232px;
           }
+        }
+
+        .teams-student-row .teams-faculty-cards > .teams-member-card {
+          flex: 0 1 280px;
         }
 
         .teams-member-row {
