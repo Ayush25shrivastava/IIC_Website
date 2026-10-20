@@ -9,7 +9,7 @@ export const SPONSOR_TIERS = [
     title: "Title Partner",
     sponsors: [
       {
-        name: "Study of Civil Services by Gyan Sir",
+        name: "Study for Civil Services by Gyan Sir",
         category: "Title Partner",
         image: CLOUDINARY_SPONSORS.title || getAssetUrl("/sponsors/studyForCivilServicesByGyanSir.jpeg"),
         fallbackImage: getAssetUrl("/sponsors/studyForCivilServicesByGyanSir.jpeg"),
@@ -30,19 +30,19 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
-  {
-    id: "ai",
-    title: "AI Partner",
-    sponsors: [
-      {
-        name: "Wayam AI",
-        category: "AI Partner",
-        image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
-        fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
-        description: "Official AI Partner for Renaissance 2026.",
-      }
-    ],
-  },
+  // {
+  //   id: "ai",
+  //   title: "AI Partner",
+  //   sponsors: [
+  //     {
+  //       name: "Wayam AI",
+  //       category: "AI Partner",
+  //       image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
+  //       fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
+  //       description: "Official AI Partner for Renaissance 2026.",
+  //     }
+  //   ],
+  // },
   {
     id: "beverage",
     title: "Beverage Partner",
@@ -83,24 +83,11 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id:"skincare",
-    title:"Skincare Partner",
-    sponsors:[
-      {
-        name:"Ayouthveda",
-        category:"Skincare Partner",
-        image:CLOUDINARY_SPONSORS.ayouthveda || getAssetUrl("/sponsors/ayouthveda.jpeg"),
-        fallbackImage: getAssetUrl("/sponsors/ayouthveda.jpeg"),
-        description: "Official Skincare Partner for Renaissance 2026.",
-      }
-    ],
-  },
-  {
     id: "logistics",
     title: "Logistics Partner",
     sponsors: [
       {
-        name: "Safe Express",
+        name: "Safexpress",
         category: "Logistics Partner",
         image: CLOUDINARY_SPONSORS.safexpress || getAssetUrl("/sponsors/safexpress.png"),
         fallbackImage: getAssetUrl("/sponsors/safexpress.png"),
@@ -148,24 +135,37 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id: "protein",
-    title: "Protein Partner",
-    sponsors: [
+    id:"skincare",
+    title:"Skincare Partner",
+    sponsors:[
       {
-        name: "Max Protein",
-        category: "Protein Partner",
-        image: CLOUDINARY_SPONSORS.maxProtein || getAssetUrl("/sponsors/maxprotein.png"),
-        fallbackImage: getAssetUrl("/sponsors/maxprotein.png"),
-        description: "Official Protein Partner for Renaissance 2026.",
+        name:"Ayouthveda",
+        category:"Skincare Partner",
+        image:CLOUDINARY_SPONSORS.ayouthveda || getAssetUrl("/sponsors/ayouthveda.jpeg"),
+        fallbackImage: getAssetUrl("/sponsors/ayouthveda.jpeg"),
+        description: "Official Skincare Partner for Renaissance 2026.",
       }
     ],
   },
+  // {
+  //   id: "protein",
+  //   title: "Protein Partner",
+  //   sponsors: [
+  //     {
+  //       name: "Max Protein",
+  //       category: "Protein Partner",
+  //       image: CLOUDINARY_SPONSORS.maxProtein || getAssetUrl("/sponsors/maxprotein.png"),
+  //       fallbackImage: getAssetUrl("/sponsors/maxprotein.png"),
+  //       description: "Official Protein Partner for Renaissance 2026.",
+  //     }
+  //   ],
+  // },
   {
     id: "travel",
     title: "Travel Partner",
     sponsors: [
       {
-        name: "AbhiBus",
+        name: "Abhibus",
         category: "Travel Partner",
         image: CLOUDINARY_SPONSORS.abhibus || getAssetUrl("/sponsors/abhibus.png"),
         fallbackImage: getAssetUrl("/sponsors/abhibus.png"),
