@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import './pages/campus-ambassador.css'
 import App from './App.jsx'
 
 const staleChunkReloadKey = 'renaissance-stale-chunk-reload-at';
