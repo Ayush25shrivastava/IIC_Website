@@ -1,5 +1,5 @@
 import Ticket from '../models/ticketModel.js';
-import { TicketStageConfig } from '../models/index.js';
+import { PromoCode, TicketStageConfig } from '../models/index.js';
 import { randomBytes } from 'node:crypto';
 
 const ticketTypes = [
@@ -31,6 +31,44 @@ const ticketPrices = {
   'accom-elite': 1499,
 };
 
+function ticketBaseAmount(ticketType, accommodationDays = 0) {
+  const base = ticketPrices[ticketType];
+  if (!base) return null;
+  return base + (ticketType.startsWith('accom-') ? (Number(accommodationDays) - 1) * 500 : 0);
+}
+
+async function getTicketPromo(code, baseAmount) {
+  const normalized = typeof code === 'string' ? code.trim().toUpperCase() : '';
+  if (!normalized) return null;
+  const promo = await PromoCode.findOne({ code: normalized, isActive: true, archivedAt: null });
+  const now = new Date();
+  if (!promo || (promo.validFrom && promo.validFrom > now) || (promo.validUntil && promo.validUntil < now)) {
+    throw Object.assign(new Error('Promo code is invalid or inactive'), { status: 400 });
+  }
+  if (promo.maxUses !== null && promo.usageCount >= promo.maxUses) {
+    throw Object.assign(new Error('This promo code has reached its usage limit'), { status: 400 });
+  }
+  let discountAmount = 0;
+  if (promo.discountType === 'PERCENTAGE') discountAmount = Math.round(baseAmount * promo.discountValue / 100);
+  if (promo.discountType === 'FIXED') discountAmount = Math.round(promo.discountValue);
+  discountAmount = Math.min(Math.max(discountAmount, 0), baseAmount);
+  return { promo, discountAmount, finalAmount: baseAmount - discountAmount };
+}
+
+async function reservePromoUse(promo) {
+  const now = new Date();
+  const filter = {
+    _id: promo._id, isActive: true, archivedAt: null,
+    $and: [
+      { $or: [{ validFrom: null }, { validFrom: { $lte: now } }] },
+      { $or: [{ validUntil: null }, { validUntil: { $gte: now } }] },
+      { $expr: { $or: [{ $eq: ['$maxUses', null] }, { $lt: ['$usageCount', '$maxUses'] }] } },
+    ],
+  };
+  const reserved = await PromoCode.findOneAndUpdate(filter, { $inc: { usageCount: 1 } }, { new: true });
+  if (!reserved) throw Object.assign(new Error('This promo code is no longer available'), { status: 409 });
+}
+
 function publicTicket(ticket) {
   return {
     ticketId: ticket.ticketId,
@@ -47,13 +85,31 @@ function publicTicket(ticket) {
   };
 }
 
+export const validateTicketPromo = async (req, res) => {
+  try {
+    const { promoCode, ticketType, accommodationDays = 0 } = req.body || {};
+    const days = Number(accommodationDays);
+    if ((ticketType?.startsWith('accom-') && (!Number.isInteger(days) || days < 1 || days > 4)) || (!ticketType?.startsWith('accom-') && days !== 0)) {
+      return res.status(400).json({ success: false, message: 'Invalid accommodation duration' });
+    }
+    const baseAmount = ticketBaseAmount(ticketType, accommodationDays);
+    if (!baseAmount) return res.status(400).json({ success: false, message: 'Select a valid pass before applying a promo code' });
+    const quote = await getTicketPromo(promoCode, baseAmount);
+    if (!quote) return res.status(400).json({ success: false, message: 'Enter a promo code to apply' });
+    res.status(200).json({ success: true, promo: { code: quote.promo.code, baseAmount, discountType: quote.promo.discountType, discountAmount: quote.discountAmount, finalAmount: quote.finalAmount } });
+  } catch (error) {
+    res.status(error.status || 500).json({ success: false, message: error.status ? error.message : 'Could not validate the promo code' });
+  }
+};
+
 export const purchaseTicket = async (req, res) => {
+  let reservedPromoId = null;
   try {
     const {
       name, email, phone, college, city, ticketType, tshirtSize,
       checkInDate, checkOutDate, accommodationPreferences, transactionId, amountPaid,
       accommodationDays = 0,
-      teamName,
+      teamName, promoCode,
     } = req.body;
 
     // Validate required fields (teamName is optional)
@@ -79,8 +135,10 @@ export const purchaseTicket = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid accommodation duration' });
     }
     const amount = baseAmount + (isAccommodation ? (days - 1) * 500 : 0);
-    if (!Number.isFinite(Number(amountPaid)) || Number(amountPaid) !== amount) {
-      return res.status(400).json({ success: false, message: `Amount paid must match the selected pass total of ₹${amount}` });
+    const promoQuote = await getTicketPromo(promoCode, amount);
+    const finalAmount = promoQuote?.finalAmount ?? amount;
+    if (!Number.isFinite(Number(amountPaid)) || Number(amountPaid) !== finalAmount) {
+      return res.status(400).json({ success: false, message: `Amount paid must match the selected pass total of ₹${finalAmount}` });
     }
 
     const isElite = ticketType === 'event-elite' || ticketType === 'accom-elite';
@@ -91,6 +149,10 @@ export const purchaseTicket = async (req, res) => {
 
     // Duplicate transaction ID check disabled to allow reuse of UTRs
 
+    if (promoQuote) {
+      await reservePromoUse(promoQuote.promo);
+      reservedPromoId = promoQuote.promo._id;
+    }
     const ticket = new Ticket({
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -104,6 +166,12 @@ export const purchaseTicket = async (req, res) => {
       checkInDate: checkInDate || null,
       checkOutDate: checkOutDate || null,
       accommodationPreferences: accommodationPreferences || '',
+      promoCodeId: promoQuote?.promo._id || null,
+      promoCode: promoQuote?.promo.code || null,
+      ambassadorId: promoQuote?.promo.ambassadorId || null,
+      discountAmount: promoQuote?.discountAmount || 0,
+      promoDiscountType: promoQuote?.promo.discountType || 'NONE',
+      promoDiscountValue: promoQuote?.promo.discountValue || 0,
       transactionId: normalizedTransactionId,
       ticketId: `REN-${randomBytes(6).toString('hex').toUpperCase()}`,
       amount,
@@ -111,6 +179,7 @@ export const purchaseTicket = async (req, res) => {
     });
 
     await ticket.save();
+    reservedPromoId = null;
 
     res.status(201).json({
       success: true,
@@ -118,16 +187,17 @@ export const purchaseTicket = async (req, res) => {
       ticket: { ticketId: ticket.ticketId, status: ticket.status }
     });
   } catch (error) {
+    if (reservedPromoId) await PromoCode.updateOne({ _id: reservedPromoId, usageCount: { $gt: 0 } }, { $inc: { usageCount: -1 } }).catch(() => {});
     if (error.code === 11000 && error.keyPattern?.transactionId) {
       return res.status(409).json({ success: false, message: 'Transaction ID already exists' });
     }
-    res.status(500).json({ success: false, message: error.message });
+    res.status(error.status || 500).json({ success: false, message: error.message });
   }
 };
 
 export const getAllTickets = async (req, res) => {
   try {
-    const tickets = await Ticket.find().sort({ createdAt: -1 });
+    const tickets = await Ticket.find().populate('ambassadorId', 'name email ambassadorId').sort({ createdAt: -1 });
     res.status(200).json({ success: true, count: tickets.length, tickets });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -259,7 +329,11 @@ export const updateTicket = async (req, res) => {
     if (!Number.isInteger(days) || (isAccommodation ? days < 1 || days > 4 : days !== 0)) {
       return res.status(400).json({ success: false, message: 'Invalid accommodation duration' });
     }
-    const amount = baseAmount + (isAccommodation ? (days - 1) * 500 : 0);
+    const grossAmount = baseAmount + (isAccommodation ? (days - 1) * 500 : 0);
+    const editedDiscount = ticket.promoDiscountType === 'PERCENTAGE'
+      ? Math.round(grossAmount * ticket.promoDiscountValue / 100)
+      : ticket.promoDiscountType === 'FIXED' ? Math.round(ticket.promoDiscountValue) : 0;
+    const amount = grossAmount - Math.min(Math.max(editedDiscount, 0), grossAmount);
     const paid = Number(amountPaid);
     if (!Number.isFinite(paid) || paid < 0) return res.status(400).json({ success: false, message: 'Amount paid must be a valid non-negative number' });
 

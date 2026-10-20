@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
-import { Anchor, ClipboardList, Compass, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, Tag, Users, LoaderCircle } from "lucide-react";
+import { Anchor, ClipboardList, Compass, Eye, EyeOff, LockKeyhole, Phone, ShieldCheck, Tag, Users, LoaderCircle } from "lucide-react";
 import { getAssetUrl } from "../utils/assetUrl";
 function PortalCard({ children, className = "" }) {
   return (
@@ -76,16 +76,16 @@ function LoginPanel({ credentials, setCredentials, onSubmit, pending, error, sho
 
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
             <label className="block">
-              <span className="mb-1.5 block font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#315B6B]">Email address</span>
+              <span className="mb-1.5 block font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#315B6B]">Phone number / username</span>
               <span className="relative block">
-                <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0D7892]" />
+                <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0D7892]" />
                 <input
-                  type="email"
-                  autoComplete="email"
-                  value={credentials.email}
-                  onChange={(event) => setCredentials((current) => ({ ...current, email: event.target.value }))}
+                  type="tel"
+                  autoComplete="username"
+                  value={credentials.username}
+                  onChange={(event) => setCredentials((current) => ({ ...current, username: event.target.value }))}
                   className="h-11 w-full rounded-xl border border-[#238FA5]/30 bg-white/70 pl-10 pr-3 text-sm outline-none focus:border-[#0D7892] focus:ring-4 focus:ring-[#0D7892]/10"
-                  placeholder="you@college.edu"
+                  placeholder="Enter your registered phone number"
                   required
                 />
               </span>
@@ -139,7 +139,7 @@ export default function CampusAmbassadorPortal() {
   const { login: signIn, sessionNotice } = useOutletContext();
   const navigate = useNavigate();
   const location = useLocation();
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -150,7 +150,7 @@ export default function CampusAmbassadorPortal() {
     try {
       const signedIn = await signIn(credentials);
       if (!signedIn) return;
-      setCredentials({ email: "", password: "" });
+      setCredentials({ username: "", password: "" });
       navigate("/campus-ambassador/dashboard", { replace: true });
     } catch (requestError) {
       setError(requestError.code === "DATABASE_UNAVAILABLE"

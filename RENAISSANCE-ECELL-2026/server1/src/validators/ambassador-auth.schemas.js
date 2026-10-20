@@ -16,9 +16,13 @@ const strongPassword = z
   .regex(/[0-9]/, "Password must include a number");
 
 export const ambassadorLoginSchema = z.object({
-  email,
+  username: z.string().trim().min(1).max(254).optional(),
+  email: email.optional(),
   password: z.string().min(1, "Password is required").max(512),
-}).strict();
+}).strict().refine((value) => Boolean(value.username || value.email), {
+  message: "Enter your phone number",
+  path: ["username"],
+});
 
 export const ambassadorChangePasswordSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required").max(512),

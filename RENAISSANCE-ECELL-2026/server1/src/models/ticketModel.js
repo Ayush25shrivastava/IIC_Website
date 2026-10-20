@@ -40,6 +40,13 @@ const ticketSchema = new Schema({
   checkOutDate: { type: Date },
   accommodationPreferences: { type: String },
 
+  promoCodeId: { type: Schema.Types.ObjectId, ref: 'PromoCode', default: null, immutable: true },
+  promoCode: { type: String, trim: true, uppercase: true, maxlength: 32, default: null, immutable: true },
+  ambassadorId: { type: Schema.Types.ObjectId, ref: 'CampusAmbassador', default: null, immutable: true },
+  discountAmount: { type: Number, min: 0, default: 0, immutable: true },
+  promoDiscountType: { type: String, enum: ['NONE', 'PERCENTAGE', 'FIXED'], default: 'NONE', immutable: true },
+  promoDiscountValue: { type: Number, min: 0, default: 0, immutable: true },
+
   transactionId: {
     type: String,
     required: true
@@ -68,5 +75,8 @@ const ticketSchema = new Schema({
   stageScans: { type: [ticketScanSchema], default: [] }
 
 }, { timestamps: true });
+
+ticketSchema.index({ promoCodeId: 1, createdAt: -1 }, { name: 'idx_ticket_promo_created_at' });
+ticketSchema.index({ ambassadorId: 1, createdAt: -1 }, { name: 'idx_ticket_ambassador_created_at' });
 
 export default mongoose.model('Ticket', ticketSchema);

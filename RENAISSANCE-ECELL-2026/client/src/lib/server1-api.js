@@ -301,6 +301,7 @@ export const adminApi = {
 
 export const ticketApi = {
   purchase: (body) => request("/tickets/purchase", { method: "POST", body }, null, false, API_ROOT_URL),
+  validatePromo: (body) => request("/tickets/promo/validate", { method: "POST", body }, null, false, API_ROOT_URL),
   availability: () => request("/tickets/availability", {}, null, false, API_ROOT_URL),
   status: (ticketId) => request(`/tickets/status/${encodeURIComponent(ticketId)}`, {}, null, false, API_ROOT_URL),
   adminList: () => request("/tickets/admin", {}, "admin", true, API_ROOT_URL),
@@ -310,6 +311,7 @@ export const ticketApi = {
   deleteStage: (ticketType, stageId) => request(`/tickets/admin/stages/${encodeURIComponent(ticketType)}/${encodeURIComponent(stageId)}`, { method: "DELETE" }, "admin", true, API_ROOT_URL),
   verify: (id, body) => request(`/tickets/admin/${encodeURIComponent(id)}/verify`, { method: "PATCH", body }, "admin", true, API_ROOT_URL),
   update: (id, body) => request(`/tickets/admin/${encodeURIComponent(id)}`, { method: "PATCH", body }, "admin", true, API_ROOT_URL),
+  scan: (body) => request("/tickets/admin/scan", { method: "POST", body }, "admin", true, API_ROOT_URL),
   adminVolunteers: () => request("/tickets/admin/volunteers", {}, "admin", true, API_ROOT_URL),
   setVolunteerStatus: (id, status) => request(`/tickets/admin/volunteers/${encodeURIComponent(id)}/status`, { method: "PATCH", body: { status } }, "admin", true, API_ROOT_URL),
   volunteerRegister: (body) => request("/tickets/volunteer/register", { method: "POST", body }, null, false, API_ROOT_URL),

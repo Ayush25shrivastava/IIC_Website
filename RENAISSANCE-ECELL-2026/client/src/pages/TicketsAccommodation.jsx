@@ -199,6 +199,7 @@ export default function TicketsAccommodation() {
     college: "",
     city: "",
     teamName: "",
+    promoCode: "",
     tshirtSize: "",
     checkInDate: "",
     checkOutDate: "",
@@ -210,6 +211,9 @@ export default function TicketsAccommodation() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedTicketId, setSubmittedTicketId] = useState("");
   const [copiedTicketId, setCopiedTicketId] = useState("");
+  const [appliedPromoQuote, setAppliedPromoQuote] = useState(null);
+  const [promoMessage, setPromoMessage] = useState("");
+  const [validatingPromo, setValidatingPromo] = useState(false);
   const [savedTicketIds, setSavedTicketIds] = useState(getSavedTicketIds);
 
   const [searchTicketId, setSearchTicketId] = useState("");
@@ -266,12 +270,42 @@ export default function TicketsAccommodation() {
     return ticket.originalPrice;
   };
 
-  const currentPayableAmount = activeTicketData
+  const basePayableAmount = activeTicketData
     ? getTicketPrice(activeTicketData, activeTicketData.includesAccommodation ? accommodationDays : 1)
     : 0;
+  const currentPayableAmount = appliedPromoQuote?.baseAmount === basePayableAmount
+    && appliedPromoQuote?.code === formData.promoCode.trim().toUpperCase()
+    ? appliedPromoQuote.finalAmount
+    : basePayableAmount;
+
+  const applyPromoCode = async () => {
+    if (!selectedTicket || !formData.promoCode.trim()) {
+      setPromoMessage("Enter a code and select a pass first.");
+      return;
+    }
+    setValidatingPromo(true);
+    setPromoMessage("");
+    try {
+      const result = await ticketApi.validatePromo({
+        promoCode: formData.promoCode,
+        ticketType: selectedTicket,
+        accommodationDays: activeTicketData?.includesAccommodation ? accommodationDays : 0,
+      });
+      setAppliedPromoQuote(result.promo);
+      setFormData((prev) => ({ ...prev, promoCode: result.promo.code, amountPaid: String(result.promo.finalAmount) }));
+      setPromoMessage(result.promo.discountAmount ? `Code applied · you save ₹${result.promo.discountAmount}.` : "Code applied.");
+    } catch (error) {
+      setAppliedPromoQuote(null);
+      setPromoMessage(error.message || "This promo code could not be applied.");
+    } finally {
+      setValidatingPromo(false);
+    }
+  };
 
   const handleSelectTicket = (id) => {
     setAvailabilityMessage("");
+    setAppliedPromoQuote(null);
+    setPromoMessage("");
     if (selectedTicket === id) {
       setSelectedTicket(null);
       setFormData((prev) => ({ ...prev, amountPaid: "" }));
@@ -309,6 +343,8 @@ export default function TicketsAccommodation() {
   const handleAccommodationDaysChange = (days) => {
     const validDays = Math.max(1, Number(days) || 1);
     setAccommodationDays(validDays);
+    setAppliedPromoQuote(null);
+    setPromoMessage("");
     if (activeTicketData?.includesAccommodation) {
       const total = getTicketPrice(activeTicketData, validDays);
       setFormData((prev) => ({ ...prev, amountPaid: total.toString() }));
@@ -350,6 +386,11 @@ export default function TicketsAccommodation() {
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === "promoCode") {
+      setAppliedPromoQuote(null);
+      setPromoMessage("");
+      setFormData((prev) => ({ ...prev, amountPaid: String(basePayableAmount) }));
+    }
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
@@ -395,9 +436,24 @@ export default function TicketsAccommodation() {
 
     setIsSubmitting(true);
     try {
+      let appliedAmount = basePayableAmount;
+      const normalizedPromoCode = formData.promoCode.trim().toUpperCase();
+      if (normalizedPromoCode) {
+        const quoteIsCurrent = appliedPromoQuote?.code === normalizedPromoCode && appliedPromoQuote?.baseAmount === basePayableAmount;
+        const quote = quoteIsCurrent ? appliedPromoQuote : (await ticketApi.validatePromo({
+          promoCode: normalizedPromoCode,
+          ticketType: selectedTicket,
+          accommodationDays: activeTicketData?.includesAccommodation ? accommodationDays : 0,
+        })).promo;
+        appliedAmount = quote.finalAmount;
+        setAppliedPromoQuote(quote);
+        setPromoMessage(quote.discountAmount ? `Code applied · you save ₹${quote.discountAmount}.` : "Code applied.");
+      }
       const data = await ticketApi.purchase({
         ...formData,
+        amountPaid: String(appliedAmount),
         teamName: formData.teamName.trim(),
+        promoCode: normalizedPromoCode,
         ticketType: selectedTicket,
         tshirtSize: includesTshirt ? formData.tshirtSize : null,
         accommodationDays: activeTicketData?.includesAccommodation ? accommodationDays : 0,
@@ -414,8 +470,10 @@ export default function TicketsAccommodation() {
       setSelectedTicket(null);
       setAccommodationDays(1);
       setFormData({
-        name: "", email: "", phone: "", college: "", city: "", teamName: "", tshirtSize: "", checkInDate: "", checkOutDate: "", accommodationPreferences: "", transactionId: "", amountPaid: "",
+        name: "", email: "", phone: "", college: "", city: "", teamName: "", promoCode: "", tshirtSize: "", checkInDate: "", checkOutDate: "", accommodationPreferences: "", transactionId: "", amountPaid: "",
       });
+      setAppliedPromoQuote(null);
+      setPromoMessage("");
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       if (error.code === "PASS_SOLD_OUT" || error.message?.toLowerCase().includes("sold out")) {
@@ -1178,6 +1236,14 @@ export default function TicketsAccommodation() {
 
                       <div className="w-full bg-[#F4EBD9]/80 border-2 border-[#C5A25F]/40 p-4 rounded-xl text-left">
                         <div className="mb-4">
+                          <label className="block text-[11px] font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold" htmlFor="campus-ambassador-promo">Campus ambassador promo code <span className="normal-case tracking-normal">(optional)</span></label>
+                          <div className="flex gap-2">
+                            <input id="campus-ambassador-promo" type="text" name="promoCode" value={formData.promoCode} onChange={handleFormChange} placeholder="Enter promo code" maxLength={32} className="min-w-0 flex-1 px-4 py-3 rounded-xl bg-white border-2 border-[#C5A25F]/30 text-sm text-[#0C2B3D] font-semibold uppercase placeholder-[#2C5263]/40 focus:outline-none focus:border-[#9E6D1F] transition-colors" />
+                            <button type="button" onClick={applyPromoCode} disabled={validatingPromo || !formData.promoCode.trim()} className="shrink-0 rounded-xl bg-[#0C2B3D] px-4 py-2 text-xs font-bold text-[#F2E5D4] disabled:opacity-50">{validatingPromo ? "Checking…" : "Apply"}</button>
+                          </div>
+                          {promoMessage && <p role="status" className="mt-2 text-xs font-semibold text-[#2C5263]">{promoMessage}</p>}
+                        </div>
+                        <div className="mb-4">
                           <label className="block text-[11px] font-mono text-[#8A5F1C] uppercase tracking-wider mb-2 font-bold">
                             Transaction ID / UTR *
                           </label>
@@ -1197,7 +1263,7 @@ export default function TicketsAccommodation() {
                             Amount Paid (₹) *
                           </label>
                           <p className="text-[10px] text-[#2C5263] font-mono mb-2">
-                            Auto-calculated: ₹{currentPayableAmount}
+                            Auto-calculated: ₹{currentPayableAmount}{currentPayableAmount < basePayableAmount && <span> · promo saved ₹{basePayableAmount - currentPayableAmount}</span>}
                           </p>
                           <input
                             type="number"

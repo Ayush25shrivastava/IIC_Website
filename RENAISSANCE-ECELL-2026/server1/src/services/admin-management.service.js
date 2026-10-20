@@ -5,6 +5,7 @@ import { AuthSession, CampusAmbassador, PromoCode, Registration, Task } from "..
 import { revokeAmbassadorSessions } from "./ambassador-auth.service.js";
 import { publicPromoCode, publicTask } from "./ambassador-dashboard.service.js";
 import { ApiError } from "../utils/api-error.js";
+import Ticket from "../models/ticketModel.js";
 
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -100,15 +101,16 @@ export async function listAmbassadors({ page, limit, status, search, college }) 
     CampusAmbassador.countDocuments(filter),
   ]);
   const ids = rows.map((row) => row._id);
-  const [promos, registrations, tasks] = await Promise.all([
+  const [promos, registrations, tickets, tasks] = await Promise.all([
     PromoCode.find({ ambassadorId: { $in: ids }, isPrimary: true }).lean(),
     Registration.aggregate([{ $match: { ambassadorId: { $in: ids } } }, { $group: { _id: "$ambassadorId", count: { $sum: 1 } } }]),
+    Ticket.aggregate([{ $match: { ambassadorId: { $in: ids } } }, { $group: { _id: "$ambassadorId", count: { $sum: 1 } } }]),
     Task.aggregate([{ $match: { ambassadorId: { $in: ids } } }, { $group: { _id: "$ambassadorId", total: { $sum: 1 }, completed: { $sum: { $cond: [{ $eq: ["$status", "COMPLETED"] }, 1, 0] } } } }]),
   ]);
   return { ambassadors: rows.map((row) => ({
     ...adminAmbassadorView(row),
     promoCode: promos.find((p) => String(p.ambassadorId) === String(row._id))?.code || null,
-    registrationCount: registrations.find((v) => String(v._id) === String(row._id))?.count || 0,
+    registrationCount: (registrations.find((v) => String(v._id) === String(row._id))?.count || 0) + (tickets.find((v) => String(v._id) === String(row._id))?.count || 0),
     taskProgress: tasks.find((v) => String(v._id) === String(row._id)) || { total: 0, completed: 0 },
   })), pagination: pagination(page, limit, total, rows.length) };
 }
@@ -116,12 +118,13 @@ export async function listAmbassadors({ page, limit, status, search, college }) 
 export async function getAmbassadorForAdmin(id) {
   const ambassador = await CampusAmbassador.findOne(ambassadorLookup(id)).lean();
   if (!ambassador) throw new ApiError(404, "Campus ambassador was not found", "AMBASSADOR_NOT_FOUND");
-  const [promo, taskCounts, referralCounts] = await Promise.all([
+  const [promo, taskCounts, referralCounts, ticketReferralCounts] = await Promise.all([
     PromoCode.findOne({ ambassadorId: ambassador._id, isPrimary: true }).lean(),
     Task.aggregate([{ $match: { ambassadorId: ambassador._id } }, { $group: { _id: "$status", count: { $sum: 1 } } }]),
     Registration.aggregate([{ $match: { ambassadorId: ambassador._id } }, { $group: { _id: "$status", count: { $sum: 1 } } }]),
+    Ticket.aggregate([{ $match: { ambassadorId: ambassador._id } }, { $group: { _id: "$status", count: { $sum: 1 } } }]),
   ]);
-  return { ambassador: adminAmbassadorView(ambassador), promoCode: promo ? adminPromoView(promo) : null, taskCounts, referralCounts };
+  return { ambassador: adminAmbassadorView(ambassador), promoCode: promo ? adminPromoView(promo) : null, taskCounts, referralCounts: [...referralCounts, ...ticketReferralCounts.map(({ _id, count }) => ({ _id: ({ Pending: REGISTRATION_STATUS.PENDING_VERIFICATION, Verified: REGISTRATION_STATUS.VERIFIED, Rejected: REGISTRATION_STATUS.REJECTED })[_id], count }))] };
 }
 
 export async function updateAmbassadorByAdmin(id, input) {
@@ -132,9 +135,11 @@ export async function updateAmbassadorByAdmin(id, input) {
     const saved = await CampusAmbassador.findOneAndUpdate(ambassadorLookup(id), mutation, { new: true, runValidators: true, session });
     if (!saved) throw new ApiError(404, "Campus ambassador was not found", "AMBASSADOR_NOT_FOUND");
     if (promoCode) {
-      await PromoCode.findOneAndUpdate({ ambassadorId: saved._id, isPrimary: true },
-        { $set: { code: promoCode }, $setOnInsert: { ambassadorId: saved._id, isPrimary: true } },
-        { upsert: true, runValidators: true, session });
+      const primaryPromo = await PromoCode.findOne({ ambassadorId: saved._id, isPrimary: true }).session(session);
+      if (primaryPromo && primaryPromo.code !== promoCode) {
+        throw new ApiError(409, "An ambassador's assigned promo code cannot be changed", "PRIMARY_PROMO_CODE_LOCKED");
+      }
+      if (!primaryPromo) await PromoCode.create([{ code: promoCode, ambassadorId: saved._id }], { session });
     }
     return saved;
   });
@@ -177,7 +182,7 @@ export async function hardDeleteAmbassadorByAdmin(id) {
     );
   }
 
-  const referralCount = await Registration.countDocuments({ ambassadorId: ambassador._id });
+  const referralCount = await Registration.countDocuments({ ambassadorId: ambassador._id }) + await Ticket.countDocuments({ ambassadorId: ambassador._id });
   if (referralCount > 0) {
     throw new ApiError(
       409,
@@ -231,6 +236,12 @@ export async function updatePromoByAdmin(promoId, input) {
   if (promo.archivedAt) {
     throw new ApiError(409, "Archived promo codes cannot be edited", "PROMO_ARCHIVED");
   }
+  if (promo.isPrimary && input.code && input.code !== promo.code) {
+    throw new ApiError(409, "An ambassador's assigned promo code cannot be changed", "PRIMARY_PROMO_CODE_LOCKED");
+  }
+  if (promo.isPrimary && input.isPrimary === false) {
+    throw new ApiError(409, "An ambassador's assigned promo code cannot be rotated", "PRIMARY_PROMO_CODE_LOCKED");
+  }
 
   if (input.isPrimary === true && !promo.isPrimary) {
     const conflict = await PromoCode.exists({
@@ -263,6 +274,7 @@ export async function setPromoStatusByAdmin(promoId, isActive) {
 export async function archivePromoByAdmin(promoId) {
   const promo = await PromoCode.findById(promoId);
   if (!promo) throw new ApiError(404, "Promo code was not found", "PROMO_NOT_FOUND");
+  if (promo.isPrimary) throw new ApiError(409, "An ambassador's assigned promo code cannot be rotated or archived. Disable it if it should stop accepting purchases.", "PRIMARY_PROMO_CODE_LOCKED");
 
   promo.isActive = false;
   promo.isPrimary = false;
@@ -283,7 +295,7 @@ export async function hardDeletePromoByAdmin(promoId) {
     );
   }
 
-  const referralCount = await Registration.countDocuments({ promoCodeId: promo._id });
+  const referralCount = await Registration.countDocuments({ promoCodeId: promo._id }) + await Ticket.countDocuments({ promoCodeId: promo._id });
   if (referralCount > 0) {
     throw new ApiError(
       409,
@@ -401,21 +413,35 @@ export async function deleteTaskByAdmin(taskId) {
 
 export async function listReferralsByAdmin({ page, limit, ambassadorId, promoCode, status, search }) {
   const filter = { ambassadorId: { $ne: null } };
-  if (ambassadorId) filter.ambassadorId = ambassadorId;
-  if (promoCode) filter.promoCode = promoCode.toUpperCase();
+  const ticketFilter = { ambassadorId: { $ne: null } };
+  if (ambassadorId) { filter.ambassadorId = ambassadorId; ticketFilter.ambassadorId = ambassadorId; }
+  if (promoCode) { filter.promoCode = promoCode.toUpperCase(); ticketFilter.promoCode = promoCode.toUpperCase(); }
   if (status) filter.status = status;
+  const ticketStatus = status === REGISTRATION_STATUS.PENDING_VERIFICATION ? "Pending" : status === REGISTRATION_STATUS.VERIFIED ? "Verified" : status === REGISTRATION_STATUS.REJECTED ? "Rejected" : undefined;
+  if (ticketStatus) ticketFilter.status = ticketStatus;
   if (search) {
     const regex = { $regex: escapeRegex(search), $options: "i" };
     filter.$or = [{ registrationId: regex }, { name: regex }, { email: regex }];
+    ticketFilter.$or = [{ ticketId: regex }, { name: regex }, { email: regex }];
   }
   const skip = (page - 1) * limit;
-  const [rows, total] = await Promise.all([
+  const [registrationRows, ticketRows, registrationTotal, ticketTotal] = await Promise.all([
     Registration.find(filter)
       .select("registrationId name email phone packageCode packageName promoCode ambassadorId status paymentStatus transactionId createdAt")
-      .sort({ createdAt: -1, _id: -1 }).skip(skip).limit(limit).lean(),
+      .sort({ createdAt: -1, _id: -1 }).limit(skip + limit).lean(),
+    Ticket.find(ticketFilter).select("ticketId name email phone ticketType promoCode ambassadorId status transactionId createdAt amount amountPaid discountAmount")
+      .sort({ createdAt: -1, _id: -1 }).limit(skip + limit).lean(),
     Registration.countDocuments(filter),
+    Ticket.countDocuments(ticketFilter),
   ]);
-  return { registrations: rows, pagination: pagination(page, limit, total, rows.length) };
+  const ticketReferralRows = ticketRows.map((ticket) => ({
+    ...ticket, registrationId: ticket.ticketId, packageCode: ticket.ticketType, packageName: ticket.ticketType,
+    status: ({ Pending: REGISTRATION_STATUS.PENDING_VERIFICATION, Verified: REGISTRATION_STATUS.VERIFIED, Rejected: REGISTRATION_STATUS.REJECTED })[ticket.status] || ticket.status,
+    recordType: "TICKET",
+  }));
+  const rows = [...registrationRows, ...ticketReferralRows].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt) || String(b._id).localeCompare(String(a._id)));
+  const total = registrationTotal + ticketTotal;
+  return { registrations: rows.slice(skip, skip + limit), pagination: pagination(page, limit, total, Math.min(limit, Math.max(0, total - skip))) };
 }
 
 function countMap(rows, keys) {
@@ -429,17 +455,18 @@ function countMap(rows, keys) {
 }
 
 export async function getAdminDashboard() {
-  const [ambassadorRows, taskRows, referralRows, activePromos, pendingReviews] = await Promise.all([
+  const [ambassadorRows, taskRows, referralRows, ticketReferralRows, activePromos, pendingReviews] = await Promise.all([
     CampusAmbassador.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
     Task.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
     Registration.aggregate([{ $match: { ambassadorId: { $ne: null } } }, { $group: { _id: "$status", count: { $sum: 1 } } }]),
+    Ticket.aggregate([{ $match: { ambassadorId: { $ne: null } } }, { $group: { _id: "$status", count: { $sum: 1 } } }]),
     PromoCode.countDocuments({ isActive: true, archivedAt: null }),
     Task.countDocuments({ status: "COMPLETED", reviewStatus: { $ne: "APPROVED" } }),
   ]);
   return {
     ambassadors: countMap(ambassadorRows, Object.values(AMBASSADOR_STATUS)),
     tasks: countMap(taskRows, Object.values(TASK_STATUS)),
-    referrals: countMap(referralRows, Object.values(REGISTRATION_STATUS)),
+    referrals: countMap([...referralRows, ...ticketReferralRows.map(({ _id, count }) => ({ _id: ({ Pending: REGISTRATION_STATUS.PENDING_VERIFICATION, Verified: REGISTRATION_STATUS.VERIFIED, Rejected: REGISTRATION_STATUS.REJECTED })[_id], count }))], Object.values(REGISTRATION_STATUS)),
     activePromoCodes: activePromos,
     pendingReviews,
   };
