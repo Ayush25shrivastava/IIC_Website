@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import {
   ArrowRight,
+  Building2,
   Calendar,
   CheckCircle2,
   ChevronRight,
@@ -345,6 +346,7 @@ export default function CampusAmbassadorDashboard() {
   const filteredTasks = taskFilter === "ALL" ? tasksList : tasksList.filter((t) => t.status === taskFilter);
 
   const firstName = ambassador?.name?.trim().split(" ")[0] || "Captain";
+  const collegeName = ambassador?.college || dashboardData?.ambassador?.college;
   const recentDays = Array.from({ length: 7 }, (_, index) => {
     const date = new Date();
     date.setUTCDate(date.getUTCDate() - (6 - index));
@@ -456,6 +458,12 @@ export default function CampusAmbassadorDashboard() {
               <ShieldCheck size={13} style={{ color: "#278DBB" }} />
               <span>Campus Ambassador</span>
             </div>
+            {collegeName && (
+              <div className="ca-profile-college" title={collegeName}>
+                <Building2 size={12} aria-hidden="true" />
+                <span>{collegeName}</span>
+              </div>
+            )}
           </div>
         </div>
 

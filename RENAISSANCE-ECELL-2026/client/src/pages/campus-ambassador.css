@@ -329,6 +329,28 @@
   gap: 4px;
 }
 
+.ca-portal .ca-profile-college {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  color: var(--ca-muted);
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.ca-portal .ca-profile-college svg {
+  flex: 0 0 auto;
+  color: var(--ca-primary);
+}
+
+.ca-portal .ca-profile-college span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .ca-portal .ca-sidebar-footer {
   text-align: center;
   font-size: 9px;
