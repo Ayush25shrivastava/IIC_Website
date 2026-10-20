@@ -105,7 +105,16 @@ export default function Teams({ embedded = false }) {
     let active = true;
     const refresh = () => {
       if (document.visibilityState !== "visible") return;
-      getTeamPhotos().then((data) => { 
+      const fetchPhotos = async () => {
+        try {
+          return await getTeamPhotos();
+        } catch (error) {
+          if (error.status && error.status < 502) throw error;
+          await new Promise((resolve) => window.setTimeout(resolve, 1500));
+          return getTeamPhotos(true);
+        }
+      };
+      fetchPhotos().then((data) => {
         if (active) { 
             setMembers(data.members || []); 
             setPhotoError(""); 
