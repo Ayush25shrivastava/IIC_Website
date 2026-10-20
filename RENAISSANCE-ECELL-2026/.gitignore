@@ -1,2 +1,5 @@
 *.zip
 *.patch
+
+# Private campus ambassador roster contains initial login credentials.
+server1/seed-data/

@@ -5,8 +5,11 @@ import {
 import {
   PromoCode,
   Registration,
+  Ticket,
   Task,
 } from "../models/index.js";
+import { randomBytes } from "node:crypto";
+import { CampusAmbassador } from "../models/index.js";
 import { publicAmbassador } from "./ambassador-auth.service.js";
 import { ApiError } from "../utils/api-error.js";
 
@@ -69,6 +72,25 @@ function promoEffectiveStatus(promo, now = new Date()) {
   if (promo.validUntil && promo.validUntil < now) return "EXPIRED";
   if (promo.maxUses !== null && promo.usageCount >= promo.maxUses) return "EXHAUSTED";
   return "ACTIVE";
+}
+
+async function getOrAssignPrimaryPromoCode(ambassadorId) {
+  let promo = await PromoCode.findOne({ ambassadorId, isPrimary: true }).lean();
+  if (promo) return promo;
+  const ambassador = await CampusAmbassador.findById(ambassadorId).select("ambassadorId").lean();
+  if (!ambassador) return null;
+  const suffix = randomBytes(5).toString("hex").toUpperCase();
+  try {
+    promo = await PromoCode.findOneAndUpdate(
+      { ambassadorId, isPrimary: true },
+      { $setOnInsert: { code: `RNX-${suffix}`, ambassadorId, isPrimary: true, discountType: "NONE", discountValue: 0 } },
+      { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true },
+    ).lean();
+  } catch (error) {
+    if (error.code !== 11000) throw error;
+    promo = await PromoCode.findOne({ ambassadorId, isPrimary: true }).lean();
+  }
+  return promo;
 }
 
 export function publicPromoCode(promo) {
@@ -140,26 +162,47 @@ async function statusCounts(Model, ambassadorId) {
   ]);
 }
 
+function combineReferralRows(registrationRows, ticketRows) {
+  const statusMap = { Pending: REGISTRATION_STATUS.PENDING_VERIFICATION, Verified: REGISTRATION_STATUS.VERIFIED, Rejected: REGISTRATION_STATUS.REJECTED };
+  const counts = new Map(registrationRows.map((row) => [row._id, row.count]));
+  for (const row of ticketRows) {
+    const status = statusMap[row._id];
+    if (status) counts.set(status, (counts.get(status) || 0) + row.count);
+  }
+  return [...counts].map(([_id, count]) => ({ _id, count }));
+}
+
+function publicTicketReferral(ticket) {
+  return {
+    id: ticket._id.toString(), registrationId: ticket.ticketId,
+    participantName: participantDisplayName(ticket.name),
+    packageCode: ticket.ticketType, packageName: ticket.ticketType,
+    promoCode: ticket.promoCode, status: ({ Pending: REGISTRATION_STATUS.PENDING_VERIFICATION, Verified: REGISTRATION_STATUS.VERIFIED, Rejected: REGISTRATION_STATUS.REJECTED })[ticket.status] || ticket.status.toUpperCase(),
+    createdAt: ticket.createdAt, recordType: "TICKET",
+  };
+}
+
 export async function getAmbassadorDashboardData(ambassador) {
-  const [promo, taskRows, referralRows] = await Promise.all([
-    PromoCode.findOne({ ambassadorId: ambassador._id, isPrimary: true }).lean(),
+  const [promo, taskRows, referralRows, ticketRows] = await Promise.all([
+    getOrAssignPrimaryPromoCode(ambassador._id),
     statusCounts(Task, ambassador._id),
     statusCounts(Registration, ambassador._id),
+    statusCounts(Ticket, ambassador._id),
   ]);
 
   return {
     ambassador: publicAmbassador(ambassador),
     promoCode: promo ? {
       ...publicPromoCode(promo),
-      registrationCount: await Registration.countDocuments({ ambassadorId: ambassador._id, promoCodeId: promo._id }),
+      registrationCount: await Registration.countDocuments({ ambassadorId: ambassador._id, promoCodeId: promo._id }) + await Ticket.countDocuments({ ambassadorId: ambassador._id, promoCodeId: promo._id }),
     } : null,
     taskStats: mapTaskStats(taskRows),
-    referralStats: mapReferralStats(referralRows),
+    referralStats: mapReferralStats(combineReferralRows(referralRows, ticketRows)),
   };
 }
 
 export async function getAmbassadorPrimaryPromoCode(ambassadorId) {
-  const promo = await PromoCode.findOne({ ambassadorId, isPrimary: true }).lean();
+  const promo = await getOrAssignPrimaryPromoCode(ambassadorId);
   return publicPromoCode(promo);
 }
 
@@ -241,30 +284,35 @@ export const updateAmbassadorTaskStatus = updateAmbassadorTask;
 export const updateAmbassadorTaskDetails = updateAmbassadorTask;
 
 export async function listAmbassadorReferrals({ ambassadorId, page, limit, status }) {
-  const filter = { ambassadorId };
-  if (status) filter.status = status;
-
   const skip = (page - 1) * limit;
-  const [registrations, total, referralRows] = await Promise.all([
-    Registration.find(filter)
+  const filter = { ambassadorId };
+  const ticketStatus = status === REGISTRATION_STATUS.PENDING_VERIFICATION ? "Pending" : status === REGISTRATION_STATUS.VERIFIED ? "Verified" : status === REGISTRATION_STATUS.REJECTED ? "Rejected" : undefined;
+  const registrationFilter = { ...filter, ...(status ? { status } : {}) };
+  const ticketFilter = { ...filter, ...(ticketStatus ? { status: ticketStatus } : {}) };
+  const [registrations, tickets, registrationTotal, ticketTotal, registrationRows, ticketRows] = await Promise.all([
+    Registration.find(registrationFilter)
       .select("registrationId name packageCode packageName promoCode status createdAt")
-      .sort({ createdAt: -1, _id: -1 })
-      .skip(skip)
-      .limit(limit)
+      .sort({ createdAt: -1, _id: -1 }).limit(skip + limit)
       .lean(),
-    Registration.countDocuments(filter),
+    Ticket.find(ticketFilter).select("ticketId name ticketType promoCode status createdAt")
+      .sort({ createdAt: -1, _id: -1 }).limit(skip + limit).lean(),
+    Registration.countDocuments(registrationFilter), Ticket.countDocuments(ticketFilter),
     statusCounts(Registration, ambassadorId),
+    statusCounts(Ticket, ambassadorId),
   ]);
+  const merged = [...registrations.map(publicReferral), ...tickets.map(publicTicketReferral)]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt) || b.id.localeCompare(a.id));
+  const total = registrationTotal + ticketTotal;
 
   return {
-    referrals: registrations.map(publicReferral),
-    stats: mapReferralStats(referralRows),
+    referrals: merged.slice(skip, skip + limit),
+    stats: mapReferralStats(combineReferralRows(registrationRows, ticketRows)),
     pagination: {
       page,
       limit,
       total,
       totalPages: total === 0 ? 0 : Math.ceil(total / limit),
-      hasNextPage: skip + registrations.length < total,
+      hasNextPage: skip + limit < total,
       hasPreviousPage: page > 1,
     },
   };

@@ -1,7 +1,7 @@
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import {
-    purchaseTicket, getAllTickets, verifyTicket, updateTicket, getTicketStatus, scanTicket,
+    purchaseTicket, validateTicketPromo, getAllTickets, verifyTicket, updateTicket, getTicketStatus, scanTicket,
     getTicketStageConfigs, addTicketStage, deleteTicketStage,
     setTicketSoldOut,
 } from '../controllers/ticketController.js';
@@ -40,6 +40,7 @@ const router = express.Router();
 
 // Public route to purchase a ticket
 router.post('/purchase', purchaseTicket);
+router.post('/promo/validate', validateTicketPromo);
 router.get('/availability', getTicketStageConfigs);
 
 // Public route to get ticket status
@@ -64,5 +65,6 @@ router.get('/admin', requireAdminAuth, getAllTickets);
 
 router.patch('/admin/:id', requireAdminAuth, requireTrustedOrigin, updateTicket);
 router.patch('/admin/:id/verify', requireAdminAuth, requireTrustedOrigin, verifyTicket);
+router.post('/admin/scan', requireAdminAuth, requireTrustedOrigin, scanTicket);
 
 export default router;

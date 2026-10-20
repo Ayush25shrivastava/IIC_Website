@@ -115,6 +115,10 @@ campusAmbassadorSchema.index(
   { unique: true, name: "uq_campus_ambassador_email" },
 );
 campusAmbassadorSchema.index(
+  { phone: 1 },
+  { sparse: true, name: "idx_campus_ambassador_phone_login" },
+);
+campusAmbassadorSchema.index(
   { status: 1, college: 1 },
   { name: "idx_campus_ambassador_status_college" },
 );

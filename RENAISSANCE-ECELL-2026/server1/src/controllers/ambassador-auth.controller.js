@@ -14,11 +14,21 @@ import { verifyAccessToken, verifyRefreshToken } from "../utils/tokens.js";
 import { assertDatabaseReady } from "../middleware/database-ready.js";
 
 export async function loginAmbassador(req, res) {
-  const { email, password } = req.validatedBody;
-
-  const ambassador = await CampusAmbassador.findOne({ email }).select("+password +passwordHash +authVersion");
-  if (!ambassador || !(await verifyAmbassadorPassword(ambassador, password))
-    || ambassador.status !== AMBASSADOR_STATUS.ACTIVE || ambassador.role !== "CAMPUS_AMBASSADOR") {
+  const { username, email, password } = req.validatedBody;
+  const identifier = username ?? email;
+  const lookup = identifier.includes("@")
+    ? { email: identifier.toLowerCase() }
+    : { phone: identifier.replace(/\D/g, "") };
+  const candidates = await CampusAmbassador.find(lookup).select("+password +passwordHash +authVersion");
+  let ambassador = null;
+  for (const candidate of candidates) {
+    if (candidate.status === AMBASSADOR_STATUS.ACTIVE && candidate.role === "CAMPUS_AMBASSADOR"
+      && await verifyAmbassadorPassword(candidate, password)) {
+      ambassador = candidate;
+      break;
+    }
+  }
+  if (!ambassador) {
     throw new ApiError(401, "Invalid email or password", "INVALID_CREDENTIALS");
   }
 
