@@ -16,7 +16,7 @@ const FacultyCard = ({ member, grouped = false, isTopLeader = false }) => {
         <img
           src={teamPhotoUrl(member)}
           alt={member.name}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover object-center"
           onError={(e) => {
             const fallback = getAssetUrl("/placeholder-speaker.svg");
             if (e.currentTarget.getAttribute("src") !== fallback) e.currentTarget.src = fallback;
@@ -85,7 +85,7 @@ function StudentTeamGroups({ members, category }) {
               <span className="mt-2 h-[2px] w-12 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-16" />
             </h3>
             <div className="teams-student-row rounded-xl" aria-labelledby={headingId}>
-              <div className="teams-faculty-cards flex flex-wrap items-stretch justify-center gap-3 px-1 pb-6 pt-2 sm:gap-5">
+              <div className="teams-faculty-cards flex w-max min-w-full items-stretch justify-center gap-3 px-1 pb-6 pt-2 sm:gap-5">
                 {teamMembers.map((member) => <FacultyCard key={member.id} member={member} grouped />)}
               </div>
             </div>
@@ -105,7 +105,16 @@ export default function Teams({ embedded = false }) {
     let active = true;
     const refresh = () => {
       if (document.visibilityState !== "visible") return;
-      getTeamPhotos().then((data) => { 
+      const fetchPhotos = async () => {
+        try {
+          return await getTeamPhotos();
+        } catch (error) {
+          if (error.status && error.status < 502) throw error;
+          await new Promise((resolve) => window.setTimeout(resolve, 1500));
+          return getTeamPhotos(true);
+        }
+      };
+      fetchPhotos().then((data) => {
         if (active) { 
             setMembers(data.members || []); 
             setPhotoError(""); 
@@ -156,12 +165,15 @@ export default function Teams({ embedded = false }) {
           overscroll-behavior-x: contain;
           scrollbar-width: thin;
           scrollbar-color: #78C8ED transparent;
+          scroll-snap-type: x proximity;
+          scroll-padding-inline: 1rem;
         }
 
         .teams-student-row .teams-member-card {
           flex: 0 0 180px;
           width: 180px;
           max-width: none;
+          scroll-snap-align: center;
         }
 
         @media (min-width: 640px) {

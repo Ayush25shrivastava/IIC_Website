@@ -7,3 +7,4 @@ export { Registration } from "./registration.model.js";
 export { Task } from "./task.model.js";
 export { default as Ticket } from "./ticketModel.js";
 export { TicketStageConfig } from "./ticket-stage-config.model.js";
+export { VolunteerScanner } from "./volunteer-scanner.model.js";

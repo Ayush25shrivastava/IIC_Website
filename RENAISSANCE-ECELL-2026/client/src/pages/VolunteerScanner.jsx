@@ -50,12 +50,15 @@ function ScanHistory({ scans = [], stages = [] }) {
 }
 
 export default function VolunteerScanner() {
-    const [email, setEmail] = useState("volunteerren@gmail.com");
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+    const [authMode, setAuthMode] = useState("login");
     const [signedIn, setSignedIn] = useState(false);
     const [loading, setLoading] = useState(true);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
+    const [notice, setNotice] = useState("");
     const [configs, setConfigs] = useState({});
     const [passType, setPassType] = useState("event-standard");
     const [stageId, setStageId] = useState("");
@@ -78,6 +81,7 @@ export default function VolunteerScanner() {
             .then(async (data) => {
                 if (!active) return;
                 setEmail(data.email);
+                setName(data.name || "");
                 await loadStages();
                 if (active) setSignedIn(true);
             })
@@ -92,11 +96,25 @@ export default function VolunteerScanner() {
         try {
             const data = await ticketApi.volunteerLogin({ email, password });
             setEmail(data.email);
+            setName(data.name || "");
             await loadStages();
             setPassword("");
             setSignedIn(true);
         } catch (err) {
             setError(err.message || "Sign-in failed. Check the volunteer scanner credentials.");
+        } finally { setBusy(false); }
+    }
+
+    async function register(event) {
+        event.preventDefault();
+        setBusy(true); setError(""); setNotice("");
+        try {
+            await ticketApi.volunteerRegister({ name, email, password });
+            setPassword("");
+            setAuthMode("login");
+            setNotice("Request submitted. You can sign in after an admin approves your scanner access.");
+        } catch (err) {
+            setError(err.message || "Could not submit your access request.");
         } finally { setBusy(false); }
     }
 
@@ -135,13 +153,16 @@ export default function VolunteerScanner() {
             <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-[#d9bf7b] bg-[#fff4d9] text-[#9a7127]"><Anchor size={26} /></div>
             <p className="mt-5 text-center font-mono text-[10px] font-black uppercase tracking-[.2em] text-[#527e8e]">Renaissance · Gate staff</p>
             <h1 className="mt-2 text-center font-cinzel text-3xl font-black text-[#173f52]">Volunteer scanner</h1>
-            <p className="mt-2 text-center text-sm text-[#527e8e]">Sign in to scan verified tickets at your assigned event stage.</p>
-            <form onSubmit={login} className="mt-7 space-y-4">
+            <p className="mt-2 text-center text-sm text-[#527e8e]">{authMode === "login" ? "Sign in after an admin approves your scanner access." : "Create an account and request scanner access from an admin."}</p>
+            <form onSubmit={authMode === "login" ? login : register} className="mt-7 space-y-4">
+                {authMode === "register" && <label className="block text-xs font-bold uppercase tracking-wider text-[#527e8e]">Full name<input type="text" autoComplete="name" minLength={2} maxLength={120} required value={name} onChange={(event) => setName(event.target.value)} className="mt-2 w-full rounded-xl border border-[#afd6e1] bg-white px-4 py-3 text-sm font-medium normal-case tracking-normal text-[#173f52] outline-none focus:border-[#0d7892] focus:ring-4 focus:ring-[#0d7892]/10" /></label>}
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#527e8e]">Email<input type="email" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} className="mt-2 w-full rounded-xl border border-[#afd6e1] bg-white px-4 py-3 text-sm font-medium normal-case tracking-normal text-[#173f52] outline-none focus:border-[#0d7892] focus:ring-4 focus:ring-[#0d7892]/10" /></label>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#527e8e]">Password<input type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} className="mt-2 w-full rounded-xl border border-[#afd6e1] bg-white px-4 py-3 text-sm font-medium normal-case tracking-normal text-[#173f52] outline-none focus:border-[#0d7892] focus:ring-4 focus:ring-[#0d7892]/10" /></label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#527e8e]">Password<input type="password" autoComplete={authMode === "login" ? "current-password" : "new-password"} minLength={authMode === "register" ? 8 : undefined} required value={password} onChange={(event) => setPassword(event.target.value)} className="mt-2 w-full rounded-xl border border-[#afd6e1] bg-white px-4 py-3 text-sm font-medium normal-case tracking-normal text-[#173f52] outline-none focus:border-[#0d7892] focus:ring-4 focus:ring-[#0d7892]/10" /></label>
                 {error && <p role="alert" className="rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-800">{error}</p>}
-                <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#123e50] px-4 py-3 font-bold text-white transition hover:bg-[#1c5b70] disabled:opacity-60">{busy ? <LoaderCircle size={18} className="animate-spin" /> : <ShieldCheck size={18} />} Sign in to scanner</button>
+                {notice && <p role="status" className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">{notice}</p>}
+                <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#123e50] px-4 py-3 font-bold text-white transition hover:bg-[#1c5b70] disabled:opacity-60">{busy ? <LoaderCircle size={18} className="animate-spin" /> : <ShieldCheck size={18} />} {authMode === "login" ? "Sign in to scanner" : "Request scanner access"}</button>
             </form>
+            <button type="button" onClick={() => { setAuthMode((mode) => mode === "login" ? "register" : "login"); setError(""); setNotice(""); }} className="mt-4 w-full text-center text-xs font-bold text-[#0d7892] underline underline-offset-4">{authMode === "login" ? "New volunteer? Request access" : "Already requested access? Sign in"}</button>
             <p className="mt-5 text-center text-[11px] text-[#688b96]">Scanner access only · Payment and stage settings are not available here.</p>
         </section>
     </main>;
@@ -162,7 +183,7 @@ export default function VolunteerScanner() {
                 {!stages.length && <p className="mt-3 text-sm font-semibold text-amber-800">No stages are configured for this pass. Ask an admin to add stages.</p>}
                 {cameraOn ? <div className="mt-5"><CameraReader onDecoded={scan} onError={cameraError} /><button type="button" onClick={() => setCameraOn(false)} className="mt-3 w-full rounded-xl border border-[#b6dce4] bg-white px-4 py-2 text-sm font-bold text-[#376579]">Stop camera</button></div> : <button type="button" disabled={!stageId || scanBusy} onClick={() => { setError(""); setCameraOn(true); }} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#123e50] px-4 py-4 font-bold text-white transition hover:bg-[#1c5b70] disabled:cursor-not-allowed disabled:opacity-50"><Camera size={19} /> Scan ticket QR</button>}
                 {result && <div role={result.error ? "alert" : "status"} className={`mt-5 rounded-2xl border p-4 ${result.error ? "border-rose-300 bg-rose-50 text-rose-900" : result.alreadyScanned ? "border-amber-300 bg-amber-100 text-amber-950" : "border-emerald-300 bg-emerald-50 text-emerald-950"}`}>
-                    <div className="flex items-center gap-2 font-black">{result.error ? <XCircle size={21} /> : result.alreadyScanned ? <Ticket size={21} /> : <CheckCircle2 size={21} />}{result.error ? "Scan blocked" : result.alreadyScanned ? `Already scanned · ${result.selectedStage}` : `Admitted · ${result.selectedStage}`}</div>
+                    <div className="flex items-center gap-2 font-black">{result.error ? <XCircle size={21} /> : result.alreadyScanned ? <Ticket size={21} /> : <CheckCircle2 size={21} />}{result.error ? (result.error.toLowerCase().includes("not eligible") ? "Not eligible for this stage" : "Scan blocked") : result.alreadyScanned ? `Already scanned · ${result.selectedStage}` : `Admitted · ${result.selectedStage}`}</div>
                     {result.error ? <p className="mt-2 text-sm">{result.error}</p> : <><p className="mt-2 font-cinzel text-lg font-black">{result.ticket?.name}{result.ticket?.teamName ? ` · Team: ${result.ticket.teamName}` : ""}</p><p className="font-mono text-xs">{result.ticket?.ticketId}{result.ticket?.ticketType ? ` · ${PASS_NAMES[result.ticket.ticketType] || result.ticket.ticketType}` : ""}{result.ticket?.tshirtSize ? ` · Size: ${result.ticket.tshirtSize}` : ""}</p><ScanHistory scans={result.ticket?.stageScans} stages={configs[result.ticket?.ticketType] || []} /></>}
                 </div>}
                 <p className="mt-5 text-center text-xs text-[#688b96]">Yellow means this ticket has already been scanned at that stage. Each pass type has its own stage list.</p>

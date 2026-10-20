@@ -36,11 +36,11 @@ export const adminStyles = {
   small: "block text-[#527e8e] text-[12px]",
 
   // Navigation & Layout
-  sidebar: "w-[260px] 2xl:w-[290px] max-[1250px]:w-[225px] max-[900px]:w-[260px] fixed inset-y-0 left-0 z-30 flex flex-col p-[32px_17px_24px] 2xl:p-[35px_20px_25px] border-r-2 border-[#508599] bg-[linear-gradient(150deg,#eefafa_0%,#c2e5ea_100%)] transition-transform duration-200 max-[900px]:top-[78px] max-[900px]:pt-5 max-[900px]:shadow-[15px_0_30px_#103c4940] overflow-y-auto",
+  sidebar: "w-[260px] 2xl:w-[290px] max-[1250px]:w-[225px] max-[900px]:w-[260px] fixed inset-y-0 left-0 z-30 flex flex-col overflow-hidden p-[32px_17px_24px] 2xl:p-[35px_20px_25px] border-r-2 border-[#508599] bg-[linear-gradient(150deg,#eefafa_0%,#c2e5ea_100%)] transition-transform duration-200 max-[900px]:top-[78px] max-[900px]:pt-5 max-[900px]:shadow-[15px_0_30px_#103c4940]",
   sidebarBrand: "text-center px-[6px]",
   sidebarBrandImg: "block w-full h-[76px] object-contain p-[12px_18px] rounded-[22px] bg-[#f7fcfc] mb-[18px]",
   sidebarNavLabel: "font-mono text-[11px] uppercase tracking-[0.14em] font-semibold text-[#527e8e] my-[42px_20px] mx-3 max-[900px]:mt-5",
-  sidebarNav: "grid gap-[10px]",
+  sidebarNav: "grid min-h-0 flex-1 content-start gap-[10px] overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:#78C8ED_transparent]",
   sidebarNavItem: "justify-start p-[15px_12px] bg-transparent border border-transparent rounded-[11px] text-left text-[14px] inline-flex items-center gap-[9px] text-[#376579] font-semibold no-underline cursor-pointer transition-colors duration-150 hover:bg-[#f4fcfd] [&_svg]:shrink-0 [&_svg]:text-[#679caf]",
   sidebarNavSelected: "!bg-[#f7f1df] !border-[#dcbb6e] !text-[#224c60] [&_svg]:!text-[#b18b36]",
   sidebarNavBadge: "ml-auto text-[#997329] bg-[#f7eed5] border border-[#dfc580] rounded-[6px] px-[6px] text-xs font-bold",

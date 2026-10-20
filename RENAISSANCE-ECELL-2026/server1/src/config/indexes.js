@@ -8,6 +8,7 @@ import {
   Task,
   Ticket,
   TicketStageConfig,
+  VolunteerScanner,
 } from "../models/index.js";
 import { logger } from "../utils/logger.js";
 
@@ -21,6 +22,7 @@ const indexedModels = [
   Task,
   Ticket,
   TicketStageConfig,
+  VolunteerScanner,
 ];
 
 async function removeUniqueTransactionIdIndex(Model) {

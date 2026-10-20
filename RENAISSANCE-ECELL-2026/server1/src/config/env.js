@@ -45,8 +45,6 @@ const schema = z.object({
   AUTH_COOKIE_SECURE: booleanFromEnv.optional(),
   AUTH_COOKIE_SAME_SITE: z.enum(["lax", "strict", "none"]).default(process.env.NODE_ENV === "production" ? "none" : "lax"),
   AUTH_COOKIE_DOMAIN: z.string().trim().optional(),
-  VOLUNTEER_SCANNER_EMAIL: z.string().trim().email().optional(),
-  VOLUNTEER_SCANNER_PASSWORD: z.string().min(8).optional(),
 });
 
 const parsed = schema.safeParse(process.env);
@@ -57,10 +55,6 @@ if (!parsed.success) {
     .join("\n");
 
   throw new Error(`Invalid server1 environment configuration:\n${message}`);
-}
-
-if (Boolean(parsed.data.VOLUNTEER_SCANNER_EMAIL) !== Boolean(parsed.data.VOLUNTEER_SCANNER_PASSWORD)) {
-  throw new Error("VOLUNTEER_SCANNER_EMAIL and VOLUNTEER_SCANNER_PASSWORD must be configured together");
 }
 
 const clientOrigins = parsed.data.CLIENT_ORIGIN
