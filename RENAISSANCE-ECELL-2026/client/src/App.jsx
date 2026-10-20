@@ -36,6 +36,7 @@ const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const CampusAmbassadorAdmin = lazy(() => import("./pages/CampusAmbassadorAdmin"));
 const TicketsAccommodation = lazy(() => import("./pages/TicketsAccommodation"));
 const TicketsAdmin = lazy(() => import("./pages/TicketsAdmin"));
+const VolunteerManagement = lazy(() => import("./pages/VolunteerManagement"));
 const VolunteerScanner = lazy(() => import("./pages/VolunteerScanner"));
 const SupportUs = lazy(() => import("./pages/SupportUs"));
 
@@ -203,6 +204,7 @@ export default function App() {
                 <Route path="login" element={<AdminLogin />} />
                 <Route path="campus-ambassadors" element={<CampusAmbassadorAdmin />} />
                 <Route path="tickets" element={<TicketsAdmin />} />
+                <Route path="volunteer" element={<VolunteerManagement />} />
               </Route>
               <Route path="/campus-ambassador/admin" element={<Navigate to="/admin" replace />} />
 
