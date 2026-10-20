@@ -101,6 +101,7 @@ async function send(path, { method = "GET", body, query, signal, cache, keepaliv
 
 const refreshRequests = new Map();
 let ambassadorAuthMutation = null;
+const AMBASSADOR_REFRESH_LOCK = "renaissance-campus-ambassador-refresh";
 
 // Finish revoking an old visit before login can issue new cookies.
 function mutateAmbassadorAuth(action) {
@@ -162,13 +163,36 @@ async function request(path, options = {}, authScope = null, retry = true, baseU
   let response = await send(path, options, baseUrl);
 
   if (response.status === 401 && retry && authScope) {
-    const refreshResult = await refreshAuth(authScope);
+    const refreshAfterCheckingLatestSession = async () => {
+      // Another tab may have refreshed the shared cookies while this tab was
+      // waiting for the browser-wide lock. Retry with those cookies first.
+      const latestResponse = await send(path, options, baseUrl);
+      if (latestResponse.status !== 401) return readResponse(latestResponse);
 
-    if (refreshResult.ok) {
-      response = await send(path, options, baseUrl);
-    } else if (refreshResult.error) {
-      throw refreshResult.error;
+      const refreshResult = await refreshAuth(authScope);
+
+      if (refreshResult.ok) {
+        response = await send(path, options, baseUrl);
+      } else if (refreshResult.error) {
+        throw refreshResult.error;
+      }
+
+      return readResponse(response);
+    };
+
+    if (authScope === "ambassador" && globalThis.navigator?.locks?.request) {
+      return globalThis.navigator.locks.request(
+        AMBASSADOR_REFRESH_LOCK,
+        { mode: "exclusive" },
+        refreshAfterCheckingLatestSession,
+      );
     }
+
+    if (authScope === "ambassador") return refreshAfterCheckingLatestSession();
+
+    const refreshResult = await refreshAuth(authScope);
+    if (refreshResult.ok) response = await send(path, options, baseUrl);
+    else if (refreshResult.error) throw refreshResult.error;
   }
 
   return readResponse(response);
