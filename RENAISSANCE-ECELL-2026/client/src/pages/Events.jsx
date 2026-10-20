@@ -753,7 +753,7 @@ export default function Events({ embedded = false }) {
 
                       {/* Identically Sized WhatsApp Community Button */}
                       <a
-                        href="https://whatsapp.com/channel/0029VbDqDCA8V0tjtrkBsT46"
+                        href="https://chat.whatsapp.com/FBmy90Cekgu5Jd4MkxXGMO"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="h-[50px] w-full px-4 rounded-xl bg-[#0C2B3D] hover:bg-[#214B63] text-[#ECF6F5] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm tracking-wider uppercase text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.15)] hover:shadow-[0_8px_25px_rgba(12,43,61,0.25)] flex items-center justify-center gap-2 cursor-pointer"

@@ -4,7 +4,7 @@ import { Link, useOutletContext } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import {
     ArrowLeft, Camera, Check, CheckCircle2, Edit3, Globe, LoaderCircle, Plus,
-    RefreshCw, Search, ShieldCheck, Ticket, Trash2, XCircle
+    RefreshCw, Search, ShieldCheck, Shirt, Ticket, Trash2, XCircle
 } from "lucide-react";
 import { ticketApi } from "../lib/server1-api";
 import { adminStyles } from "../lib/adminStyles";
@@ -759,13 +759,20 @@ export default function TicketsAdmin() {
                                                 {(ticket.ticketType ===
                                                     "event-elite" ||
                                                     ticket.ticketType ===
-                                                        "accom-elite") &&
-                                                    ticket.tshirtSize && (
-                                                        <span className="inline-flex w-max items-center gap-1 rounded-md border border-[#C5A25F]/40 bg-[#E8D4B4]/50 px-2 py-0.5 text-[10px] font-mono font-bold text-[#8A5F1C]">
-                                                            Shirt Size:{" "}
-                                                            {ticket.tshirtSize}
+                                                        "accom-elite" ||
+                                                    ticket.tshirtSize) && (
+                                                    ticket.tshirtSize ? (
+                                                        <span className="inline-flex w-max items-center gap-1.5 rounded-md border border-[#C5A25F]/60 bg-[#F4EBD9] px-2 py-0.5 text-[11px] font-mono font-bold text-[#8A5F1C] shadow-xs">
+                                                            <Shirt size={13} className="text-[#8A5F1C]" />
+                                                            Size: {ticket.tshirtSize}
                                                         </span>
-                                                    )}
+                                                    ) : (
+                                                        <span className="inline-flex w-max items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-mono font-medium text-amber-700">
+                                                            <Shirt size={12} className="text-amber-600" />
+                                                            Size: Not set
+                                                        </span>
+                                                    )
+                                                )}
                                             </dd>
                                         </div>
 
@@ -1232,6 +1239,9 @@ export default function TicketsAdmin() {
                                                   ] ||
                                                   scanResult.ticket.ticketType
                                               }`
+                                            : ""}
+                                        {scanResult.ticket?.tshirtSize
+                                            ? ` · Size: ${scanResult.ticket.tshirtSize}`
                                             : ""}
                                     </p>
 

@@ -11,12 +11,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/v1': {
-        target: 'http://localhost:5001',
+        target: 'http://localhost:3001',
         changeOrigin: true,
         cookieDomainRewrite: '',
       },
-      '/tickets/': {
-        target: 'http://localhost:5001',
+      '/tickets': {
+        target: 'http://localhost:3001',
         changeOrigin: true,
         cookieDomainRewrite: '',
       },
