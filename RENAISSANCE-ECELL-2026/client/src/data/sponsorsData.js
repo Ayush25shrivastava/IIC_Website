@@ -44,15 +44,15 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id: "protein",
-    title: "Protein Partner",
+    id: "beverage",
+    title: "Beverage Partner",
     sponsors: [
       {
-        name: "Max Protein",
-        category: "Protein Partner",
-        image: CLOUDINARY_SPONSORS.maxProtein || getAssetUrl("/sponsors/maxprotein.png"),
-        fallbackImage: getAssetUrl("/sponsors/maxprotein.png"),
-        description: "Official Protein Partner for Renaissance 2026.",
+        name: "Campa",
+        category: "Beverage Partner",
+        image: CLOUDINARY_SPONSORS.campa || getAssetUrl("/sponsors/campacola.jpeg"),
+        fallbackImage: getAssetUrl("/sponsors/campacola.jpeg"),
+        description: "Official Beverage Partner for Renaissance 2026.",
       }
     ],
   },
@@ -71,11 +71,11 @@ export const SPONSOR_TIERS = [
   },
   {
     id:"goodness",
-    title:"Official Goodness Partner",
+    title:"Goodness Partner",
     sponsors:[
       {
         name:"Plum Goodness",
-        category:"Official Goodness Partner",
+        category:"Goodness Partner",
         image:CLOUDINARY_SPONSORS.plum|| getAssetUrl("/sponsors/plum-goodness.png"),
         fallbackImage: getAssetUrl("/sponsors/plum-goodness.png"),
         description: "Official Goodness Partner for Renaissance 2026.",
@@ -84,11 +84,11 @@ export const SPONSOR_TIERS = [
   },
   {
     id:"skincare",
-    title:"Official Skincare Partner",
+    title:"Skincare Partner",
     sponsors:[
       {
         name:"Ayouthveda",
-        category:"Official Skincare Partner",
+        category:"Skincare Partner",
         image:CLOUDINARY_SPONSORS.ayouthveda || getAssetUrl("/sponsors/ayouthveda.jpeg"),
         fallbackImage: getAssetUrl("/sponsors/ayouthveda.jpeg"),
         description: "Official Skincare Partner for Renaissance 2026.",
@@ -96,25 +96,12 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id:"myfa-chocolate",
-    title:"Official Snacking Partner",
-    sponsors:[
-      {
-        name:"Myfa Chocolate",
-        category:"Official Snacking Partner",
-        image:CLOUDINARY_SPONSORS.myfa || getAssetUrl("/sponsors/myfa chocolates.png"),
-        fallbackImage: getAssetUrl("/sponsors/myfa chocolates.png"),
-        description: "Official Snacking Partner for Renaissance 2026.",
-      }
-    ],
-  },
-  {
     id: "logistics",
-    title: "Official Logistics Partner",
+    title: "Logistics Partner",
     sponsors: [
       {
         name: "Safe Express",
-        category: "Official Logistics Partner",
+        category: "Logistics Partner",
         image: CLOUDINARY_SPONSORS.safexpress || getAssetUrl("/sponsors/safexpress.png"),
         fallbackImage: getAssetUrl("/sponsors/safexpress.png"),
         description: "Official Logistics Partner for Renaissance 2026.",
@@ -123,13 +110,26 @@ export const SPONSOR_TIERS = [
   },
   {
     id: "snacking",
-    title: "Official Snacking Partner",
+    title: "Snacking Partner",
     sponsors: [
       {
         name: "Lotte",
-        category: "Official Snacking Partner",
+        category: "Snacking Partner",
         image: CLOUDINARY_SPONSORS.lotte || getAssetUrl("/sponsors/lotte.png"),
         fallbackImage: getAssetUrl("/sponsors/lotte.png"),
+        description: "Official Snacking Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id:"myfa-chocolate",
+    title:"Snacking Partner",
+    sponsors:[
+      {
+        name:"Myfa Chocolate",
+        category:"Snacking Partner",
+        image:CLOUDINARY_SPONSORS.myfa || getAssetUrl("/sponsors/myfa chocolates.png"),
+        fallbackImage: getAssetUrl("/sponsors/myfa chocolates.png"),
         description: "Official Snacking Partner for Renaissance 2026.",
       }
     ],
@@ -148,6 +148,19 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
+    id: "protein",
+    title: "Protein Partner",
+    sponsors: [
+      {
+        name: "Max Protein",
+        category: "Protein Partner",
+        image: CLOUDINARY_SPONSORS.maxProtein || getAssetUrl("/sponsors/maxprotein.png"),
+        fallbackImage: getAssetUrl("/sponsors/maxprotein.png"),
+        description: "Official Protein Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
     id: "travel",
     title: "Travel Partner",
     sponsors: [
@@ -157,19 +170,6 @@ export const SPONSOR_TIERS = [
         image: CLOUDINARY_SPONSORS.abhibus || getAssetUrl("/sponsors/abhibus.png"),
         fallbackImage: getAssetUrl("/sponsors/abhibus.png"),
         description: "Official Travel Partner for Renaissance 2026.",
-      }
-    ],
-  },
-  {
-    id: "beverage",
-    title: "Official Beverage Partner",
-    sponsors: [
-      {
-        name: "Campa",
-        category: "Official Beverage Partner",
-        image: CLOUDINARY_SPONSORS.campa || getAssetUrl("/sponsors/campacola.jpeg"),
-        fallbackImage: getAssetUrl("/sponsors/campacola.jpeg"),
-        description: "Official Beverage Partner for Renaissance 2026.",
       }
     ],
   }
