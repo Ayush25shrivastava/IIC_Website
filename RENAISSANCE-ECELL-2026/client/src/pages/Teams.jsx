@@ -153,13 +153,22 @@ export default function Teams({ embedded = false }) {
         }
 
         .teams-student-row {
+          overscroll-behavior-x: contain;
           scrollbar-width: thin;
           scrollbar-color: #78C8ED transparent;
         }
 
         .teams-student-row .teams-member-card {
-          width: 100%;
-          max-width: 280px;
+          flex: 0 0 180px;
+          width: 180px;
+          max-width: none;
+        }
+
+        @media (min-width: 640px) {
+          .teams-student-row .teams-member-card {
+            flex-basis: 232px;
+            width: 232px;
+          }
         }
 
         .teams-student-row .teams-faculty-cards > .teams-member-card {
