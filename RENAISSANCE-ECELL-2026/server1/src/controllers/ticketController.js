@@ -343,7 +343,7 @@ export const scanTicket = async (req, res) => {
       return res.status(409).json({ success: false, message: `Ticket is ${existing.status.toLowerCase()} and cannot be scanned` });
     }
     if (req.body.ticketType && req.body.ticketType !== existing.ticketType) {
-      return res.status(409).json({ success: false, message: 'Selected pass type does not match this ticket' });
+      return res.status(409).json({ success: false, message: `Not eligible for this stage: this ticket has a ${existing.ticketType} pass, while the selected stage is for ${req.body.ticketType}.` });
     }
 
     const config = await getOrCreateStageConfig(existing.ticketType);
@@ -353,7 +353,7 @@ export const scanTicket = async (req, res) => {
     const selectedStage = requestedStageId
       ? config.stages.find((stage) => stage.stageId === requestedStageId)
       : Number.isInteger(legacyStage) && legacyStage > 0 ? config.stages[legacyStage - 1] : null;
-    if (!selectedStage) return res.status(400).json({ success: false, message: 'Select a stage configured for this pass type' });
+    if (!selectedStage) return res.status(requestedStageId ? 409 : 400).json({ success: false, message: requestedStageId ? 'Not eligible for this stage: it is not configured for this ticket’s pass.' : 'Select a stage configured for this pass type' });
     const legacyStageNumber = selectedStage.stageId.match(/^stage-([1-3])$/)
       ? Number(selectedStage.stageId.slice('stage-'.length))
       : null;
@@ -374,6 +374,7 @@ export const scanTicket = async (req, res) => {
             ...(legacyStageNumber ? { stage: legacyStageNumber } : {}),
             ...(req.admin?._id ? { scannedBy: req.admin._id, scannedByRole: 'ADMIN' } : {
               scannedByRole: 'VOLUNTEER_SCANNER',
+              scannedByName: req.volunteerScanner?.name,
               scannedByEmail: req.volunteerScanner?.email,
             }),
             scannedAt: new Date(),

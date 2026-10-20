@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { env } from "../config/env.js";
 import { asyncHandler } from "./async-handler.js";
 import { ApiError } from "../utils/api-error.js";
+import { VolunteerScanner } from "../models/index.js";
 
 export const VOLUNTEER_SCANNER_COOKIE = "rn_volunteer_scanner";
 export const VOLUNTEER_SCANNER_AUDIENCE = "renaissance-volunteer-scanner";
@@ -31,10 +32,15 @@ export const requireVolunteerScanner = asyncHandler(async (req, _res, next) => {
         throw new ApiError(401, "Volunteer scanner session is invalid or expired", "VOLUNTEER_SCANNER_SESSION_INVALID");
     }
 
-    if (payload.role !== "VOLUNTEER_SCANNER" || payload.sub !== "volunteer-scanner") {
+    if (payload.role !== "VOLUNTEER_SCANNER" || typeof payload.sub !== "string") {
         throw new ApiError(401, "Volunteer scanner session is invalid", "VOLUNTEER_SCANNER_SESSION_INVALID");
     }
 
-    req.volunteerScanner = { email: env.VOLUNTEER_SCANNER_EMAIL };
+    const volunteer = await VolunteerScanner.findById(payload.sub).select("name email status +authVersion").lean();
+    if (!volunteer || volunteer.status !== "ACTIVE" || volunteer.authVersion !== payload.authVersion) {
+        throw new ApiError(401, "Volunteer scanner access is no longer active. Sign in again or contact an admin.", "VOLUNTEER_SCANNER_ACCESS_REVOKED");
+    }
+
+    req.volunteerScanner = { id: volunteer._id, name: volunteer.name, email: volunteer.email };
     next();
 });
