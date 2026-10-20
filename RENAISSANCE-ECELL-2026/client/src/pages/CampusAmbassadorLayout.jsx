@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ambassadorApi } from "../lib/server1-api";
-import "./campus-ambassador.css";
 
 export default function CampusAmbassadorLayout() {
   const [ambassador, setAmbassador] = useState(null);
