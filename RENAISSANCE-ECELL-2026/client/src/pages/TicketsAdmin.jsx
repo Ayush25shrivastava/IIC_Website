@@ -169,6 +169,7 @@ export default function TicketsAdmin() {
     const [error, setError] = useState("");
     const [notice, setNotice] = useState("");
     const [filter, setFilter] = useState("Pending");
+    const [passFilter, setPassFilter] = useState("All");
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [stageConfigs, setStageConfigs] = useState({});
@@ -483,6 +484,7 @@ export default function TicketsAdmin() {
     const visibleTickets = tickets.filter((ticket) => {
         const matchesFilter =
             filter === "All" || ticket.status === filter;
+        const matchesPass = passFilter === "All" || ticket.ticketType === passFilter;
 
         const term = search.trim().toLowerCase();
 
@@ -501,7 +503,7 @@ export default function TicketsAdmin() {
                 String(value || "").toLowerCase().includes(term)
             );
 
-        return matchesFilter && matchesSearch;
+        return matchesFilter && matchesPass && matchesSearch;
     });
     const totalPages = Math.max(1, Math.ceil(visibleTickets.length / TICKETS_PER_PAGE));
     const pageTickets = visibleTickets.slice((currentPage - 1) * TICKETS_PER_PAGE, currentPage * TICKETS_PER_PAGE);
@@ -671,6 +673,20 @@ export default function TicketsAdmin() {
                                 <option>Verified</option>
                                 <option>Rejected</option>
                                 <option>All</option>
+                            </select>
+                            <select
+                                aria-label="Filter by pass type"
+                                value={passFilter}
+                                onChange={(event) => {
+                                    setPassFilter(event.target.value);
+                                    setCurrentPage(1);
+                                }}
+                                className="rounded-xl border border-[#afd6e1] bg-white px-3 py-2 text-sm text-[#173f52]"
+                            >
+                                <option value="All">All passes</option>
+                                {PASS_TYPES.map(([id, name]) => (
+                                    <option key={id} value={id}>{name}</option>
+                                ))}
                             </select>
                         </div>
                     </div>

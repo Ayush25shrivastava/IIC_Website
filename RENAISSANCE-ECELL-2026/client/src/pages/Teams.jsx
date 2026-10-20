@@ -84,8 +84,8 @@ function StudentTeamGroups({ members, category }) {
               {team}
               <span className="mt-2 h-[2px] w-12 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-16" />
             </h3>
-            <div className="teams-student-row rounded-xl" aria-labelledby={headingId}>
-              <div className="teams-faculty-cards grid grid-cols-2 items-stretch justify-items-center gap-3 px-1 pb-6 pt-2 sm:gap-5 lg:grid-cols-4">
+            <div className="teams-student-row overflow-x-auto overflow-y-hidden rounded-xl" aria-labelledby={headingId}>
+              <div className="teams-faculty-cards flex w-max min-w-full flex-nowrap items-stretch justify-center gap-3 px-1 pb-6 pt-2 sm:gap-5">
                 {teamMembers.map((member) => <FacultyCard key={member.id} member={member} grouped />)}
               </div>
             </div>
@@ -145,13 +145,22 @@ export default function Teams({ embedded = false }) {
         }
 
         .teams-student-row {
+          overscroll-behavior-x: contain;
           scrollbar-width: thin;
           scrollbar-color: #78C8ED transparent;
         }
 
         .teams-student-row .teams-member-card {
-          width: 100%;
-          max-width: 280px;
+          flex: 0 0 180px;
+          width: 180px;
+          max-width: none;
+        }
+
+        @media (min-width: 640px) {
+          .teams-student-row .teams-member-card {
+            flex-basis: 232px;
+            width: 232px;
+          }
         }
 
         .teams-member-row {
