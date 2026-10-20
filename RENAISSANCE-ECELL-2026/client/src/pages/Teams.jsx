@@ -84,8 +84,8 @@ function StudentTeamGroups({ members, category }) {
               {team}
               <span className="mt-2 h-[2px] w-12 rounded-full bg-[#78C8ED] sm:mt-3 sm:w-16" />
             </h3>
-            <div className="teams-student-row rounded-xl" aria-labelledby={headingId}>
-              <div className="teams-faculty-cards flex w-max min-w-full items-stretch justify-center gap-3 px-1 pb-6 pt-2 sm:gap-5">
+            <div className="teams-student-row w-full max-w-full overflow-x-auto rounded-xl" aria-labelledby={headingId}>
+              <div className="teams-faculty-cards flex w-max min-w-full items-stretch justify-start md:justify-center gap-3 px-2 pb-6 pt-2 sm:gap-5">
                 {teamMembers.map((member) => <FacultyCard key={member.id} member={member} grouped />)}
               </div>
             </div>
@@ -162,11 +162,34 @@ export default function Teams({ embedded = false }) {
         }
 
         .teams-student-row {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
           overscroll-behavior-x: contain;
           scrollbar-width: thin;
-          scrollbar-color: #78C8ED transparent;
+          scrollbar-color: #78C8ED rgba(64, 53, 43, 0.15);
           scroll-snap-type: x proximity;
           scroll-padding-inline: 1rem;
+        }
+
+        .teams-student-row::-webkit-scrollbar {
+          height: 8px;
+        }
+
+        .teams-student-row::-webkit-scrollbar-track {
+          background: rgba(64, 53, 43, 0.15);
+          border-radius: 9999px;
+          margin: 0 1rem;
+        }
+
+        .teams-student-row::-webkit-scrollbar-thumb {
+          background: #78C8ED;
+          border-radius: 9999px;
+          border: 2px solid transparent;
+          background-clip: content-box;
+        }
+
+        .teams-student-row::-webkit-scrollbar-thumb:hover {
+          background: #166E94;
         }
 
         .teams-student-row .teams-member-card {
