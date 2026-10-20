@@ -21,6 +21,7 @@ const argumentsMap = new Map(
     }),
 );
 const applyChanges = process.argv.includes("--apply");
+const shortenPromoCodes = process.argv.includes("--shorten-promos");
 const inputPath = path.resolve(serverDirectory, argumentsMap.get("file") || "seed-data/CA_details - Form Responses 1.csv");
 
 const REQUIRED_COLUMNS = ["Email Address", "Name", "College Name", "Contact Number (Preferably Whatsapp)"];
@@ -142,10 +143,9 @@ async function assignUniqueIds(rows, session) {
 }
 
 async function uniquePromoCode(name, session, usedCodes) {
-  const namePart = name.normalize("NFKD").replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 14) || "CAPTAIN";
   let code;
   do {
-    code = `RNX-${namePart}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
+    code = `RNX-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
   } while (usedCodes.has(code) || await PromoCode.exists({ code }).session(session));
   usedCodes.add(code);
   return code;
@@ -160,6 +160,7 @@ try {
   let created = 0;
   let updated = 0;
   let existingCount = 0;
+  let promosShortened = 0;
   await mongoose.connection.transaction(async (session) => {
     const emails = rows.map((row) => row.email);
     const existing = await CampusAmbassador.find({ email: { $in: emails } })
@@ -171,10 +172,29 @@ try {
     const phoneCollisions = await CampusAmbassador.find({ phone: { $in: rows.map((row) => row.phone) }, email: { $nin: emails } }).select("_id").session(session).lean();
     if (phoneCollisions.length) throw new Error("A CSV phone username is already assigned to a different ambassador account.");
 
-    if (applyChanges) {
+    if (applyChanges || shortenPromoCodes) {
       const usedCodes = new Set();
       for (const row of rows) {
         let ambassador = existingByEmail.get(row.email);
+        if (shortenPromoCodes) {
+          if (!ambassador) throw new Error("All CSV accounts must be seeded before shortening their promo codes.");
+          let primaryPromo = await PromoCode.findOne({ ambassadorId: ambassador._id, isPrimary: true }).session(session);
+          if (primaryPromo && /^RNX-[A-F0-9]{8}$/.test(primaryPromo.code)) continue;
+          const code = await uniquePromoCode(row.name, session, usedCodes);
+          if (applyChanges) {
+            if (primaryPromo) {
+              primaryPromo.code = code;
+              await primaryPromo.save({ session });
+            } else {
+              primaryPromo = await PromoCode.create([{
+                code, ambassadorId: ambassador._id, isPrimary: true, discountType: "NONE", discountValue: 0,
+              }], { session }).then(([createdPromo]) => createdPromo);
+            }
+          }
+          promosShortened += 1;
+          continue;
+        }
+        if (!applyChanges) continue;
         if (ambassador) {
           ambassador.name = row.name;
           ambassador.email = row.email;
@@ -217,6 +237,7 @@ try {
     toUpdate: existingCount,
     created,
     updated,
+    promoCodesShortened: promosShortened,
     mode: applyChanges ? "applied" : "preview",
   }));
   if (!applyChanges) console.log('Preview only. Rerun with "--apply" to apply these account and promo-code changes.');
