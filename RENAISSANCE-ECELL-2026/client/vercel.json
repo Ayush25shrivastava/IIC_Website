@@ -33,6 +33,24 @@
       ]
     },
     {
+      "source": "/renaissance/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/campus-ambassador/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
       "source": "/admin/:path*",
       "headers": [
         {

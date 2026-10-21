@@ -1,4 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from "react";
+import "./pages/campus-ambassador.css";
 
 import {
   BrowserRouter,

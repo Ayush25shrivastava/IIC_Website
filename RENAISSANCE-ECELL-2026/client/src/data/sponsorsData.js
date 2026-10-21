@@ -89,7 +89,7 @@ export const SPONSOR_TIERS = [
     title: "Logistics Partner",
     sponsors: [
       {
-        name: "Safe Express",
+        name: "Safexpress",
         category: "Logistics Partner",
         image: CLOUDINARY_SPONSORS.safexpress || getAssetUrl("/sponsors/safexpress.png"),
         fallbackImage: getAssetUrl("/sponsors/safexpress.png"),
@@ -151,12 +151,25 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
+  // {
+  //   id: "protein",
+  //   title: "Protein Partner",
+  //   sponsors: [
+  //     {
+  //       name: "Max Protein",
+  //       category: "Protein Partner",
+  //       image: CLOUDINARY_SPONSORS.maxProtein || getAssetUrl("/sponsors/maxprotein.png"),
+  //       fallbackImage: getAssetUrl("/sponsors/maxprotein.png"),
+  //       description: "Official Protein Partner for Renaissance 2026.",
+  //     }
+  //   ],
+  // },
   {
     id: "travel",
     title: "Travel Partner",
     sponsors: [
       {
-        name: "AbhiBus",
+        name: "Abhibus",
         category: "Travel Partner",
         image: CLOUDINARY_SPONSORS.abhibus || getAssetUrl("/sponsors/abhibus.png"),
         fallbackImage: getAssetUrl("/sponsors/abhibus.png"),

@@ -6,17 +6,19 @@ export default function CampusAmbassadorLayout() {
   const [ambassador, setAmbassador] = useState(null);
   const [error, setError] = useState("");
   const [sessionNotice, setSessionNotice] = useState("");
+  const [checkingSession, setCheckingSession] = useState(true);
   const [attempt, setAttempt] = useState(0);
   const [loggingOut, setLoggingOut] = useState(false);
   const visitRef = useRef(null);
+  const pathnameRef = useRef("");
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isDashboard = /\/dashboard\/?$/.test(pathname);
+  pathnameRef.current = pathname;
 
   const handleAuthError = useCallback((requestError) => {
     if (!visitRef.current?.active) return true;
     if (requestError.status === 401 || requestError.code === "ACCOUNT_DISABLED") {
-      visitRef.current.authenticated = false;
       setAmbassador(null);
       setSessionNotice(requestError.code === "ACCOUNT_DISABLED"
         ? "Your account is unavailable. Please contact the Renaissance team."
@@ -32,33 +34,44 @@ export default function CampusAmbassadorLayout() {
   }, [navigate]);
 
   useEffect(() => {
-    const visit = { active: true, authenticated: false, pendingLogin: false };
+    const visit = { active: true, pendingLogin: false };
     visitRef.current = visit;
 
-    // Never restore a previous visit from cookies, even if the browser was
-    // force-closed and could not deliver its pagehide logout request.
-    // Show the login form immediately; network/database availability must not
-    // prevent signed-out visitors from reaching it. Retry cleanup on submit.
-    visit.reset = ambassadorApi.logout();
-    void visit.reset.catch(() => {});
-
-    const endVisit = () => {
-      if (!visit.active) return;
-      visit.active = false;
-      if (visit.authenticated || visit.pendingLogin) {
-        // Keep the revocation request alive during navigation/tab closure.
-        // A failed delivery is retried by the next portal visit above.
-        void ambassadorApi.logout({ keepalive: true }).catch(() => {});
+    const restoreSession = async () => {
+      try {
+        const data = await ambassadorApi.me();
+        if (!visit.active || visit.pendingLogin) return;
+        setAmbassador(data.ambassador);
+        setSessionNotice("");
+      } catch (requestError) {
+        if (!visit.active || visit.pendingLogin) return;
+        if (requestError.status === 401 || requestError.code === "ACCOUNT_DISABLED") {
+          setAmbassador(null);
+          if (/\/dashboard\/?$/.test(pathnameRef.current)) {
+            if (requestError.code === "ACCOUNT_DISABLED") {
+              const message = "Your account is unavailable. Please contact the Renaissance team.";
+              setSessionNotice(message);
+              navigate("/campus-ambassador", { replace: true, state: { message } });
+            } else {
+              navigate("/campus-ambassador", { replace: true });
+            }
+          }
+        }
+      } finally {
+        if (visit.active && !visit.pendingLogin) setCheckingSession(false);
       }
     };
-    const onPageHide = () => {
-      endVisit();
-      setAmbassador(null);
-    };
+
+    void restoreSession();
+
+    // Do not revoke the server session on reload or tab close. Explicit Logout
+    // revokes only the session represented by this browser's cookies.
+    const onPageHide = () => { visit.active = false; };
     const onPageShow = (event) => {
       if (!event.persisted) return;
       setAmbassador(null);
       setError("");
+      setCheckingSession(true);
       setAttempt((value) => value + 1);
     };
     window.addEventListener("pagehide", onPageHide);
@@ -66,29 +79,24 @@ export default function CampusAmbassadorLayout() {
     return () => {
       window.removeEventListener("pagehide", onPageHide);
       window.removeEventListener("pageshow", onPageShow);
-      endVisit();
+      visit.active = false;
     };
-  }, [attempt]);
+  }, [attempt, navigate]);
 
   async function login(credentials) {
     const visit = visitRef.current;
     if (!visit?.active) return false;
     visit.pendingLogin = true;
     try {
-      await visit.reset.catch(() => {
-        if (visit.active) return ambassadorApi.logout();
-      });
       if (!visit.active || visitRef.current !== visit) return false;
       const data = await ambassadorApi.login(credentials);
-      // A login response arriving after navigation must not reopen the portal.
-      // endVisit queues server revocation behind that in-flight login.
       if (!visit.active || visitRef.current !== visit) return false;
-      visit.authenticated = true;
       setAmbassador(data.ambassador);
       setSessionNotice("");
       return true;
     } finally {
       visit.pendingLogin = false;
+      if (visit.active && visitRef.current === visit) setCheckingSession(false);
     }
   }
 
@@ -112,7 +120,6 @@ export default function CampusAmbassadorLayout() {
     try {
       await ambassadorApi.logout();
       if (!visit?.active || visitRef.current !== visit) return;
-      visit.authenticated = false;
       setSessionNotice("");
       setAmbassador(null);
       navigate("/campus-ambassador", { replace: true });
@@ -122,7 +129,8 @@ export default function CampusAmbassadorLayout() {
   }
 
   let content;
-  if (isDashboard && !ambassador) content = <Navigate to="/campus-ambassador" replace />;
+  if (isDashboard && checkingSession) content = <div className="ca-gate" role="status">Checking your session…</div>;
+  else if (isDashboard && !ambassador) content = <Navigate to="/campus-ambassador" replace />;
   else if (!isDashboard && ambassador) content = <Navigate to="/campus-ambassador/dashboard" replace />;
   else content = <Outlet context={{ ambassador, login, sessionNotice, logout, loggingOut, handleAuthError }} />;
 
