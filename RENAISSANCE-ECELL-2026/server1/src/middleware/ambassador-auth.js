@@ -8,9 +8,11 @@ import { verifyAccessToken } from "../utils/tokens.js";
 import { asyncHandler } from "./async-handler.js";
 
 function getAccessToken(req) {
+  const cookie = req.cookies?.[ACCESS_COOKIE_NAME];
+  if (cookie) return cookie;
   const header = req.get("authorization");
   if (header?.startsWith("Bearer ")) return header.slice(7).trim();
-  return req.cookies?.[ACCESS_COOKIE_NAME] || null;
+  return null;
 }
 
 export const requireAmbassadorAuth = asyncHandler(async (req, _res, next) => {

@@ -75,7 +75,7 @@ async function readResponse(response) {
   return payload?.data ?? payload;
 }
 
-async function send(path, { method = "GET", body, query, signal, cache, keepalive = false } = {}, baseUrl = API_BASE_URL) {
+async function send(path, { method = "GET", body, query, signal, cache, keepalive = false } = {}, baseUrl = API_BASE_URL, authScope = null) {
   const headers = { Accept: "application/json" };
   let requestBody;
 
@@ -84,7 +84,8 @@ async function send(path, { method = "GET", body, query, signal, cache, keepaliv
     requestBody = JSON.stringify(body);
   }
 
-  if (adminToken) {
+  const isAdminRequest = authScope === "admin" || path.startsWith("/admin/") || path === "/admin";
+  if (adminToken && isAdminRequest) {
     headers["Authorization"] = `Bearer ${adminToken}`;
   }
 
@@ -126,8 +127,8 @@ async function refreshAuth(authScope) {
 
   const refreshPromise = (async () => {
     const response = await (authScope === "ambassador"
-      ? mutateAmbassadorAuth(() => send(refreshPath, { method: "POST" }))
-      : send(refreshPath, { method: "POST" }));
+      ? mutateAmbassadorAuth(() => send(refreshPath, { method: "POST" }, API_BASE_URL, authScope))
+      : send(refreshPath, { method: "POST" }, API_BASE_URL, authScope));
 
     if (response.ok) {
       if (authScope === "admin") {
@@ -160,19 +161,19 @@ async function refreshAuth(authScope) {
   return refreshPromise;
 }
 async function request(path, options = {}, authScope = null, retry = true, baseUrl = API_BASE_URL) {
-  let response = await send(path, options, baseUrl);
+  let response = await send(path, options, baseUrl, authScope);
 
   if (response.status === 401 && retry && authScope) {
     const refreshAfterCheckingLatestSession = async () => {
       // Another tab may have refreshed the shared cookies while this tab was
       // waiting for the browser-wide lock. Retry with those cookies first.
-      const latestResponse = await send(path, options, baseUrl);
+      const latestResponse = await send(path, options, baseUrl, authScope);
       if (latestResponse.status !== 401) return readResponse(latestResponse);
 
       const refreshResult = await refreshAuth(authScope);
 
       if (refreshResult.ok) {
-        response = await send(path, options, baseUrl);
+        response = await send(path, options, baseUrl, authScope);
       } else if (refreshResult.error) {
         throw refreshResult.error;
       }
@@ -191,7 +192,7 @@ async function request(path, options = {}, authScope = null, retry = true, baseU
     if (authScope === "ambassador") return refreshAfterCheckingLatestSession();
 
     const refreshResult = await refreshAuth(authScope);
-    if (refreshResult.ok) response = await send(path, options, baseUrl);
+    if (refreshResult.ok) response = await send(path, options, baseUrl, authScope);
     else if (refreshResult.error) throw refreshResult.error;
   }
 

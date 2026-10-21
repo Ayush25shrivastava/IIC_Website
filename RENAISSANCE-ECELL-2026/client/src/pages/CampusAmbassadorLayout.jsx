@@ -19,6 +19,7 @@ export default function CampusAmbassadorLayout() {
   const handleAuthError = useCallback((requestError) => {
     if (!visitRef.current?.active) return true;
     if (requestError.status === 401 || requestError.code === "ACCOUNT_DISABLED") {
+      if (visitRef.current) visitRef.current.sessionEstablished = false;
       setAmbassador(null);
       setSessionNotice(requestError.code === "ACCOUNT_DISABLED"
         ? "Your account is unavailable. Please contact the Renaissance team."
@@ -34,17 +35,18 @@ export default function CampusAmbassadorLayout() {
   }, [navigate]);
 
   useEffect(() => {
-    const visit = { active: true, pendingLogin: false };
+    const visit = { active: true, pendingLogin: false, sessionEstablished: false };
     visitRef.current = visit;
 
     const restoreSession = async () => {
       try {
         const data = await ambassadorApi.me();
-        if (!visit.active || visit.pendingLogin) return;
+        if (!visit.active || visit.pendingLogin || visit.sessionEstablished) return;
+        visit.sessionEstablished = true;
         setAmbassador(data.ambassador);
         setSessionNotice("");
       } catch (requestError) {
-        if (!visit.active || visit.pendingLogin) return;
+        if (!visit.active || visit.pendingLogin || visit.sessionEstablished) return;
         if (requestError.status === 401 || requestError.code === "ACCOUNT_DISABLED") {
           setAmbassador(null);
           if (/\/dashboard\/?$/.test(pathnameRef.current)) {
@@ -69,6 +71,7 @@ export default function CampusAmbassadorLayout() {
     const onPageHide = () => { visit.active = false; };
     const onPageShow = (event) => {
       if (!event.persisted) return;
+      visit.sessionEstablished = false;
       setAmbassador(null);
       setError("");
       setCheckingSession(true);
@@ -91,6 +94,7 @@ export default function CampusAmbassadorLayout() {
       if (!visit.active || visitRef.current !== visit) return false;
       const data = await ambassadorApi.login(credentials);
       if (!visit.active || visitRef.current !== visit) return false;
+      visit.sessionEstablished = true;
       setAmbassador(data.ambassador);
       setSessionNotice("");
       return true;
@@ -115,6 +119,7 @@ export default function CampusAmbassadorLayout() {
 
   async function logout() {
     const visit = visitRef.current;
+    if (visit) visit.sessionEstablished = false;
     setLoggingOut(true);
     setError("");
     try {
