@@ -9,7 +9,7 @@ export const SPONSOR_TIERS = [
     title: "Title Partner",
     sponsors: [
       {
-        name: "Study for Civil Services by Gyan Sir",
+        name: "Study For Civil Services by Gyan Sir",
         category: "Title Partner",
         image: CLOUDINARY_SPONSORS.title || getAssetUrl("/sponsors/studyForCivilServicesByGyanSir.jpeg"),
         fallbackImage: getAssetUrl("/sponsors/studyForCivilServicesByGyanSir.jpeg"),
@@ -30,19 +30,7 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
-  // {
-  //   id: "ai",
-  //   title: "AI Partner",
-  //   sponsors: [
-  //     {
-  //       name: "Wayam AI",
-  //       category: "AI Partner",
-  //       image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
-  //       fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
-  //       description: "Official AI Partner for Renaissance 2026.",
-  //     }
-  //   ],
-  // },
+
   {
     id: "beverage",
     title: "Beverage Partner",
@@ -82,6 +70,20 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
+  
+    {
+    id: "ai",
+    title: "AI Partner",
+    sponsors: [
+      {
+        name: "Wayam AI",
+        category: "AI Partner",
+        image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
+        fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
+        description: "Official AI Partner for Renaissance 2026.",
+      }
+    ],
+  },
   {
     id: "logistics",
     title: "Logistics Partner",
@@ -95,6 +97,7 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
+
   {
     id: "snacking",
     title: "Snacking Partner",
@@ -134,6 +137,7 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
+  
   {
     id:"skincare",
     title:"Skincare Partner",

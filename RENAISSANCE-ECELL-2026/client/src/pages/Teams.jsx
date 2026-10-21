@@ -162,8 +162,8 @@ export default function Teams({ embedded = false }) {
         }
 
         .teams-student-row {
+          width: 100%;
           overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
           overscroll-behavior-x: contain;
           scrollbar-width: thin;
           scrollbar-color: #78C8ED rgba(64, 53, 43, 0.15);
@@ -171,25 +171,28 @@ export default function Teams({ embedded = false }) {
           scroll-padding-inline: 1rem;
         }
 
-        .teams-student-row::-webkit-scrollbar {
-          height: 8px;
+        .teams-faculty-section {
+          width: 100%;
+          margin-inline: auto;
+          text-align: center;
         }
 
-        .teams-student-row::-webkit-scrollbar-track {
-          background: rgba(64, 53, 43, 0.15);
-          border-radius: 9999px;
-          margin: 0 1rem;
+        .teams-student-row .teams-faculty-cards {
+          margin-inline: auto;
+        }
+
+        .teams-student-row::-webkit-scrollbar {
+          height: 7px;
         }
 
         .teams-student-row::-webkit-scrollbar-thumb {
+          border-radius: 999px;
           background: #78C8ED;
-          border-radius: 9999px;
-          border: 2px solid transparent;
-          background-clip: content-box;
         }
 
-        .teams-student-row::-webkit-scrollbar-thumb:hover {
-          background: #166E94;
+        .teams-student-row::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.45);
+          border-radius: 999px;
         }
 
         .teams-student-row .teams-member-card {
