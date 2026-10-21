@@ -8,6 +8,9 @@ export default defineConfig(({ mode }) => {
   const server1ProxyTarget = env.VITE_SERVER1_PROXY_TARGET || 'http://localhost:5001';
 
   return {
+    // The production site is mounted below /renaissance while local and
+    // preview builds may be served from /. Relative bundle URLs work in both.
+    base: './',
     plugins: [
       tailwindcss(),
       react()

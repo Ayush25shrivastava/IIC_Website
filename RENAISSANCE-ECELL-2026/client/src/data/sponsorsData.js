@@ -30,19 +30,7 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
-  {
-    id: "ai",
-    title: "AI Partner",
-    sponsors: [
-      {
-        name: "Wayam AI",
-        category: "AI Partner",
-        image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
-        fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
-        description: "Official AI Partner for Renaissance 2026.",
-      }
-    ],
-  },
+
   {
     id: "beverage",
     title: "Beverage Partner",
@@ -82,16 +70,17 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
-  {
-    id:"skincare",
-    title:"Skincare Partner",
-    sponsors:[
+  
+    {
+    id: "ai",
+    title: "AI Partner",
+    sponsors: [
       {
-        name:"Ayouthveda",
-        category:"Skincare Partner",
-        image:CLOUDINARY_SPONSORS.ayouthveda || getAssetUrl("/sponsors/ayouthveda.jpeg"),
-        fallbackImage: getAssetUrl("/sponsors/ayouthveda.jpeg"),
-        description: "Official Skincare Partner for Renaissance 2026.",
+        name: "Wayam AI",
+        category: "AI Partner",
+        image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
+        fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
+        description: "Official AI Partner for Renaissance 2026.",
       }
     ],
   },
@@ -108,6 +97,7 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
+
   {
     id: "snacking",
     title: "Snacking Partner",
@@ -147,16 +137,17 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
+  
   {
-    id: "protein",
-    title: "Protein Partner",
-    sponsors: [
+    id:"skincare",
+    title:"Skincare Partner",
+    sponsors:[
       {
-        name: "Max Protein",
-        category: "Protein Partner",
-        image: CLOUDINARY_SPONSORS.maxProtein || getAssetUrl("/sponsors/maxprotein.png"),
-        fallbackImage: getAssetUrl("/sponsors/maxprotein.png"),
-        description: "Official Protein Partner for Renaissance 2026.",
+        name:"Ayouthveda",
+        category:"Skincare Partner",
+        image:CLOUDINARY_SPONSORS.ayouthveda || getAssetUrl("/sponsors/ayouthveda.jpeg"),
+        fallbackImage: getAssetUrl("/sponsors/ayouthveda.jpeg"),
+        description: "Official Skincare Partner for Renaissance 2026.",
       }
     ],
   },
