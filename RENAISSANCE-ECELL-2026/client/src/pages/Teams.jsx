@@ -162,11 +162,27 @@ export default function Teams({ embedded = false }) {
         }
 
         .teams-student-row {
+          width: 100%;
+          overflow-x: auto;
           overscroll-behavior-x: contain;
           scrollbar-width: thin;
           scrollbar-color: #78C8ED transparent;
           scroll-snap-type: x proximity;
           scroll-padding-inline: 1rem;
+        }
+
+        .teams-student-row::-webkit-scrollbar {
+          height: 7px;
+        }
+
+        .teams-student-row::-webkit-scrollbar-thumb {
+          border-radius: 999px;
+          background: #78C8ED;
+        }
+
+        .teams-student-row::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.45);
+          border-radius: 999px;
         }
 
         .teams-student-row .teams-member-card {

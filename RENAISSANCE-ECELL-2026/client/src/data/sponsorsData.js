@@ -9,7 +9,7 @@ export const SPONSOR_TIERS = [
     title: "Title Partner",
     sponsors: [
       {
-        name: "Study of Civil Services by Gyan Sir",
+        name: "Study For Civil Services by Gyan Sir",
         category: "Title Partner",
         image: CLOUDINARY_SPONSORS.title || getAssetUrl("/sponsors/studyForCivilServicesByGyanSir.jpeg"),
         fallbackImage: getAssetUrl("/sponsors/studyForCivilServicesByGyanSir.jpeg"),
