@@ -171,6 +171,16 @@ export default function Teams({ embedded = false }) {
           scroll-padding-inline: 1rem;
         }
 
+        .teams-faculty-section {
+          width: 100%;
+          margin-inline: auto;
+          text-align: center;
+        }
+
+        .teams-student-row .teams-faculty-cards {
+          margin-inline: auto;
+        }
+
         .teams-student-row::-webkit-scrollbar {
           height: 7px;
         }
