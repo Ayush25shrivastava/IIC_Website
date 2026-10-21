@@ -39,7 +39,7 @@ export const SPEAKERS_DATA = [
   {
     id: "vineet-shukla",
     name: "Vineet Shukla",
-    title: "CTO at JoulestoWatts | Enterprise Strategist",
+    title: "Chief Technology Officer (CTO) | JoulestoWatts Business Solutions Pvt Ltd",
     image: getAssetUrl("/speakers/vineet-shukla.png"),
     linkedin: "https://www.linkedin.com/in/shuklavineet/",
   },
