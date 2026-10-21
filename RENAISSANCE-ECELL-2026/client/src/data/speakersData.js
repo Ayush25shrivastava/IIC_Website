@@ -39,17 +39,11 @@ export const SPEAKERS_DATA = [
   {
     id: "vineet-shukla",
     name: "Vineet Shukla",
-    title: "Co-founder, Wayyam ai",
+    title: "CTO |Patent Holder | Enterprise Strategy",
     image: getAssetUrl("/speakers/vineet-shukla.png"),
     linkedin: "https://www.linkedin.com/in/shuklavineet/",
   },
-  {
-    id: "awantik-das",
-    name: "Awantik Das",
-    title: "Founder, Ed Yoda",
-    image: getAssetUrl("/speakers/awantik-das.jpg"),
-    linkedin: "https://www.linkedin.com/in/awantik/",
-  },
+ 
   {
     id: "sasikanth-r",
     name: "Sasikanth R",
