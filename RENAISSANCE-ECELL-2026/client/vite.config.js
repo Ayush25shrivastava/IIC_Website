@@ -22,7 +22,10 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           cookieDomainRewrite: '',
         },
-        '/tickets': {
+        // Match the ticket API path only. A plain '/tickets' prefix also
+        // captures the client route '/tickets-accommodation' and sends it
+        // to Express instead of letting Vite serve the SPA fallback.
+        '^/tickets(?:/|$)': {
           target: server1ProxyTarget,
           changeOrigin: true,
           cookieDomainRewrite: '',
