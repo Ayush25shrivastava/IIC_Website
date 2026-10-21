@@ -82,10 +82,13 @@ export default function App() {
     typeof window !== "undefined" &&
     window.location.pathname.startsWith("/renaissance");
 
+  const configuredBaseUrl = import.meta.env.BASE_URL;
+  // Relative Vite bases ("./") keep bundled assets working under either the
+  // domain root or /renaissance, but must not become React Router basenames.
   const viteBasename =
-    import.meta.env.BASE_URL === "/"
-      ? ""
-      : import.meta.env.BASE_URL.replace(/\/$/, "");
+    configuredBaseUrl.startsWith("/") && configuredBaseUrl !== "/"
+      ? configuredBaseUrl.replace(/\/$/, "")
+      : "";
 
   const routerBasename =
     viteBasename || (hasRenaissanceBase ? "/renaissance" : "");
