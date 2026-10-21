@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /udbhav
+Allow: /renaissance
+
+# Disallow internal and admin portals
+Disallow: /admin/
+Disallow: /volunteer/
+Disallow: /renaissance/admin/
+Disallow: /renaissance/volunteer/
+Disallow: /api/
+
+Sitemap: https://iic.mnnit.ac.in/sitemap.xml
