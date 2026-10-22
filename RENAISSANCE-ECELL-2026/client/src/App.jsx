@@ -17,6 +17,35 @@ import SmoothScroll from "./components/SmoothScroll";
 import PageTransitionShimmer from "./components/PageTransitionShimmer";
 import { useSmoothScroll } from "./lib/smoothScroll";
 import { prefetchTeamPhotos } from "./lib/server1-api";
+import SEO from "./components/SEO";
+
+const renaissanceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "Renaissance'26 - 10th Edition",
+  "description": "Annual Entrepreneurship Summit of MNNIT Allahabad organized by E-Cell.",
+  "url": "https://iic.mnnit.ac.in/renaissance",
+  "image": "https://iic.mnnit.ac.in/renaissance-logo.png",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "organizer": {
+    "@type": "Organization",
+    "name": "E-Cell MNNIT Allahabad",
+    "url": "https://iic.mnnit.ac.in/renaissance"
+  },
+  "location": {
+    "@type": "Place",
+    "name": "MNNIT Allahabad",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Barrister Mullah Colony, Teliarganj",
+      "addressLocality": "Prayagraj",
+      "addressRegion": "Uttar Pradesh",
+      "postalCode": "211004",
+      "addressCountry": "IN"
+    }
+  }
+};
 
 // Home page is eagerly loaded for instant interactive entry
 import Home from "./pages/Home";
@@ -108,7 +137,20 @@ export default function App() {
           >
             <Routes>
               {/* Home */}
-              <Route path="/" element={<Home />} />
+              <Route
+                path="/"
+                element={
+                  <>
+                    <SEO
+                      title="Renaissance'26 | 10th Edition • E-Cell MNNIT Allahabad"
+                      description="Official website of Renaissance'26, the 10th edition of annual entrepreneurship summit organized by E-Cell MNNIT Allahabad. Register for startup competitions, workshops, and speaker sessions."
+                      canonical="https://iic.mnnit.ac.in/renaissance"
+                      jsonLd={renaissanceJsonLd}
+                    />
+                    <Home />
+                  </>
+                }
+              />
 
               <Route
                 path="/udbhav"
@@ -116,7 +158,19 @@ export default function App() {
               />
 
               {/* Sponsors */}
-              <Route path="/sponsors" element={<Sponsors />} />
+              <Route
+                path="/sponsors"
+                element={
+                  <>
+                    <SEO
+                      title="Sponsors & Partners | Renaissance'26 • MNNIT Allahabad"
+                      description="Explore the sponsors, industrial partners, and associates powering Renaissance'26 E-Summit at MNNIT Allahabad."
+                      canonical="https://iic.mnnit.ac.in/renaissance/sponsors"
+                    />
+                    <Sponsors />
+                  </>
+                }
+              />
 
               <Route
                 path="/udbhav/sponsors"
@@ -126,12 +180,30 @@ export default function App() {
               {/* Registration */}
               <Route
                 path="/register"
-                element={<Registration />}
+                element={
+                  <>
+                    <SEO
+                      title="Register | Renaissance'26 • E-Cell MNNIT Allahabad"
+                      description="Register now for events, competitions, and masterclasses at Renaissance'26, MNNIT Allahabad."
+                      canonical="https://iic.mnnit.ac.in/renaissance/register"
+                    />
+                    <Registration />
+                  </>
+                }
               />
 
               <Route
                 path="/events/:eventId/register"
-                element={<Registration />}
+                element={
+                  <>
+                    <SEO
+                      title="Event Registration | Renaissance'26 • MNNIT Allahabad"
+                      description="Register for flagship competitions at Renaissance'26, MNNIT Allahabad."
+                      canonical="https://iic.mnnit.ac.in/renaissance/register"
+                    />
+                    <Registration />
+                  </>
+                }
               />
 
               <Route
@@ -140,7 +212,19 @@ export default function App() {
               />
 
               {/* Events */}
-              <Route path="/events" element={<Events />} />
+              <Route
+                path="/events"
+                element={
+                  <>
+                    <SEO
+                      title="Events & Competitions | Renaissance'26 • MNNIT Allahabad"
+                      description="Explore flagship competitions including B-Plan (Fish Tank), Strategy Wiz, Business Wars, and Creative Quest at Renaissance'26."
+                      canonical="https://iic.mnnit.ac.in/renaissance/events"
+                    />
+                    <Events />
+                  </>
+                }
+              />
 
               <Route
                 path="/udbhav/events"
@@ -150,9 +234,29 @@ export default function App() {
               {/* Tickets & Accommodation */}
               <Route
                 path="/tickets-accommodation"
-                element={<TicketsAccommodation />}
+                element={
+                  <>
+                    <SEO
+                      title="Tickets & Accommodation | Renaissance'26 • MNNIT Allahabad"
+                      description="Secure official attendee passes, summit merchandise, and campus accommodation for Renaissance'26."
+                      canonical="https://iic.mnnit.ac.in/renaissance/tickets-accommodation"
+                    />
+                    <TicketsAccommodation />
+                  </>
+                }
               />
-              <Route path="/volunteer" element={<VolunteerScanner />} />
+              <Route
+                path="/volunteer"
+                element={
+                  <>
+                    <SEO
+                      title="Volunteer Scanner | Renaissance'26"
+                      robots="noindex, nofollow"
+                    />
+                    <VolunteerScanner />
+                  </>
+                }
+              />
               <Route
                 path="/udbhav/tickets-accommodation"
                 element={<TicketsAccommodation />}
@@ -160,7 +264,15 @@ export default function App() {
               {/* Dashboard */}
               <Route
                 path="/dashboard"
-                element={<Dashboard />}
+                element={
+                  <>
+                    <SEO
+                      title="User Dashboard | Renaissance'26"
+                      robots="noindex, nofollow"
+                    />
+                    <Dashboard />
+                  </>
+                }
               />
 
               <Route
@@ -169,7 +281,19 @@ export default function App() {
               />
 
               {/* Teams */}
-              <Route path="/teams" element={<Teams />} />
+              <Route
+                path="/teams"
+                element={
+                  <>
+                    <SEO
+                      title="Our Team | Renaissance'26 • E-Cell MNNIT Allahabad"
+                      description="Meet the core organizing committee, student coordinators, and mentors of Renaissance'26 E-Cell MNNIT Allahabad."
+                      canonical="https://iic.mnnit.ac.in/renaissance/teams"
+                    />
+                    <Teams />
+                  </>
+                }
+              />
 
               <Route
                 path="/udbhav/teams"
@@ -177,7 +301,19 @@ export default function App() {
               />
 
               {/* Gallery */}
-              <Route path="/gallery" element={<Gallery />} />
+              <Route
+                path="/gallery"
+                element={
+                  <>
+                    <SEO
+                      title="Gallery | Renaissance'26 • E-Cell MNNIT Allahabad"
+                      description="Glimpses, memories, and captured moments from editions of Renaissance E-Summit at MNNIT Allahabad."
+                      canonical="https://iic.mnnit.ac.in/renaissance/gallery"
+                    />
+                    <Gallery />
+                  </>
+                }
+              />
 
               <Route
                 path="/udbhav/gallery"
@@ -185,7 +321,19 @@ export default function App() {
               />
 
               {/* Support Us */}
-              <Route path="/support-us" element={<SupportUs />} />
+              <Route
+                path="/support-us"
+                element={
+                  <>
+                    <SEO
+                      title="Support Us | Renaissance'26 • E-Cell MNNIT Allahabad"
+                      description="Support student entrepreneurship and innovation initiatives at Renaissance'26, MNNIT Allahabad."
+                      canonical="https://iic.mnnit.ac.in/renaissance/support-us"
+                    />
+                    <SupportUs />
+                  </>
+                }
+              />
 
               <Route
                 path="/udbhav/support-us"
@@ -193,8 +341,31 @@ export default function App() {
               />
 
               <Route path="/campus-ambassador" element={<CampusAmbassadorLayout />}>
-                <Route index element={<CampusAmbassador />} />
-                <Route path="dashboard" element={<CampusAmbassadorDashboard />} />
+                <Route
+                  index
+                  element={
+                    <>
+                      <SEO
+                        title="Campus Ambassador Program | Renaissance'26 • MNNIT Allahabad"
+                        description="Become a Campus Ambassador for Renaissance'26. Represent your college, lead entrepreneurship drives, and unlock exclusive rewards."
+                        canonical="https://iic.mnnit.ac.in/renaissance/campus-ambassador"
+                      />
+                      <CampusAmbassador />
+                    </>
+                  }
+                />
+                <Route
+                  path="dashboard"
+                  element={
+                    <>
+                      <SEO
+                        title="CA Dashboard | Renaissance'26"
+                        robots="noindex, nofollow"
+                      />
+                      <CampusAmbassadorDashboard />
+                    </>
+                  }
+                />
               </Route>
 
               {/* Keep previously shared dashboard and login URLs working. */}

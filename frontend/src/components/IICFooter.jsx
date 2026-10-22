@@ -79,9 +79,9 @@ const IICFooter = () => {
 
       {/* FULL WATERMARK */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <h1 className="text-[20vw] md:text-[15vw] font-black text-[#1a1f24] opacity-[0.06] tracking-tighter font-playfair uppercase">
+        <span aria-hidden="true" className="text-[20vw] md:text-[15vw] font-black text-[#1a1f24] opacity-[0.06] tracking-tighter font-playfair uppercase">
           IIC MNNIT
-        </h1>
+        </span>
       </div>
 
       {/* CONTACT MODAL (MATCHED STYLE) */}

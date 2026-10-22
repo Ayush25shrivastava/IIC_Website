@@ -23,6 +23,35 @@ import Teams from './pages/Teams';
 import GlobalLandingPage from './pages/GlobalLandingPage';
 import SlidingBar from './components/SlidingBar';
 
+import SEO from './components/SEO';
+
+const udbhavJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "Udbhav - Annual Entrepreneurship & Financial Literacy Summit",
+  "description": "The flagship entrepreneurship and financial literacy summit of MNNIT Allahabad organized by Institution's Innovation Council (IIC).",
+  "url": "https://iic.mnnit.ac.in/udbhav",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "organizer": {
+    "@type": "Organization",
+    "name": "Institution's Innovation Council, MNNIT Allahabad",
+    "url": "https://iic.mnnit.ac.in"
+  },
+  "location": {
+    "@type": "Place",
+    "name": "MNNIT Allahabad",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Barrister Mullah Colony, Teliarganj",
+      "addressLocality": "Prayagraj",
+      "addressRegion": "Uttar Pradesh",
+      "postalCode": "211004",
+      "addressCountry": "IN"
+    }
+  }
+};
+
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
@@ -68,12 +97,16 @@ function App() {
               path="/udbhav"
               element={
                 <>
+                  <SEO
+                    title="Udbhav | IIC MNNIT Allahabad"
+                    description="Udbhav is the premier annual entrepreneurship and financial literacy summit organized by Institution's Innovation Council (IIC) MNNIT Allahabad."
+                    canonical="https://iic.mnnit.ac.in/udbhav"
+                    jsonLd={udbhavJsonLd}
+                  />
                   <Navbar />
                   <div className="hidden md:block">
                     <SlidingBar />
                   </div>
-
-                  <Navbar />
 
                   {/* Mobile: SlidingBar BELOW Navbar */}
                   <div className="block md:hidden">
@@ -99,6 +132,11 @@ function App() {
               path="/udbhav/events"
               element={
                 <>
+                  <SEO
+                    title="Events | Udbhav • IIC MNNIT Allahabad"
+                    description="Explore flagship competitions, case clashes, hackathons, and challenges at Udbhav Summit, MNNIT Allahabad."
+                    canonical="https://iic.mnnit.ac.in/udbhav/events"
+                  />
                   <Navbar />
                   <main>
                     <Events />
@@ -113,7 +151,11 @@ function App() {
               path="/udbhav/events/:eventId/register"
               element={
                 <>
-                  {/* Omit Navbar here for full app-like experience or keep it if consistent */}
+                  <SEO
+                    title="Register | Udbhav • IIC MNNIT Allahabad"
+                    description="Register for competitions and events at Udbhav Summit, MNNIT Allahabad."
+                    canonical="https://iic.mnnit.ac.in/udbhav/events"
+                  />
                   <main>
                     <Registration />
                   </main>
@@ -125,6 +167,11 @@ function App() {
               path="/udbhav/dashboard"
               element={
                 <>
+                  <SEO
+                    title="User Dashboard | Udbhav"
+                    description="User dashboard for registered participants of Udbhav Summit."
+                    robots="noindex, nofollow"
+                  />
                   <main>
                     <Dashboard />
                   </main>
@@ -137,6 +184,11 @@ function App() {
               path="/udbhav/gallery"
               element={
                 <>
+                  <SEO
+                    title="Gallery | Udbhav • IIC MNNIT Allahabad"
+                    description="Moments, keynotes, and glimpses from previous editions of Udbhav Summit at MNNIT Allahabad."
+                    canonical="https://iic.mnnit.ac.in/udbhav/gallery"
+                  />
                   <Navbar />
                   <main>
                     <Gallery />
@@ -150,6 +202,11 @@ function App() {
               path="/udbhav/sponsors"
               element={
                 <>
+                  <SEO
+                    title="Sponsors & Partners | Udbhav • IIC MNNIT Allahabad"
+                    description="Sponsors, corporate partners, and patrons of Udbhav Summit, MNNIT Allahabad."
+                    canonical="https://iic.mnnit.ac.in/udbhav/sponsors"
+                  />
                   <Navbar />
                   <main>
                     <Sponsors />
@@ -162,6 +219,11 @@ function App() {
               path="/udbhav/teams"
               element={
                 <>
+                  <SEO
+                    title="Our Team | Udbhav • IIC MNNIT Allahabad"
+                    description="Meet the organizing team, student leads, and faculty advisors of Udbhav Summit at MNNIT Allahabad."
+                    canonical="https://iic.mnnit.ac.in/udbhav/teams"
+                  />
                   <Navbar />
                   <main>
                     <Teams />

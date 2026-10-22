@@ -62,9 +62,9 @@ const ContactFooter = () => {
 
                 {/* Large Background Text - "UDBHAV" */}
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-10 translate-y-[35%] w-full text-center md:text-right pointer-events-none z-0">
-                    <h1 className="text-[15vw] md:text-[18vw] font-black text-[#0E0E0E] opacity-[0.05] leading-none tracking-tighter select-none font-playfair uppercase">
+                    <span aria-hidden="true" className="text-[15vw] md:text-[18vw] font-black text-[#0E0E0E] opacity-[0.05] leading-none tracking-tighter select-none font-playfair uppercase">
                         UDBHAV
-                    </h1>
+                    </span>
                 </div>
 
             </div>

@@ -11,6 +11,14 @@ import heroImg3 from '../assets/hero-section/hostels.png';
 import heroImg4 from '../assets/hero-section/mnnit image.png';
 
 import IICFooter from "../components/IICFooter";
+import SEO from "../components/SEO";
+
+const SLIDE_DESCRIPTIONS = [
+  "MNNIT Allahabad Academic Building",
+  "MNNIT Allahabad Campus Main Entrance",
+  "MNNIT Allahabad Student Hostels",
+  "MNNIT Allahabad Institute Campus View"
+];
 
 const IICPage = () => {
   const images = [heroImg1, heroImg2, heroImg3, heroImg4];
@@ -26,6 +34,12 @@ const IICPage = () => {
 
   return (
     <div className="min-h-screen bg-[#fdfbf7] text-[#0E0E0E] font-merriweather selection:bg-[#B8A18A] selection:text-white">
+      <SEO
+        title="IIC MNNIT Allahabad | Innovation & Entrepreneurship"
+        description="Official Portal of Institution's Innovation Council (IIC) & E-Cell MNNIT Allahabad. Nurturing ideas, fostering entrepreneurs, and building the future of technology."
+        canonical="https://iic.mnnit.ac.in/"
+        ogImage="https://iic.mnnit.ac.in/renaissance-logo.png"
+      />
       <style>{`
         * { cursor: auto !important; }
         a, button, [role="button"], input { cursor: pointer !important; }
@@ -39,7 +53,7 @@ const IICPage = () => {
           <img
             key={idx}
             src={img}
-            alt={`Slide ${idx}`}
+            alt={SLIDE_DESCRIPTIONS[idx] || `MNNIT Campus View ${idx + 1}`}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out ${idx === currentImg ? 'opacity-100 z-0' : 'opacity-0 -z-10'
               }`}
           />
@@ -270,12 +284,12 @@ const EventCard = ({ image, title, description, link }) => (
         {description}
       </p>
 
-      <a href={link} rel="noopener noreferrer" className="mt-8 block">
-        <button
-          className="w-full py-4 rounded-xl bg-[#0E0E0E] text-[#fdfbf7] font-merriweather uppercase tracking-widest text-xs font-bold shadow-[5px_5px_15px_rgba(0,0,0,0.2)] hover:bg-[#B8A18A] hover:text-[#0E0E0E] hover:shadow-[8px_8px_20px_rgba(0,0,0,0.3)] transition-all duration-300 cursor-pointer"
-        >
-          Explore / Register
-        </button>
+      <a
+        href={link}
+        rel="noopener noreferrer"
+        className="mt-8 block w-full py-4 rounded-xl bg-[#0E0E0E] text-[#fdfbf7] font-merriweather uppercase tracking-widest text-xs font-bold text-center shadow-[5px_5px_15px_rgba(0,0,0,0.2)] hover:bg-[#B8A18A] hover:text-[#0E0E0E] hover:shadow-[8px_8px_20px_rgba(0,0,0,0.3)] transition-all duration-300 cursor-pointer"
+      >
+        Explore / Register
       </a>
 
     </div>

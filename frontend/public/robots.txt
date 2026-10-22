@@ -3,11 +3,17 @@ Allow: /
 Allow: /udbhav
 Allow: /renaissance
 
-# Disallow internal and admin portals
+# Disallow internal administrative and private dashboards
 Disallow: /admin/
 Disallow: /volunteer/
 Disallow: /renaissance/admin/
 Disallow: /renaissance/volunteer/
+Disallow: /dashboard
+Disallow: /udbhav/dashboard
+Disallow: /campus-ambassador/dashboard
+Disallow: /renaissance/campus-ambassador/dashboard
+Disallow: /login/
+Disallow: /udbhav/login/
 Disallow: /api/
 
 Sitemap: https://iic.mnnit.ac.in/sitemap.xml

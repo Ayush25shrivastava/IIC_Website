@@ -18,6 +18,11 @@ export default function Hero() {
           />
         </div>
 
+        {/* Primary Heading for SEO and Accessibility */}
+        <h1 className="sr-only">
+          Renaissance'26 — 10th Edition Annual Entrepreneurship Summit | E-Cell MNNIT Allahabad
+        </h1>
+
         {/* Balanced Summit Description Text */}
         <p className="font-montserrat text-lg sm:text-xl text-[#CBD5E1] max-w-xl font-light mb-8 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] leading-relaxed">
           The Annual Entrepreneurship Summit of{" "}
