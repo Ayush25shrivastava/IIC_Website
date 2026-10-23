@@ -37,17 +37,27 @@ export default function EventSection() {
                 </p>
               </div>
 
-              <WaterButton
-                onClick={() =>
-                  event.registrationUrl
-                    ? window.open(event.registrationUrl, "_blank", "noopener,noreferrer")
-                    : navigate(`/events/${event.id}/register`)
-                }
-                variant="primary"
-                className="w-full !px-4 !py-2.5 text-[11px]"
-              >
-                Register
-              </WaterButton>
+              <div className="flex items-center gap-2 mt-auto">
+                <WaterButton
+                  onClick={() =>
+                    event.registrationUrl
+                      ? window.open(event.registrationUrl, "_blank", "noopener,noreferrer")
+                      : navigate(`/events/${event.id}/register`)
+                  }
+                  variant="primary"
+                  className="flex-1 !px-3 !py-2.5 text-[11px]"
+                >
+                  Register
+                </WaterButton>
+                <a
+                  href={event.rulebookUrl || "https://drive.google.com/file/d/1GKo2utmVtmqG4AAFaZkUpYblXxmvERii/view?usp=sharing"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-2.5 rounded-full border border-[#C5A25F]/40 bg-[#0A192F]/80 hover:bg-[#C5A25F]/20 text-[#F4EBD9] font-mono text-[10px] uppercase font-bold tracking-wider transition-colors text-center shadow-sm"
+                >
+                  Rulebook
+                </a>
+              </div>
             </div>
           ))}
         </div>
