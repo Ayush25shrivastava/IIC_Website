@@ -191,6 +191,7 @@ export default function TicketsAccommodation() {
   const [availabilityMessage, setAvailabilityMessage] = useState("");
   const [accommodationDays, setAccommodationDays] = useState(1);
   const [showForm, setShowForm] = useState(false);
+  const [confirmingTicket, setConfirmingTicket] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -367,6 +368,30 @@ export default function TicketsAccommodation() {
       setShowForm(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
+
+  const handleMobileBuyClick = (e, option) => {
+    e.stopPropagation();
+    if (soldOutPasses[option.id]) {
+      setAvailabilityMessage("This pass is sold out. Please try another pass.");
+      return;
+    }
+    setConfirmingTicket(option);
+  };
+
+  const handleConfirmBuy = () => {
+    if (!confirmingTicket) return;
+    const option = confirmingTicket;
+    setSelectedTicket(option.id);
+    const days = option.includesAccommodation ? accommodationDays : 1;
+    const total = getTicketPrice(option, days);
+    setFormData((prev) => ({ ...prev, amountPaid: total.toString() }));
+    setAppliedPromoQuote(null);
+    setPromoMessage("");
+    setAvailabilityMessage("");
+    setConfirmingTicket(null);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleBackToSelection = () => {
@@ -1057,6 +1082,23 @@ export default function TicketsAccommodation() {
                             </span>
                           </div>
                         )}
+
+                        {/* Mobile View Only: Buy button */}
+                        <div className="pt-4 mt-2 border-t border-[#0C2B3D]/10 lg:hidden">
+                          <button
+                            type="button"
+                            disabled={isSoldOut}
+                            onClick={(e) => handleMobileBuyClick(e, option)}
+                            className={`w-full py-3 px-4 rounded-xl font-cinzel text-xs font-black tracking-widest uppercase flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 ${
+                              isSoldOut
+                                ? "bg-stone-300 text-stone-500 cursor-not-allowed border border-stone-400/40"
+                                : "bg-[#0C2B3D] text-[#F2E5D4] hover:bg-[#16435E] border border-[#0C2B3D]"
+                            }`}
+                          >
+                            <span>{isSoldOut ? "Sold Out" : `Buy ${option.name}`}</span>
+                            {!isSoldOut && <ChevronRight className="w-4 h-4 text-[#E5C378]" />}
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   );
@@ -1531,6 +1573,91 @@ export default function TicketsAccommodation() {
         </AnimatePresence>
 
       </section>
+
+      {/* Confirmation Modal for Mobile Buy */}
+      <AnimatePresence>
+        {confirmingTicket && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setConfirmingTicket(null)}
+              className="absolute inset-0 bg-[#062538]/70 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-md rounded-3xl border-2 border-[#9E6D1F] bg-gradient-to-br from-[#EEDFCA] via-[#E6D6C0] to-[#DCECEE] p-6 shadow-2xl overflow-hidden text-center z-10"
+            >
+              <div className="pointer-events-none absolute inset-3 rounded-2xl border border-[#A87E35]/35" />
+              <button
+                type="button"
+                onClick={() => setConfirmingTicket(null)}
+                className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/70 text-[#0C2B3D] hover:bg-white transition-colors"
+                aria-label="Close confirmation modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="mx-auto w-14 h-14 rounded-2xl bg-[#0C2B3D] text-[#E5C378] flex items-center justify-center mb-4 shadow-md">
+                <Ticket className="w-7 h-7" />
+              </div>
+
+              <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono font-black uppercase tracking-wider bg-[#0C2B3D] text-[#E5C378] mb-2">
+                {confirmingTicket.badge}
+              </span>
+
+              <h3 className="font-cinzel text-2xl font-black text-[#0C2B3D] mb-1">
+                Confirm Your Plan
+              </h3>
+              <p className="font-montserrat text-sm text-[#2C5263] font-semibold mb-5">
+                Are you sure you want to proceed with buying the <strong className="text-[#0C2B3D]">{confirmingTicket.name}</strong>?
+              </p>
+
+              <div className="p-4 rounded-2xl bg-white/75 border border-[#C5A25F]/40 mb-6 text-left space-y-2 shadow-sm">
+                <div className="flex justify-between items-center text-xs font-mono">
+                  <span className="text-[#8A5F1C] font-bold uppercase tracking-wider">Pass:</span>
+                  <span className="font-black text-[#0C2B3D]">{confirmingTicket.name}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs font-mono">
+                  <span className="text-[#8A5F1C] font-bold uppercase tracking-wider">Early-Bird Price:</span>
+                  <span className="font-black text-[#9E6D1F] text-base">{confirmingTicket.formattedPrice}</span>
+                </div>
+                <div className="flex justify-between items-center text-[11px] font-mono text-[#2C5263]">
+                  <span>Access:</span>
+                  <span className="font-semibold">{confirmingTicket.duration}</span>
+                </div>
+                {confirmingTicket.includesAccommodation && (
+                  <p className="text-[10px] font-mono font-bold text-[#2E7D32] pt-1 border-t border-[#C5A25F]/20">
+                    ✓ Includes 1-day campus accommodation & 3 meals
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                <button
+                  type="button"
+                  onClick={handleConfirmBuy}
+                  className="w-full py-3.5 px-6 rounded-2xl bg-[#0C2B3D] text-[#F2E5D4] font-cinzel text-xs font-black tracking-widest uppercase shadow-lg hover:bg-[#16435E] transition-all flex items-center justify-center gap-2 active:scale-95"
+                >
+                  <span>Yes, Confirm & Proceed</span>
+                  <ChevronRight className="w-4 h-4 text-[#E5C378]" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingTicket(null)}
+                  className="w-full py-2.5 px-6 rounded-2xl bg-transparent text-[#2C5263] hover:text-[#0C2B3D] font-mono text-xs font-bold uppercase tracking-wider transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <div className="relative z-10 bg-[#E2D2BC]">
         <ContactFooter />
