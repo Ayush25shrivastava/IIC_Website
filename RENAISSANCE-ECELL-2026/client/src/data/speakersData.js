@@ -43,14 +43,13 @@ export const SPEAKERS_DATA = [
     image: getAssetUrl("/speakers/vineet-shukla.png"),
     linkedin: "https://www.linkedin.com/in/shuklavineet/",
   },
- 
-  {
-    id: "sasikanth-r",
-    name: "Sasikanth R",
-    title: "Business Strategist | AI Consultant | Startup Mentor",
-    image: getAssetUrl("/speakers/sasikanth-r.png"),
-    linkedin: "https://www.linkedin.com/in/sasikanthr/",
-  },
+  // {
+  //   id: "sasikanth-r",
+  //   name: "Sasikanth R",
+  //   title: "Business Strategist | AI Consultant | Startup Mentor",
+  //   image: getAssetUrl("/speakers/sasikanth-r.png"),
+  //   linkedin: "https://www.linkedin.com/in/sasikanthr/",
+  // },
   {
     id: "manas-pandey",
     name: "Dr. Manas Pandey",
