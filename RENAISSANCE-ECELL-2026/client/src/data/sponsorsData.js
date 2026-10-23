@@ -190,6 +190,19 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
+    id:"coaching",
+    title:"Coaching Partner",
+    sponsors:[
+      {
+        name:"Toppers Code India",
+        category:"Coaching Partner",
+        image:CLOUDINARY_SPONSORS.toppersCode || getAssetUrl("/sponsors/topperscode.jpeg"),
+        fallbackImage: getAssetUrl("/sponsors/topperscode.jpeg"),
+        description: "Official Coaching Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
     id:"communication",
     title:"Communication Partner",
     sponsors:[
