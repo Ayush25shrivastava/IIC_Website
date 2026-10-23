@@ -142,10 +142,10 @@ export default function CampusAmbassadorAdmin() {
   }
 
   return <div className={adminStyles.app}>
-    <aside className={`${adminStyles.sidebar} ${mobileOpen ? "max-[900px]:translate-x-0" : "max-[900px]:-translate-x-full"}`}>
+    <aside data-lenis-prevent className={`${adminStyles.sidebar} ${mobileOpen ? "max-[900px]:translate-x-0" : "max-[900px]:-translate-x-full"}`}>
       <div className={adminStyles.sidebarBrand}><img src={logo} alt="Renaissance" className={adminStyles.sidebarBrandImg} /><span className={adminStyles.kicker}>Admin command center</span></div>
       <p className={adminStyles.sidebarNavLabel}>The command deck</p>
-      <nav aria-label="Admin navigation" className={adminStyles.sidebarNav}>
+      <nav data-lenis-prevent aria-label="Admin navigation" className={adminStyles.sidebarNav}>
         {sections.map(([id, label, Icon]) => <button key={id} className={`${adminStyles.sidebarNavItem} ${tab === id ? adminStyles.sidebarNavSelected : ""}`} aria-current={tab === id ? "page" : undefined} onClick={() => navigateSection(id)}><Icon size={20} /><span>{label}</span>{id === "reviews" && pending.length > 0 && <b className={adminStyles.sidebarNavBadge}>{pending.length}</b>}</button>)}
         <Link to="/admin/tickets" className={adminStyles.sidebarNavItem}>
           <Ticket size={20} />
