@@ -323,46 +323,54 @@ export default function AdisyonShader({ className = "" }) {
     const start = performance.now()
     const timeAnimated = Math.abs(UNIFORMS.timeScale) > 0.0001
 
+    const isTouch =
+      typeof window !== "undefined" &&
+      (window.matchMedia("(pointer: coarse)").matches ||
+        "ontouchstart" in window ||
+        navigator.maxTouchPoints > 0);
+
     const resizeCanvas = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.25)
-      const width = Math.max(1, Math.round(bounds.width * dpr))
-      const height = Math.max(1, Math.round(bounds.height * dpr))
+      // On mobile / touch devices, cap DPR to 0.75-0.8 for significantly lower GPU fill cost during scroll
+      const maxDpr = isTouch ? 0.8 : 1.25;
+      const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
+      const width = Math.max(1, Math.round(bounds.width * dpr));
+      const height = Math.max(1, Math.round(bounds.height * dpr));
       if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width
-        canvas.height = height
-        gl.viewport(0, 0, width, height)
+        canvas.width = width;
+        canvas.height = height;
+        gl.viewport(0, 0, width, height);
       }
-    }
+    };
 
     function requestRender() {
-      if (!disposed && visible && inView && raf === 0) raf = requestAnimationFrame(render)
+      if (!disposed && visible && inView && raf === 0) raf = requestAnimationFrame(render);
     }
 
     const updatePointerTarget = () => {
-      if (!pointerKnown || bounds.width === 0 || bounds.height === 0) return
-      const inside = pointerClientX >= bounds.left && pointerClientX <= bounds.right && pointerClientY >= bounds.top && pointerClientY <= bounds.bottom
+      if (isTouch || !pointerKnown || bounds.width === 0 || bounds.height === 0) return;
+      const inside = pointerClientX >= bounds.left && pointerClientX <= bounds.right && pointerClientY >= bounds.top && pointerClientY <= bounds.bottom;
       if (!inside) {
-        targetPresence = 0; requestRender(); return
+        targetPresence = 0; requestRender(); return;
       }
-      const nextX = ((pointerClientX - bounds.left) / bounds.width) * 2 - 1
-      const nextY = -(((pointerClientY - bounds.top) / bounds.height) * 2 - 1)
-      if (targetPresence === 0 && cursorPresence < 0.01) { mouseX = nextX; mouseY = nextY }
-      targetX = nextX; targetY = nextY; targetPresence = 1
-      requestRender()
-    }
+      const nextX = ((pointerClientX - bounds.left) / bounds.width) * 2 - 1;
+      const nextY = -(((pointerClientY - bounds.top) / bounds.height) * 2 - 1);
+      if (targetPresence === 0 && cursorPresence < 0.01) { mouseX = nextX; mouseY = nextY; }
+      targetX = nextX; targetY = nextY; targetPresence = 1;
+      requestRender();
+    };
     const onPointerMove = (event) => {
-      pointerKnown = true; pointerClientX = event.clientX; pointerClientY = event.clientY
-      updatePointerTarget()
-    }
-    const onPointerLeave = () => { pointerKnown = false; targetPresence = 0; requestRender() }
-    const updateLayout = () => { bounds = canvas.getBoundingClientRect(); resizeCanvas(); updatePointerTarget(); requestRender() }
+      pointerKnown = true; pointerClientX = event.clientX; pointerClientY = event.clientY;
+      updatePointerTarget();
+    };
+    const onPointerLeave = () => { pointerKnown = false; targetPresence = 0; requestRender(); };
+    const updateLayout = () => { bounds = canvas.getBoundingClientRect(); resizeCanvas(); updatePointerTarget(); requestRender(); };
     
-    window.addEventListener("resize", updateLayout)
-    if (UNIFORMS.cursorEnabled) {
-      window.addEventListener("pointermove", onPointerMove, { passive: true })
-      window.addEventListener("pointercancel", onPointerLeave)
-      window.addEventListener("blur", onPointerLeave)
-      document.documentElement.addEventListener("pointerleave", onPointerLeave)
+    window.addEventListener("resize", updateLayout);
+    if (UNIFORMS.cursorEnabled && !isTouch) {
+      window.addEventListener("pointermove", onPointerMove, { passive: true });
+      window.addEventListener("pointercancel", onPointerLeave);
+      window.addEventListener("blur", onPointerLeave);
+      document.documentElement.addEventListener("pointerleave", onPointerLeave);
     }
 
     const resizeObserver = new ResizeObserver(updateLayout)
@@ -404,11 +412,11 @@ export default function AdisyonShader({ className = "" }) {
       intersectionObserver.disconnect()
       document.removeEventListener("visibilitychange", onVisibilityChange)
       window.removeEventListener("resize", updateLayout)
-      if (UNIFORMS.cursorEnabled) {
-        window.removeEventListener("pointermove", onPointerMove)
-        window.removeEventListener("pointercancel", onPointerLeave)
-        window.removeEventListener("blur", onPointerLeave)
-        document.documentElement.removeEventListener("pointerleave", onPointerLeave)
+      if (UNIFORMS.cursorEnabled && !isTouch) {
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointercancel", onPointerLeave);
+        window.removeEventListener("blur", onPointerLeave);
+        document.documentElement.removeEventListener("pointerleave", onPointerLeave);
       }
       gl.deleteBuffer(buf)
       gl.deleteProgram(program)

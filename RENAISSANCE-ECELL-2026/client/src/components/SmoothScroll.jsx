@@ -17,6 +17,11 @@ export default function SmoothScroll({ children }) {
         top: target,
         behavior: options.immediate ? "auto" : "smooth",
       });
+    } else if (target instanceof HTMLElement) {
+      target.scrollIntoView({
+        behavior: options.immediate ? "auto" : "smooth",
+        block: "start",
+      });
     }
   }, []);
 
@@ -35,11 +40,15 @@ export default function SmoothScroll({ children }) {
         const LenisClass = mod.default || mod.Lenis || mod;
         if (!LenisClass) return;
 
+        // On touch screens (phones/tablets), do NOT hijack touch events.
+        // Hijacking touch with JS smooth scroll causes high touch-to-render latency and stutter.
         const lenis = new LenisClass({
           duration: 1.0,
           easing: (time) => Math.min(1, 1.001 - 2 ** (-10 * time)),
           wheelMultiplier: 1.0,
-          touchMultiplier: 1.0,
+          touchMultiplier: 0,
+          syncTouch: false,
+          smoothTouch: false,
           autoResize: true,
         });
         lenisInstance = lenis;
@@ -52,14 +61,22 @@ export default function SmoothScroll({ children }) {
           lenis.raf(time * 1000);
         };
         gsap.ticker.add(tickerCallback);
-        gsap.ticker.lagSmoothing(0);
+        // Use standard lag smoothing so frame drops don't cause massive animation jumps
+        gsap.ticker.lagSmoothing(500, 33);
       })
       .catch((err) => {
         console.warn("Smooth scroll initialization skipped:", err);
       });
 
+    // Ensure native mobile touch scrolling also triggers ScrollTrigger updates
+    const onScroll = () => {
+      ScrollTrigger.update();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
       isMounted = false;
+      window.removeEventListener("scroll", onScroll);
       if (tickerCallback) {
         gsap.ticker.remove(tickerCallback);
       }

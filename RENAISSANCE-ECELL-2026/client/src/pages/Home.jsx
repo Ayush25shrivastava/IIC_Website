@@ -231,11 +231,27 @@ const PAST_SPONSORS = [
 ];
 
 function FeaturedSpeakersGrid({ speakers }) {
+  const sectionRef = useRef(null);
   const scrollRef = useRef(null);
   const isPausedRef = useRef(false);
   const isDraggingRef = useRef(false);
+  const isVisibleRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
+
+  // Only run glide animation when the section is actually in the viewport
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+      },
+      { rootMargin: "150px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const container = scrollRef.current;
@@ -252,7 +268,7 @@ function FeaturedSpeakersGrid({ speakers }) {
       const deltaTime = (currentTime - lastTime) / 1000;
       lastTime = currentTime;
 
-      if (!isPausedRef.current && !isDraggingRef.current && container) {
+      if (!isPausedRef.current && !isDraggingRef.current && isVisibleRef.current && container) {
         if (currentTime >= pauseUntil) {
           const maxScroll = container.scrollWidth - container.clientWidth;
 
@@ -325,6 +341,7 @@ function FeaturedSpeakersGrid({ speakers }) {
   return (
     <section
       id="speakers"
+      ref={sectionRef}
       className="relative w-full bg-transparent py-16 sm:py-24 select-none z-20 overflow-hidden"
     >
       {/* Subtle atmospheric ambient glow */}
@@ -485,6 +502,8 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
     const items = grid.querySelectorAll(".premium-sponsor-item");
     if (items.length === 0) return;
 
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
     items.forEach((item) => {
       item.style.willChange = "transform, opacity";
     });
@@ -494,7 +513,8 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             items.forEach((item, index) => {
-              const delay = index * 80;
+              // Minimal stagger on mobile so items don't delay or show blank space
+              const delay = isMobile ? Math.min(index * 25, 200) : index * 60;
               item.style.transitionDelay = `${delay}ms`;
               item.classList.add("opacity-100", "translate-y-0", "scale-100");
               item.classList.remove(
@@ -505,13 +525,13 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
 
               setTimeout(() => {
                 item.style.willChange = "auto";
-              }, delay + 800);
+              }, delay + 600);
             });
             obs.disconnect();
           }
         });
       },
-      { threshold: 0.15 },
+      { threshold: 0.02, rootMargin: "150px 0px 150px 0px" },
     );
 
     observer.observe(grid);
@@ -593,12 +613,15 @@ function StaggeredSponsorsGrid({ title, subtitle, sponsors }) {
     const items = grid.querySelectorAll(".sponsor-item");
     if (items.length === 0) return;
 
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
     const observer = new IntersectionObserver(
       (entries, obs) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             items.forEach((item, index) => {
-              const delay = index * 80;
+              // Minimal stagger on mobile so items appear quickly
+              const delay = isMobile ? Math.min(index * 20, 180) : index * 50;
               item.style.transitionDelay = `${delay}ms`;
               item.classList.add("opacity-100", "translate-y-0");
               item.classList.remove("opacity-0", "translate-y-10");
@@ -608,14 +631,14 @@ function StaggeredSponsorsGrid({ title, subtitle, sponsors }) {
                   item.style.willChange = "auto";
                   item.style.transitionDelay = "0ms";
                 },
-                800 + delay + 50,
+                500 + delay + 50,
               );
             });
             obs.disconnect();
           }
         });
       },
-      { threshold: 0.15 },
+      { threshold: 0.02, rootMargin: "150px 0px 150px 0px" },
     );
 
     observer.observe(grid);
@@ -718,9 +741,32 @@ export default function Home() {
 
   const speakersSectionRef = useRef(null);
 
-  useEffect(() => {
-    const isDesktopViewport = window.matchMedia("(min-width: 768px)").matches;
+  // Dedicated Mobile Event State & Touch Gesture Handlers (eliminates 4-5 events skipping on phone)
+  const [mobileEventIdx, setMobileEventIdx] = useState(0);
+  const touchStartXRef = useRef(0);
+  const touchStartYRef = useRef(0);
 
+  const handleMobileTouchStart = (e) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleMobileTouchEnd = (e) => {
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartYRef.current;
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX < 0) {
+        // swipe left -> next event
+        setMobileEventIdx((prev) => Math.min(prev + 1, EVENTS.length - 1));
+      } else {
+        // swipe right -> previous event
+        setMobileEventIdx((prev) => Math.max(prev - 1, 0));
+      }
+    }
+  };
+
+  useEffect(() => {
+    const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
       // Fade out scroll indicator as user begins scrolling
       if (scrollIndicatorRef.current && heroSectionRef.current) {
@@ -737,8 +783,11 @@ export default function Home() {
         });
       }
 
-      // Pinned Events Parallax Timeline (Desktop + Mobile)
-      if (eventsSectionRef.current) {
+      // Pinned Events Parallax Timeline: DESKTOP ONLY (>= 768px)
+      // On mobile devices, pinning 5,000px causes fast touch-momentum skips (4-5 events per flick).
+      // On mobile we use a dedicated touch-swipable event carousel without pin locks.
+      mm.add("(min-width: 768px)", () => {
+        if (!eventsSectionRef.current) return;
         if (wheelImgRef.current) {
           gsap.set(wheelImgRef.current, { transformOrigin: "50% 50%" });
         }
@@ -769,16 +818,14 @@ export default function Home() {
               duration: totalTimelineDuration,
               onUpdate: function () {
                 const now = performance.now();
-                if (now - lastRippleTime < 35) return;
+                if (now - lastRippleTime < 50) return;
                 lastRippleTime = now;
 
-                // When wheel rotates, interact with the WebGL ocean water along the moving wheel rim!
                 const progress = this.progress();
                 const angle = (progress * 180 * (totalEvents - 1) * Math.PI) / 180;
-                const isMobile = window.innerWidth < 768;
-                const cx = isMobile ? window.innerWidth / 2 : 0;
+                const cx = 0;
                 const cy = window.innerHeight / 2;
-                const radius = window.innerHeight * (isMobile ? 0.38 : 0.46);
+                const radius = window.innerHeight * 0.46;
                 const rippleX = cx + Math.cos(angle) * radius;
                 const rippleY = cy + Math.sin(angle) * radius;
 
@@ -837,7 +884,7 @@ export default function Home() {
             );
           }
         });
-      }
+      });
 
       // Reveal About on entry without pinning or adding scroll distance.
       if (aboutSectionRef.current) {
@@ -859,7 +906,7 @@ export default function Home() {
             ease: "power2.out",
             scrollTrigger: {
               trigger: aboutSectionRef.current,
-              start: "top 90%",
+              start: "top 95%",
               once: true,
             },
           },
@@ -901,6 +948,7 @@ export default function Home() {
     });
 
     return () => {
+      mm.revert();
       ctx.revert();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
@@ -1121,8 +1169,9 @@ export default function Home() {
       <section
         id="events"
         ref={eventsSectionRef}
-        className="featured-events-section relative flex min-h-[100svh] h-[100svh] w-full flex-col justify-center md:justify-between overflow-hidden bg-transparent px-4 py-6 select-none sm:px-6 md:px-12 md:pb-6 md:pt-32"
+        className="featured-events-section relative flex w-full flex-col justify-center overflow-hidden bg-transparent px-4 py-12 select-none sm:px-6 md:px-12 md:min-h-[100svh] md:h-[100svh] md:justify-between md:pb-6 md:pt-32"
       >
+        {/* ==================== DESKTOP PINNED VIEW (>= md) ==================== */}
         {/* Giant Rotating Nautical Wheel */}
         <div
           ref={wheelContainerRef}
@@ -1137,8 +1186,8 @@ export default function Home() {
           />
         </div>
 
-        {/* Right Half Container: Events Header & Event Showcase */}
-        <div className="relative z-20 mx-auto my-auto flex w-full max-w-7xl flex-col items-center justify-center md:items-end">
+        {/* Desktop Container: Events Header & Event Showcase */}
+        <div className="relative z-20 mx-auto my-auto hidden md:flex w-full max-w-7xl flex-col items-end">
           <div className="flex w-full max-w-md sm:max-w-xl flex-col gap-3 sm:gap-4 md:ml-auto">
             {/* Header */}
             <div
@@ -1195,7 +1244,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Compact text summary on mobile so user has up/down areas to scroll */}
+                    {/* Compact text summary so user has areas to scroll */}
                     <p className="featured-events-description line-clamp-2 md:line-clamp-none text-[11px] sm:text-xs md:text-sm font-mono leading-relaxed opacity-90 text-[#0C2B3D] whitespace-pre-line overflow-hidden md:overflow-y-auto max-h-[48px] sm:max-h-[100px] md:max-h-[160px] pr-1">
                       {event.desc}
                     </p>
@@ -1236,12 +1285,147 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Footer Info */}
+        {/* ==================== MOBILE DEDICATED VIEW (< md) ==================== */}
+        {/* Solves 4-5 events skipping on phone by rendering a 1-at-a-time touch slider */}
+        <div className="relative z-20 mx-auto w-full max-w-lg flex flex-col md:hidden">
+          {/* Mobile Header with Previous / Next Controls */}
+          <div className="w-full pb-3 mb-4 border-b border-white/10 flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-mono text-white uppercase tracking-[0.25em] font-extrabold flex items-center gap-1.5 mb-1">
+                <Compass className="w-3.5 h-3.5 text-[#38BDF8]" />
+                <span>Summit Flagships</span>
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight animate-whitegold-shine">
+                Featured Events
+              </h2>
+            </div>
+
+            {/* Stepper controls */}
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setMobileEventIdx((p) => Math.max(0, p - 1))}
+                disabled={mobileEventIdx === 0}
+                aria-label="Previous Event"
+                className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all ${
+                  mobileEventIdx === 0
+                    ? "border-white/10 text-white/30 cursor-not-allowed bg-black/20"
+                    : "border-[#d4af37]/60 text-[#d4af37] bg-[#041021]/80 hover:bg-[#d4af37] hover:text-[#0C2B3D] active:scale-95 shadow-sm"
+                }`}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileEventIdx((p) => Math.min(EVENTS.length - 1, p + 1))}
+                disabled={mobileEventIdx === EVENTS.length - 1}
+                aria-label="Next Event"
+                className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all ${
+                  mobileEventIdx === EVENTS.length - 1
+                    ? "border-white/10 text-white/30 cursor-not-allowed bg-black/20"
+                    : "border-[#d4af37]/60 text-[#d4af37] bg-[#041021]/80 hover:bg-[#d4af37] hover:text-[#0C2B3D] active:scale-95 shadow-sm"
+                }`}
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Swipeable Active Card Container */}
+          <div
+            onTouchStart={handleMobileTouchStart}
+            onTouchEnd={handleMobileTouchEnd}
+            className="w-full relative touch-pan-y"
+          >
+            <div className="w-full p-5 rounded-2xl border border-[#d4af37]/60 bg-[#F4EBD9] text-[#0C2B3D] shadow-[0_15px_40px_rgba(0,0,0,0.6)] flex flex-col gap-3 min-h-[380px] justify-between transition-all duration-300">
+              <div className="flex items-center justify-between w-full pb-2 border-b border-[#0C2B3D]/10">
+                <span className="text-[10px] font-mono font-bold tracking-widest uppercase opacity-70">
+                  {EVENTS[mobileEventIdx].category}
+                </span>
+                <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-[#0C2B3D]/20 bg-[#0C2B3D]/10 text-[#0C2B3D] uppercase tracking-wider font-extrabold">
+                  CHALLENGE {EVENTS[mobileEventIdx].id} / {EVENTS.length.toString().padStart(2, "0")}
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-extrabold font-sans tracking-tight mb-1">
+                  {EVENTS[mobileEventIdx].name}
+                </h3>
+                {EVENTS[mobileEventIdx].tagline && (
+                  <p className="text-xs font-semibold italic opacity-85 mb-1.5 text-[#0C2B3D]">
+                    "{EVENTS[mobileEventIdx].tagline}"
+                  </p>
+                )}
+                <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#b8860b]">
+                  <Trophy className="w-3.5 h-3.5 text-[#d4af37] shrink-0" />
+                  <span>Prize Pool: {EVENTS[mobileEventIdx].prize}</span>
+                </div>
+              </div>
+
+              <p className="text-xs font-mono leading-relaxed opacity-90 text-[#0C2B3D] whitespace-pre-line line-clamp-4">
+                {EVENTS[mobileEventIdx].desc}
+              </p>
+
+              <div className="pt-3 border-t border-[#0C2B3D]/10 flex flex-col items-center gap-2.5 w-full">
+                {EVENTS[mobileEventIdx].registrationClosed ? (
+                  <div className="w-full py-2.5 rounded-full bg-red-600 text-white font-bold text-xs tracking-wider uppercase flex items-center justify-center select-none shadow-sm">
+                    Registration Closed
+                  </div>
+                ) : EVENTS[mobileEventIdx].registrationUrl ? (
+                  <a
+                    href={EVENTS[mobileEventIdx].registrationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] animate-pulse" />
+                    <span>Register Now</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-[#38BDF8]" />
+                  </a>
+                ) : (
+                  <div className="w-full py-2.5 rounded-full bg-[#0C2B3D]/10 text-[#0C2B3D]/70 font-mono font-bold text-[11px] tracking-wider uppercase flex items-center justify-center gap-2 select-none">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37]" />
+                    <span>Registrations Opening Soon</span>
+                  </div>
+                )}
+                <Link
+                  to="/events"
+                  className="text-xs font-bold uppercase tracking-widest text-[#0C2B3D] hover:opacity-75 transition-opacity"
+                >
+                  View Full Schedule →
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Navigation Dots */}
+          <div className="flex items-center justify-center gap-1.5 mt-4 py-1">
+            {EVENTS.map((_, dotIdx) => (
+              <button
+                key={dotIdx}
+                type="button"
+                onClick={() => setMobileEventIdx(dotIdx)}
+                aria-label={`Go to event ${dotIdx + 1}`}
+                className={`h-2 transition-all duration-300 rounded-full cursor-pointer ${
+                  dotIdx === mobileEventIdx
+                    ? "w-6 bg-[#d4af37] shadow-[0_0_10px_rgba(212,175,55,0.7)]"
+                    : "w-2 bg-white/25 hover:bg-white/40"
+                }`}
+              />
+            ))}
+          </div>
+
+          <span className="text-[10px] font-mono text-center text-white/50 uppercase tracking-widest mt-1">
+            Swipe left/right or tap arrows to navigate
+          </span>
+        </div>
+
+        {/* Desktop Footer Info */}
         <div
           ref={eventsFooterRef}
-          className="max-w-7xl w-full mx-auto flex items-center justify-between text-xs font-mono text-[#64748B] relative z-20"
+          className="max-w-7xl w-full mx-auto hidden md:flex items-center justify-between text-xs font-mono text-[#64748B] relative z-20"
         >
-          <span className="hidden sm:inline text-[#64748B]">
+          <span className="text-[#64748B]">
             10th Edition Summit
           </span>
         </div>
