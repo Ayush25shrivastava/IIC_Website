@@ -190,15 +190,15 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id:"coaching",
-    title:"Coaching Partner",
-    sponsors:[
+    id: "exam-prep-topperscode",
+    title: "Exam Preparation Partner",
+    sponsors: [
       {
-        name:"Toppers Code India",
-        category:"Coaching Partner",
-        image:CLOUDINARY_SPONSORS.toppersCode || getAssetUrl("/sponsors/topperscode.jpeg"),
+        name: "Toppers Code India",
+        category: "Exam Preparation Partner",
+        image: CLOUDINARY_SPONSORS.toppersCode || getAssetUrl("/sponsors/topperscode.jpeg"),
         fallbackImage: getAssetUrl("/sponsors/topperscode.jpeg"),
-        description: "Official Coaching Partner for Renaissance 2026.",
+        description: "Official Exam Preparation Partner for Renaissance 2026.",
       }
     ],
   },
@@ -280,19 +280,19 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
-  {
-    id: "knowledge",
-    title: "Knowledge Partner",
-    sponsors: [
-      {
-        name: "Syncoro Ventures",
-        category: "Knowledge Partner",
-        image: CLOUDINARY_SPONSORS.syncoro || getAssetUrl("/sponsors/syncoro-ventures.png"),
-        fallbackImage: getAssetUrl("/sponsors/syncoro-ventures.png"),
-        description: "Official Knowledge Partner for Renaissance 2026.",
-      }
-    ],
-  },
+  // {
+  //   id: "knowledge",
+  //   title: "Knowledge Partner",
+  //   sponsors: [
+  //     {
+  //       name: "Syncoro Ventures",
+  //       category: "Knowledge Partner",
+  //       image: CLOUDINARY_SPONSORS.syncoro || getAssetUrl("/sponsors/syncoro-ventures.png"),
+  //       fallbackImage: getAssetUrl("/sponsors/syncoro-ventures.png"),
+  //       description: "Official Knowledge Partner for Renaissance 2026.",
+  //     }
+  //   ],
+  // },
   {
     id: "merchandise",
     title: "Merchandise Partner",
@@ -306,17 +306,17 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
-  {
-    id: "learning",
-    title: "Learning Partner",
-    sponsors: [
-      {
-        name: "Chemica Point",
-        category: "Learning Partner",
-        image: CLOUDINARY_SPONSORS.chemicapoint || getAssetUrl("/sponsors/chemica-point.png"),
-        fallbackImage: getAssetUrl("/sponsors/chemica-point.png"),
-        description: "Official Learning Partner for Renaissance 2026.",
-      }
-    ],
-  }
+  // {
+  //   id: "learning",
+  //   title: "Learning Partner",
+  //   sponsors: [
+  //     {
+  //       name: "Chemica Point",
+  //       category: "Learning Partner",
+  //       image: CLOUDINARY_SPONSORS.chemicapoint || getAssetUrl("/sponsors/chemica-point.png"),
+  //       fallbackImage: getAssetUrl("/sponsors/chemica-point.png"),
+  //       description: "Official Learning Partner for Renaissance 2026.",
+  //     }
+  //   ],
+  // }
 ];
