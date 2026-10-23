@@ -741,32 +741,22 @@ export default function Home() {
 
   const speakersSectionRef = useRef(null);
 
-  // Dedicated Mobile Event State & Touch Gesture Handlers (eliminates 4-5 events skipping on phone)
-  const [mobileEventIdx, setMobileEventIdx] = useState(0);
-  const touchStartXRef = useRef(0);
-  const touchStartYRef = useRef(0);
+  // Real-time active event index tracked during scroll
+  const [activeEventIdx, setActiveEventIdx] = useState(0);
 
-  const handleMobileTouchStart = (e) => {
-    touchStartXRef.current = e.touches[0].clientX;
-    touchStartYRef.current = e.touches[0].clientY;
-  };
-
-  const handleMobileTouchEnd = (e) => {
-    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
-    const deltaY = e.changedTouches[0].clientY - touchStartYRef.current;
-    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
-      if (deltaX < 0) {
-        // swipe left -> next event
-        setMobileEventIdx((prev) => Math.min(prev + 1, EVENTS.length - 1));
-      } else {
-        // swipe right -> previous event
-        setMobileEventIdx((prev) => Math.max(prev - 1, 0));
-      }
-    }
-  };
+  const scrollToEvent = useCallback((index) => {
+    const st = ScrollTrigger.getById("eventsScrollTrigger");
+    if (!st) return;
+    const totalEvents = EVENTS.length;
+    const targetProgress = Math.max(0, Math.min(1, index / (totalEvents - 1)));
+    const targetScroll = st.start + (st.end - st.start) * targetProgress;
+    window.scrollTo({
+      top: targetScroll,
+      behavior: "smooth",
+    });
+  }, []);
 
   useEffect(() => {
-    const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
       // Fade out scroll indicator as user begins scrolling
       if (scrollIndicatorRef.current && heroSectionRef.current) {
@@ -783,45 +773,50 @@ export default function Home() {
         });
       }
 
-      // Pinned Events Parallax Timeline: DESKTOP ONLY (>= 768px)
-      // On mobile devices, pinning 5,000px causes fast touch-momentum skips (4-5 events per flick).
-      // On mobile we use a dedicated touch-swipable event carousel without pin locks.
-      mm.add("(min-width: 768px)", () => {
-        if (!eventsSectionRef.current) return;
+      // Smooth Pinned Events Parallax Timeline (Unified for both Mobile & Desktop)
+      // Uses scrub damping, seamless card cross-fade, and automatic card snapping
+      if (eventsSectionRef.current) {
         if (wheelImgRef.current) {
           gsap.set(wheelImgRef.current, { transformOrigin: "50% 50%" });
         }
 
         const totalEvents = EVENTS.length;
-        const stepDuration = 2.4;
-        const totalTimelineDuration = (totalEvents - 1) * stepDuration + 2.0;
+        const stepDuration = 1.0;
+        const totalTimelineDuration = (totalEvents - 1) * stepDuration;
 
         let lastRippleTime = 0;
+        const isMobile = window.innerWidth < 768;
+
         const mainTl = gsap.timeline({
           scrollTrigger: {
+            id: "eventsScrollTrigger",
             trigger: eventsSectionRef.current,
             start: "top top",
-            end: () => `+=${totalEvents * 450}`,
+            end: () => `+=${totalEvents * (window.innerWidth < 768 ? 480 : 500)}`,
             pin: true,
             pinSpacing: true,
-            scrub: 0.5,
+            scrub: 0.8, // Smooth momentum damping prevents harsh multi-card jumps on mobile touch
+            snap: {
+              snapTo: 1 / (totalEvents - 1),
+              duration: { min: 0.25, max: 0.55 },
+              delay: 0.05,
+              ease: "power2.out",
+            },
             invalidateOnRefresh: true,
-          },
-        });
+            onUpdate: function (self) {
+              const currentIdx = Math.min(
+                totalEvents - 1,
+                Math.max(0, Math.round(self.progress * (totalEvents - 1)))
+              );
+              setActiveEventIdx(currentIdx);
 
-        if (wheelImgRef.current) {
-          mainTl.to(
-            wheelImgRef.current,
-            {
-              rotation: 180 * (totalEvents - 1),
-              ease: "none",
-              duration: totalTimelineDuration,
-              onUpdate: function () {
+              // Wheel rotation ripple on desktop
+              if (!isMobile && wheelImgRef.current) {
                 const now = performance.now();
                 if (now - lastRippleTime < 50) return;
                 lastRippleTime = now;
 
-                const progress = this.progress();
+                const progress = self.progress;
                 const angle = (progress * 180 * (totalEvents - 1) * Math.PI) / 180;
                 const cx = 0;
                 const cy = window.innerHeight / 2;
@@ -836,7 +831,19 @@ export default function Home() {
                     bubbles: false,
                   })
                 );
-              },
+              }
+            },
+          },
+        });
+
+        // Rotate wheel smoothly across the timeline
+        if (wheelImgRef.current) {
+          mainTl.to(
+            wheelImgRef.current,
+            {
+              rotation: 180 * (totalEvents - 1),
+              ease: "none",
+              duration: totalTimelineDuration,
             },
             0
           );
@@ -847,44 +854,57 @@ export default function Home() {
           if (cardEl) {
             gsap.set(cardEl, {
               opacity: i === 0 ? 1 : 0,
-              y: i === 0 ? 0 : 20,
+              y: i === 0 ? 0 : 35,
+              scale: i === 0 ? 1 : 0.95,
               pointerEvents: i === 0 ? "auto" : "none",
             });
           }
         });
 
-        EVENTS.forEach((_, idx) => {
-          const cardEl = visualsRef.current[idx];
-          if (!cardEl) return;
+        // Seamless overlapping cross-fade between consecutive cards
+        // Card i dissolves and floats slightly up while Card i+1 rises and blooms in
+        for (let i = 0; i < totalEvents - 1; i++) {
+          const currCard = visualsRef.current[i];
+          const nextCard = visualsRef.current[i + 1];
+          const transitionStart = i * stepDuration;
 
-          const startTime = idx * stepDuration;
-
-          if (idx > 0) {
-            mainTl.fromTo(
-              cardEl,
-              { opacity: 0, y: 20, pointerEvents: "none" },
-              { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.6, ease: "power2.out" },
-              startTime
-            );
-          }
-
-          mainTl.to(cardEl, { opacity: 1, duration: 1.0 }, startTime + (idx === 0 ? 0 : 0.6));
-
-          if (idx < totalEvents - 1) {
+          if (currCard) {
             mainTl.to(
-              cardEl,
+              currCard,
               {
                 opacity: 0,
-                y: -20,
+                y: -35,
+                scale: 0.95,
                 pointerEvents: "none",
-                duration: 0.6,
-                ease: "power2.in",
+                duration: stepDuration * 0.7,
+                ease: "power1.inOut",
               },
-              startTime + 1.8
+              transitionStart + stepDuration * 0.15
             );
           }
-        });
-      });
+
+          if (nextCard) {
+            mainTl.fromTo(
+              nextCard,
+              {
+                opacity: 0,
+                y: 35,
+                scale: 0.95,
+                pointerEvents: "none",
+              },
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                pointerEvents: "auto",
+                duration: stepDuration * 0.7,
+                ease: "power1.inOut",
+              },
+              transitionStart + stepDuration * 0.15
+            );
+          }
+        }
+      }
 
       // Reveal About on entry without pinning or adding scroll distance.
       if (aboutSectionRef.current) {
@@ -948,7 +968,6 @@ export default function Home() {
     });
 
     return () => {
-      mm.revert();
       ctx.revert();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
@@ -1169,10 +1188,9 @@ export default function Home() {
       <section
         id="events"
         ref={eventsSectionRef}
-        className="featured-events-section relative flex w-full flex-col justify-center overflow-hidden bg-transparent px-4 py-12 select-none sm:px-6 md:px-12 md:min-h-[100svh] md:h-[100svh] md:justify-between md:pb-6 md:pt-32"
+        className="featured-events-section relative flex min-h-[100svh] h-[100svh] w-full flex-col justify-center overflow-hidden bg-transparent px-4 py-3 select-none sm:px-6 md:px-12 md:justify-between md:pb-6 md:pt-32"
       >
-        {/* ==================== DESKTOP PINNED VIEW (>= md) ==================== */}
-        {/* Giant Rotating Nautical Wheel */}
+        {/* Giant Rotating Nautical Wheel (Desktop >= md) */}
         <div
           ref={wheelContainerRef}
           className="featured-events-wheel pointer-events-none absolute left-0 top-1/2 z-10 hidden md:flex h-[calc(100svh-4px)] w-[calc(100svh-4px)] max-h-[calc(100svh-4px)] max-w-[calc(100svh-4px)] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-visible opacity-100 aspect-square"
@@ -1186,9 +1204,18 @@ export default function Home() {
           />
         </div>
 
-        {/* Desktop Container: Events Header & Event Showcase */}
-        <div className="relative z-20 mx-auto my-auto hidden md:flex w-full max-w-7xl flex-col items-end">
-          <div className="flex w-full max-w-md sm:max-w-xl flex-col gap-3 sm:gap-4 md:ml-auto">
+        {/* Subtle decorative wheel watermark for mobile */}
+        <div className="pointer-events-none absolute right-[-50px] top-1/2 -translate-y-1/2 z-0 md:hidden opacity-10 w-72 h-72">
+          <img
+            src={getAssetUrl("/pirate-wheel-transparent.png")}
+            alt="Wheel Watermark"
+            className="w-full h-full object-contain animate-spin [animation-duration:60s]"
+          />
+        </div>
+
+        {/* Content Container (Unified for both Mobile & Desktop scroll navigation) */}
+        <div className="relative z-20 mx-auto my-auto flex w-full max-w-7xl flex-col items-center md:items-end">
+          <div className="flex w-full max-w-md sm:max-w-xl flex-col gap-2.5 sm:gap-4 md:ml-auto">
             {/* Header */}
             <div
               ref={eventsHeaderRef}
@@ -1196,17 +1223,24 @@ export default function Home() {
             >
               <div>
                 <span className="text-[11px] sm:text-xs font-mono text-white uppercase tracking-[0.25em] font-extrabold flex items-center gap-1.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] mb-1">
-                  <Compass className="w-3.5 h-3.5 text-white" />
+                  <Compass className="w-3.5 h-3.5 text-[#38BDF8]" />
                   <span>Summit Flagships</span>
                 </span>
-                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] animate-whitegold-shine pb-1 sm:pb-2">
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] animate-whitegold-shine pb-0.5 sm:pb-2">
                   Featured Events
                 </h2>
               </div>
+
+              {/* Active Challenge Pill */}
+              <div className="flex items-center gap-1.5 font-mono text-xs text-[#d4af37] font-bold pb-1">
+                <span className="px-2.5 py-0.5 rounded-full border border-[#d4af37]/40 bg-[#d4af37]/10 text-[10px] sm:text-xs">
+                  {EVENTS[activeEventIdx]?.id || "01"} / {EVENTS.length.toString().padStart(2, "0")}
+                </span>
+              </div>
             </div>
 
-            {/* Event Showcase Cards */}
-            <div className="relative w-full h-[320px] sm:h-[380px] md:h-[480px]">
+            {/* Event Showcase Cards Stack (Cross-Faded smoothly by GSAP on scroll) */}
+            <div className="relative w-full h-[350px] sm:h-[390px] md:h-[480px]">
               {EVENTS.map((event, idx) => (
                 <div
                   key={event.id}
@@ -1218,7 +1252,7 @@ export default function Home() {
                       visualsRef.current[idx] = el;
                       detailsRef.current[idx] = el;
                     }}
-                    className="w-full p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-[#d4af37]/60 bg-[#F4EBD9]/95 text-[#0C2B3D] backdrop-blur-md shadow-[0_15px_40px_rgba(0,0,0,0.5)] flex flex-col gap-2 sm:gap-3 overflow-hidden will-change-transform pointer-events-auto"
+                    className="w-full h-full p-4 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl border border-[#d4af37]/60 bg-[#F4EBD9]/95 text-[#0C2B3D] backdrop-blur-md shadow-[0_15px_40px_rgba(0,0,0,0.5)] flex flex-col justify-between gap-2 sm:gap-3 overflow-hidden will-change-transform pointer-events-auto"
                   >
                     <div className="flex items-center justify-between w-full pb-1.5 sm:pb-2 border-b border-[#0C2B3D]/10">
                       <span className="text-[10px] sm:text-xs font-mono font-bold tracking-widest uppercase opacity-70">
@@ -1244,14 +1278,14 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Compact text summary so user has areas to scroll */}
-                    <p className="featured-events-description line-clamp-2 md:line-clamp-none text-[11px] sm:text-xs md:text-sm font-mono leading-relaxed opacity-90 text-[#0C2B3D] whitespace-pre-line overflow-hidden md:overflow-y-auto max-h-[48px] sm:max-h-[100px] md:max-h-[160px] pr-1">
+                    {/* Compact text summary */}
+                    <p className="featured-events-description line-clamp-3 sm:line-clamp-4 md:line-clamp-none text-[11px] sm:text-xs md:text-sm font-mono leading-relaxed opacity-90 text-[#0C2B3D] whitespace-pre-line overflow-hidden md:overflow-y-auto max-h-[64px] sm:max-h-[100px] md:max-h-[160px] pr-1">
                       {event.desc}
                     </p>
 
                     <div className="pt-2 sm:pt-3 mt-auto border-t border-[#0C2B3D]/10 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 w-full">
                       {event.registrationClosed ? (
-                        <div className="w-full sm:w-auto px-4 sm:px-7 py-2 sm:py-3 rounded-full bg-red-600 text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase flex items-center justify-center select-none">
+                        <div className="w-full sm:w-auto px-4 sm:px-7 py-2 sm:py-2.5 rounded-full bg-red-600 text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase flex items-center justify-center select-none shadow-sm">
                           Registration Closed
                         </div>
                       ) : event.registrationUrl ? (
@@ -1259,7 +1293,7 @@ export default function Home() {
                           href={event.registrationUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full sm:w-auto px-4 sm:px-7 py-2 sm:py-3 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.03] transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                          className="w-full sm:w-auto px-4 sm:px-7 py-2 sm:py-2.5 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
                         >
                           <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#38BDF8] animate-pulse" />
                           <span>Register</span>
@@ -1282,145 +1316,60 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
 
-        {/* ==================== MOBILE DEDICATED VIEW (< md) ==================== */}
-        {/* Solves 4-5 events skipping on phone by rendering a 1-at-a-time touch slider */}
-        <div className="relative z-20 mx-auto w-full max-w-lg flex flex-col md:hidden">
-          {/* Mobile Header with Previous / Next Controls */}
-          <div className="w-full pb-3 mb-4 border-b border-white/10 flex items-center justify-between">
-            <div>
-              <span className="text-[11px] font-mono text-white uppercase tracking-[0.25em] font-extrabold flex items-center gap-1.5 mb-1">
-                <Compass className="w-3.5 h-3.5 text-[#38BDF8]" />
-                <span>Summit Flagships</span>
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight animate-whitegold-shine">
-                Featured Events
-              </h2>
-            </div>
-
-            {/* Stepper controls */}
-            <div className="flex items-center gap-1.5">
+            {/* Stepper Navigation Controls (Synced with scroll & clickable) */}
+            <div className="w-full flex items-center justify-between pt-1">
+              {/* Previous button */}
               <button
                 type="button"
-                onClick={() => setMobileEventIdx((p) => Math.max(0, p - 1))}
-                disabled={mobileEventIdx === 0}
+                onClick={() => scrollToEvent(Math.max(0, activeEventIdx - 1))}
+                disabled={activeEventIdx === 0}
                 aria-label="Previous Event"
-                className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all ${
-                  mobileEventIdx === 0
-                    ? "border-white/10 text-white/30 cursor-not-allowed bg-black/20"
-                    : "border-[#d4af37]/60 text-[#d4af37] bg-[#041021]/80 hover:bg-[#d4af37] hover:text-[#0C2B3D] active:scale-95 shadow-sm"
+                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center border transition-all ${
+                  activeEventIdx === 0
+                    ? "border-white/10 text-white/20 cursor-not-allowed bg-black/20"
+                    : "border-[#d4af37]/60 text-[#d4af37] bg-[#041021]/80 hover:bg-[#d4af37] hover:text-[#0C2B3D] active:scale-95 shadow-sm cursor-pointer"
                 }`}
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
+
+              {/* 11 Interactive Progress Dots */}
+              <div className="flex items-center gap-1 sm:gap-1.5">
+                {EVENTS.map((_, dotIdx) => (
+                  <button
+                    key={dotIdx}
+                    type="button"
+                    onClick={() => scrollToEvent(dotIdx)}
+                    aria-label={`Go to event ${dotIdx + 1}`}
+                    className={`h-2 transition-all duration-300 rounded-full cursor-pointer ${
+                      dotIdx === activeEventIdx
+                        ? "w-5 sm:w-6 bg-[#d4af37] shadow-[0_0_10px_rgba(212,175,55,0.7)]"
+                        : "w-1.5 sm:w-2 bg-white/25 hover:bg-white/50"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Next button */}
               <button
                 type="button"
-                onClick={() => setMobileEventIdx((p) => Math.min(EVENTS.length - 1, p + 1))}
-                disabled={mobileEventIdx === EVENTS.length - 1}
+                onClick={() => scrollToEvent(Math.min(EVENTS.length - 1, activeEventIdx + 1))}
+                disabled={activeEventIdx === EVENTS.length - 1}
                 aria-label="Next Event"
-                className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all ${
-                  mobileEventIdx === EVENTS.length - 1
-                    ? "border-white/10 text-white/30 cursor-not-allowed bg-black/20"
-                    : "border-[#d4af37]/60 text-[#d4af37] bg-[#041021]/80 hover:bg-[#d4af37] hover:text-[#0C2B3D] active:scale-95 shadow-sm"
+                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center border transition-all ${
+                  activeEventIdx === EVENTS.length - 1
+                    ? "border-white/10 text-white/20 cursor-not-allowed bg-black/20"
+                    : "border-[#d4af37]/60 text-[#d4af37] bg-[#041021]/80 hover:bg-[#d4af37] hover:text-[#0C2B3D] active:scale-95 shadow-sm cursor-pointer"
                 }`}
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>
-
-          {/* Swipeable Active Card Container */}
-          <div
-            onTouchStart={handleMobileTouchStart}
-            onTouchEnd={handleMobileTouchEnd}
-            className="w-full relative touch-pan-y"
-          >
-            <div className="w-full p-5 rounded-2xl border border-[#d4af37]/60 bg-[#F4EBD9] text-[#0C2B3D] shadow-[0_15px_40px_rgba(0,0,0,0.6)] flex flex-col gap-3 min-h-[380px] justify-between transition-all duration-300">
-              <div className="flex items-center justify-between w-full pb-2 border-b border-[#0C2B3D]/10">
-                <span className="text-[10px] font-mono font-bold tracking-widest uppercase opacity-70">
-                  {EVENTS[mobileEventIdx].category}
-                </span>
-                <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-[#0C2B3D]/20 bg-[#0C2B3D]/10 text-[#0C2B3D] uppercase tracking-wider font-extrabold">
-                  CHALLENGE {EVENTS[mobileEventIdx].id} / {EVENTS.length.toString().padStart(2, "0")}
-                </span>
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-extrabold font-sans tracking-tight mb-1">
-                  {EVENTS[mobileEventIdx].name}
-                </h3>
-                {EVENTS[mobileEventIdx].tagline && (
-                  <p className="text-xs font-semibold italic opacity-85 mb-1.5 text-[#0C2B3D]">
-                    "{EVENTS[mobileEventIdx].tagline}"
-                  </p>
-                )}
-                <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#b8860b]">
-                  <Trophy className="w-3.5 h-3.5 text-[#d4af37] shrink-0" />
-                  <span>Prize Pool: {EVENTS[mobileEventIdx].prize}</span>
-                </div>
-              </div>
-
-              <p className="text-xs font-mono leading-relaxed opacity-90 text-[#0C2B3D] whitespace-pre-line line-clamp-4">
-                {EVENTS[mobileEventIdx].desc}
-              </p>
-
-              <div className="pt-3 border-t border-[#0C2B3D]/10 flex flex-col items-center gap-2.5 w-full">
-                {EVENTS[mobileEventIdx].registrationClosed ? (
-                  <div className="w-full py-2.5 rounded-full bg-red-600 text-white font-bold text-xs tracking-wider uppercase flex items-center justify-center select-none shadow-sm">
-                    Registration Closed
-                  </div>
-                ) : EVENTS[mobileEventIdx].registrationUrl ? (
-                  <a
-                    href={EVENTS[mobileEventIdx].registrationUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-2.5 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] animate-pulse" />
-                    <span>Register Now</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-[#38BDF8]" />
-                  </a>
-                ) : (
-                  <div className="w-full py-2.5 rounded-full bg-[#0C2B3D]/10 text-[#0C2B3D]/70 font-mono font-bold text-[11px] tracking-wider uppercase flex items-center justify-center gap-2 select-none">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37]" />
-                    <span>Registrations Opening Soon</span>
-                  </div>
-                )}
-                <Link
-                  to="/events"
-                  className="text-xs font-bold uppercase tracking-widest text-[#0C2B3D] hover:opacity-75 transition-opacity"
-                >
-                  View Full Schedule →
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Interactive Navigation Dots */}
-          <div className="flex items-center justify-center gap-1.5 mt-4 py-1">
-            {EVENTS.map((_, dotIdx) => (
-              <button
-                key={dotIdx}
-                type="button"
-                onClick={() => setMobileEventIdx(dotIdx)}
-                aria-label={`Go to event ${dotIdx + 1}`}
-                className={`h-2 transition-all duration-300 rounded-full cursor-pointer ${
-                  dotIdx === mobileEventIdx
-                    ? "w-6 bg-[#d4af37] shadow-[0_0_10px_rgba(212,175,55,0.7)]"
-                    : "w-2 bg-white/25 hover:bg-white/40"
-                }`}
-              />
-            ))}
-          </div>
-
-          <span className="text-[10px] font-mono text-center text-white/50 uppercase tracking-widest mt-1">
-            Swipe left/right or tap arrows to navigate
-          </span>
         </div>
 
-        {/* Desktop Footer Info */}
+        {/* Footer Info */}
         <div
           ref={eventsFooterRef}
           className="max-w-7xl w-full mx-auto hidden md:flex items-center justify-between text-xs font-mono text-[#64748B] relative z-20"
