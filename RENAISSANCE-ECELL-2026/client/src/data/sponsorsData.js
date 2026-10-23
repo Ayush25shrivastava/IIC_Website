@@ -112,19 +112,6 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id:"myfa-chocolate",
-    title:"Snacking Partner",
-    sponsors:[
-      {
-        name:"Myfa Chocolate",
-        category:"Snacking Partner",
-        image:CLOUDINARY_SPONSORS.myfa || getAssetUrl("/sponsors/myfa chocolates.png"),
-        fallbackImage: getAssetUrl("/sponsors/myfa chocolates.png"),
-        description: "Official Snacking Partner for Renaissance 2026.",
-      }
-    ],
-  },
-  {
     id: "platform",
     title: "Platform Partner",
     sponsors: [
@@ -137,7 +124,19 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
-  
+  {
+    id:"myfa-chocolate",
+    title:"Snacking Partner",
+    sponsors:[
+      {
+        name:"Myfa Chocolate",
+        category:"Snacking Partner",
+        image:CLOUDINARY_SPONSORS.myfa || getAssetUrl("/sponsors/myfa chocolates.png"),
+        fallbackImage: getAssetUrl("/sponsors/myfa chocolates.png"),
+        description: "Official Snacking Partner for Renaissance 2026.",
+      }
+    ],
+  }, 
   {
     id:"skincare",
     title:"Skincare Partner",
@@ -174,6 +173,45 @@ export const SPONSOR_TIERS = [
         image: CLOUDINARY_SPONSORS.abhibus || getAssetUrl("/sponsors/abhibus.png"),
         fallbackImage: getAssetUrl("/sponsors/abhibus.png"),
         description: "Official Travel Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "sports",
+    title: "Sports Partner",
+    sponsors: [
+      {
+        name: "Shukla Sport",
+        category: "Sports Partner",
+        image: CLOUDINARY_SPONSORS.shuklaSport || getAssetUrl("/sponsors/shukla sports.jpeg"),
+        fallbackImage: getAssetUrl("/sponsors/shukla sports.jpeg"),
+        description: "Official Sports Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id:"coaching",
+    title:"Coaching Partner",
+    sponsors:[
+      {
+        name:"Toppers Code India",
+        category:"Coaching Partner",
+        image:CLOUDINARY_SPONSORS.toppersCode || getAssetUrl("/sponsors/topperscode.jpeg"),
+        fallbackImage: getAssetUrl("/sponsors/topperscode.jpeg"),
+        description: "Official Coaching Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id:"communication",
+    title:"Communication Partner",
+    sponsors:[
+      {
+        name:"Caller Desk",
+        category:"Communication Partner",
+        image:CLOUDINARY_SPONSORS.callerDesk || getAssetUrl("/sponsors/caller-desk.jpeg"),
+        fallbackImage: getAssetUrl("/sponsors/caller-desk.jpeg"),
+        description: "Official Communication Partner for Renaissance 2026.",
       }
     ],
   }

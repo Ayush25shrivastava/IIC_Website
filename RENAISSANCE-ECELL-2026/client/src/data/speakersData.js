@@ -43,12 +43,32 @@ export const SPEAKERS_DATA = [
     image: getAssetUrl("/speakers/vineet-shukla.png"),
     linkedin: "https://www.linkedin.com/in/shuklavineet/",
   },
- 
+  // {
+  //   id: "sasikanth-r",
+  //   name: "Sasikanth R",
+  //   title: "Business Strategist | AI Consultant | Startup Mentor",
+  //   image: getAssetUrl("/speakers/sasikanth-r.png"),
+  //   linkedin: "https://www.linkedin.com/in/sasikanthr/",
+  // },
   {
-    id: "sasikanth-r",
-    name: "Sasikanth R",
-    title: "Business Strategist | AI Consultant | Startup Mentor",
-    image: getAssetUrl("/speakers/sasikanth-r.png"),
-    linkedin: "https://www.linkedin.com/in/sasikanthr/",
+    id: "manas-pandey",
+    name: "Dr. Manas Pandey",
+    title: "Co-Founder & Director @ TOPPERSCODE PVT. LTD.",
+    image: getAssetUrl("/speakers/manas-pandey.jpeg"),
+    linkedin: "https://www.linkedin.com/in/dr-manas-pandey-5bb83255/",
+  },
+  {
+    id: "abhishek-srivastava",
+    name: "Abhishek Srivastava",
+    title: "Founder, Spiderbrain AI",
+    image: getAssetUrl("/speakers/abhishek-srivastava.png"),
+    linkedin: "https://www.linkedin.com/in/eabhi/",
+  },
+  {
+    id: "rajat-agarwal",
+    name: "Rajat Agarwal",
+    title: "CEO, Perform Digital",
+    image: getAssetUrl("/speakers/rajat-agarwal.png"),
+    linkedin: "https://www.linkedin.com/in/rajat-agarwal-448a149b/",
   }
 ];
