@@ -68,6 +68,7 @@ const TICKET_OPTIONS = [
       "Official Certificate of Participation",
       "Full 3-Day Event Access",
       "Event Participation Included",
+      "Exclusive Access to Bhajan Jamming and Pronite",
     ],
     includesAccommodation: false,
     warning: "Accommodation is NOT included in this tier.",
@@ -90,6 +91,7 @@ const TICKET_OPTIONS = [
       "Official Delegate ID Card",
       "Official Certificate of Participation",
       "Full 3-Day Event Access & Event Participation",
+      "Exclusive Access to Bhajan Jamming and Pronite",
     ],
     includesAccommodation: false,
     warning: "Accommodation is NOT included in this tier.",
@@ -113,6 +115,7 @@ const TICKET_OPTIONS = [
       "Official Delegate ID Card",
       "Official Certificate of Participation",
       "Full 3-Day Event Access & Event Participation",
+      "Exclusive Access to Bhajan Jamming and Pronite",
     ],
     includesAccommodation: false,
     warning: "Accommodation is NOT included in this tier.",
@@ -132,6 +135,7 @@ const TICKET_OPTIONS = [
     badge: "Value Stay",
     benefits: [
       "All ₹499 Standard Pass Facilities Included",
+      "Exclusive Access to Bhajan Jamming and Pronite",
       "1-Day Campus Accommodation Included",
       "3 Meals Each Day: Breakfast, Lunch & Dinner",
       "Lodging Kit: 1 Bed, Pillow, Blanket & Linen",
@@ -153,6 +157,7 @@ const TICKET_OPTIONS = [
     badge: "Most Popular Stay",
     benefits: [
       "All ₹699 Premium Pass Facilities (Premium Kit Included)",
+      "Exclusive Access to Bhajan Jamming and Pronite",
       "1-Day Campus Accommodation Included",
       "3 Meals Each Day: Breakfast, Lunch & Dinner",
       "Lodging Kit: 1 Bed, Pillow, Blanket & Linen",
@@ -174,6 +179,7 @@ const TICKET_OPTIONS = [
     badge: "T-Shirt + Kit + Stay",
     benefits: [
       "All ₹1,099 Elite Pass Facilities (Summit T-Shirt + Premium Kit)",
+      "Exclusive Access to Bhajan Jamming and Pronite",
       "1-Day Campus Accommodation Included",
       "3 Meals Each Day: Breakfast, Lunch & Dinner",
       "Lodging Kit: 1 Bed, Pillow, Blanket & Linen",
@@ -841,7 +847,7 @@ export default function TicketsAccommodation() {
                       </div>
                       <div>
                         <h3 className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#2C5263] mb-1.5">Date & Duration</h3>
-                        <p className="font-montserrat text-sm sm:text-base font-black text-[#0C2B3D]">To Be Announced</p>
+                        <p className="font-montserrat text-sm sm:text-base font-black text-[#0C2B3D]">25 - 27 October, 2026</p>
                         <p className="font-mono text-xs text-[#8A5F1C] mt-1 font-bold">3 Days of Summit (Full Access Included)</p>
                       </div>
                     </div>
@@ -894,7 +900,7 @@ export default function TicketsAccommodation() {
                         <BedDouble className="w-5 h-5 text-[#219653] shrink-0 mt-0.5" />
                         <div>
                           <strong className="text-[#0C2B3D] block font-extrabold text-xs sm:text-sm">Complete Bedding (1 Bed, Pillow, Blanket)</strong>
-                          <span className="text-[11px] sm:text-xs text-[#2C5263] leading-snug font-medium">Clean and comfortable hostel stay with mattress, pillow, blanket & fresh linen.</span>
+                          <span className="text-[11px] sm:text-xs text-[#2C5263] leading-snug font-medium">Clean and comfortable hostel stay with mattress, pillow.</span>
                         </div>
                       </li>
                       <li className="flex items-start gap-3 bg-[#EEDFCA]/60 p-2.5 rounded-xl border border-[#BFA275]/35">
@@ -951,7 +957,7 @@ export default function TicketsAccommodation() {
                   Choose Your Option
                 </h2>
                 <p className="font-montserrat text-xs sm:text-sm text-[#2C5263] font-bold max-w-xl">
-                  Every pass includes 3-day event access and event participation. Stay packages also include 1 day of accommodation, 3 meals, a bed, pillow and blanket.
+                  Every pass includes 3-day event access and event participation. Stay packages also include 1 day of accommodation, 3 meals, a bed, and a pillow.
                 </p>
 
                 <div className="mt-8 inline-flex flex-wrap justify-center gap-1 p-1.5 rounded-2xl bg-[#0C2B3D]/10 border border-[#C5A25F]/40 backdrop-blur-md">
