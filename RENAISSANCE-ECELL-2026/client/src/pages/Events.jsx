@@ -13,10 +13,14 @@ import {
   ExternalLink,
   X,
   Trophy,
+  FileText,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import ContactFooter from "../components/ContactFooter";
 import { getAssetUrl } from "../utils/assetUrl";
+
+export const RENAISSANCE_RULEBOOK_URL =
+  "https://drive.google.com/file/d/1GKo2utmVtmqG4AAFaZkUpYblXxmvERii/view?usp=sharing";
 
 export default function Events({ embedded = false }) {
   const [activeDay, setActiveDay] = useState(1);
@@ -512,11 +516,11 @@ export default function Events({ embedded = false }) {
                     </p>
                   </div>
 
-                  {/* Action Button: Matched with Home.jsx Wheel Card */}
-                  <div className="pt-3 sm:pt-4 mt-auto">
+                  {/* Action Buttons: View Details & Rulebook */}
+                  <div className="pt-3 sm:pt-4 mt-auto flex items-center gap-2">
                     {event.registrationClosed ? (
-                      <div className="w-full py-2.5 sm:py-3 px-4 rounded-full bg-red-600 text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase flex items-center justify-center select-none">
-                        Registration Closed
+                      <div className="flex-1 py-2.5 sm:py-3 px-3 rounded-full bg-red-600 text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase flex items-center justify-center select-none text-center">
+                        Closed
                       </div>
                     ) : (
                       <button
@@ -525,13 +529,24 @@ export default function Events({ embedded = false }) {
                           e.stopPropagation();
                           openStandaloneEvent(event);
                         }}
-                        className="w-full py-2.5 sm:py-3 px-4 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group/btn cursor-pointer"
+                        className="flex-1 py-2.5 sm:py-3 px-3 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.02] transition-all flex items-center justify-center gap-1.5 group/btn cursor-pointer"
                       >
                         <span className="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse" />
-                        <span>View Details</span>
+                        <span>Details</span>
                         <ExternalLink className="w-3.5 h-3.5 text-[#38BDF8] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                       </button>
                     )}
+
+                    <a
+                      href={RENAISSANCE_RULEBOOK_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="px-4 py-2.5 sm:py-3 rounded-full border border-[#0C2B3D]/30 bg-white/70 hover:bg-white text-[#0C2B3D] font-bold text-[11px] sm:text-xs tracking-wider uppercase transition-all shadow-sm flex items-center justify-center gap-1.5 hover:border-[#0C2B3D]/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-[#8A5F1C]" />
+                      <span>Rulebook</span>
+                    </a>
                   </div>
                 </article>
               ))}
@@ -583,6 +598,7 @@ export default function Events({ embedded = false }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
+              data-lenis-prevent
               className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0C2B3D]/75 backdrop-blur-md p-3 sm:p-5 md:p-8 overflow-y-auto overscroll-contain"
               onClick={() => setSelectedEventModal(null)}
             >
@@ -595,7 +611,8 @@ export default function Events({ embedded = false }) {
                   prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 12 }
                 }
                 transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className="relative w-full max-w-4xl overflow-hidden rounded-2xl sm:rounded-3xl border border-[#7FB6C7]/60 bg-gradient-to-br from-[#ECF6F5] via-[#E0F1F7] to-[#FBE5D6] text-[#416678] shadow-[0_25px_90px_rgba(12,43,61,0.45)] max-h-[92vh] max-h-[92dvh] flex flex-col my-auto"
+                data-lenis-prevent
+                className="relative w-full max-w-5xl overflow-hidden rounded-2xl sm:rounded-3xl border border-[#7FB6C7]/60 bg-gradient-to-br from-[#ECF6F5] via-[#E0F1F7] to-[#FBE5D6] text-[#416678] shadow-[0_25px_90px_rgba(12,43,61,0.45)] max-h-[92vh] max-h-[92dvh] flex flex-col my-auto"
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -612,7 +629,8 @@ export default function Events({ embedded = false }) {
                 </button>
 
                 <div
-                  className="min-h-0 flex-1 grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-4 sm:gap-6 items-stretch p-4 sm:p-6 md:p-7 overflow-y-auto overscroll-contain"
+                  data-lenis-prevent
+                  className="min-h-0 flex-1 grid grid-cols-1 md:grid-cols-[0.9fr_1.3fr] gap-4 sm:gap-6 lg:gap-8 items-stretch p-4 sm:p-6 md:p-8 overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:#7FB6C7_transparent]"
                   style={{ WebkitOverflowScrolling: "touch" }}
                 >
                   {/* Left Column: Event Poster (Clean Poster Image, No AI Slop) */}
@@ -658,9 +676,12 @@ export default function Events({ embedded = false }) {
                     )}
                   </div>
 
-                  {/* Right Column: Clean Event Dossier (Richly Filled, Zero Awkward Space) */}
-                  <div className="flex flex-col justify-between pt-1 md:pt-0">
-                    <div>
+                  {/* Right Column: Clean Event Dossier (Scrollable with pinned accessible action bar) */}
+                  <div className="flex flex-col min-h-0 h-full overflow-hidden pt-1 md:pt-0">
+                    <div
+                      data-lenis-prevent
+                      className="flex-1 overflow-y-auto overscroll-contain pr-1 sm:pr-2 [scrollbar-width:thin] [scrollbar-color:#7FB6C7_transparent]"
+                    >
                       {/* Event Title */}
                       <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-black text-[#0C2B3D] uppercase tracking-wide pr-8">
                         {selectedEventModal.title}
@@ -687,7 +708,7 @@ export default function Events({ embedded = false }) {
                       </div>
 
                       {/* Event Overview: Well-Proportioned, Natural Spacing, No Clipping */}
-                      <div className="mt-4 sm:mt-5">
+                      <div className="mt-4 sm:mt-5 pb-2">
                         <span className="block font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#0C2B3D]">
                           EVENT OVERVIEW
                         </span>
@@ -722,45 +743,58 @@ export default function Events({ embedded = false }) {
                       </div>
                     </div>
 
-                    {/* Bottom Action Buttons: Identically Sized Register & WhatsApp Buttons in Equal Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full mt-6">
-                      {selectedEventModal.registrationClosed ? (
-                        <div className="h-[50px] w-full px-4 rounded-xl bg-red-600 text-white font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center flex items-center justify-center select-none">
-                          Registration Closed
-                        </div>
-                      ) : selectedEventModal.registrationUrl ? (
+                    {/* Bottom Action Buttons: Always Pinned & Accessible */}
+                    <div className="pt-3 sm:pt-4 mt-auto border-t border-[#7FB6C7]/30 bg-gradient-to-t from-[#E0F1F7]/80 to-transparent shrink-0">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5 w-full">
+                        {selectedEventModal.registrationClosed ? (
+                          <div className="h-[46px] w-full px-2.5 rounded-xl bg-red-600 text-white font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center flex items-center justify-center select-none shadow-sm">
+                            Registration Closed
+                          </div>
+                        ) : selectedEventModal.registrationUrl ? (
+                          <a
+                            href={selectedEventModal.registrationUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="h-[46px] w-full px-2.5 rounded-xl bg-[#F3C7AD] hover:bg-[#EDB696] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.1)] hover:shadow-[0_8px_25px_rgba(220,169,137,0.3)] flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                          >
+                            <span>Register</span>
+                            <ExternalLink className="w-4 h-4 shrink-0" />
+                          </a>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedEventModal(null);
+                              navigate(`/events/${selectedEventModal.id}/register`);
+                            }}
+                            className="h-[46px] w-full px-2.5 rounded-xl bg-[#F3C7AD] hover:bg-[#EDB696] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.1)] hover:shadow-[0_8px_25px_rgba(220,169,137,0.3)] flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                          >
+                            <span>Register</span>
+                          </button>
+                        )}
+
+                        {/* Rulebook Download/View Button */}
                         <a
-                          href={selectedEventModal.registrationUrl}
+                          href={RENAISSANCE_RULEBOOK_URL}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="h-[50px] w-full px-4 rounded-xl bg-[#F3C7AD] hover:bg-[#EDB696] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.1)] hover:shadow-[0_8px_25px_rgba(220,169,137,0.3)] flex items-center justify-center gap-2 cursor-pointer"
+                          className="h-[46px] w-full px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-[#7FB6C7]/50 text-[#0C2B3D] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
                         >
-                          <span>Register</span>
-                          <ExternalLink className="w-4 h-4 shrink-0" />
+                          <FileText className="w-4 h-4 text-[#8A5F1C] shrink-0" />
+                          <span>Rulebook</span>
                         </a>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedEventModal(null);
-                            navigate(`/events/${selectedEventModal.id}/register`);
-                          }}
-                          className="h-[50px] w-full px-4 rounded-xl bg-[#F3C7AD] hover:bg-[#EDB696] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] text-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm uppercase tracking-wider text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.1)] hover:shadow-[0_8px_25px_rgba(220,169,137,0.3)] flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <span>Register</span>
-                        </button>
-                      )}
 
-                      {/* Identically Sized WhatsApp Community Button */}
-                      <a
-                        href="https://chat.whatsapp.com/FBmy90Cekgu5Jd4MkxXGMO"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="h-[50px] w-full px-4 rounded-xl bg-[#0C2B3D] hover:bg-[#214B63] text-[#ECF6F5] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm tracking-wider uppercase text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.15)] hover:shadow-[0_8px_25px_rgba(12,43,61,0.25)] flex items-center justify-center gap-2 cursor-pointer"
-                      >
-                        <FaWhatsapp className="w-4 h-4 text-[#B8DDEB] shrink-0" />
-                        <span>Join WhatsApp Group</span>
-                      </a>
+                        {/* WhatsApp Community Button */}
+                        <a
+                          href="https://chat.whatsapp.com/FBmy90Cekgu5Jd4MkxXGMO"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="h-[46px] w-full px-2.5 rounded-xl bg-[#0C2B3D] hover:bg-[#214B63] text-[#ECF6F5] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C2B3D] font-montserrat font-bold text-xs sm:text-sm tracking-wider uppercase text-center transition-all shadow-[0_4px_14px_rgba(12,43,61,0.15)] hover:shadow-[0_8px_25px_rgba(12,43,61,0.25)] flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                        >
+                          <FaWhatsapp className="w-4 h-4 text-[#B8DDEB] shrink-0" />
+                          <span>WhatsApp</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
