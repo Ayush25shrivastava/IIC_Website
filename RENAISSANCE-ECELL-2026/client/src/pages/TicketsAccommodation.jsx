@@ -327,26 +327,6 @@ export default function TicketsAccommodation() {
     }
   };
 
-  useEffect(() => {
-    if (!selectedTicket || showForm) return;
-
-    const handleClickOutside = (e) => {
-      if (e.target.closest("[data-ticket-card]")) {
-        return;
-      }
-      if (e.target.closest("[data-cta-section]")) {
-        return;
-      }
-      setSelectedTicket(null);
-      setFormData((prev) => ({ ...prev, amountPaid: "" }));
-    };
-
-    document.addEventListener("pointerdown", handleClickOutside);
-    return () => {
-      document.removeEventListener("pointerdown", handleClickOutside);
-    };
-  }, [selectedTicket, showForm]);
-
   const handleAccommodationDaysChange = (days) => {
     const validDays = Math.max(1, Number(days) || 1);
     setAccommodationDays(validDays);
