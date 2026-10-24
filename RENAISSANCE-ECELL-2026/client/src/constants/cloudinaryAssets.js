@@ -31,7 +31,7 @@ export const CLOUDINARY_SPONSORS = {
   laals: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_laals_sponsor.png",
   smc: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_smc_sponsor.png",
   doon: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_doon_sponsor.png",
-  syncoro: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_syncoro_sponsor.png",
+  syncoro: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/v1792835058/renaissance_syncoro_sponsor.png",
   chemicapoint: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_chemicapoint_sponsor.png",
 };
 

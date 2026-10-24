@@ -280,19 +280,19 @@ export const SPONSOR_TIERS = [
       }
     ],
   },
-  // {
-  //   id: "knowledge",
-  //   title: "Knowledge Partner",
-  //   sponsors: [
-  //     {
-  //       name: "Syncoro Ventures",
-  //       category: "Knowledge Partner",
-  //       image: CLOUDINARY_SPONSORS.syncoro || getAssetUrl("/sponsors/syncoro-ventures.png"),
-  //       fallbackImage: getAssetUrl("/sponsors/syncoro-ventures.png"),
-  //       description: "Official Knowledge Partner for Renaissance 2026.",
-  //     }
-  //   ],
-  // },
+  {
+    id: "knowledge",
+    title: "Knowledge Partner",
+    sponsors: [
+      {
+        name: "Syncoro Ventures",
+        category: "Knowledge Partner",
+        image: CLOUDINARY_SPONSORS.syncoro || getAssetUrl("/sponsors/syncoro-ventures.png"),
+        fallbackImage: getAssetUrl("/sponsors/syncoro-ventures.png"),
+        description: "Official Knowledge Partner for Renaissance 2026.",
+      }
+    ],
+  },
   {
     id: "merchandise",
     title: "Merchandise Partner",
