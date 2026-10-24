@@ -45,7 +45,33 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id: "beverage",
+    id: "ai",
+    title: "AI Partner",
+    sponsors: [
+      {
+        name: "Wayam AI",
+        category: "AI Partner",
+        image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
+        fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
+        description: "Official AI Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "learning",
+    title: "Learning Partner",
+    sponsors: [
+      {
+        name: "Chemica Point",
+        category: "Learning Partner",
+        image: CLOUDINARY_SPONSORS.chemicapoint || getAssetUrl("/sponsors/chemica-point.png"),
+        fallbackImage: getAssetUrl("/sponsors/chemica-point.png"),
+        description: "Official Learning Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "beverage-oatey",
     title: "Beverage Partner",
     sponsors: [
       {
@@ -67,20 +93,6 @@ export const SPONSOR_TIERS = [
         image:CLOUDINARY_SPONSORS.plum|| getAssetUrl("/sponsors/plum-goodness.png"),
         fallbackImage: getAssetUrl("/sponsors/plum-goodness.png"),
         description: "Official Goodness Partner for Renaissance 2026.",
-      }
-    ],
-  },
-  
-    {
-    id: "ai",
-    title: "AI Partner",
-    sponsors: [
-      {
-        name: "Wayam AI",
-        category: "AI Partner",
-        image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
-        fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
-        description: "Official AI Partner for Renaissance 2026.",
       }
     ],
   },
@@ -292,18 +304,5 @@ export const SPONSOR_TIERS = [
         description: "Official Merchandise Partner for Renaissance 2026.",
       }
     ],
-  },
-  // {
-  //   id: "learning",
-  //   title: "Learning Partner",
-  //   sponsors: [
-  //     {
-  //       name: "Chemica Point",
-  //       category: "Learning Partner",
-  //       image: CLOUDINARY_SPONSORS.chemicapoint || getAssetUrl("/sponsors/chemica-point.png"),
-  //       fallbackImage: getAssetUrl("/sponsors/chemica-point.png"),
-  //       description: "Official Learning Partner for Renaissance 2026.",
-  //     }
-  //   ],
-  // }
+  }
 ];

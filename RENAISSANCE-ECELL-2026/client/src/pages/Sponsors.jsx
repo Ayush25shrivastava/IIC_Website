@@ -256,23 +256,28 @@ export default function Sponsors({ embedded = false }) {
                 s.category?.toLowerCase().includes("title") ||
                 s.name?.toLowerCase().includes("civil services")
             );
+            const executiveSponsors = allSponsors.filter(
+              (s) =>
+                s.category?.toLowerCase().includes("executive") ||
+                s.name?.toLowerCase().includes("formcept")
+            );
             const otherSponsors = allSponsors.filter(
-              (s) => !titleSponsors.includes(s)
+              (s) => !titleSponsors.includes(s) && !executiveSponsors.includes(s)
             );
 
             return (
-              <div className="mx-auto mt-14 max-w-6xl space-y-12">
-                {/* Title Sponsor on Top */}
+              <div className="mx-auto mt-14 max-w-6xl space-y-12 sm:space-y-16">
+                {/* 1. Title Partner on First Line (sabse bada) */}
                 {titleSponsors.length > 0 && (
                   <div className="flex flex-col items-center">
                     <div className="mb-4 flex items-center justify-center gap-3">
-                      <span className="h-px w-8 bg-[#B58B3E]/60" />
-                      <span className="font-mono text-[9px] font-bold uppercase tracking-[0.3em] text-[#8E6422]">
+                      <span className="h-px w-10 bg-[#B58B3E]/70" />
+                      <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] text-[#8E6422]">
                         Title Partner
                       </span>
-                      <span className="h-px w-8 bg-[#B58B3E]/60" />
+                      <span className="h-px w-10 bg-[#B58B3E]/70" />
                     </div>
-                    <div className="flex justify-center w-full max-w-[440px]">
+                    <div className="flex justify-center w-full max-w-[480px]">
                       {titleSponsors.map((sponsor, index) => (
                         <SponsorCard
                           key={`title-${sponsor.name}-${index}`}
@@ -284,15 +289,37 @@ export default function Sponsors({ embedded = false }) {
                   </div>
                 )}
 
-                {/* Grid of 3 sponsors per row */}
+                {/* 2. Executive Partner on Second Line (medium size) */}
+                {executiveSponsors.length > 0 && (
+                  <div className="flex flex-col items-center">
+                    <div className="mb-4 flex items-center justify-center gap-3">
+                      <span className="h-px w-8 bg-[#B58B3E]/50" />
+                      <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] text-[#8E6422]/90">
+                        Executive Partner
+                      </span>
+                      <span className="h-px w-8 bg-[#B58B3E]/50" />
+                    </div>
+                    <div className="flex justify-center w-full max-w-[360px]">
+                      {executiveSponsors.map((sponsor, index) => (
+                        <SponsorCard
+                          key={`executive-${sponsor.name}-${index}`}
+                          sponsor={sponsor}
+                          size="medium"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Grid of all other sponsors (same size, in priority order: Campa, Wayam AI, Chemica...) */}
                 {otherSponsors.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8 justify-items-center w-full">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-7 justify-items-center w-full">
                     {otherSponsors.map((sponsor, index) => (
                       <div
                         key={`${sponsor.name}-${index}`}
-                        className="flex justify-center w-full max-w-[360px]"
+                        className="flex justify-center w-full max-w-[300px]"
                       >
-                        <SponsorCard sponsor={sponsor} size="medium" />
+                        <SponsorCard sponsor={sponsor} size="small" />
                       </div>
                     ))}
                   </div>
@@ -509,17 +536,23 @@ function SponsorSection({
 
 function SponsorCard({ sponsor, size = "medium" }) {
   const isLarge = size === "large";
+  const isMedium = size === "medium";
   const isSmall = size === "small";
 
   return (
     <div className="flex flex-col items-center group w-full">
       <article
-        className="
+        className={`
           relative
           flex
           w-full
-          min-h-[160px]
-          sm:min-h-[200px]
+          ${
+            isLarge
+              ? "min-h-[210px] sm:min-h-[250px]"
+              : isMedium
+              ? "min-h-[170px] sm:min-h-[195px]"
+              : "min-h-[140px] sm:min-h-[160px]"
+          }
           items-center
           justify-center
           transition-all
@@ -530,15 +563,27 @@ function SponsorCard({ sponsor, size = "medium" }) {
           rounded-2xl
           shadow-[0_8px_30px_rgba(12,43,61,0.12)]
           overflow-hidden
-        "
+        `}
       >
         {/* Subtle glow / oceanic depth */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[180px] h-[180px] bg-white/40 rounded-full blur-[40px]" />
+          <div
+            className={`${
+              isLarge
+                ? "w-[240px] h-[240px]"
+                : isMedium
+                ? "w-[170px] h-[170px]"
+                : "w-[130px] h-[130px]"
+            } bg-white/40 rounded-full blur-[40px]`}
+          />
         </div>
-        
+
         {/* Central Content Area */}
-        <div className="relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-[1.05] z-10 p-6">
+        <div
+          className={`relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-[1.05] z-10 ${
+            isLarge ? "p-6 sm:p-8" : isMedium ? "p-5" : "p-4"
+          }`}
+        >
           <img
             src={getAssetUrl(sponsor.image)}
             alt={sponsor.name}
@@ -549,19 +594,41 @@ function SponsorCard({ sponsor, size = "medium" }) {
                 e.currentTarget.src = fallback;
               }
             }}
-            className="relative z-10 max-h-[120px] max-w-[90%] object-contain drop-shadow-md mix-blend-multiply"
+            className={`relative z-10 ${
+              isLarge
+                ? "max-h-[145px] max-w-[90%]"
+                : isMedium
+                ? "max-h-[105px] max-w-[88%]"
+                : "max-h-[82px] max-w-[82%]"
+            } object-contain drop-shadow-md mix-blend-multiply`}
           />
         </div>
       </article>
 
       {/* Sponsor Info Below Card */}
-      <div className="mt-4 text-center">
+      <div className="mt-3 sm:mt-4 text-center px-1">
         {sponsor.category && (
-          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#8E6422] font-bold block mb-1">
+          <span
+            className={`font-mono ${
+              isLarge
+                ? "text-xs sm:text-sm tracking-[0.3em]"
+                : isMedium
+                ? "text-[10px] sm:text-xs tracking-[0.25em]"
+                : "text-[9px] sm:text-[10px] tracking-[0.2em]"
+            } uppercase text-[#8E6422] font-bold block mb-1`}
+          >
             {sponsor.category}
           </span>
         )}
-        <h3 className="font-cinzel text-xl sm:text-2xl font-bold text-[#0C2B3D] tracking-wider transition-colors duration-300 group-hover:text-[#9E6D1F]">
+        <h3
+          className={`font-cinzel ${
+            isLarge
+              ? "text-2xl sm:text-3xl font-extrabold"
+              : isMedium
+              ? "text-lg sm:text-xl font-bold"
+              : "text-sm sm:text-base font-bold"
+          } text-[#0C2B3D] tracking-wider transition-colors duration-300 group-hover:text-[#9E6D1F] line-clamp-2`}
+        >
           {sponsor.name}
         </h3>
       </div>

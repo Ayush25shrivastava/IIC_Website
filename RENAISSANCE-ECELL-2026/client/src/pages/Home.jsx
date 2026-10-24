@@ -450,13 +450,40 @@ function FeaturedSpeakersGrid({ speakers }) {
   );
 }
 
-function PremiumSponsorCard({ sponsor }) {
+function PremiumSponsorCard({ sponsor, size = "small" }) {
+  const isLarge = size === "large";
+  const isMedium = size === "medium";
+
   return (
-    <div className="premium-sponsor-item flex flex-col items-center group w-full max-w-[260px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-      <div className="relative flex h-[135px] sm:h-[150px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-xl shadow-[0_6px_22px_rgba(12,43,61,0.18)] overflow-hidden">
+    <div
+      className={`premium-sponsor-item flex flex-col items-center group w-full ${
+        isLarge
+          ? "max-w-[360px] sm:max-w-[420px]"
+          : isMedium
+          ? "max-w-[280px] sm:max-w-[320px]"
+          : "max-w-[230px] sm:max-w-[250px]"
+      } opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
+    >
+      <div
+        className={`relative flex ${
+          isLarge
+            ? "h-[185px] sm:h-[210px]"
+            : isMedium
+            ? "h-[145px] sm:h-[165px]"
+            : "h-[125px] sm:h-[140px]"
+        } w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-xl shadow-[0_6px_22px_rgba(12,43,61,0.18)] overflow-hidden`}
+      >
         {/* Subtle glow / oceanic depth */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[130px] h-[130px] bg-white/40 rounded-full blur-[30px]" />
+          <div
+            className={`${
+              isLarge
+                ? "w-[200px] h-[200px]"
+                : isMedium
+                ? "w-[140px] h-[140px]"
+                : "w-[120px] h-[120px]"
+            } bg-white/40 rounded-full blur-[30px]`}
+          />
         </div>
 
         {/* Logo Central Area */}
@@ -472,10 +499,18 @@ function PremiumSponsorCard({ sponsor }) {
                   e.currentTarget.src = fallback;
                 }
               }}
-              className="relative z-10 max-h-[85px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
+              className={`relative z-10 ${
+                isLarge
+                  ? "max-h-[135px] max-w-[90%]"
+                  : isMedium
+                  ? "max-h-[95px] max-w-[85%]"
+                  : "max-h-[78px] max-w-[82%]"
+              } object-contain drop-shadow-md mix-blend-multiply`}
             />
           ) : (
-            <span className="text-[#0C2B3D] font-cinzel text-base font-bold text-center">{sponsor.name}</span>
+            <span className="text-[#0C2B3D] font-cinzel text-base font-bold text-center">
+              {sponsor.name}
+            </span>
           )}
         </div>
       </div>
@@ -483,11 +518,23 @@ function PremiumSponsorCard({ sponsor }) {
       {/* Sponsor Info Below Card */}
       <div className="mt-3 text-center px-1">
         {sponsor.category && (
-          <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#C5A25F] font-bold block mb-1">
+          <span
+            className={`font-mono ${
+              isLarge ? "text-[11px] sm:text-xs" : "text-[9px] sm:text-[10px]"
+            } uppercase tracking-[0.2em] text-[#C5A25F] font-bold block mb-1`}
+          >
             {sponsor.category}
           </span>
         )}
-        <h3 className="font-cinzel text-sm sm:text-base font-bold text-[#F4EBD9] tracking-wide transition-colors duration-300 group-hover:text-[#D4AF37] line-clamp-2">
+        <h3
+          className={`font-cinzel ${
+            isLarge
+              ? "text-lg sm:text-xl font-extrabold"
+              : isMedium
+              ? "text-sm sm:text-base font-bold"
+              : "text-xs sm:text-sm font-bold"
+          } text-[#F4EBD9] tracking-wide transition-colors duration-300 group-hover:text-[#D4AF37] line-clamp-2`}
+        >
           {sponsor.name}
         </h3>
       </div>
@@ -555,7 +602,7 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
 
       <div
         ref={gridRef}
-        className="mx-auto mt-2 max-w-6xl space-y-8 sm:space-y-10 w-full"
+        className="mx-auto mt-2 max-w-6xl space-y-10 sm:space-y-12 w-full"
       >
         {sponsors.length === 0 ? (
           <div className="flex justify-center w-full">
@@ -572,32 +619,62 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
                 s.category?.toLowerCase().includes("title") ||
                 s.name?.toLowerCase().includes("civil services")
             );
+            const executiveSponsors = sponsors.filter(
+              (s) =>
+                s.category?.toLowerCase().includes("executive") ||
+                s.name?.toLowerCase().includes("formcept")
+            );
             const otherSponsors = sponsors.filter(
-              (s) => !titleSponsors.includes(s)
+              (s) => !titleSponsors.includes(s) && !executiveSponsors.includes(s)
             );
 
             return (
-              <>
-                {/* Title Sponsor on top row alone with same card dimension */}
+              <div className="space-y-10 sm:space-y-12 w-full">
+                {/* 1. Title Sponsor on first line (sabse bada) */}
                 {titleSponsors.length > 0 && (
                   <div className="flex flex-col items-center w-full">
-                    <div className="flex justify-center w-full max-w-[260px]">
+                    <div className="mb-3 flex items-center justify-center gap-3">
+                      <span className="h-px w-10 bg-[#C5A25F]/60" />
+                      <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] text-[#C5A25F]">
+                        Title Partner
+                      </span>
+                      <span className="h-px w-10 bg-[#C5A25F]/60" />
+                    </div>
+                    <div className="flex justify-center w-full max-w-[420px]">
                       {titleSponsors.map((sponsor, idx) => (
-                        <PremiumSponsorCard key={`title-${idx}`} sponsor={sponsor} />
+                        <PremiumSponsorCard key={`title-${idx}`} sponsor={sponsor} size="large" />
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Grid of 4 sponsors per row */}
+                {/* 2. Executive Partner on second line (medium size) */}
+                {executiveSponsors.length > 0 && (
+                  <div className="flex flex-col items-center w-full">
+                    <div className="mb-3 flex items-center justify-center gap-3">
+                      <span className="h-px w-8 bg-[#C5A25F]/40" />
+                      <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] text-[#C5A25F]/90">
+                        Executive Partner
+                      </span>
+                      <span className="h-px w-8 bg-[#C5A25F]/40" />
+                    </div>
+                    <div className="flex justify-center w-full max-w-[320px]">
+                      {executiveSponsors.map((sponsor, idx) => (
+                        <PremiumSponsorCard key={`executive-${idx}`} sponsor={sponsor} size="medium" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Grid of all other sponsors (same size, in priority order: Campa, Wayam AI, Chemica...) */}
                 {otherSponsors.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 justify-items-center w-full">
                     {otherSponsors.map((sponsor, idx) => (
-                      <PremiumSponsorCard key={`other-${idx}`} sponsor={sponsor} />
+                      <PremiumSponsorCard key={`other-${idx}`} sponsor={sponsor} size="small" />
                     ))}
                   </div>
                 )}
-              </>
+              </div>
             );
           })()
         )}
