@@ -11,6 +11,7 @@ import {
   Trophy,
   ChevronLeft,
   ChevronRight,
+  FileText,
 } from "lucide-react";
 import { FaLinkedin, FaLinkedinIn } from "react-icons/fa";
 import gsap from "gsap";
@@ -23,6 +24,9 @@ import { SPONSOR_TIERS } from "../data/sponsorsData";
 import { SPEAKERS_DATA } from "../data/speakersData";
 import { CLOUDINARY_SPONSORS } from "../constants/cloudinaryAssets";
 import { getAssetUrl } from "../utils/assetUrl";
+
+export const RENAISSANCE_RULEBOOK_URL =
+  "https://drive.google.com/file/d/1GKo2utmVtmqG4AAFaZkUpYblXxmvERii/view?usp=sharing";
 
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
@@ -199,13 +203,6 @@ const CURRENT_SPONSORS =
         image: CLOUDINARY_SPONSORS.abhibus || "/sponsors/abhibus.png",
         fallbackImage: "/sponsors/abhibus.png",
         description: "Official Travel Partner for Renaissance 2026.",
-      },
-      {
-        name: "Dainik Jagran inext",
-        category: "Media Partner",
-        image: CLOUDINARY_SPONSORS.dainikJagranInext || "/sponsors/dainik-jagran-inext.png",
-        fallbackImage: "/sponsors/dainik-jagran-inext.png",
-        description: "Official Media Partner for Renaissance 2026.",
       },
     ];
 
@@ -453,13 +450,40 @@ function FeaturedSpeakersGrid({ speakers }) {
   );
 }
 
-function PremiumSponsorCard({ sponsor }) {
+function PremiumSponsorCard({ sponsor, size = "small" }) {
+  const isLarge = size === "large";
+  const isMedium = size === "medium";
+
   return (
-    <div className="premium-sponsor-item flex flex-col items-center group w-full max-w-[260px] opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-      <div className="relative flex h-[135px] sm:h-[150px] w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-xl shadow-[0_6px_22px_rgba(12,43,61,0.18)] overflow-hidden">
+    <div
+      className={`premium-sponsor-item flex flex-col items-center group w-full ${
+        isLarge
+          ? "max-w-[360px] sm:max-w-[420px]"
+          : isMedium
+          ? "max-w-[280px] sm:max-w-[320px]"
+          : "max-w-[230px] sm:max-w-[250px]"
+      } opacity-0 translate-y-[20px] scale-90 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
+    >
+      <div
+        className={`relative flex ${
+          isLarge
+            ? "h-[185px] sm:h-[210px]"
+            : isMedium
+            ? "h-[145px] sm:h-[165px]"
+            : "h-[125px] sm:h-[140px]"
+        } w-full items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 bg-gradient-to-br from-[#DFECEE] to-[#BFE0E5] border border-[#98C5CD] rounded-xl shadow-[0_6px_22px_rgba(12,43,61,0.18)] overflow-hidden`}
+      >
         {/* Subtle glow / oceanic depth */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[130px] h-[130px] bg-white/40 rounded-full blur-[30px]" />
+          <div
+            className={`${
+              isLarge
+                ? "w-[200px] h-[200px]"
+                : isMedium
+                ? "w-[140px] h-[140px]"
+                : "w-[120px] h-[120px]"
+            } bg-white/40 rounded-full blur-[30px]`}
+          />
         </div>
 
         {/* Logo Central Area */}
@@ -475,10 +499,18 @@ function PremiumSponsorCard({ sponsor }) {
                   e.currentTarget.src = fallback;
                 }
               }}
-              className="relative z-10 max-h-[85px] max-w-[85%] object-contain drop-shadow-md mix-blend-multiply"
+              className={`relative z-10 ${
+                isLarge
+                  ? "max-h-[135px] max-w-[90%]"
+                  : isMedium
+                  ? "max-h-[95px] max-w-[85%]"
+                  : "max-h-[78px] max-w-[82%]"
+              } object-contain drop-shadow-md mix-blend-multiply`}
             />
           ) : (
-            <span className="text-[#0C2B3D] font-cinzel text-base font-bold text-center">{sponsor.name}</span>
+            <span className="text-[#0C2B3D] font-cinzel text-base font-bold text-center">
+              {sponsor.name}
+            </span>
           )}
         </div>
       </div>
@@ -486,11 +518,23 @@ function PremiumSponsorCard({ sponsor }) {
       {/* Sponsor Info Below Card */}
       <div className="mt-3 text-center px-1">
         {sponsor.category && (
-          <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#C5A25F] font-bold block mb-1">
+          <span
+            className={`font-mono ${
+              isLarge ? "text-[11px] sm:text-xs" : "text-[9px] sm:text-[10px]"
+            } uppercase tracking-[0.2em] text-[#C5A25F] font-bold block mb-1`}
+          >
             {sponsor.category}
           </span>
         )}
-        <h3 className="font-cinzel text-sm sm:text-base font-bold text-[#F4EBD9] tracking-wide transition-colors duration-300 group-hover:text-[#D4AF37] line-clamp-2">
+        <h3
+          className={`font-cinzel ${
+            isLarge
+              ? "text-lg sm:text-xl font-extrabold"
+              : isMedium
+              ? "text-sm sm:text-base font-bold"
+              : "text-xs sm:text-sm font-bold"
+          } text-[#F4EBD9] tracking-wide transition-colors duration-300 group-hover:text-[#D4AF37] line-clamp-2`}
+        >
           {sponsor.name}
         </h3>
       </div>
@@ -558,7 +602,7 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
 
       <div
         ref={gridRef}
-        className="mx-auto mt-2 max-w-6xl space-y-8 sm:space-y-10 w-full"
+        className="mx-auto mt-2 max-w-6xl space-y-10 sm:space-y-12 w-full"
       >
         {sponsors.length === 0 ? (
           <div className="flex justify-center w-full">
@@ -575,32 +619,62 @@ function PremiumSponsorsGrid({ title, subtitle, sponsors }) {
                 s.category?.toLowerCase().includes("title") ||
                 s.name?.toLowerCase().includes("civil services")
             );
+            const executiveSponsors = sponsors.filter(
+              (s) =>
+                s.category?.toLowerCase().includes("executive") ||
+                s.name?.toLowerCase().includes("formcept")
+            );
             const otherSponsors = sponsors.filter(
-              (s) => !titleSponsors.includes(s)
+              (s) => !titleSponsors.includes(s) && !executiveSponsors.includes(s)
             );
 
             return (
-              <>
-                {/* Title Sponsor on top row alone with same card dimension */}
+              <div className="space-y-10 sm:space-y-12 w-full">
+                {/* 1. Title Sponsor on first line (sabse bada) */}
                 {titleSponsors.length > 0 && (
                   <div className="flex flex-col items-center w-full">
-                    <div className="flex justify-center w-full max-w-[260px]">
+                    <div className="mb-3 flex items-center justify-center gap-3">
+                      <span className="h-px w-10 bg-[#C5A25F]/60" />
+                      <span className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] text-[#C5A25F]">
+                        Title Partner
+                      </span>
+                      <span className="h-px w-10 bg-[#C5A25F]/60" />
+                    </div>
+                    <div className="flex justify-center w-full max-w-[420px]">
                       {titleSponsors.map((sponsor, idx) => (
-                        <PremiumSponsorCard key={`title-${idx}`} sponsor={sponsor} />
+                        <PremiumSponsorCard key={`title-${idx}`} sponsor={sponsor} size="large" />
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Grid of 4 sponsors per row */}
+                {/* 2. Executive Partner on second line (medium size) */}
+                {executiveSponsors.length > 0 && (
+                  <div className="flex flex-col items-center w-full">
+                    <div className="mb-3 flex items-center justify-center gap-3">
+                      <span className="h-px w-8 bg-[#C5A25F]/40" />
+                      <span className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.25em] text-[#C5A25F]/90">
+                        Executive Partner
+                      </span>
+                      <span className="h-px w-8 bg-[#C5A25F]/40" />
+                    </div>
+                    <div className="flex justify-center w-full max-w-[320px]">
+                      {executiveSponsors.map((sponsor, idx) => (
+                        <PremiumSponsorCard key={`executive-${idx}`} sponsor={sponsor} size="medium" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Grid of all other sponsors (same size, in priority order: Campa, Wayam AI, Chemica...) */}
                 {otherSponsors.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 justify-items-center w-full">
                     {otherSponsors.map((sponsor, idx) => (
-                      <PremiumSponsorCard key={`other-${idx}`} sponsor={sponsor} />
+                      <PremiumSponsorCard key={`other-${idx}`} sponsor={sponsor} size="small" />
                     ))}
                   </div>
                 )}
-              </>
+              </div>
             );
           })()
         )}
@@ -1289,33 +1363,46 @@ export default function Home() {
                       {event.desc}
                     </p>
 
-                    <div className="pt-2 sm:pt-3 mt-auto border-t border-[#0C2B3D]/10 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 w-full">
-                      {event.registrationClosed ? (
-                        <div className="w-full sm:w-auto px-4 sm:px-7 py-2 sm:py-2.5 rounded-full bg-red-600 text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase flex items-center justify-center select-none shadow-sm">
-                          Registration Closed
-                        </div>
-                      ) : event.registrationUrl ? (
+                    <div className="pt-2 sm:pt-3 mt-auto border-t border-[#0C2B3D]/10 flex flex-wrap items-center justify-between gap-2 sm:gap-2.5 w-full">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {event.registrationClosed ? (
+                          <div className="px-3.5 sm:px-5 py-2 rounded-full bg-red-600 text-white font-bold text-[10px] sm:text-xs tracking-wider uppercase flex items-center justify-center select-none shadow-sm">
+                            Registration Closed
+                          </div>
+                        ) : event.registrationUrl ? (
+                          <a
+                            href={event.registrationUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3.5 sm:px-5 py-2 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[10px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 group cursor-pointer"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] animate-pulse" />
+                            <span>Register</span>
+                            <ExternalLink className="w-3 h-3 text-[#38BDF8] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                          </a>
+                        ) : (
+                          <div className="px-3 sm:px-4 py-2 rounded-full bg-[#0C2B3D]/10 text-[#0C2B3D]/70 font-mono font-bold text-[9px] sm:text-[11px] tracking-wider uppercase flex items-center justify-center gap-1.5 select-none">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37]" />
+                            <span>Opening Soon</span>
+                          </div>
+                        )}
+
                         <a
-                          href={event.registrationUrl}
+                          href={RENAISSANCE_RULEBOOK_URL}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full sm:w-auto px-4 sm:px-7 py-2 sm:py-2.5 rounded-full bg-[#1C4ED8] hover:bg-[#1E40AF] text-white font-bold text-[11px] sm:text-xs tracking-wider uppercase shadow-[0_4px_16px_rgba(28,78,216,0.35)] hover:shadow-[0_6px_22px_rgba(28,78,216,0.55)] hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                          className="px-3 sm:px-4 py-2 rounded-full border border-[#0C2B3D]/30 bg-white/70 hover:bg-white text-[#0C2B3D] font-bold text-[10px] sm:text-xs tracking-wider uppercase transition-all shadow-sm flex items-center justify-center gap-1.5 hover:border-[#0C2B3D]/60 hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
                         >
-                          <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#38BDF8] animate-pulse" />
-                          <span>Register</span>
-                          <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#38BDF8] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                          <FileText className="w-3.5 h-3.5 text-[#8A5F1C]" />
+                          <span>Rulebook</span>
                         </a>
-                      ) : (
-                        <div className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 rounded-full bg-[#0C2B3D]/10 text-[#0C2B3D]/70 font-mono font-bold text-[10px] sm:text-xs tracking-wider uppercase flex items-center justify-center gap-2 select-none">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37]" />
-                          <span>Registrations Opening Soon</span>
-                        </div>
-                      )}
+                      </div>
+
                       <Link
                         to="/events"
-                        className="text-[10px] sm:text-xs font-bold uppercase tracking-widest cursor-pointer hover:opacity-70 transition-opacity"
+                        className="text-[10px] sm:text-xs font-bold uppercase tracking-widest cursor-pointer hover:opacity-70 transition-opacity ml-auto"
                       >
-                        View Schedule →
+                        Schedule →
                       </Link>
                     </div>
                   </div>

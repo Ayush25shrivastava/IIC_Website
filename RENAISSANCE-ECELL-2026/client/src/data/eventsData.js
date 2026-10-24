@@ -1,3 +1,6 @@
+export const RENAISSANCE_RULEBOOK_URL =
+  "https://drive.google.com/file/d/1GKo2utmVtmqG4AAFaZkUpYblXxmvERii/view?usp=sharing";
+
 export const EVENTS_DATA = [
   {
     id: "b-plan",
@@ -12,7 +15,7 @@ export const EVENTS_DATA = [
     image: "/b-plan-card.jpeg",
     description: "Pitch your venture idea to an expert panel. Define your market opportunity, business model, and financial viability in Renaissance 10.0's flagship business-plan challenge.",
     tagline: "Pitch ideas. Solve real-world problems.",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   },
   {
     id: "strategy-wiz",
@@ -27,7 +30,7 @@ export const EVENTS_DATA = [
     image: "/strategy-wiz-card.jpeg",
     description: "Craft a high-impact launch strategy. Analyze market dynamics, define your target audience, and build an iconic go-to-market plan.",
     tagline: "Think strategic. Build market winners.",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   },
   {
     id: "biz-war",
@@ -42,7 +45,7 @@ export const EVENTS_DATA = [
     image: "/biz-war-card.jpeg",
     description: "Navigate real-world market turbulence, outmaneuver competitors, and make critical strategic decisions in a high-pressure corporate competition.",
     tagline: "Compete. Analyse. Make real decisions.",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   },
   {
     id: "creative-quest",
@@ -57,7 +60,7 @@ export const EVENTS_DATA = [
     image: "",
     description: "Unleash your creative flair through filmmaking, visual storytelling, and brand content creation in Renaissance 10.0's flagship media challenge.",
     tagline: "Capture. Create. Tell the story.",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   },
   {
     id: "biz-tech-quiz",
@@ -72,7 +75,7 @@ export const EVENTS_DATA = [
     image: "",
     description: "Conducted by Gnosis Quiz Club, test your knowledge across technology breakthroughs, startups, venture pivots, and global business titans.",
     tagline: "Test your business, tech and current affairs knowledge.",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   },
   {
     id: "mock-ipl-auction",
@@ -87,7 +90,7 @@ export const EVENTS_DATA = [
     image: "",
     description: "Manage token purses, evaluate player valuations, and build a championship-winning squad under live auction pressure.",
     tagline: "Bid. Negotiate. Build your dream team.",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   },
   {
     id: "treasure-hunt",
@@ -102,7 +105,7 @@ export const EVENTS_DATA = [
     image: "",
     description: "An adventurous campus-wide quest. Decode cryptic clues, navigate hidden waypoints across MNNIT, and race against the clock.",
     tagline: "Solve. Explore. Discover.",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   },
   {
     id: "glow-and-know",
@@ -117,7 +120,7 @@ export const EVENTS_DATA = [
     image: "",
     description: "An exciting, interactive skincare, wellness, and self-care trivia mania designed exclusively for girls. Quiz, play, and win exclusive gift hampers!",
     tagline: "Girls only, quiz, play & win!",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   },
   {
     id: "ttt",
@@ -133,7 +136,7 @@ export const EVENTS_DATA = [
     description: "A 10-minute corporate crisis simulation. Analyse unit economics, protect market share, and defend your turnaround strategy before a board of directors.",
     tagline: "600 Seconds to Save a Unicorn.",
     registrationUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdVM7d6SgP70JEj9gE-90XscLjGzNKAqAM7m7ifox6J63AIJg/viewform",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   },
   {
     id: "b-plan-junior",
@@ -149,7 +152,7 @@ export const EVENTS_DATA = [
     description: "Got an early-stage startup idea or business plan? Take your entrepreneurial vision to the next level with B-Plan Junior, a platform designed to identify, nurture, and accelerate promising young innovators. Present your ideas, showcase your business strategies, and compete with talented teams to demonstrate your creativity, problem-solving abilities, and entrepreneurial potential. The top-performing teams earn the opportunity to skip the queue and secure direct fast-track qualification to the flagship B-Plan presentation round, bringing them one step closer to turning their innovative ideas into reality. Seize this opportunity to gain recognition, challenge conventional thinking, and transform your business vision into a compelling venture.",
     tagline: "Build your idea. Fast-track your pitch.",
     registrationUrl: "https://docs.google.com/forms/d/e/1FAIpQLScMsj-9CoI368_dbNIkOc9QsNPtp_Z_Uj0uwk55Az8RPoTabQ/viewform",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   },
   {
     id: "mun",
@@ -165,6 +168,6 @@ export const EVENTS_DATA = [
     description: "High-stakes diplomacy, intense committee debates, and global policy strategy. Step up, represent your nation, and dominate the floor!",
     tagline: "Represent your nation. Make your voice heard.",
     registrationUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeM1d3obsXb9Dx20wkoLDw2hA6AnbS36HVthLtvRzTPW_g12g/viewform",
-    rulebookUrl: "#"
+    rulebookUrl: RENAISSANCE_RULEBOOK_URL
   }
 ];

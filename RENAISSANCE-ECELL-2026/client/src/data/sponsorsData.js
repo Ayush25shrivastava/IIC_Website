@@ -45,7 +45,33 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id: "beverage",
+    id: "ai",
+    title: "AI Partner",
+    sponsors: [
+      {
+        name: "Wayam AI",
+        category: "AI Partner",
+        image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
+        fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
+        description: "Official AI Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "learning",
+    title: "Learning Partner",
+    sponsors: [
+      {
+        name: "Chemica Point",
+        category: "Learning Partner",
+        image: CLOUDINARY_SPONSORS.chemicapoint || getAssetUrl("/sponsors/chemica-point.png"),
+        fallbackImage: getAssetUrl("/sponsors/chemica-point.png"),
+        description: "Official Learning Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "beverage-oatey",
     title: "Beverage Partner",
     sponsors: [
       {
@@ -67,20 +93,6 @@ export const SPONSOR_TIERS = [
         image:CLOUDINARY_SPONSORS.plum|| getAssetUrl("/sponsors/plum-goodness.png"),
         fallbackImage: getAssetUrl("/sponsors/plum-goodness.png"),
         description: "Official Goodness Partner for Renaissance 2026.",
-      }
-    ],
-  },
-  
-    {
-    id: "ai",
-    title: "AI Partner",
-    sponsors: [
-      {
-        name: "Wayam AI",
-        category: "AI Partner",
-        image: CLOUDINARY_SPONSORS.wayamai || getAssetUrl("/sponsors/wayamai.png"),
-        fallbackImage: getAssetUrl("/sponsors/wayamai.png"),
-        description: "Official AI Partner for Renaissance 2026.",
       }
     ],
   },
@@ -190,15 +202,15 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id:"coaching",
-    title:"Coaching Partner",
-    sponsors:[
+    id: "exam-prep-topperscode",
+    title: "Exam Preparation Partner",
+    sponsors: [
       {
-        name:"Toppers Code India",
-        category:"Coaching Partner",
-        image:CLOUDINARY_SPONSORS.toppersCode || getAssetUrl("/sponsors/topperscode.jpeg"),
+        name: "Toppers Code India",
+        category: "Exam Preparation Partner",
+        image: CLOUDINARY_SPONSORS.toppersCode || getAssetUrl("/sponsors/topperscode.jpeg"),
         fallbackImage: getAssetUrl("/sponsors/topperscode.jpeg"),
-        description: "Official Coaching Partner for Renaissance 2026.",
+        description: "Official Exam Preparation Partner for Renaissance 2026.",
       }
     ],
   },
@@ -216,15 +228,80 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id: "media",
-    title: "Media Partner",
+    id: "travel-easemytrip",
+    title: "Travel Partner",
     sponsors: [
       {
-        name: "Dainik Jagran inext",
-        category: "Media Partner",
-        image: CLOUDINARY_SPONSORS.dainikJagranInext || getAssetUrl("/sponsors/dainik-jagran-inext.png"),
-        fallbackImage: getAssetUrl("/sponsors/dainik-jagran-inext.png"),
-        description: "Official Media Partner for Renaissance 2026.",
+        name: "EaseMyTrip",
+        category: "Travel Partner",
+        image: CLOUDINARY_SPONSORS.easemytrip || getAssetUrl("/sponsors/easemytrip.png"),
+        fallbackImage: getAssetUrl("/sponsors/easemytrip.png"),
+        description: "Official Travel Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "exam-prep",
+    title: "Exam Prep Partner",
+    sponsors: [
+      {
+        name: "IMS",
+        category: "Exam Prep Partner",
+        image: CLOUDINARY_SPONSORS.ims || getAssetUrl("/sponsors/ims.png"),
+        fallbackImage: getAssetUrl("/sponsors/ims.png"),
+        description: "Official Exam Prep Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "fooding",
+    title: "Fooding Partner",
+    sponsors: [
+      {
+        name: "Laal's Kitchen",
+        category: "Fooding Partner",
+        image: CLOUDINARY_SPONSORS.laals || getAssetUrl("/sponsors/laals-kitchen.png"),
+        fallbackImage: getAssetUrl("/sponsors/laals-kitchen.png"),
+        description: "Official Fooding Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "trading",
+    title: "Trading Partner",
+    sponsors: [
+      {
+        name: "SMC",
+        category: "Trading Partner",
+        image: CLOUDINARY_SPONSORS.smc || getAssetUrl("/sponsors/smc.png"),
+        fallbackImage: getAssetUrl("/sponsors/smc.png"),
+        description: "Official Trading Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "knowledge",
+    title: "Knowledge Partner",
+    sponsors: [
+      {
+        name: "Syncoro Ventures",
+        category: "Knowledge Partner",
+        image: CLOUDINARY_SPONSORS.syncoro || getAssetUrl("/sponsors/syncoro-ventures.png"),
+        fallbackImage: getAssetUrl("/sponsors/syncoro-ventures.png"),
+        description: "Official Knowledge Partner for Renaissance 2026.",
+      }
+    ],
+  },
+  {
+    id: "merchandise",
+    title: "Merchandise Partner",
+    sponsors: [
+      {
+        name: "Doon Merchandise",
+        category: "Merchandise Partner",
+        image: CLOUDINARY_SPONSORS.doon || getAssetUrl("/sponsors/doon-merchandise.png"),
+        fallbackImage: getAssetUrl("/sponsors/doon-merchandise.png"),
+        description: "Official Merchandise Partner for Renaissance 2026.",
       }
     ],
   }

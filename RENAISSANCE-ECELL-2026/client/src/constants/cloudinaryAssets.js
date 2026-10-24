@@ -26,6 +26,13 @@ export const CLOUDINARY_SPONSORS = {
   lotte: "https://res.cloudinary.com/fbf4uyoz/image/fetch/f_auto,q_auto/https://upload.wikimedia.org/wikipedia/commons/2/2a/Lotte_logo.svg",
   unstop: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/unstop",
   abhibus: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/abhibus",
+  easemytrip: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_easemytrip_sponsor.png",
+  ims: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_ims_sponsor.png",
+  laals: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_laals_sponsor.png",
+  smc: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_smc_sponsor.png",
+  doon: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_doon_sponsor.png",
+  syncoro: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/v1792835058/renaissance_syncoro_sponsor.png",
+  chemicapoint: "https://res.cloudinary.com/fbf4uyoz/image/upload/f_auto,q_auto/renaissance_chemicapoint_sponsor.png",
 };
 
 /**
