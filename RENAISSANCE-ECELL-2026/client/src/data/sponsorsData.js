@@ -216,19 +216,6 @@ export const SPONSOR_TIERS = [
     ],
   },
   {
-    id: "media",
-    title: "Media Partner",
-    sponsors: [
-      {
-        name: "Dainik Jagran inext",
-        category: "Media Partner",
-        image: CLOUDINARY_SPONSORS.dainikJagranInext || getAssetUrl("/sponsors/dainik-jagran-inext.png"),
-        fallbackImage: getAssetUrl("/sponsors/dainik-jagran-inext.png"),
-        description: "Official Media Partner for Renaissance 2026.",
-      }
-    ],
-  },
-  {
     id: "travel-easemytrip",
     title: "Travel Partner",
     sponsors: [

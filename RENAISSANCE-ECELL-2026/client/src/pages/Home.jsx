@@ -204,13 +204,6 @@ const CURRENT_SPONSORS =
         fallbackImage: "/sponsors/abhibus.png",
         description: "Official Travel Partner for Renaissance 2026.",
       },
-      {
-        name: "Dainik Jagran inext",
-        category: "Media Partner",
-        image: CLOUDINARY_SPONSORS.dainikJagranInext || "/sponsors/dainik-jagran-inext.png",
-        fallbackImage: "/sponsors/dainik-jagran-inext.png",
-        description: "Official Media Partner for Renaissance 2026.",
-      },
     ];
 
 const PAST_SPONSORS = [
