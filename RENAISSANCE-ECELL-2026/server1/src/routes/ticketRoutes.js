@@ -26,15 +26,6 @@ const volunteerLoginLimiter = rateLimit({
         res.status(429).json({ success: false, message: 'Too many sign-in attempts. Try again later.' });
     },
 });
-const volunteerRegisterLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000,
-    limit: 5,
-    standardHeaders: 'draft-8',
-    legacyHeaders: false,
-    handler(_req, res) {
-        res.status(429).json({ success: false, message: 'Too many access requests. Try again later.' });
-    },
-});
 
 const router = express.Router();
 
@@ -47,7 +38,7 @@ router.get('/availability', getTicketStageConfigs);
 router.get('/status/:ticketId', getTicketStatus);
 
 // Volunteer requests are reviewed by admins before they can use scanner routes.
-router.post('/volunteer/register', requireTrustedOrigin, volunteerRegisterLimiter, registerVolunteerScanner);
+router.post('/volunteer/register', requireTrustedOrigin, registerVolunteerScanner);
 router.post('/volunteer/login', requireTrustedOrigin, volunteerLoginLimiter, loginVolunteerScanner);
 router.get('/volunteer/session', requireVolunteerScanner, getVolunteerScannerSession);
 router.post('/volunteer/logout', requireTrustedOrigin, logoutVolunteerScanner);
